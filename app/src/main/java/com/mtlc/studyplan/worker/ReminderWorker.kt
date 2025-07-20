@@ -6,7 +6,7 @@ import androidx.work.WorkerParameters
 import com.mtlc.studyplan.notification.NotificationHelper
 import java.util.Calendar
 
-class ReminderWorker(
+class ReminderWorker private constructor(
     private val context: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
