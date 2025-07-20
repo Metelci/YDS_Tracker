@@ -25,7 +25,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun YDSYOKDILKotlinComposeGorevTakipUygulamasiTheme(
+fun StudyPlanTheme( // İsim sadeleştirildi
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

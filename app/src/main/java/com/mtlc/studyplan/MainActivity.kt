@@ -6,25 +6,64 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FactCheck
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.EventAvailable
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,8 +73,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,25 +88,33 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.mtlc.studyplan.notification.NotificationHelper
-import com.mtlc.studyplan.ui.theme.YDSYOKDILKotlinComposeGorevTakipUygulamasiTheme
+import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import com.mtlc.studyplan.worker.ReminderWorker
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import androidx.core.net.toUri
 
-// --- VERİ MODELLERİ VE KAYNAĞI ---
-// YENİ: Task modeline 'details' alanı eklendi
+// --- VERI MODELLERI VE KAYNAGI ---
 data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val title: String, val days: List<DayPlan>)
 data class Achievement(val id: String, val title: String, val description: String, val condition: (Set<String>) -> Boolean)
 data class ExamInfo(val name: String, val applicationStart: LocalDate, val applicationEnd: LocalDate, val examDate: LocalDate)
 
-// YENİ: 8 AYLIK (32 HAFTALIK) KAPSAMLI PLAN VE DETAYLI GÖREV AÇIKLAMALARI
+data class PlanUiState(
+    val isLoading: Boolean = true,
+    val userProgress: UserProgress = UserProgress()
+)
+
 object PlanDataSource {
     private fun generateWeeks(startWeek: Int, month: Int, units: List<Int>): List<WeekPlan> {
         val weeks = mutableListOf<WeekPlan>()
@@ -75,24 +127,24 @@ object PlanDataSource {
                     title = "$month. Ay, $weekNumber. Hafta",
                     days = listOf(
                         DayPlan(day = "Pazartesi", tasks = listOf(
-                            Task(id = "w${weekNumber}_t1", desc = "Okuma Pratiği", details = "Öneri: Oxford Bookworms (Stage 1-2) veya Penguin Readers (Level 1-2) serisinden bir kitap okumaya devam et. Anlamadığın yerleri not al."),
-                            Task(id = "w${weekNumber}_t2", desc = "Kelime Çalışması", details = "Öneri: Okuduğun bölümden en az 10 yeni kelime çıkar. Anlamları ve örnek cümleleriyle birlikte Quizlet veya Anki'ye ekle.")
+                            Task(id = "w${weekNumber}_t1", desc = "Okuma Pratigi", details = "Oneri: Oxford Bookworms (Stage 1-2) veya Penguin Readers (Level 1-2) serisinden bir kitap okumaya devam et. Anlamadigin yerleri not al."),
+                            Task(id = "w${weekNumber}_t2", desc = "Kelime Calismasi", details = "Oneri: Okudugun bolumden en az 10 yeni kelime cikar. Anlamlari ve ornek cumleleriyle birlikte Quizlet veya Anki'ye ekle.")
                         )),
-                        DayPlan(day = "Salı", tasks = listOf(
-                            Task(id = "w${weekNumber}_t3", desc = "Dinleme Pratiği", details = "Öneri: BBC 6 Minute English, VOA Learning English gibi kaynaklardan seviyene uygun bir bölümü önce altyazısız, sonra altyazılı dinle."),
-                            Task(id = "w${weekNumber}_t4", desc = "Kelime Çalışması", details = "Öneri: Dinlediğin bölümden en az 5 yeni kelime veya kalıp öğren. Kelime uygulamana eklemeyi unutma.")
+                        DayPlan(day = "Sali", tasks = listOf(
+                            Task(id = "w${weekNumber}_t3", desc = "Dinleme Pratigi", details = "Oneri: BBC 6 Minute English, VOA Learning English gibi kaynaklardan seviyene uygun bir bolumu once altyazisiz, sonra altyazili dinle."),
+                            Task(id = "w${weekNumber}_t4", desc = "Kelime Calismasi", details = "Oneri: Dinledigin bolumden en az 5 yeni kelime veya kalip ogren. Kelime uygulamana eklemeyi unutma.")
                         )),
-                        DayPlan(day = "Çarşamba", tasks = listOf(
-                            Task(id = "w${weekNumber}_t5", desc = "Gramer: Unit ${unitChunk[0]} ve ${unitChunk[1]}", details = "Kaynak: Raymond Murphy - Essential Grammar in Use (Kırmızı Kitap). Konuları dikkatlice oku."),
-                            Task(id = "w${weekNumber}_t6", desc = "Alıştırma", details = "Çalıştığın iki gramer ünitesinin kitaptaki alıştırmalarını tamamla. Yanlışlarını kontrol et.")
+                        DayPlan(day = "Carsamba", tasks = listOf(
+                            Task(id = "w${weekNumber}_t5", desc = "Gramer: Unit ${unitChunk[0]} ve ${unitChunk[1]}", details = "Kaynak: Raymond Murphy - Essential Grammar in Use (Kirmizi Kitap). Konulari dikkatlice oku."),
+                            Task(id = "w${weekNumber}_t6", desc = "Alistirma", details = "Calistigin iki gramer unitesinin kitaptaki alistirmalarini tamamla. Yanlislarini kontrol et.")
                         )),
-                        DayPlan(day = "Perşembe", tasks = listOf(
-                            Task(id = "w${weekNumber}_t7", desc = "Tekrar: Okuma & Dinleme", details = "Hafta başında okuduğun ve dinlediğin materyalleri tekrar gözden geçir. Kelimelerin ne kadar aklında kaldığını kontrol et."),
-                            Task(id = "w${weekNumber}_t8", desc = "Tekrar: Kelime", details = "Bu hafta öğrendiğin tüm kelimeleri kelime uygulaman üzerinden tekrar et. Flashcard'larla kendini test et.")
+                        DayPlan(day = "Persembe", tasks = listOf(
+                            Task(id = "w${weekNumber}_t7", desc = "Tekrar: Okuma & Dinleme", details = "Hafta basinda okudugun ve dinledigin materyalleri tekrar gozden gecir. Kelimelerin ne kadar aklinda kaldigini kontrol et."),
+                            Task(id = "w${weekNumber}_t8", desc = "Tekrar: Kelime", details = "Bu hafta ogrendigin tum kelimeleri kelime uygulaman uzerinden tekrar et. Flashcard'larla kendini test et.")
                         )),
                         DayPlan(day = "Cuma", tasks = listOf(
-                            Task(id = "w${weekNumber}_t9", desc = "Gramer: Unit ${unitChunk.getOrNull(2)} ve ${unitChunk.getOrNull(3)}", details = "Kaynak: Raymond Murphy - Essential Grammar in Use (Kırmızı Kitap). Konuları dikkatlice oku."),
-                            Task(id = "w${weekNumber}_t10", desc = "Alıştırma ve Tekrar", details = "Çalıştığın iki gramer ünitesinin alıştırmalarını yap ve hafta boyunca işlenen tüm gramer konularını hızlıca gözden geçir.")
+                            Task(id = "w${weekNumber}_t9", desc = "Gramer: Unit ${unitChunk.getOrNull(2)} ve ${unitChunk.getOrNull(3)}", details = "Kaynak: Raymond Murphy - Essential Grammar in Use (Kirmizi Kitap). Konulari dikkatlice oku."),
+                            Task(id = "w${weekNumber}_t10", desc = "Alistirma ve Tekrar", details = "Calistigin iki gramer unitesinin alistirmalarini yap ve hafta boyunca islenen tum gramer konularini hizlica gozden gecir.")
                         )))
                 )
             )
@@ -117,19 +169,19 @@ object AchievementDataSource {
     private val month1Tasks = PlanDataSource.planData.take(4).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
 
     val allAchievements = listOf(
-        Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { it.isNotEmpty() },
-        Achievement("ten_tasks", "Isınma Turları", "10 görevi tamamladın!") { it.size >= 10 },
-        Achievement("fifty_tasks", "Yarı Maraton", "50 görevi tamamladın!") { it.size >= 50 },
-        Achievement("month1_complete", "İlk Ay Bitti!", "İlk ayın tüm görevlerini tamamladın!") { it.containsAll(month1Tasks) },
-        Achievement("halfway_there", "Yolun Yarısı!", "Tüm planın yarısını tamamladın!") { it.size >= (allTasks.size / 2) }
+        Achievement("first_task", "Ilk Adim", "Ilk gorevini tamamladin!") { it.isNotEmpty() },
+        Achievement("ten_tasks", "Isinma Turlari", "10 gorevi tamamladin!") { it.size >= 10 },
+        Achievement("fifty_tasks", "Yari Maraton", "50 gorevi tamamladin!") { it.size >= 50 },
+        Achievement("month1_complete", "Ilk Ay Bitti!", "Ilk ayin tum gorevlerini tamamladin!") { it.containsAll(month1Tasks) },
+        Achievement("halfway_there", "Yolun Yarisi!", "Tum planin yarisini tamamladin!") { it.size >= (allTasks.size / 2) }
     )
 }
 
 object ExamCalendarDataSource {
     val upcomingExams = listOf(
-        ExamInfo(name = "YÖKDİL/1 (İlkbahar)", applicationStart = LocalDate.of(2026, 1, 28), applicationEnd = LocalDate.of(2026, 2, 5), examDate = LocalDate.of(2026, 3, 22)),
-        ExamInfo(name = "YDS/1 (İlkbahar)", applicationStart = LocalDate.of(2026, 2, 18), applicationEnd = LocalDate.of(2026, 2, 26), examDate = LocalDate.of(2026, 4, 12)),
-        ExamInfo(name = "YÖKDİL/2 (Sonbahar)", applicationStart = LocalDate.of(2026, 7, 15), applicationEnd = LocalDate.of(2026, 7, 23), examDate = LocalDate.of(2026, 8, 23)),
+        ExamInfo(name = "YOKDIL/1 (Ilkbahar)", applicationStart = LocalDate.of(2026, 1, 28), applicationEnd = LocalDate.of(2026, 2, 5), examDate = LocalDate.of(2026, 3, 22)),
+        ExamInfo(name = "YDS/1 (Ilkbahar)", applicationStart = LocalDate.of(2026, 2, 18), applicationEnd = LocalDate.of(2026, 2, 26), examDate = LocalDate.of(2026, 4, 12)),
+        ExamInfo(name = "YOKDIL/2 (Sonbahar)", applicationStart = LocalDate.of(2026, 7, 15), applicationEnd = LocalDate.of(2026, 7, 23), examDate = LocalDate.of(2026, 8, 23)),
         ExamInfo(name = "YDS/2 (Sonbahar)", applicationStart = LocalDate.of(2026, 8, 26), applicationEnd = LocalDate.of(2026, 9, 3), examDate = LocalDate.of(2026, 10, 25))
     )
 
@@ -177,23 +229,23 @@ data class UserProgress(
 )
 
 class PlanViewModel(private val repository: ProgressRepository) : ViewModel() {
-    private val _userProgress = MutableStateFlow(UserProgress())
-    val userProgress: StateFlow<UserProgress> = _userProgress.asStateFlow()
+    private val _uiState = MutableStateFlow(PlanUiState())
+    val uiState: StateFlow<PlanUiState> = _uiState.asStateFlow()
 
     private val _newlyUnlockedAchievement = MutableSharedFlow<Achievement>()
     val newlyUnlockedAchievement: SharedFlow<Achievement> = _newlyUnlockedAchievement.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            repository.progressFlow.collect {
-                _userProgress.value = it
+            repository.progressFlow.collect { progress ->
+                _uiState.value = PlanUiState(isLoading = false, userProgress = progress)
             }
         }
     }
 
     fun toggleTask(taskId: String) {
         viewModelScope.launch {
-            val currentProgress = _userProgress.value
+            val currentProgress = _uiState.value.userProgress
             val currentTasks = currentProgress.completedTasks.toMutableSet()
             val wasCompleted = currentTasks.contains(taskId)
 
@@ -242,7 +294,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         NotificationHelper.createNotificationChannel(this)
         setContent {
-            YDSYOKDILKotlinComposeGorevTakipUygulamasiTheme {
+            // DÜZELTME: Tema adı sadeleştirildi
+            StudyPlanTheme {
                 val permissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission(),
                     onResult = { isGranted -> if (isGranted) { scheduleDailyReminder(this) } }
@@ -270,7 +323,8 @@ fun scheduleDailyReminder(context: Context) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlanScreen(viewModel: PlanViewModel) {
-    val userProgress by viewModel.userProgress.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val userProgress = uiState.userProgress
     val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
     val progress = if (allTasks.isNotEmpty()) userProgress.completedTasks.size.toFloat() / allTasks.size else 0f
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "Overall Progress Animation")
@@ -284,7 +338,7 @@ fun PlanScreen(viewModel: PlanViewModel) {
     LaunchedEffect(Unit) {
         viewModel.newlyUnlockedAchievement.collect { achievement ->
             snackbarHostState.showSnackbar(
-                message = "Yeni Başarım: ${achievement.title}",
+                message = "Yeni Basarim: ${achievement.title}",
                 actionLabel = "OK",
                 withDismissAction = true,
                 duration = SnackbarDuration.Short
@@ -295,26 +349,37 @@ fun PlanScreen(viewModel: PlanViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             MainHeader()
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                stickyHeader {
-                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                        GamificationHeader(
-                            streakCount = userProgress.streakCount,
-                            achievementsCount = userProgress.unlockedAchievements.size,
-                            onAchievementsClick = { showAchievementsSheet = true }
-                        )
-                        ExamCountdownCard()
-                        OverallProgressCard(progress = animatedProgress)
-                    }
+
+            if (uiState.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-                items(PlanDataSource.planData, key = { it.week }) { weekPlan ->
-                    WeekCard(
-                        weekPlan = weekPlan,
-                        completedTasks = userProgress.completedTasks,
-                        onToggleTask = viewModel::toggleTask
-                    )
+            } else {
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    stickyHeader {
+                        Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                            GamificationHeader(
+                                streakCount = userProgress.streakCount,
+                                achievementsCount = userProgress.unlockedAchievements.size,
+                                onAchievementsClick = { showAchievementsSheet = true }
+                            )
+                            ExamCountdownCard()
+                            OverallProgressCard(progress = animatedProgress)
+                        }
+                    }
+                    items(PlanDataSource.planData, key = { it.week }) { weekPlan ->
+                        WeekCard(
+                            weekPlan = weekPlan,
+                            completedTasks = userProgress.completedTasks,
+                            onToggleTask = viewModel::toggleTask
+                        )
+                    }
                 }
             }
         }
@@ -324,34 +389,55 @@ fun PlanScreen(viewModel: PlanViewModel) {
 @Composable
 fun MainHeader() {
     val context = LocalContext.current
-    Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface, shadowElevation = 3.dp) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 3.dp
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(56.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(contentAlignment = Alignment.CenterStart) {
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.FactCheck,
                     contentDescription = null,
-                    modifier = Modifier.size(80.dp).offset(x = (-16).dp),
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(start = 8.dp),
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                 )
-                Text(text = "Road to YDS", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    text = "Road to YDS",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
             }
             IconButton(onClick = {
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    "mailto:".toUri().also { data = it }
+                    data = "mailto:".toUri()
                     putExtra(Intent.EXTRA_EMAIL, arrayOf("metelci@gmail.com"))
-                    putExtra(Intent.EXTRA_SUBJECT, "Road to YDS Uygulaması Geri Bildirimi")
+                    putExtra(Intent.EXTRA_SUBJECT, "Road to YDS Uygulamasi Geri Bildirimi")
                 }
-                context.startActivity(Intent.createChooser(intent, "E-posta gönder..."))
+                context.startActivity(Intent.createChooser(intent, "E-posta gonder..."))
             }) {
-                Icon(imageVector = Icons.Default.Email, contentDescription = "E-posta ile İletişim")
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "E-posta ile Iletisim"
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun ExamCountdownCard() {
@@ -368,30 +454,30 @@ fun ExamCountdownCard() {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Yaklaşan Sınav: ${nextExam.name}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = "Yaklasan Sinav: ${nextExam.name}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.EditCalendar, contentDescription = "Başvuru Tarihi", tint = MaterialTheme.colorScheme.secondary)
+                Icon(Icons.Default.EditCalendar, contentDescription = "Basvuru Tarihi", tint = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text("Başvuru İçin Son", style = MaterialTheme.typography.bodySmall)
+                    Text("Basvuru Icin Son", style = MaterialTheme.typography.bodySmall)
                     if (daysToApplicationEnd >= 0) {
-                        Text("${daysToApplicationEnd + 1} gün", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("${daysToApplicationEnd + 1} gun", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     } else {
-                        Text("Süre Doldu", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                        Text("Sure Doldu", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.EventAvailable, contentDescription = "Sınav Tarihi", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Default.EventAvailable, contentDescription = "Sinav Tarihi", tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text("Sınava Kalan Süre", style = MaterialTheme.typography.bodySmall)
+                    Text("Sinava Kalan Sure", style = MaterialTheme.typography.bodySmall)
                     if (daysToExam >= 0) {
-                        Text("$daysToExam gün", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("$daysToExam gun", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     } else {
-                        Text("Sınav Geçti", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("Sinav Gecti", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -399,13 +485,14 @@ fun ExamCountdownCard() {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AchievementsSheet(unlockedAchievementIds: Set<String>, onDismiss: () -> Unit) {
     val allAchievements = remember { AchievementDataSource.allAchievements }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp)) {
-            Text(text = "Başarımlar", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            Text(text = "Basarimlar", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
                 items(allAchievements) { achievement ->
                     val isUnlocked = unlockedAchievementIds.contains(achievement.id)
@@ -421,7 +508,7 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
     val contentAlpha = if (isUnlocked) 1f else 0.5f
     val iconColor = if (isUnlocked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = "Başarım İkonu", tint = iconColor, modifier = Modifier.size(40.dp))
+        Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = "Basarim Ikonu", tint = iconColor, modifier = Modifier.size(40.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = achievement.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha))
@@ -433,9 +520,9 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
 @Composable
 fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp), horizontalArrangement = Arrangement.SpaceAround) {
-        InfoChip(icon = Icons.Default.LocalFireDepartment, label = "Çalışma Serisi", value = "$streakCount gün", iconColor = MaterialTheme.colorScheme.error)
+        InfoChip(icon = Icons.Default.LocalFireDepartment, label = "Calisma Serisi", value = "$streakCount gun", iconColor = MaterialTheme.colorScheme.error)
         Box(modifier = Modifier.clickable { onAchievementsClick() }) {
-            InfoChip(icon = Icons.Default.WorkspacePremium, label = "Başarımlar", value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
+            InfoChip(icon = Icons.Default.WorkspacePremium, label = "Basarimlar", value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
         }
     }
 }
@@ -463,7 +550,7 @@ fun OverallProgressCard(progress: Float) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Genel İlerleme", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Genel Ilerleme", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -489,9 +576,9 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
                 Column(modifier = Modifier.weight(1f)) {
                     Text(weekPlan.title, style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("$completedInWeek / ${weekTasks.size} görev tamamlandı", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("$completedInWeek / ${weekTasks.size} gorev tamamlandi", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Genişlet/Daralt", modifier = Modifier.rotate(rotationAngle))
+                Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Genislet/Daralt", modifier = Modifier.rotate(rotationAngle))
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column {
@@ -500,13 +587,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
                         thickness = DividerDefaults.Thickness,
                         color = DividerDefaults.color
                     )
-                    weekPlan.days.forEach { dayPlan ->
-                        DaySection(
-                            dayPlan = dayPlan,
-                            completedTasks = completedTasks,
-                            onToggleTask = onToggleTask
-                        )
-                    }
+                    weekPlan.days.forEach { dayPlan -> DaySection(dayPlan = dayPlan, completedTasks = completedTasks, onToggleTask = onToggleTask) }
                 }
             }
         }
@@ -521,7 +602,6 @@ fun DaySection(dayPlan: DayPlan, completedTasks: Set<String>, onToggleTask: (Str
     }
 }
 
-// YENİ: TaskItem artık kendi içinde genişleyebilir
 @Composable
 fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
