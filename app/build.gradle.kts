@@ -12,10 +12,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.2.2"
-
-        //Artık 6+1 aylık bir çalışma programı var. Son ay sadece deneme sınavı kampı mevcut.
+        versionCode = 3
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

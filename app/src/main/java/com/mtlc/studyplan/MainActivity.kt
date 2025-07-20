@@ -1,6 +1,8 @@
 package com.mtlc.studyplan
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -31,7 +33,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.EventAvailable
@@ -51,7 +52,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -62,17 +62,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -81,21 +82,12 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.mtlc.studyplan.notification.NotificationHelper
+import androidx.work.WorkerParameters
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
-import com.mtlc.studyplan.worker.ReminderWorker
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -103,18 +95,20 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-// --- VERİ MODELLERİ VE KAYNAĞI ---
+// --- VERİ MODELLERİ ---
 data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
 data class Achievement(val id: String, val title: String, val description: String, val condition: (Set<String>) -> Boolean)
 data class ExamInfo(val name: String, val applicationStart: LocalDate, val applicationEnd: LocalDate, val examDate: LocalDate)
-
-data class PlanUiState(
-    val isLoading: Boolean = true,
-    val userProgress: UserProgress = UserProgress()
+data class UserProgress(
+    val completedTasks: Set<String> = emptySet(),
+    val streakCount: Int = 0,
+    val lastCompletionDate: Long = 0L,
+    val unlockedAchievements: Set<String> = emptySet(),
 )
 
+// --- VERİ KAYNAKLARI ---
 object PlanDataSource {
     private fun createPreparationWeek(week: Int, level: String, book: String, units: String, practice: String): WeekPlan {
         val month = ((week - 1) / 4) + 1
@@ -155,12 +149,12 @@ object PlanDataSource {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
         return WeekPlan(week, month, "$month. Ay, $week. Hafta: Sınav Kampı", listOf(
-            DayPlan("Pazartesi", listOf(Task("$weekId-t1", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t2", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et. Bilmediğin kelimeleri listele."))),
-            DayPlan("Salı", listOf(Task("$weekId-t3", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t4", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Çarşamba", listOf(Task("$weekId-t5", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t6", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Perşembe", listOf(Task("$weekId-t7", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t8", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Cuma", listOf(Task("$weekId-t9", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t10", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Cumartesi", listOf(Task("$weekId-t11", "Tam Deneme Sınavı", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t12", "Haftalık Kelime Tekrarı", "Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri tekrar et."))),
+            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", "Tam Deneme Sınavı #1", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-1", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et. Bilmediğin kelimeleri listele."))),
+            DayPlan("Salı", listOf(Task("$weekId-exam-2", "Tam Deneme Sınavı #2", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-2", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
+            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", "Tam Deneme Sınavı #3", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-3", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
+            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", "Tam Deneme Sınavı #4", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-4", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
+            DayPlan("Cuma", listOf(Task("$weekId-exam-5", "Tam Deneme Sınavı #5", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-5", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
+            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", "Tam Deneme Sınavı #6", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t12", "Haftalık Kelime Tekrarı", "Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri tekrar et."))),
             DayPlan("Pazar", listOf(Task("$weekId-t13", "Genel Tekrar ve Dinlenme", "Haftanın denemelerindeki genel hatalarını gözden geçir."), Task("$weekId-t14", "Strateji ve Motivasyon", "Gelecek haftanın stratejisini belirle ve zihnini dinlendir.")))
         ))
     }
@@ -181,9 +175,8 @@ object AchievementDataSource {
         Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { it.size >= 100 },
         Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { it.containsAll(prepPhaseTasks) },
         Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { it.any { id -> id.startsWith("w27") } },
-        Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") {
-            val examTasks = it.filter { id -> id.contains("Deneme Sınavı") }.distinctBy { id -> id.split("#").getOrNull(1) }
-            examTasks.size >= 10
+        Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { completedIds ->
+            completedIds.count { it.contains("-exam-") } >= 10
         }
     )
 }
@@ -202,7 +195,7 @@ object ExamCalendarDataSource {
     }
 }
 
-
+// --- DATASTORE VE REPOSITORY ---
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "yds_progress")
 
 class ProgressRepository(private val dataStore: DataStore<Preferences>) {
@@ -213,7 +206,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         val UNLOCKED_ACHIEVEMENTS = stringSetPreferencesKey("unlocked_achievements")
     }
 
-    val progressFlow = dataStore.data.map { preferences ->
+    val userProgressFlow = dataStore.data.map { preferences ->
         UserProgress(
             completedTasks = preferences[Keys.COMPLETED_TASKS] ?: emptySet(),
             streakCount = preferences[Keys.STREAK_COUNT] ?: 0,
@@ -232,74 +225,106 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
     }
 }
 
-data class UserProgress(
-    val completedTasks: Set<String> = emptySet(),
-    val streakCount: Int = 0,
-    val lastCompletionDate: Long = 0L,
-    val unlockedAchievements: Set<String> = emptySet()
-)
+// --- BİLDİRİM VE ARKA PLAN İŞLERİ ---
+object NotificationHelper {
+    private const val CHANNEL_ID_REMINDER = "YDS_REMINDER_CHANNEL"
+    private const val CHANNEL_NAME_REMINDER = "Günlük Hatırlatıcılar"
+    private const val NOTIFICATION_ID_REMINDER = 1
 
-class PlanViewModel(private val repository: ProgressRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(PlanUiState())
-    val uiState: StateFlow<PlanUiState> = _uiState.asStateFlow()
+    private const val CHANNEL_ID_APPLICATION = "YDS_APPLICATION_CHANNEL"
+    private const val CHANNEL_NAME_APPLICATION = "Sınav Başvuru Tarihleri"
 
-    private val _newlyUnlockedAchievement = MutableSharedFlow<Achievement>()
-    val newlyUnlockedAchievement: SharedFlow<Achievement> = _newlyUnlockedAchievement.asSharedFlow()
-
-    init {
-        viewModelScope.launch {
-            repository.progressFlow.collect { progress ->
-                _uiState.value = PlanUiState(isLoading = false, userProgress = progress)
-            }
+    fun createNotificationChannel(context: Context) {
+        val reminderChannel = NotificationChannel(
+            CHANNEL_ID_REMINDER,
+            CHANNEL_NAME_REMINDER,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Günlük çalışma planı hatırlatıcıları."
         }
+
+        val applicationChannel = NotificationChannel(
+            CHANNEL_ID_APPLICATION,
+            CHANNEL_NAME_APPLICATION,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Önemli sınav başvuru başlangıç ve bitiş tarihleri."
+        }
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(reminderChannel)
+        notificationManager.createNotificationChannel(applicationChannel)
     }
 
-    fun toggleTask(taskId: String) {
-        viewModelScope.launch {
-            val currentProgress = _uiState.value.userProgress
-            val currentTasks = currentProgress.completedTasks.toMutableSet()
-            val wasCompleted = currentTasks.contains(taskId)
+    fun showStudyReminderNotification(context: Context) {
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID_REMINDER)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Çalışma Zamanı!")
+            .setContentText("Bugünkü hedeflerini tamamlamayı unutma.")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
 
-            if (wasCompleted) {
-                currentTasks.remove(taskId)
-                repository.saveProgress(currentProgress.copy(completedTasks = currentTasks))
-            } else {
-                currentTasks.add(taskId)
-                updateStreakAndAchievements(currentProgress, currentTasks)
-            }
-        }
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID_REMINDER, builder.build())
     }
 
-    private suspend fun updateStreakAndAchievements(currentProgress: UserProgress, newCompletedTasks: Set<String>) {
-        val today = Calendar.getInstance()
-        val lastCompletion = Calendar.getInstance().apply { timeInMillis = currentProgress.lastCompletionDate }
-        var newStreak = currentProgress.streakCount
-        if (currentProgress.lastCompletionDate > 0) {
-            val isSameDay = today.get(Calendar.DAY_OF_YEAR) == lastCompletion.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == lastCompletion.get(Calendar.YEAR)
-            if (!isSameDay) {
-                lastCompletion.add(Calendar.DAY_OF_YEAR, 1)
-                val isConsecutiveDay = today.get(Calendar.DAY_OF_YEAR) == lastCompletion.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == lastCompletion.get(Calendar.YEAR)
-                newStreak = if (isConsecutiveDay) newStreak + 1 else 1
-            }
-        } else {
-            newStreak = 1
-        }
-        val newUnlocked = AchievementDataSource.allAchievements.filter { achievement ->
-            !currentProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(newCompletedTasks)
-        }
-        newUnlocked.forEach { _newlyUnlockedAchievement.emit(it) }
-        val allUnlockedIds = currentProgress.unlockedAchievements + newUnlocked.map { it.id }
-        repository.saveProgress(
-            UserProgress(
-                completedTasks = newCompletedTasks,
-                streakCount = newStreak,
-                lastCompletionDate = today.timeInMillis,
-                unlockedAchievements = allUnlockedIds
-            )
-        )
+    fun showApplicationReminderNotification(context: Context, title: String, message: String, notificationId: Int) {
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID_APPLICATION)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(notificationId, builder.build())
     }
 }
 
+class ReminderWorker(
+    context: Context,
+    workerParams: WorkerParameters,
+) : CoroutineWorker(context, workerParams) {
+
+    override suspend fun doWork(): Result {
+        val today = LocalDate.now()
+
+        val examsWithEventsToday = ExamCalendarDataSource.upcomingExams.filter {
+            it.applicationStart == today || it.applicationEnd == today
+        }
+
+        var wasSpecialNotificationSent = false
+        if (examsWithEventsToday.isNotEmpty()) {
+            examsWithEventsToday.forEach { exam ->
+                val title = "Sınav Başvuru Hatırlatıcısı"
+                val message = if (today == exam.applicationStart) {
+                    "${exam.name} için başvurular bugün başladı!"
+                } else {
+                    "${exam.name} için bugün son başvuru günü!"
+                }
+                NotificationHelper.showApplicationReminderNotification(
+                    applicationContext,
+                    title,
+                    message,
+                    exam.name.hashCode()
+                )
+            }
+            wasSpecialNotificationSent = true
+        }
+
+        if (!wasSpecialNotificationSent) {
+            NotificationHelper.showStudyReminderNotification(applicationContext)
+        }
+
+        return Result.success()
+    }
+}
+
+// --- ANA ACTIVITY VE EKRANLAR ---
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -308,7 +333,11 @@ class MainActivity : ComponentActivity() {
             StudyPlanTheme {
                 val permissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission(),
-                    onResult = { isGranted -> if (isGranted) { scheduleDailyReminder(this) } }
+                    onResult = { isGranted ->
+                        if (isGranted) {
+                            scheduleDailyReminder(this)
+                        }
+                    }
                 )
                 LaunchedEffect(key1 = true) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -317,24 +346,42 @@ class MainActivity : ComponentActivity() {
                         scheduleDailyReminder(this@MainActivity)
                     }
                 }
-                val context = LocalContext.current
-                val viewModel: PlanViewModel = viewModel(factory = PlanViewModelFactory(ProgressRepository(context.dataStore)))
-                PlanScreen(viewModel)
+                PlanScreen()
             }
         }
     }
 }
 
 fun scheduleDailyReminder(context: Context) {
-    val reminderRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS).build()
-    WorkManager.getInstance(context).enqueueUniquePeriodicWork("YDS_DAILY_REMINDER", ExistingPeriodicWorkPolicy.KEEP, reminderRequest)
+    val hour = 17 // Sabit saat 17:00
+    val minute = 0
+
+    val now = Calendar.getInstance()
+    val nextNotificationTime = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        if (before(now)) {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
+    }
+    val initialDelay = nextNotificationTime.timeInMillis - now.timeInMillis
+
+    val reminderRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
+        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+        .build()
+
+    WorkManager.getInstance(context).enqueueUniquePeriodicWork("YDS_DAILY_REMINDER", ExistingPeriodicWorkPolicy.REPLACE, reminderRequest)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PlanScreen(viewModel: PlanViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
-    val userProgress = uiState.userProgress
+fun PlanScreen() {
+    val context = LocalContext.current
+    val repository = remember { ProgressRepository(context.dataStore) }
+    val userProgress by repository.userProgressFlow.collectAsState(initial = UserProgress())
+    val coroutineScope = rememberCoroutineScope()
+
     val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
     val progress = if (allTasks.isNotEmpty()) userProgress.completedTasks.size.toFloat() / allTasks.size else 0f
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "Overall Progress Animation")
@@ -343,17 +390,6 @@ fun PlanScreen(viewModel: PlanViewModel) {
 
     if (showAchievementsSheet) {
         AchievementsSheet(unlockedAchievementIds = userProgress.unlockedAchievements, onDismiss = { showAchievementsSheet = false })
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.newlyUnlockedAchievement.collect { achievement ->
-            snackbarHostState.showSnackbar(
-                message = "Yeni Başarım: ${achievement.title}",
-                actionLabel = "OK",
-                withDismissAction = true,
-                duration = SnackbarDuration.Short
-            )
-        }
     }
 
     Scaffold(
@@ -366,7 +402,7 @@ fun PlanScreen(viewModel: PlanViewModel) {
         ) {
             MainHeader()
 
-            if (uiState.isLoading) {
+            if (userProgress.completedTasks.isEmpty() && userProgress.streakCount == 0) { // Basit bir yüklenme kontrolü
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -377,7 +413,6 @@ fun PlanScreen(viewModel: PlanViewModel) {
                             GamificationHeader(
                                 streakCount = userProgress.streakCount,
                                 achievementsCount = userProgress.unlockedAchievements.size,
-                                completedTasksCount = userProgress.completedTasks.size,
                                 onAchievementsClick = { showAchievementsSheet = true }
                             )
                             ExamCountdownCard()
@@ -388,7 +423,18 @@ fun PlanScreen(viewModel: PlanViewModel) {
                         WeekCard(
                             weekPlan = weekPlan,
                             completedTasks = userProgress.completedTasks,
-                            onToggleTask = viewModel::toggleTask
+                            onToggleTask = { taskId ->
+                                coroutineScope.launch {
+                                    val currentTasks = userProgress.completedTasks.toMutableSet()
+                                    if (currentTasks.contains(taskId)) {
+                                        currentTasks.remove(taskId)
+                                    } else {
+                                        currentTasks.add(taskId)
+                                    }
+                                    // Streak & Achievement logic can be added here if needed
+                                    repository.saveProgress(userProgress.copy(completedTasks = currentTasks))
+                                }
+                            }
                         )
                     }
                 }
@@ -397,33 +443,17 @@ fun PlanScreen(viewModel: PlanViewModel) {
     }
 }
 
-// GÜNCELLENDİ: Sabit Başlık Composable'ı (Gradient Arka Plan)
 @Composable
 fun MainHeader() {
     val context = LocalContext.current
-    val headerGradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFFA8E6CF), Color(0xFFFF8A80)) // Pastel Yeşil -> Pastel Kırmızı
-    )
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shadowElevation = 3.dp
-    ) {
+    Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface, shadowElevation = 3.dp) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(headerGradient)
-                .height(56.dp)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Road to YDS",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black.copy(alpha = 0.8f) // Gradient üzerinde okunabilirlik için koyu renk
-            )
+            Text("Road to YDS", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+
             IconButton(onClick = {
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                     data = "mailto:".toUri()
@@ -432,16 +462,11 @@ fun MainHeader() {
                 }
                 context.startActivity(Intent.createChooser(intent, "E-posta gönder..."))
             }) {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = "E-posta ile İletişim",
-                    tint = Color.Black.copy(alpha = 0.7f) // Gradient üzerinde okunabilirlik için koyu renk
-                )
+                Icon(imageVector = Icons.Default.Email, contentDescription = "E-posta ile İletişim")
             }
         }
     }
 }
-
 
 @Composable
 fun ExamCountdownCard() {
@@ -522,23 +547,15 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
 }
 
 @Composable
-fun GamificationHeader(
-    streakCount: Int,
-    achievementsCount: Int,
-    completedTasksCount: Int,
-    onAchievementsClick: () -> Unit
-) {
+fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
         InfoChip(icon = Icons.Default.LocalFireDepartment, label = "Çalışma Serisi", value = "$streakCount gün", iconColor = MaterialTheme.colorScheme.error)
         Box(modifier = Modifier.clickable { onAchievementsClick() }) {
             InfoChip(icon = Icons.Default.WorkspacePremium, label = "Başarımlar", value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
         }
-        InfoChip(icon = Icons.Default.CheckCircle, label = "Tamamlanan", value = "$completedTasksCount ders", iconColor = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -583,14 +600,9 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
 
     val monthColors = remember {
         listOf(
-            Color(0xFF009688), // 1. Ay: Canlı Yeşil
-            Color(0xFF3F51B5), // 2. Ay: Indigo
-            Color(0xFF9C27B0), // 3. Ay: Mor
-            Color(0xFFFFC107), // 4. Ay: Kehribar (Amber)
-            Color(0xFF673AB7), // 5. Ay: Derin Mor
-            Color(0xFFFF5722), // 6. Ay: Derin Turuncu
-            Color(0xFF795548), // 7. Ay: Kahverengi
-            Color(0xFFE91E63)  // 8. Ay: Canlı Pembe
+            Color(0xFF009688), Color(0xFF3F51B5), Color(0xFF9C27B0),
+            Color(0xFFFFC107), Color(0xFF673AB7), Color(0xFFFF5722),
+            Color(0xFF795548), Color(0xFFE91E63)
         )
     }
     val titleColor = monthColors[(weekPlan.month - 1) % monthColors.size]
