@@ -114,7 +114,48 @@ data class UserProgress(
 // --- VERİ KAYNAKLARI ---
 object PlanDataSource {
 
-    // Bu fonksiyon Mavi ve Yeşil Kitaplar için kullanılmaya devam edecek
+    // Kırmızı Kitap'ın 8 haftalık "Sağlam Temel" programı için özel fonksiyon
+    private fun createRedBookFoundationWeek(
+        week: Int,
+        monUnits: String, tueUnits: String, thuUnits: String, friUnits: String
+    ): WeekPlan {
+        val month = ((week - 1) / 4) + 1
+        val weekId = "w${week}"
+        val book = "Kırmızı Kitap - Essential Grammar in Use"
+
+        return WeekPlan(week, month, "$month. Ay, $week. Hafta: Sağlam Temel", listOf(
+            DayPlan("Pazartesi", listOf(
+                Task("$weekId-pzt1", "1. Ders: Gramer Konuları", "$book, Üniteler: $monUnits"),
+                Task("$weekId-pzt2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            )),
+            DayPlan("Salı", listOf(
+                Task("$weekId-sal1", "1. Ders: Gramer Konuları", "$book, Üniteler: $tueUnits"),
+                Task("$weekId-sal2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            )),
+            DayPlan("Çarşamba", listOf(
+                Task("$weekId-car1", "1. Ders: Okuma ve Kelime", "Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar."),
+                Task("$weekId-car2", "2. Ders: Dinleme ve Tekrar", "ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.")
+            )),
+            DayPlan("Perşembe", listOf(
+                Task("$weekId-per1", "1. Ders: Gramer Konuları", "$book, Üniteler: $thuUnits"),
+                Task("$weekId-per2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            )),
+            DayPlan("Cuma", listOf(
+                Task("$weekId-cum1", "1. Ders: Gramer Konuları", "$book, Üniteler: $friUnits"),
+                Task("$weekId-cum2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            )),
+            DayPlan("Cumartesi", listOf(
+                Task("$weekId-cmt1", "1. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et."),
+                Task("$weekId-cmt2", "2. Ders: Keyif için İngilizce (Dizi/Film)", "İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.")
+            )),
+            DayPlan("Pazar", listOf(
+                Task("$weekId-paz1", "1. Ders: Haftalık Genel Tekrar", "Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al."),
+                Task("$weekId-paz2", "2. Ders: Serbest Okuma/Dinleme", "İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.")
+            ))
+        ))
+    }
+
+    // Mavi ve Yeşil Kitaplar için kullanılan standart fonksiyon
     private fun createAdvancedPreparationWeek(
         week: Int,
         level: String,
@@ -201,108 +242,44 @@ object PlanDataSource {
         ))
     }
 
-    // 30 HAFTALIK, 5 HAFTA DETAYLI KAMP BAŞLANGIÇLI PLAN
     val planData: List<WeekPlan> = mutableListOf<WeekPlan>().apply {
 
-        // --- 1. FAZ: KIRMIZI KİTAP BİTİRME KAMPI --- (5 Hafta)
-        val book = "Kırmızı Kitap - Essential Grammar in Use"
+        // --- 1. FAZ: KIRMIZI KİTAP "SAĞLAM TEMEL" PROGRAMI --- (8 Hafta)
+        add(createRedBookFoundationWeek(1, "1-4", "5-8", "9-12", "13-16"))
+        add(createRedBookFoundationWeek(2, "17-20", "21-24", "25-28", "29-32"))
+        add(createRedBookFoundationWeek(3, "33-36", "37-40", "41-44", "45-48"))
+        add(createRedBookFoundationWeek(4, "49-52", "53-56", "57-60", "61-64"))
+        add(createRedBookFoundationWeek(5, "65-68", "69-72", "73-76", "77-80"))
+        add(createRedBookFoundationWeek(6, "81-84", "85-88", "89-92", "93-96"))
+        add(createRedBookFoundationWeek(7, "97-100", "101-104", "105-108", "109-112"))
+        add(createRedBookFoundationWeek(8, "113-115", "Genel Tekrar 1-50", "Genel Tekrar 51-115", "Zayıf Konu Analizi"))
 
-        // 115 Üniteyi 20 gramer gününe bölüyoruz.
-        val redBookDailyTopics = listOf(
-            "1-6 (Present Tenses 1)", "7-12 (Present Tenses 2)", "13-18 (Past Tenses)", "19-24 (Present Perfect 1)",
-            "25-30 (Present Perfect 2 & Passive)", "31-36 (Passive & Review)", "37-42 (Future Forms)", "43-48 (Future & Modals 1)",
-            "49-54 (Modals 2)", "55-60 (Reported Speech & Questions 1)", "61-66 (Gerunds & Infinitives 1)", "67-72 (Gerunds & Infinitives 2)",
-            "73-78 (Articles & Nouns 1)", "79-84 (Nouns & Pronouns 2)", "85-90 (Relative Clauses)", "91-96 (Adjectives & Adverbs)",
-            "97-102 (Comparisons)", "103-107 (Conjunctions)", "108-112 (Prepositions)", "113-115 (Phrasal Verbs)"
-        )
 
-        var topicCounter = 0
-        (1..5).forEach { week ->
-            val weekId = "w${week}"
-            val dayPlans = mutableListOf<DayPlan>()
-
-            // Gramer Günü: Pazartesi
-            dayPlans.add(DayPlan("Pazartesi", listOf(
-                Task("$weekId-pzt1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
-                Task("$weekId-pzt2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
-            ))); topicCounter++
-
-            // Gramer Günü: Salı
-            dayPlans.add(DayPlan("Salı", listOf(
-                Task("$weekId-sal1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
-                Task("$weekId-sal2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
-            ))); topicCounter++
-
-            // Beceri Günü: Çarşamba
-            dayPlans.add(DayPlan("Çarşamba", listOf(
-                Task("$weekId-car1", "1. Ders: Okuma ve Kelime", "Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar."),
-                Task("$weekId-car2", "2. Ders: Dinleme ve Tekrar", "ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.")
-            )))
-
-            // Gramer Günü: Perşembe
-            dayPlans.add(DayPlan("Perşembe", listOf(
-                Task("$weekId-per1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
-                Task("$weekId-per2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
-            ))); topicCounter++
-
-            // Gramer Günü: Cuma
-            dayPlans.add(DayPlan("Cuma", listOf(
-                Task("$weekId-cum1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
-                Task("$weekId-cum2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
-            ))); topicCounter++
-
-            // Beceri Günü: Cumartesi
-            dayPlans.add(DayPlan("Cumartesi", listOf(
-                Task("$weekId-cmt1", "1. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et."),
-                Task("$weekId-cmt2", "2. Ders: Keyif için İngilizce (Dizi/Film)", "İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.")
-            )))
-
-            // Beceri Günü: Pazar
-            dayPlans.add(DayPlan("Pazar", listOf(
-                Task("$weekId-paz1", "1. Ders: Haftalık Genel Tekrar", "Bu hafta işlenen tüm gramer konularını (${(week-1)*4 + 1}. - ${week*4}. blok) hızlıca gözden geçir."),
-                Task("$weekId-paz2", "2. Ders: Serbest Okuma/Dinleme", "İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.")
-            )))
-
-            add(WeekPlan(week, 1, "1. Ay, $week. Hafta: Kırmızı Kitap Kampı", dayPlans))
-        }
-
-        // --- 2. FAZ: MAVİ KİTAP (B1-B2 GELİŞİMİ) --- (11 Hafta)
+        // --- 2. FAZ: MAVİ KİTAP (B1-B2 GELİŞİMİ) --- (10 Hafta)
         val blueBook = "Mavi Kitap - English Grammar in Use"
         val blueBookTopics = listOf(
-            "Tenses Review (Tüm Zamanların Karşılaştırması)",
-            "Future in Detail (Future Continuous/Perfect)",
-            "Modals 1 (Ability, Permission, Advice)",
-            "Modals 2 (Deduction, Obligation, Regret)",
-            "Conditionals & Wish (Tüm Tipler & İleri Düzey)",
-            "Passive Voice (Tüm Zamanlar) & 'have something done'",
-            "Reported Speech (Sorular, Komutlar, İleri Düzey)",
-            "Noun Clauses (that, what, if, whether...)",
-            "Relative Clauses (who, which, that, whose)",
-            "Gerunds & Infinitives (İleri kalıplar)",
-            "Conjunctions & Connectors"
+            "Tenses Review (Tüm Zamanların Karşılaştırması)", "Future in Detail (Continuous/Perfect)",
+            "Modals 1 (Ability, Permission, Advice)", "Modals 2 (Deduction, Obligation, Regret)",
+            "Conditionals & Wish (Tüm Tipler & İleri Düzey)", "Passive Voice (Tüm Zamanlar) & 'have something done'",
+            "Reported Speech (Sorular, Komutlar, İleri Düzey)", "Noun Clauses & Relative Clauses",
+            "Gerunds & Infinitives (İleri kalıplar)", "Conjunctions & Connectors"
         )
         blueBookTopics.forEachIndexed { index, topic ->
-            val weekNumber = index + 6 // 5 hafta bitti, 6. haftadan başlıyoruz
+            val weekNumber = index + 9 // 8 hafta bitti, 9. haftadan başlıyoruz
             val nextTopic = if (index + 1 < blueBookTopics.size) blueBookTopics[index + 1] else "Yeşil Kitap - Advanced Tenses"
             add(createAdvancedPreparationWeek(weekNumber, "B1-B2 Gelişimi", blueBook, topic, nextTopic, "The Guardian, BBC News", "TED-Ed Videoları", "Cümle Tamamlama"))
         }
 
-        // --- 3. FAZ: YEŞİL KİTAP (C1 USTALIĞI) --- (10 Hafta)
+        // --- 3. FAZ: YEŞİL KİTAP (C1 USTALIĞI) --- (8 Hafta)
         val greenBook = "Yeşil Kitap - Advanced Grammar in Use"
         val greenBookTopics = listOf(
-            "Advanced Tense Nuances & Narrative Tenses",
-            "Inversion & Emphasis (Not only, Hardly...)",
-            "Advanced Modals 1 (Speculation, Deduction)",
-            "Advanced Modals 2 (Hypothetical Situations, Politeness)",
-            "Participle Clauses (-ing ve -ed clauses)",
-            "Advanced Connectors & Discourse Markers",
-            "Hypothetical Meaning & Subjunctives",
-            "Adjectives & Adverbs (İleri Kullanımlar)",
-            "Prepositions (İleri Düzey)",
-            "Phrasal Verbs (Genel Tekrar ve İleri Düzey)"
+            "Advanced Tense Nuances & Narrative Tenses", "Inversion & Emphasis (Not only, Hardly...)",
+            "Advanced Modals (Speculation, Hypothetical)", "Participle Clauses (-ing ve -ed clauses)",
+            "Advanced Connectors & Discourse Markers", "Hypothetical Meaning & Subjunctives",
+            "Adjectives & Adverbs (İleri Kullanımlar)", "Prepositions & Phrasal Verbs (İleri Düzey)"
         )
         greenBookTopics.forEachIndexed { index, topic ->
-            val weekNumber = index + 17 // 5+11=16 hafta bitti, 17. haftadan başlıyoruz
+            val weekNumber = index + 19 // 8+10=18 hafta bitti, 19. haftadan başlıyoruz
             val nextTopic = if (index + 1 < greenBookTopics.size) greenBookTopics[index + 1] else "Genel Tekrar ve Sınav Kampı"
             add(createAdvancedPreparationWeek(weekNumber, "C1 Ustalığı", greenBook, topic, nextTopic, "National Geographic, Scientific American", "NPR, BBC Radio 4 Podcast'leri", "Paragraf Tamamlama & Anlam Bütünlüğünü Bozan Cümle"))
         }
