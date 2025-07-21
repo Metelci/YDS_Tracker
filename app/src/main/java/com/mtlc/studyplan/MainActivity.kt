@@ -6,11 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -97,7 +97,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-// --- VERİ MODELLERİ ---
+//region VERİ MODELLERİ
 data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
@@ -109,8 +109,9 @@ data class UserProgress(
     val lastCompletionDate: Long = 0L,
     val unlockedAchievements: Set<String> = emptySet(),
 )
+//endregion
 
-// --- VERİ KAYNAKLARI ---
+//region VERİ KAYNAKLARI
 object PlanDataSource {
 
     // Kırmızı Kitap'ın 8 haftalık "Sağlam Temel" programı için özel fonksiyon
@@ -295,20 +296,18 @@ object AchievementDataSource {
     val allAchievements = listOf(
         Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { userProgress -> userProgress.completedTasks.isNotEmpty() },
         Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 100 },
-        // Başarım koşulunu yeni plana göre güncelle
         Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { userProgress ->
             userProgress.completedTasks.containsAll(prepPhaseTasks)
         },
-        // Başarım koşulunu yeni plana göre güncelle
         Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { userProgress ->
             userProgress.completedTasks.any { taskId -> taskId.startsWith("w27") } // Kamp 27. haftada başlıyor
         },
         Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { userProgress ->
-            // Bu koşul dinamik olduğu için değişikliğe gerek yok
             userProgress.completedTasks.count { it.contains("-exam-") } >= 10
         }
     )
 }
+
 object ExamCalendarDataSource {
     val upcomingExams = listOf(
         ExamInfo(name = "YÖKDİL/1 (İlkbahar)", applicationStart = LocalDate.of(2026, 1, 28), applicationEnd = LocalDate.of(2026, 2, 5), examDate = LocalDate.of(2026, 3, 22)),
@@ -322,8 +321,9 @@ object ExamCalendarDataSource {
         return upcomingExams.filter { it.examDate.isAfter(today) }.minByOrNull { it.examDate }
     }
 }
+//endregion
 
-// --- DATASTORE VE REPOSITORY ---
+//region DATASTORE VE REPOSITORY
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "yds_progress")
 
 class ProgressRepository(private val dataStore: DataStore<Preferences>) {
@@ -352,8 +352,9 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 }
+//endregion
 
-// --- BİLDİRİM VE ARKA PLAN İŞLERİ ---
+//region BİLDİRİM VE ARKA PLAN İŞLERİ
 object NotificationHelper {
     private const val CHANNEL_ID_REMINDER = "YDS_REMINDER_CHANNEL"
     private const val NOTIFICATION_ID_REMINDER = 1
@@ -426,8 +427,9 @@ class ReminderWorker(
         return Result.success()
     }
 }
+//endregion
 
-// --- ANA ACTIVITY VE EKRANLAR ---
+//region ANA ACTIVITY VE YARDIMCI FONKSİYONLAR
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -476,7 +478,9 @@ fun scheduleDailyReminder(context: Context) {
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork("YDS_DAILY_REMINDER", ExistingPeriodicWorkPolicy.REPLACE, reminderRequest)
 }
+//endregion
 
+//region EKRAN COMPOSABLE'LARI
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlanScreen() {
@@ -498,7 +502,7 @@ fun PlanScreen() {
     }
 
     Scaffold(
-        topBar = { MainHeader() }, // <-- Header buraya geldi
+        topBar = { MainHeader() },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
@@ -506,7 +510,6 @@ fun PlanScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
             if (userProgress == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -781,7 +784,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
         listOf(
             Color(0xFF009688), Color(0xFF3F51B5), Color(0xFF9C27B0),
             Color(0xFFFFC107), Color(0xFF673AB7), Color(0xFFFF5722),
-            Color(0xFF795548), Color(0xFFE91E63)
+            Color(0xFF795548), Color(0xFFE91E63), Color(0xFF4CAF50), Color(0xFF2196F3)
         )
     }
     val titleColor = monthColors[(weekPlan.month - 1) % monthColors.size]
@@ -861,3 +864,4 @@ fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
         }
     }
 }
+//endregion
