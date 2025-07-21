@@ -10,7 +10,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.compose.ui.text.style.TextAlign
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -73,6 +72,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
@@ -98,10 +98,10 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 // --- VERİ MODELLERİ ---
-data class Task(val id: String, val desc: String, val details: String? = null)
+data class Task(val id: String, val desc: String, val details: String? = null, val grammarTopic: String? = null, val questionType: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
-data class Achievement(val id: String, val title: String, val description: String, val condition: (Set<String>) -> Boolean)
+data class Achievement(val id: String, val title: String, val description: String, val condition: (UserProgress) -> Boolean) // Burayı değiştirdik!
 data class ExamInfo(val name: String, val applicationStart: LocalDate, val applicationEnd: LocalDate, val examDate: LocalDate)
 data class UserProgress(
     val completedTasks: Set<String> = emptySet(),
@@ -169,17 +169,102 @@ object PlanDataSource {
     }
 }
 
+// MainActivity.kt (AchievementDataSource object'i içinde)
+
 object AchievementDataSource {
+    // Mevcut hazırlık aşaması görevlerini doğru şekilde hesaplayın.
+    // İlk 26 hafta (6 ay) hazırlık, sonraki 4 hafta (1 ay) deneme kampı ise:
     private val prepPhaseTasks = PlanDataSource.planData.take(26).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
+    private val examCampTasks = PlanDataSource.planData.drop(26).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
 
     val allAchievements = listOf(
-        Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { it.isNotEmpty() },
-        Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { it.size >= 100 },
-        Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { it.containsAll(prepPhaseTasks) },
-        Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { it.any { id -> id.startsWith("w27") } },
-        Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { completedIds ->
-            completedIds.count { it.contains("-exam-") } >= 10
-        }
+        // Mevcut başarımlar - Düzeltildi
+        Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { userProgress -> userProgress.completedTasks.isNotEmpty() },
+        Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 100 },
+        Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { userProgress -> userProgress.completedTasks.containsAll(prepPhaseTasks) },
+        Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { userProgress ->
+            // Sınav kampı görevlerinden herhangi birini tamamladığında
+            userProgress.completedTasks.any { taskId -> examCampTasks.contains(taskId) }
+        },
+        Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { userProgress ->
+            userProgress.completedTasks.count { it.contains("-exam-") } >= 10
+        },
+
+        // --- YENİ BAŞARIMLAR BAŞLANGICI ---
+
+        // Çalışma Serisi Başarımları (Bunlar zaten doğruydu)
+        Achievement("3_day_streak", "İstikrar Başlangıcı", "3 günlük çalışma serisine ulaştın!") { userProgress ->
+            userProgress.streakCount >= 3
+        },
+        Achievement("7_day_streak", "Bir Hafta Tamam!", "7 günlük çalışma serisine ulaştın!") { userProgress ->
+            userProgress.streakCount >= 7
+        },
+        Achievement("30_day_streak", "Bir Ay İstikrar", "30 günlük çalışma serisine ulaştın!") { userProgress ->
+            userProgress.streakCount >= 30
+        },
+
+        // Görev Sayısı Başarımları - Düzeltildi
+        Achievement("fifty_tasks", "Yarı Yoldasın", "50 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 50 },
+        Achievement("two_hundred_tasks", "Çalışkan Arı", "200 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 200 },
+        Achievement("all_tasks_completed", "Şampiyon!", "Tüm görevleri tamamladın!") { userProgress ->
+            val allTaskIds = PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
+            userProgress.completedTasks.containsAll(allTaskIds) && userProgress.completedTasks.size == allTaskIds.size
+        },
+
+        // Gramer Konusu Başarımları (Örnek: Belirli bir konudaki tüm görevleri bitirme) - Düzeltildi
+        Achievement("master_tenses", "Zamanların Efendisi", "Tüm 'Tenses' gramer görevlerini tamamladın!") { userProgress ->
+            val tensesTasks = PlanDataSource.planData.flatMap { it.days }
+                .flatMap { it.tasks }
+                .filter { it.grammarTopic == "Tenses" }
+                .map { it.id }
+                .toSet()
+            tensesTasks.isNotEmpty() && userProgress.completedTasks.containsAll(tensesTasks)
+        },
+        Achievement("master_modals", "Modalların Üstadı", "Tüm 'Modals' gramer görevlerini tamamladın!") { userProgress ->
+            val modalsTasks = PlanDataSource.planData.flatMap { it.days }
+                .flatMap { it.tasks }
+                .filter { it.grammarTopic == "Modals" }
+                .map { it.id }
+                .toSet()
+            modalsTasks.isNotEmpty() && userProgress.completedTasks.containsAll(modalsTasks)
+        },
+        // ... Diğer gramer konuları için de benzer başarımlar eklenebilir.
+
+        // Soru Tipi Başarımları (Örnek: Belirli bir soru tipinde yeterli sayıda soru çözme) - Düzeltildi
+        Achievement("sentence_completion_pro", "Cümle Tamamlama Prosu", "Tüm 'Cümle Tamamlama' soru tipi görevlerini tamamladın!") { userProgress ->
+            val sentenceCompletionTasks = PlanDataSource.planData.flatMap { it.days }
+                .flatMap { it.tasks }
+                .filter { it.questionType == "Cümle Tamamlama" }
+                .map { it.id }
+                .toSet()
+            sentenceCompletionTasks.isNotEmpty() && userProgress.completedTasks.containsAll(sentenceCompletionTasks)
+        },
+        Achievement("paragraph_completion_pro", "Paragraf Tamamlama Prosu", "Tüm 'Paragraf Tamamlama' soru tipi görevlerini tamamladın!") { userProgress ->
+            val paragraphCompletionTasks = PlanDataSource.planData.flatMap { it.days }
+                .flatMap { it.tasks }
+                .filter { it.questionType == "Paragraf Tamamlama" }
+                .map { it.id }
+                .toSet()
+            paragraphCompletionTasks.isNotEmpty() && userProgress.completedTasks.containsAll(paragraphCompletionTasks)
+        },
+        // ... Diğer soru tipleri için de benzer başarımlar eklenebilir.
+
+        // Sınav Takvimi Başarımları - Düzeltildi
+        Achievement("first_exam_registered", "İlk Başvurunu Yaptın!", "Yaklaşan bir sınava başvuru tarihleri içinde kayıt oldun!") { userProgress ->
+            userProgress.completedTasks.any { it.contains("applied_for_exam_") } // Farazi bir görev ID'si
+        },
+        Achievement("exam_day_ready", "Sınav Günü Hazır!", "Sınav gününe çok az kaldı, başarılar!") { userProgress ->
+            val nextExam = ExamCalendarDataSource.getNextExam()
+            if (nextExam != null) {
+                val today = LocalDate.now()
+                val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
+                daysToExam <= 7 && daysToExam >= 0 // Sınava 7 gün veya daha az kaldıysa
+            } else {
+                false
+            }
+        },
+
+        // --- YENİ BAŞARIMLAR SONU ---
     )
 }
 
@@ -459,7 +544,11 @@ fun PlanScreen() {
                                     }
 
                                     val newUnlocked = AchievementDataSource.allAchievements.filter { achievement ->
-                                        !userProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(currentTasks)
+                                        !userProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(userProgress.copy(
+                                            completedTasks = currentTasks, // Güncel görev listesi
+                                            streakCount = newStreak,       // Güncel streak
+                                            lastCompletionDate = if(currentTasks.size > userProgress.completedTasks.size) today.timeInMillis else userProgress.lastCompletionDate // Güncel tarih
+                                        )) // Başarım koşuluna güncel UserProgress'i gönderiyoruz
                                     }
                                     newUnlocked.forEach { achievement ->
                                         launch {
