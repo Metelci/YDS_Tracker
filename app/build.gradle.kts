@@ -12,8 +12,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.2.4" //code cleanup ve region upgrade
+        versionCode = 16
+        versionName = "1.2.5" //code cleanup ve region upgrade
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
