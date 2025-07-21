@@ -44,6 +44,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,11 +73,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
+import androidx.core.view.WindowCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -98,10 +99,10 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 // --- VERİ MODELLERİ ---
-data class Task(val id: String, val desc: String, val details: String? = null, val grammarTopic: String? = null, val questionType: String? = null)
+data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
-data class Achievement(val id: String, val title: String, val description: String, val condition: (UserProgress) -> Boolean) // Burayı değiştirdik!
+data class Achievement(val id: String, val title: String, val description: String, val condition: (UserProgress) -> Boolean)
 data class ExamInfo(val name: String, val applicationStart: LocalDate, val applicationEnd: LocalDate, val examDate: LocalDate)
 data class UserProgress(
     val completedTasks: Set<String> = emptySet(),
@@ -112,162 +113,226 @@ data class UserProgress(
 
 // --- VERİ KAYNAKLARI ---
 object PlanDataSource {
-    private fun createPreparationWeek(week: Int, level: String, book: String, units: String, practice: String): WeekPlan {
+
+    // Bu fonksiyon Mavi ve Yeşil Kitaplar için kullanılmaya devam edecek
+    private fun createAdvancedPreparationWeek(
+        week: Int,
+        level: String,
+        book: String,
+        grammarTopics: String,
+        nextGrammarTopic: String,
+        readingFocus: String,
+        listeningFocus: String,
+        questionType: String
+    ): WeekPlan {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
-        return WeekPlan(week, month, "$month. Ay, $week. Hafta: $level Seviyesi", listOf(
-            DayPlan("Pazartesi", listOf(
-                Task("$weekId-t1", "Gramer: Ünite $units ($book)", "Kaynak: $book. Konuları dikkatlice oku."),
-                Task("$weekId-t2", "Kelime Çalışması", "Seviyene uygun kelime listesinden (örneğin A2/B1 Oxford 3000) 20 yeni kelime öğren. Quizlet veya Anki'ye ekle.")
-            )),
-            DayPlan("Salı", listOf(
-                Task("$weekId-t3", "Okuma Pratiği", "Öneri: Oxford Bookworms (Stage 2-3) veya newsinlevels.com gibi kaynaklardan en az 2 metin oku."),
-                Task("$weekId-t4", "Gramer Alıştırmaları", "Pazartesi çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
-            )),
-            DayPlan("Çarşamba", listOf(
-                Task("$weekId-t5", "Soru Tipi: $practice", "Kaynak: Çıkmış YDS/YÖKDİL soruları veya güvenilir yayınevlerinin soru bankaları. En az 20 soru çöz."),
-                Task("$weekId-t6", "Kelime Tekrarı", "Bu hafta öğrendiğin 20 kelimeyi tekrar et.")
-            )),
-            DayPlan("Perşembe", listOf(
-                Task("$weekId-t7", "Dinleme Pratiği", "Öneri: BBC Learning English - 6 Minute English veya TED-Ed videolarını İngilizce altyazı ile izle."),
-                Task("$weekId-t8", "Kelime Çalışması", "20 yeni kelime daha öğren.")
-            )),
-            DayPlan("Cuma", listOf(
-                Task("$weekId-t9", "Soru Tipi: $practice", "Aynı soru tipinden 20 soru daha çözerek pekiştir."),
-                Task("$weekId-t10", "Kelime Tekrarı", "Dün öğrendiğin 20 kelimeyi tekrar et.")
-            )),
-            DayPlan("Cumartesi", listOf(
-                Task("$weekId-t11", "Haftalık Mini Deneme", "40 soruluk bir mini deneme çöz (kelime, gramer, okuma ağırlıklı)."),
-                Task("$weekId-t12", "Serbest Çalışma", "İlgini çeken bir konuda İngilizce bir blog oku veya YouTube videosu izle.")
-            )),
-            DayPlan("Pazar", listOf(
-                Task("$weekId-t13", "Haftalık Analiz ve Tekrar", "Mini deneme ve hafta içi yanlışlarını analiz et."),
-                Task("$weekId-t14", "Keyif İçin Dinleme/İzleme", "Haftanın ödülü olarak İngilizce bir dizi/film izle. Anlamaya değil, keyif almaya odaklan.")
-            ))
-        ))
+
+        val shouldStartAdvancedPractice = week >= 13
+
+        val miniExamDayPlan = DayPlan(
+            day = "",
+            tasks = listOf(
+                Task("$weekId-mini_exam", "1. Ders: Mini Deneme Sınavı", "40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et."),
+                Task("$weekId-mini_analysis", "2. Ders: Deneme Analizi ve Kelime Çalışması", "Tüm yanlışlarını ve boşlarını detaylıca analiz et. Bilmediğin kelimeleri not al ve kelime setine ekle.")
+            )
+        )
+
+        val regularDays = mutableListOf<DayPlan>()
+
+        regularDays.add(DayPlan("Pazartesi", listOf(
+            Task("$weekId-t1", "1. Ders: Gramer Konusu", "Kaynak: $book. Haftanın konusu olan '$grammarTopics' üzerine detaylıca çalış."),
+            Task("$weekId-t2", "2. Ders: Okuma Pratiği ve Kelime", "Kaynak: $readingFocus. Okuma yaparken en az 10 yeni kelime belirle ve anlamlarıyla birlikte not al.")
+        )))
+        regularDays.add(DayPlan("Salı", listOf(
+            Task("$weekId-t3", "1. Ders: Gramer Alıştırmaları", "$book kitabından dünkü konunun alıştırmalarını eksiksiz tamamla."),
+            Task("$weekId-t4", "2. Ders: Dinleme Pratiği ve Tekrar", "Kaynak: $listeningFocus. Aktif dinleme yap ve dünkü kelimeleri tekrar et.")
+        )))
+        if (shouldStartAdvancedPractice) {
+            regularDays.add(miniExamDayPlan.copy(day = "Çarşamba"))
+        } else {
+            regularDays.add(DayPlan("Çarşamba", listOf(
+                Task("$weekId-t5", "1. Ders: Gramer Pekiştirme", "Öğrendiğin gramer yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yap."),
+                Task("$weekId-t6", "2. Ders: Serbest Okuma", "İlgini çeken bir konuda İngilizce blog/makale oku.")
+            )))
+        }
+        regularDays.add(DayPlan("Perşembe", listOf(
+            Task("$weekId-t7", "1. Ders: Gramer Konusu (Devam)", "Haftanın gramer konusunu pekiştir ve ek alıştırmalar çöz."),
+            Task("$weekId-t8", "2. Ders: Zorlu Okuma ve Kelime", "Kaynak: $readingFocus (Zor seviye). Yeni 10 kelime daha öğren.")
+        )))
+        if (shouldStartAdvancedPractice) {
+            regularDays.add(DayPlan("Cuma", listOf(
+                Task("$weekId-t9", "1. Ders: Soru Tipi Pratiği", "$questionType soru tipinden en az 20 soru çöz."),
+                Task("$weekId-t10", "2. Ders: Soru Analizi ve Tekrar", "Çözdüğün sorulardaki yanlışlarını analiz et ve haftalık kelimeleri tekrar et.")
+            )))
+        } else {
+            regularDays.add(DayPlan("Cuma", listOf(
+                Task("$weekId-t9", "1. Ders: Haftalık Gramer Tekrarı", "Bu hafta işlenen tüm gramer konularını ve kurallarını tekrar et."),
+                Task("$weekId-t10", "2. Ders: Serbest Dinleme", "İlgini çeken bir konuda İngilizce podcast/video izle.")
+            )))
+        }
+        regularDays.add(DayPlan("Cumartesi", listOf(
+            Task("$weekId-t11", "1. Ders: Gelecek Haftaya Hazırlık", "Gelecek haftanın konusu olan '$nextGrammarTopic' konusuna kısaca göz atarak ön hazırlık yap."),
+            Task("$weekId-t12", "2. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm kelimeleri (yaklaşık 20-30 kelime) flashcard uygulamasıyla tekrar et.")
+        )))
+        if (shouldStartAdvancedPractice) {
+            regularDays.add(miniExamDayPlan.copy(day = "Pazar"))
+        } else {
+            regularDays.add(DayPlan("Pazar", listOf(
+                Task("$weekId-t13", "1. Ders: Haftalık Analiz ve Planlama", "Haftanın genel bir değerlendirmesini yap. Güçlü ve zayıf yönlerini belirle."),
+                Task("$weekId-t14", "2. Ders: Keyif için İngilizce", "İngilizce bir film/dizi izle veya oyun oyna. Amaç sadece dilin keyfini çıkarmak.")
+            )))
+        }
+
+        return WeekPlan(week, month, "$month. Ay, $week. Hafta: $level Seviyesi", regularDays)
     }
 
     private fun createExamCampWeek(week: Int): WeekPlan {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
         return WeekPlan(week, month, "$month. Ay, $week. Hafta: Sınav Kampı", listOf(
-            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", "Tam Deneme Sınavı #1", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-1", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et. Bilmediğin kelimeleri listele."))),
-            DayPlan("Salı", listOf(Task("$weekId-exam-2", "Tam Deneme Sınavı #2", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-2", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", "Tam Deneme Sınavı #3", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-3", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", "Tam Deneme Sınavı #4", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-4", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Cuma", listOf(Task("$weekId-exam-5", "Tam Deneme Sınavı #5", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-analysis-5", "Deneme Analizi", "Yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını analiz et, kelimelerini çıkar."))),
-            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", "Tam Deneme Sınavı #6", "Kaynak: Çıkmış YDS/YÖKDİL sınavı. 80 soruyu 180 dakika içinde çöz."), Task("$weekId-t12", "Haftalık Kelime Tekrarı", "Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri tekrar et."))),
-            DayPlan("Pazar", listOf(Task("$weekId-t13", "Genel Tekrar ve Dinlenme", "Haftanın denemelerindeki genel hatalarını gözden geçir."), Task("$weekId-t14", "Strateji ve Motivasyon", "Gelecek haftanın stratejisini belirle ve zihnini dinlendir.")))
+            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", "Tam Deneme Sınavı", "Kaynak: Son yıllara ait çıkmış bir YDS/YÖKDİL sınavı. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-1", "Deneme Analizi", "Sınav sonrası en az 1 saat ara ver. Ardından yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını detaylıca analiz et. Bilmediğin kelimeleri listele."))),
+            DayPlan("Salı", listOf(Task("$weekId-exam-2", "Tam Deneme Sınavı", "Kaynak: Güvenilir bir yayınevinin deneme sınavı. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-2", "Deneme Analizi", "Dünkü gibi detaylı analiz yap. Özellikle tekrar eden hata tiplerine odaklan."))),
+            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-3", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
+            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-4", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
+            DayPlan("Cuma", listOf(Task("$weekId-exam-5", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-5", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
+            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-t12", "Haftalık Kelime Tekrarı", "Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri flashcard uygulaması üzerinden tekrar et."))),
+            DayPlan("Pazar", listOf(Task("$weekId-t13", "Genel Tekrar ve Dinlenme", "Haftanın denemelerindeki genel hata tiplerini (örn: zaman yönetimi, belirli soru tipi) gözden geçir."), Task("$weekId-t14", "Strateji ve Motivasyon", "Gelecek haftanın stratejisini belirle ve zihnini dinlendir. Sınava az kaldı!")))
         ))
     }
 
+    // 30 HAFTALIK, 5 HAFTA DETAYLI KAMP BAŞLANGIÇLI PLAN
     val planData: List<WeekPlan> = mutableListOf<WeekPlan>().apply {
-        addAll(List(10) { i -> createPreparationWeek(i + 1, "A2-B1 Temel", "Kırmızı Kitap", "${i * 5 + 1}-${i * 5 + 5}", "Cümle Tamamlama") })
-        addAll(List(10) { i -> createPreparationWeek(i + 11, "B1-B2 Gelişim", "Mavi Kitap", "${i * 5 + 1}-${i * 5 + 5}", "Paragraf Tamamlama") })
-        addAll(List(6) { i -> createPreparationWeek(i + 21, "B2-C1 İleri", "Yeşil Kitap", "${i * 6 + 1}-${i * 6 + 6}", "Anlamı Bozan Cümle") })
+
+        // --- 1. FAZ: KIRMIZI KİTAP BİTİRME KAMPI --- (5 Hafta)
+        val book = "Kırmızı Kitap - Essential Grammar in Use"
+
+        // 115 Üniteyi 20 gramer gününe bölüyoruz.
+        val redBookDailyTopics = listOf(
+            "1-6 (Present Tenses 1)", "7-12 (Present Tenses 2)", "13-18 (Past Tenses)", "19-24 (Present Perfect 1)",
+            "25-30 (Present Perfect 2 & Passive)", "31-36 (Passive & Review)", "37-42 (Future Forms)", "43-48 (Future & Modals 1)",
+            "49-54 (Modals 2)", "55-60 (Reported Speech & Questions 1)", "61-66 (Gerunds & Infinitives 1)", "67-72 (Gerunds & Infinitives 2)",
+            "73-78 (Articles & Nouns 1)", "79-84 (Nouns & Pronouns 2)", "85-90 (Relative Clauses)", "91-96 (Adjectives & Adverbs)",
+            "97-102 (Comparisons)", "103-107 (Conjunctions)", "108-112 (Prepositions)", "113-115 (Phrasal Verbs)"
+        )
+
+        var topicCounter = 0
+        (1..5).forEach { week ->
+            val weekId = "w${week}"
+            val dayPlans = mutableListOf<DayPlan>()
+
+            // Gramer Günü: Pazartesi
+            dayPlans.add(DayPlan("Pazartesi", listOf(
+                Task("$weekId-pzt1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
+                Task("$weekId-pzt2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
+            ))); topicCounter++
+
+            // Gramer Günü: Salı
+            dayPlans.add(DayPlan("Salı", listOf(
+                Task("$weekId-sal1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
+                Task("$weekId-sal2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
+            ))); topicCounter++
+
+            // Beceri Günü: Çarşamba
+            dayPlans.add(DayPlan("Çarşamba", listOf(
+                Task("$weekId-car1", "1. Ders: Okuma ve Kelime", "Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar."),
+                Task("$weekId-car2", "2. Ders: Dinleme ve Tekrar", "ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.")
+            )))
+
+            // Gramer Günü: Perşembe
+            dayPlans.add(DayPlan("Perşembe", listOf(
+                Task("$weekId-per1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
+                Task("$weekId-per2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
+            ))); topicCounter++
+
+            // Gramer Günü: Cuma
+            dayPlans.add(DayPlan("Cuma", listOf(
+                Task("$weekId-cum1", "1. Ders: Gramer", "$book, Üniteler: ${redBookDailyTopics[topicCounter]}"),
+                Task("$weekId-cum2", "2. Ders: Alıştırmalar", "Çalıştığın konuların kitaptaki alıştırmalarını tamamla.")
+            ))); topicCounter++
+
+            // Beceri Günü: Cumartesi
+            dayPlans.add(DayPlan("Cumartesi", listOf(
+                Task("$weekId-cmt1", "1. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et."),
+                Task("$weekId-cmt2", "2. Ders: Keyif için İngilizce (Dizi/Film)", "İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.")
+            )))
+
+            // Beceri Günü: Pazar
+            dayPlans.add(DayPlan("Pazar", listOf(
+                Task("$weekId-paz1", "1. Ders: Haftalık Genel Tekrar", "Bu hafta işlenen tüm gramer konularını (${(week-1)*4 + 1}. - ${week*4}. blok) hızlıca gözden geçir."),
+                Task("$weekId-paz2", "2. Ders: Serbest Okuma/Dinleme", "İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.")
+            )))
+
+            add(WeekPlan(week, 1, "1. Ay, $week. Hafta: Kırmızı Kitap Kampı", dayPlans))
+        }
+
+        // --- 2. FAZ: MAVİ KİTAP (B1-B2 GELİŞİMİ) --- (11 Hafta)
+        val blueBook = "Mavi Kitap - English Grammar in Use"
+        val blueBookTopics = listOf(
+            "Tenses Review (Tüm Zamanların Karşılaştırması)",
+            "Future in Detail (Future Continuous/Perfect)",
+            "Modals 1 (Ability, Permission, Advice)",
+            "Modals 2 (Deduction, Obligation, Regret)",
+            "Conditionals & Wish (Tüm Tipler & İleri Düzey)",
+            "Passive Voice (Tüm Zamanlar) & 'have something done'",
+            "Reported Speech (Sorular, Komutlar, İleri Düzey)",
+            "Noun Clauses (that, what, if, whether...)",
+            "Relative Clauses (who, which, that, whose)",
+            "Gerunds & Infinitives (İleri kalıplar)",
+            "Conjunctions & Connectors"
+        )
+        blueBookTopics.forEachIndexed { index, topic ->
+            val weekNumber = index + 6 // 5 hafta bitti, 6. haftadan başlıyoruz
+            val nextTopic = if (index + 1 < blueBookTopics.size) blueBookTopics[index + 1] else "Yeşil Kitap - Advanced Tenses"
+            add(createAdvancedPreparationWeek(weekNumber, "B1-B2 Gelişimi", blueBook, topic, nextTopic, "The Guardian, BBC News", "TED-Ed Videoları", "Cümle Tamamlama"))
+        }
+
+        // --- 3. FAZ: YEŞİL KİTAP (C1 USTALIĞI) --- (10 Hafta)
+        val greenBook = "Yeşil Kitap - Advanced Grammar in Use"
+        val greenBookTopics = listOf(
+            "Advanced Tense Nuances & Narrative Tenses",
+            "Inversion & Emphasis (Not only, Hardly...)",
+            "Advanced Modals 1 (Speculation, Deduction)",
+            "Advanced Modals 2 (Hypothetical Situations, Politeness)",
+            "Participle Clauses (-ing ve -ed clauses)",
+            "Advanced Connectors & Discourse Markers",
+            "Hypothetical Meaning & Subjunctives",
+            "Adjectives & Adverbs (İleri Kullanımlar)",
+            "Prepositions (İleri Düzey)",
+            "Phrasal Verbs (Genel Tekrar ve İleri Düzey)"
+        )
+        greenBookTopics.forEachIndexed { index, topic ->
+            val weekNumber = index + 17 // 5+11=16 hafta bitti, 17. haftadan başlıyoruz
+            val nextTopic = if (index + 1 < greenBookTopics.size) greenBookTopics[index + 1] else "Genel Tekrar ve Sınav Kampı"
+            add(createAdvancedPreparationWeek(weekNumber, "C1 Ustalığı", greenBook, topic, nextTopic, "National Geographic, Scientific American", "NPR, BBC Radio 4 Podcast'leri", "Paragraf Tamamlama & Anlam Bütünlüğünü Bozan Cümle"))
+        }
+
+        // --- 4. FAZ: SINAV KAMPI --- (4 Hafta)
         addAll(List(4) { i -> createExamCampWeek(i + 27) })
     }
 }
 
-// MainActivity.kt (AchievementDataSource object'i içinde)
-
 object AchievementDataSource {
-    // Mevcut hazırlık aşaması görevlerini doğru şekilde hesaplayın.
-    // İlk 26 hafta (6 ay) hazırlık, sonraki 4 hafta (1 ay) deneme kampı ise:
+    // Hazırlık dönemi artık ilk 26 hafta
     private val prepPhaseTasks = PlanDataSource.planData.take(26).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
-    private val examCampTasks = PlanDataSource.planData.drop(26).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
 
     val allAchievements = listOf(
-        // Mevcut başarımlar - Düzeltildi
         Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { userProgress -> userProgress.completedTasks.isNotEmpty() },
         Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 100 },
-        Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { userProgress -> userProgress.completedTasks.containsAll(prepPhaseTasks) },
+        // Başarım koşulunu yeni plana göre güncelle
+        Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { userProgress ->
+            userProgress.completedTasks.containsAll(prepPhaseTasks)
+        },
+        // Başarım koşulunu yeni plana göre güncelle
         Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { userProgress ->
-            // Sınav kampı görevlerinden herhangi birini tamamladığında
-            userProgress.completedTasks.any { taskId -> examCampTasks.contains(taskId) }
+            userProgress.completedTasks.any { taskId -> taskId.startsWith("w27") } // Kamp 27. haftada başlıyor
         },
         Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { userProgress ->
+            // Bu koşul dinamik olduğu için değişikliğe gerek yok
             userProgress.completedTasks.count { it.contains("-exam-") } >= 10
-        },
-
-        // --- YENİ BAŞARIMLAR BAŞLANGICI ---
-
-        // Çalışma Serisi Başarımları (Bunlar zaten doğruydu)
-        Achievement("3_day_streak", "İstikrar Başlangıcı", "3 günlük çalışma serisine ulaştın!") { userProgress ->
-            userProgress.streakCount >= 3
-        },
-        Achievement("7_day_streak", "Bir Hafta Tamam!", "7 günlük çalışma serisine ulaştın!") { userProgress ->
-            userProgress.streakCount >= 7
-        },
-        Achievement("30_day_streak", "Bir Ay İstikrar", "30 günlük çalışma serisine ulaştın!") { userProgress ->
-            userProgress.streakCount >= 30
-        },
-
-        // Görev Sayısı Başarımları - Düzeltildi
-        Achievement("fifty_tasks", "Yarı Yoldasın", "50 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 50 },
-        Achievement("two_hundred_tasks", "Çalışkan Arı", "200 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 200 },
-        Achievement("all_tasks_completed", "Şampiyon!", "Tüm görevleri tamamladın!") { userProgress ->
-            val allTaskIds = PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
-            userProgress.completedTasks.containsAll(allTaskIds) && userProgress.completedTasks.size == allTaskIds.size
-        },
-
-        // Gramer Konusu Başarımları (Örnek: Belirli bir konudaki tüm görevleri bitirme) - Düzeltildi
-        Achievement("master_tenses", "Zamanların Efendisi", "Tüm 'Tenses' gramer görevlerini tamamladın!") { userProgress ->
-            val tensesTasks = PlanDataSource.planData.flatMap { it.days }
-                .flatMap { it.tasks }
-                .filter { it.grammarTopic == "Tenses" }
-                .map { it.id }
-                .toSet()
-            tensesTasks.isNotEmpty() && userProgress.completedTasks.containsAll(tensesTasks)
-        },
-        Achievement("master_modals", "Modalların Üstadı", "Tüm 'Modals' gramer görevlerini tamamladın!") { userProgress ->
-            val modalsTasks = PlanDataSource.planData.flatMap { it.days }
-                .flatMap { it.tasks }
-                .filter { it.grammarTopic == "Modals" }
-                .map { it.id }
-                .toSet()
-            modalsTasks.isNotEmpty() && userProgress.completedTasks.containsAll(modalsTasks)
-        },
-        // ... Diğer gramer konuları için de benzer başarımlar eklenebilir.
-
-        // Soru Tipi Başarımları (Örnek: Belirli bir soru tipinde yeterli sayıda soru çözme) - Düzeltildi
-        Achievement("sentence_completion_pro", "Cümle Tamamlama Prosu", "Tüm 'Cümle Tamamlama' soru tipi görevlerini tamamladın!") { userProgress ->
-            val sentenceCompletionTasks = PlanDataSource.planData.flatMap { it.days }
-                .flatMap { it.tasks }
-                .filter { it.questionType == "Cümle Tamamlama" }
-                .map { it.id }
-                .toSet()
-            sentenceCompletionTasks.isNotEmpty() && userProgress.completedTasks.containsAll(sentenceCompletionTasks)
-        },
-        Achievement("paragraph_completion_pro", "Paragraf Tamamlama Prosu", "Tüm 'Paragraf Tamamlama' soru tipi görevlerini tamamladın!") { userProgress ->
-            val paragraphCompletionTasks = PlanDataSource.planData.flatMap { it.days }
-                .flatMap { it.tasks }
-                .filter { it.questionType == "Paragraf Tamamlama" }
-                .map { it.id }
-                .toSet()
-            paragraphCompletionTasks.isNotEmpty() && userProgress.completedTasks.containsAll(paragraphCompletionTasks)
-        },
-        // ... Diğer soru tipleri için de benzer başarımlar eklenebilir.
-
-        // Sınav Takvimi Başarımları - Düzeltildi
-        Achievement("first_exam_registered", "İlk Başvurunu Yaptın!", "Yaklaşan bir sınava başvuru tarihleri içinde kayıt oldun!") { userProgress ->
-            userProgress.completedTasks.any { it.contains("applied_for_exam_") } // Farazi bir görev ID'si
-        },
-        Achievement("exam_day_ready", "Sınav Günü Hazır!", "Sınav gününe çok az kaldı, başarılar!") { userProgress ->
-            val nextExam = ExamCalendarDataSource.getNextExam()
-            if (nextExam != null) {
-                val today = LocalDate.now()
-                val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
-                daysToExam <= 7 && daysToExam >= 0 // Sınava 7 gün veya daha az kaldıysa
-            } else {
-                false
-            }
-        },
-
-        // --- YENİ BAŞARIMLAR SONU ---
+        }
     )
 }
-
 object ExamCalendarDataSource {
     val upcomingExams = listOf(
         ExamInfo(name = "YÖKDİL/1 (İlkbahar)", applicationStart = LocalDate.of(2026, 1, 28), applicationEnd = LocalDate.of(2026, 2, 5), examDate = LocalDate.of(2026, 3, 22)),
@@ -415,6 +480,7 @@ class ReminderWorker(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         NotificationHelper.createNotificationChannel(this)
         setContent {
             StudyPlanTheme {
@@ -466,17 +532,19 @@ fun scheduleDailyReminder(context: Context) {
 fun PlanScreen() {
     val context = LocalContext.current
     val repository = remember { ProgressRepository(context.dataStore) }
-    val userProgress by repository.userProgressFlow.collectAsState(initial = UserProgress())
+    val userProgress by repository.userProgressFlow.collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
 
     val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
-    val progress = if (allTasks.isNotEmpty()) userProgress.completedTasks.size.toFloat() / allTasks.size else 0f
+    val progress = if (allTasks.isNotEmpty() && userProgress != null) userProgress!!.completedTasks.size.toFloat() / allTasks.size else 0f
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "Overall Progress Animation")
     val snackbarHostState = remember { SnackbarHostState() }
     var showAchievementsSheet by remember { mutableStateOf(false) }
 
+    val currentProgress = userProgress ?: UserProgress()
+
     if (showAchievementsSheet) {
-        AchievementsSheet(unlockedAchievementIds = userProgress.unlockedAchievements, onDismiss = { showAchievementsSheet = false })
+        AchievementsSheet(unlockedAchievementIds = currentProgress.unlockedAchievements, onDismiss = { showAchievementsSheet = false })
     }
 
     Scaffold(
@@ -489,26 +557,17 @@ fun PlanScreen() {
         ) {
             MainHeader()
 
-            if (userProgress.completedTasks.isEmpty() && userProgress.streakCount == 0) {
+            if (userProgress == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Hoş Geldiniz!", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
-                        Text("YDS'ye hazırlanmaya başlamak için ilk görevinizi işaretleyin.",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(horizontal = 32.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Icon(Icons.Default.ExpandMore, contentDescription = "Aşağı kaydır", modifier = Modifier.size(48.dp))
-                    }
+                    CircularProgressIndicator()
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     stickyHeader {
                         Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                             GamificationHeader(
-                                streakCount = userProgress.streakCount,
-                                achievementsCount = userProgress.unlockedAchievements.size,
+                                streakCount = currentProgress.streakCount,
+                                achievementsCount = currentProgress.unlockedAchievements.size,
                                 onAchievementsClick = { showAchievementsSheet = true }
                             )
                             ExamCountdownCard()
@@ -518,21 +577,20 @@ fun PlanScreen() {
                     items(PlanDataSource.planData, key = { it.week }) { weekPlan ->
                         WeekCard(
                             weekPlan = weekPlan,
-                            completedTasks = userProgress.completedTasks,
+                            completedTasks = currentProgress.completedTasks,
                             onToggleTask = { taskId ->
                                 coroutineScope.launch {
-                                    val currentTasks = userProgress.completedTasks.toMutableSet()
+                                    val currentTasks = currentProgress.completedTasks.toMutableSet()
                                     if (currentTasks.contains(taskId)) {
                                         currentTasks.remove(taskId)
                                     } else {
                                         currentTasks.add(taskId)
                                     }
 
-                                    // Streak & Achievement logic
                                     val today = Calendar.getInstance()
-                                    val lastCompletion = Calendar.getInstance().apply { timeInMillis = userProgress.lastCompletionDate }
-                                    var newStreak = userProgress.streakCount
-                                    if (userProgress.lastCompletionDate > 0) {
+                                    val lastCompletion = Calendar.getInstance().apply { timeInMillis = currentProgress.lastCompletionDate }
+                                    var newStreak = currentProgress.streakCount
+                                    if (currentProgress.lastCompletionDate > 0) {
                                         val isSameDay = today.get(Calendar.DAY_OF_YEAR) == lastCompletion.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == lastCompletion.get(Calendar.YEAR)
                                         if (!isSameDay) {
                                             lastCompletion.add(Calendar.DAY_OF_YEAR, 1)
@@ -543,12 +601,9 @@ fun PlanScreen() {
                                         newStreak = 1
                                     }
 
+                                    val updatedProgressForCheck = currentProgress.copy(completedTasks = currentTasks, streakCount = newStreak)
                                     val newUnlocked = AchievementDataSource.allAchievements.filter { achievement ->
-                                        !userProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(userProgress.copy(
-                                            completedTasks = currentTasks, // Güncel görev listesi
-                                            streakCount = newStreak,       // Güncel streak
-                                            lastCompletionDate = if(currentTasks.size > userProgress.completedTasks.size) today.timeInMillis else userProgress.lastCompletionDate // Güncel tarih
-                                        )) // Başarım koşuluna güncel UserProgress'i gönderiyoruz
+                                        !currentProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(updatedProgressForCheck)
                                     }
                                     newUnlocked.forEach { achievement ->
                                         launch {
@@ -560,13 +615,13 @@ fun PlanScreen() {
                                             )
                                         }
                                     }
-                                    val allUnlockedIds = userProgress.unlockedAchievements + newUnlocked.map { it.id }
+                                    val allUnlockedIds = currentProgress.unlockedAchievements + newUnlocked.map { it.id }
 
                                     repository.saveProgress(
-                                        userProgress.copy(
+                                        currentProgress.copy(
                                             completedTasks = currentTasks,
                                             streakCount = newStreak,
-                                            lastCompletionDate = if(currentTasks.size > userProgress.completedTasks.size) today.timeInMillis else userProgress.lastCompletionDate,
+                                            lastCompletionDate = if(currentTasks.size > currentProgress.completedTasks.size) today.timeInMillis else currentProgress.lastCompletionDate,
                                             unlockedAchievements = allUnlockedIds
                                         )
                                     )
@@ -585,7 +640,10 @@ fun MainHeader() {
     val context = LocalContext.current
     Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface, shadowElevation = 3.dp) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -615,52 +673,61 @@ fun ExamCountdownCard() {
     val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = MaterialTheme.shapes.large,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Yaklaşan Sınav: ${nextExam.name}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.EditCalendar, contentDescription = "Başvuru Tarihi", tint = MaterialTheme.colorScheme.secondary)
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text("Başvuru İçin Son", style = MaterialTheme.typography.bodySmall)
-                    if (daysToApplicationEnd >= 0) {
-                        Text("${daysToApplicationEnd + 1} gün", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    } else {
-                        Text("Süre Doldu", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                    }
-                }
-            }
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = "Yaklaşan Sınav: ${nextExam.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.EventAvailable, contentDescription = "Sınav Tarihi", tint = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text("Sınava Kalan Süre", style = MaterialTheme.typography.bodySmall)
-                    if (daysToExam >= 0) {
-                        Text("$daysToExam gün", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    } else {
-                        Text("Sınav Geçti", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    }
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                CountdownItem(
+                    icon = Icons.Default.EditCalendar,
+                    label = "Başvuru İçin Son",
+                    days = daysToApplicationEnd + 1,
+                    isExpired = daysToApplicationEnd < 0,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                CountdownItem(
+                    icon = Icons.Default.EventAvailable,
+                    label = "Sınava Kalan Süre",
+                    days = daysToExam,
+                    isExpired = daysToExam < 0,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
-            // YENİ: Başvuru veya Bilgi Linki
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             val context = LocalContext.current
-            val osymLink = "https://ais.osym.gov.tr/" // ÖSYM'nin ilgili sayfası
+            val osymLink = "https://ais.osym.gov.tr/"
             Button(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, osymLink.toUri())
                     context.startActivity(intent)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = daysToExam >= 0 // Sınav geçmemişse aktif olsun
+                enabled = daysToExam >= 0
             ) {
                 Text("ÖSYM Sayfasına Git")
             }
+        }
+    }
+}
+
+@Composable
+fun CountdownItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, days: Long, isExpired: Boolean, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(imageVector = icon, contentDescription = label, tint = color, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        if (!isExpired) {
+            Text("$days gün", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = color)
+            Text(label, style = MaterialTheme.typography.bodySmall)
+        } else {
+            Text("Süre Doldu", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
         }
     }
 }
@@ -671,7 +738,9 @@ fun ExamCountdownCard() {
 fun AchievementsSheet(unlockedAchievementIds: Set<String>, onDismiss: () -> Unit) {
     val allAchievements = remember { AchievementDataSource.allAchievements }
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 32.dp)) {
             Text(text = "Başarımlar", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
                 items(allAchievements) { achievement ->
@@ -687,7 +756,9 @@ fun AchievementsSheet(unlockedAchievementIds: Set<String>, onDismiss: () -> Unit
 fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
     val contentAlpha = if (isUnlocked) 1f else 0.5f
     val iconColor = if (isUnlocked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = "Başarım İkonu", tint = iconColor, modifier = Modifier.size(40.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -700,7 +771,9 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
 @Composable
 fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         InfoChip(icon = Icons.Default.LocalFireDepartment, label = "Çalışma Serisi", value = "$streakCount gün", iconColor = MaterialTheme.colorScheme.error)
@@ -727,7 +800,9 @@ fun InfoChip(icon: androidx.compose.ui.graphics.vector.ImageVector, label: Strin
 @Composable
 fun OverallProgressCard(progress: Float) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
@@ -737,7 +812,10 @@ fun OverallProgressCard(progress: Float) {
                 Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(12.dp))
-            LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(10.dp).clip(CircleShape))
+            LinearProgressIndicator(progress = { progress }, modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .clip(CircleShape))
         }
     }
 }
@@ -759,7 +837,10 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
     val titleColor = monthColors[(weekPlan.month - 1) % monthColors.size]
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clickable { isExpanded = !isExpanded },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable { isExpanded = !isExpanded },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -798,7 +879,7 @@ fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(if(isExpanded) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else Color.Transparent)
+            .background(if (isExpanded) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else Color.Transparent)
             .clickable { isExpanded = !isExpanded }
     ) {
         Row(
