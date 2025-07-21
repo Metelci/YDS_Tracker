@@ -1,12 +1,12 @@
 package com.mtlc.studyplan
 
 import android.Manifest
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -77,7 +77,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import androidx.core.view.WindowCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -357,34 +356,9 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
 // --- BİLDİRİM VE ARKA PLAN İŞLERİ ---
 object NotificationHelper {
     private const val CHANNEL_ID_REMINDER = "YDS_REMINDER_CHANNEL"
-    private const val CHANNEL_NAME_REMINDER = "Günlük Hatırlatıcılar"
     private const val NOTIFICATION_ID_REMINDER = 1
 
     private const val CHANNEL_ID_APPLICATION = "YDS_APPLICATION_CHANNEL"
-    private const val CHANNEL_NAME_APPLICATION = "Sınav Başvuru Tarihleri"
-
-    fun createNotificationChannel(context: Context) {
-        val reminderChannel = NotificationChannel(
-            CHANNEL_ID_REMINDER,
-            CHANNEL_NAME_REMINDER,
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = "Günlük çalışma planı hatırlatıcıları."
-        }
-
-        val applicationChannel = NotificationChannel(
-            CHANNEL_ID_APPLICATION,
-            CHANNEL_NAME_APPLICATION,
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = "Önemli sınav başvuru başlangıç ve bitiş tarihleri."
-        }
-
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(reminderChannel)
-        notificationManager.createNotificationChannel(applicationChannel)
-    }
 
     fun showStudyReminderNotification(context: Context) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID_REMINDER)
@@ -457,8 +431,7 @@ class ReminderWorker(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        NotificationHelper.createNotificationChannel(this)
+        enableEdgeToEdge()
         setContent {
             StudyPlanTheme {
                 val permissionLauncher = rememberLauncherForActivityResult(
@@ -525,6 +498,7 @@ fun PlanScreen() {
     }
 
     Scaffold(
+        topBar = { MainHeader() }, // <-- Header buraya geldi
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
@@ -532,7 +506,6 @@ fun PlanScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            MainHeader()
 
             if (userProgress == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
