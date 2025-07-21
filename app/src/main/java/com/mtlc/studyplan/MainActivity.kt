@@ -10,6 +10,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.compose.ui.text.style.TextAlign
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,10 +41,10 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -52,6 +53,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -402,9 +404,18 @@ fun PlanScreen() {
         ) {
             MainHeader()
 
-            if (userProgress.completedTasks.isEmpty() && userProgress.streakCount == 0) { // Basit bir yüklenme kontrolü
+            if (userProgress.completedTasks.isEmpty() && userProgress.streakCount == 0) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Hoş Geldiniz!", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
+                        Text("YDS'ye hazırlanmaya başlamak için ilk görevinizi işaretleyin.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(horizontal = 32.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Icon(Icons.Default.ExpandMore, contentDescription = "Aşağı kaydır", modifier = Modifier.size(48.dp))
+                    }
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
@@ -431,8 +442,45 @@ fun PlanScreen() {
                                     } else {
                                         currentTasks.add(taskId)
                                     }
-                                    // Streak & Achievement logic can be added here if needed
-                                    repository.saveProgress(userProgress.copy(completedTasks = currentTasks))
+
+                                    // Streak & Achievement logic
+                                    val today = Calendar.getInstance()
+                                    val lastCompletion = Calendar.getInstance().apply { timeInMillis = userProgress.lastCompletionDate }
+                                    var newStreak = userProgress.streakCount
+                                    if (userProgress.lastCompletionDate > 0) {
+                                        val isSameDay = today.get(Calendar.DAY_OF_YEAR) == lastCompletion.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == lastCompletion.get(Calendar.YEAR)
+                                        if (!isSameDay) {
+                                            lastCompletion.add(Calendar.DAY_OF_YEAR, 1)
+                                            val isConsecutiveDay = today.get(Calendar.DAY_OF_YEAR) == lastCompletion.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == lastCompletion.get(Calendar.YEAR)
+                                            newStreak = if (isConsecutiveDay) newStreak + 1 else 1
+                                        }
+                                    } else if (currentTasks.isNotEmpty()) {
+                                        newStreak = 1
+                                    }
+
+                                    val newUnlocked = AchievementDataSource.allAchievements.filter { achievement ->
+                                        !userProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(currentTasks)
+                                    }
+                                    newUnlocked.forEach { achievement ->
+                                        launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = "Yeni Başarım: ${achievement.title}",
+                                                actionLabel = "OK",
+                                                withDismissAction = true,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    }
+                                    val allUnlockedIds = userProgress.unlockedAchievements + newUnlocked.map { it.id }
+
+                                    repository.saveProgress(
+                                        userProgress.copy(
+                                            completedTasks = currentTasks,
+                                            streakCount = newStreak,
+                                            lastCompletionDate = if(currentTasks.size > userProgress.completedTasks.size) today.timeInMillis else userProgress.lastCompletionDate,
+                                            unlockedAchievements = allUnlockedIds
+                                        )
+                                    )
                                 }
                             }
                         )
@@ -509,6 +557,20 @@ fun ExamCountdownCard() {
                         Text("Sınav Geçti", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     }
                 }
+            }
+            // YENİ: Başvuru veya Bilgi Linki
+            Spacer(modifier = Modifier.height(16.dp))
+            val context = LocalContext.current
+            val osymLink = "https://ais.osym.gov.tr/" // ÖSYM'nin ilgili sayfası
+            Button(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, osymLink.toUri())
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = daysToExam >= 0 // Sınav geçmemişse aktif olsun
+            ) {
+                Text("ÖSYM Sayfasına Git")
             }
         }
     }
