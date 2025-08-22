@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,11 +23,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -62,6 +67,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +79,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -87,10 +94,10 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.utils.Constants
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -114,6 +121,15 @@ data class UserProgress(
 
 //region VERİ KAYNAKLARI
 object PlanDataSource {
+    private var appContext: Context? = null
+
+    fun initialize(context: Context) {
+        appContext = context.applicationContext
+    }
+
+    private fun getAppContext(): Context {
+        return appContext ?: throw IllegalStateException("PlanDataSource must be initialized with context before use")
+    }
 
     // Kırmızı Kitap'ın 8 haftalık "Sağlam Temel" programı için özel fonksiyon
     private fun createRedBookFoundationWeek(
@@ -122,36 +138,36 @@ object PlanDataSource {
     ): WeekPlan {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
-        val book = "Kırmızı Kitap - Essential Grammar in Use"
+        val book = getAppContext().getString(R.string.red_book)
 
-        return WeekPlan(week, month, "$month. Ay, $week. Hafta: Sağlam Temel", listOf(
-            DayPlan("Pazartesi", listOf(
-                Task("$weekId-pzt1", "1. Ders: Gramer Konuları", "$book, Üniteler: $monUnits"),
-                Task("$weekId-pzt2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+        return WeekPlan(week, month, getAppContext().getString(R.string.month_week_format, month, week, getAppContext().getString(R.string.foundation_level)), listOf(
+            DayPlan(getAppContext().getString(R.string.monday), listOf(
+                Task("$weekId-pzt1", getAppContext().getString(R.string.grammar_topics_lesson), "$book, ${getAppContext().getString(R.string.units)}: $monUnits"),
+                Task("$weekId-pzt2", getAppContext().getString(R.string.quick_practice_lesson), getAppContext().getString(R.string.practice_description_1))
             )),
-            DayPlan("Salı", listOf(
-                Task("$weekId-sal1", "1. Ders: Gramer Konuları", "$book, Üniteler: $tueUnits"),
-                Task("$weekId-sal2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            DayPlan(getAppContext().getString(R.string.tuesday), listOf(
+                Task("$weekId-sal1", getAppContext().getString(R.string.grammar_topics_lesson), "$book, ${getAppContext().getString(R.string.units)}: $tueUnits"),
+                Task("$weekId-sal2", getAppContext().getString(R.string.quick_practice_lesson), getAppContext().getString(R.string.practice_description_1))
             )),
-            DayPlan("Çarşamba", listOf(
-                Task("$weekId-car1", "1. Ders: Okuma ve Kelime", "Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar."),
-                Task("$weekId-car2", "2. Ders: Dinleme ve Tekrar", "ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.")
+            DayPlan(getAppContext().getString(R.string.wednesday), listOf(
+                Task("$weekId-car1", getAppContext().getString(R.string.reading_vocabulary_lesson), getAppContext().getString(R.string.reading_description_1)),
+                Task("$weekId-car2", getAppContext().getString(R.string.listening_repeat_lesson), getAppContext().getString(R.string.listening_description_1))
             )),
-            DayPlan("Perşembe", listOf(
-                Task("$weekId-per1", "1. Ders: Gramer Konuları", "$book, Üniteler: $thuUnits"),
-                Task("$weekId-per2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            DayPlan(getAppContext().getString(R.string.thursday), listOf(
+                Task("$weekId-per1", getAppContext().getString(R.string.grammar_topics_lesson), "$book, ${getAppContext().getString(R.string.units)}: $thuUnits"),
+                Task("$weekId-per2", getAppContext().getString(R.string.quick_practice_lesson), getAppContext().getString(R.string.practice_description_1))
             )),
-            DayPlan("Cuma", listOf(
-                Task("$weekId-cum1", "1. Ders: Gramer Konuları", "$book, Üniteler: $friUnits"),
-                Task("$weekId-cum2", "2. Ders: Hızlı Pratik", "Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.")
+            DayPlan(getAppContext().getString(R.string.friday), listOf(
+                Task("$weekId-cum1", getAppContext().getString(R.string.grammar_topics_lesson), "$book, ${getAppContext().getString(R.string.units)}: $friUnits"),
+                Task("$weekId-cum2", getAppContext().getString(R.string.quick_practice_lesson), getAppContext().getString(R.string.practice_description_1))
             )),
-            DayPlan("Cumartesi", listOf(
-                Task("$weekId-cmt1", "1. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et."),
-                Task("$weekId-cmt2", "2. Ders: Keyif için İngilizce (Dizi/Film)", "İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.")
+            DayPlan(getAppContext().getString(R.string.saturday), listOf(
+                Task("$weekId-cmt1", getAppContext().getString(R.string.weekly_vocabulary_lesson), getAppContext().getString(R.string.vocabulary_description_1)),
+                Task("$weekId-cmt2", getAppContext().getString(R.string.entertainment_english_lesson), getAppContext().getString(R.string.entertainment_description_1))
             )),
-            DayPlan("Pazar", listOf(
-                Task("$weekId-paz1", "1. Ders: Haftalık Genel Tekrar", "Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al."),
-                Task("$weekId-paz2", "2. Ders: Serbest Okuma/Dinleme", "İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.")
+            DayPlan(getAppContext().getString(R.string.sunday), listOf(
+                Task("$weekId-paz1", getAppContext().getString(R.string.weekly_general_repeat), getAppContext().getString(R.string.general_repeat_description_1)),
+                Task("$weekId-paz2", getAppContext().getString(R.string.free_reading_listening), getAppContext().getString(R.string.free_reading_description_1))
             ))
         ))
     }
@@ -243,7 +259,8 @@ object PlanDataSource {
         ))
     }
 
-    val planData: List<WeekPlan> = mutableListOf<WeekPlan>().apply {
+    val planData: List<WeekPlan> by lazy {
+        mutableListOf<WeekPlan>().apply {
 
         // --- 1. FAZ: KIRMIZI KİTAP "SAĞLAM TEMEL" PROGRAMI --- (8 Hafta)
         add(createRedBookFoundationWeek(1, "1-4", "5-8", "9-12", "13-16"))
@@ -287,24 +304,25 @@ object PlanDataSource {
 
         // --- 4. FAZ: SINAV KAMPI --- (4 Hafta)
         addAll(List(4) { i -> createExamCampWeek(i + 27) })
+        }.toList()
     }
 }
 
 object AchievementDataSource {
     // Hazırlık dönemi artık ilk 26 hafta
-    private val prepPhaseTasks = PlanDataSource.planData.take(26).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
+    private val prepPhaseTasks = PlanDataSource.planData.take(Constants.PREP_PHASE_END_WEEK).flatMap { it.days }.flatMap { it.tasks }.map { it.id }.toSet()
 
     val allAchievements = listOf(
         Achievement("first_task", "İlk Adım", "İlk görevini tamamladın!") { userProgress -> userProgress.completedTasks.isNotEmpty() },
-        Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= 100 },
+        Achievement("hundred_tasks", "Yola Çıktın", "100 görevi tamamladın!") { userProgress -> userProgress.completedTasks.size >= Constants.HUNDRED_TASKS_THRESHOLD },
         Achievement("prep_complete", "Hazırlık Dönemi Bitti!", "6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!") { userProgress ->
             userProgress.completedTasks.containsAll(prepPhaseTasks)
         },
         Achievement("first_exam_week", "Sınav Kampı Başladı!", "Son ay deneme kampına başladın!") { userProgress ->
-            userProgress.completedTasks.any { taskId -> taskId.startsWith("w27") } // Kamp 27. haftada başlıyor
+            userProgress.completedTasks.any { taskId -> taskId.startsWith("w${Constants.EXAM_WEEK_START}") }
         },
         Achievement("ten_exams", "10 Deneme Bitti!", "Toplam 10 tam deneme sınavı çözdün!") { userProgress ->
-            userProgress.completedTasks.count { it.contains("-exam-") } >= 10
+            userProgress.completedTasks.count { it.contains("-exam-") } >= Constants.TEN_EXAMS_THRESHOLD
         }
     )
 }
@@ -325,7 +343,7 @@ object ExamCalendarDataSource {
 //endregion
 
 //region DATASTORE VE REPOSITORY
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "yds_progress")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.DATASTORE_NAME)
 
 class ProgressRepository(private val dataStore: DataStore<Preferences>) {
     private object Keys {
@@ -459,10 +477,45 @@ class ReminderWorker(
 }
 //endregion
 
+//region DİL YÖNETİMİ
+object LanguageManager {
+    fun getCurrentLanguage(context: Context): String {
+        val sharedPrefs = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        return sharedPrefs.getString(Constants.PREF_SELECTED_LANGUAGE, Constants.LANGUAGE_TURKISH)
+            ?: Constants.LANGUAGE_TURKISH
+    }
+
+    fun setLanguage(context: Context, language: String) {
+        val sharedPrefs = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        sharedPrefs.edit().putString(Constants.PREF_SELECTED_LANGUAGE, language).apply()
+    }
+
+    fun updateLocale(context: Context, language: String): Context {
+        val locale = java.util.Locale(language)
+        java.util.Locale.setDefault(locale)
+
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+
+        return context.createConfigurationContext(config)
+    }
+}
+//endregion
+
 //region ANA ACTIVITY VE YARDIMCI FONKSİYONLAR
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context?) {
+        val currentLanguage = LanguageManager.getCurrentLanguage(newBase ?: super.getBaseContext())
+        val updatedContext = LanguageManager.updateLocale(newBase ?: super.getBaseContext(), currentLanguage)
+        super.attachBaseContext(updatedContext)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // PlanDataSource'u initialize et
+        PlanDataSource.initialize(this)
+
         enableEdgeToEdge()
         setContent {
             StudyPlanTheme {
@@ -488,8 +541,8 @@ class MainActivity : ComponentActivity() {
 }
 
 fun scheduleDailyReminder(context: Context) {
-    val hour = 17 // Sabit saat 17:00
-    val minute = 0
+    val hour = Constants.NOTIFICATION_REMINDER_HOUR
+    val minute = Constants.NOTIFICATION_REMINDER_MINUTE
 
     val now = Calendar.getInstance()
     val nextNotificationTime = Calendar.getInstance().apply {
@@ -502,11 +555,23 @@ fun scheduleDailyReminder(context: Context) {
     }
     val initialDelay = nextNotificationTime.timeInMillis - now.timeInMillis
 
-    val reminderRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
+    // Use OneTimeWorkRequest for initial delay, then PeriodicWorkRequest for daily repeats
+    val initialWorkRequest = androidx.work.OneTimeWorkRequest.Builder(ReminderWorker::class.java)
         .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+        .addTag(Constants.DAILY_REMINDER_WORK + "_initial")
         .build()
 
-    WorkManager.getInstance(context).enqueueUniquePeriodicWork("YDS_DAILY_REMINDER", ExistingPeriodicWorkPolicy.REPLACE, reminderRequest)
+    val periodicWorkRequest = androidx.work.PeriodicWorkRequest.Builder(
+        ReminderWorker::class.java,
+        Constants.REMINDER_INTERVAL_HOURS, // Removed .toLong()
+        TimeUnit.HOURS
+    )
+        .addTag(Constants.DAILY_REMINDER_WORK)
+        .build()
+
+    val workManager = WorkManager.getInstance(context)
+    workManager.enqueue(initialWorkRequest)
+    workManager.enqueueUniquePeriodicWork(Constants.DAILY_REMINDER_WORK, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest)
 }
 //endregion
 
@@ -519,8 +584,18 @@ fun PlanScreen() {
     val userProgress by repository.userProgressFlow.collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
 
+    // Optimize: Pre-calculate all tasks
     val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
-    val progress = if (allTasks.isNotEmpty() && userProgress != null) userProgress!!.completedTasks.size.toFloat() / allTasks.size else 0f
+    val totalTasks = remember(allTasks) { allTasks.size }
+
+    // Optimize: Use derivedStateOf for progress calculation
+    val progress by remember {
+        derivedStateOf { // Removed <Float>
+            if (totalTasks > 0 && userProgress != null) {
+                userProgress!!.completedTasks.size.toFloat() / totalTasks
+            } else 0f
+        }
+    }
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "Overall Progress Animation")
     val snackbarHostState = remember { SnackbarHostState() }
     var showAchievementsSheet by remember { mutableStateOf(false) }
@@ -557,7 +632,10 @@ fun PlanScreen() {
                             OverallProgressCard(progress = animatedProgress)
                         }
                     }
-                    items(PlanDataSource.planData, key = { it.week }) { weekPlan ->
+                    items(
+                        items = PlanDataSource.planData,
+                        key = { it.week }
+                    ) { weekPlan ->
                         WeekCard(
                             weekPlan = weekPlan,
                             completedTasks = currentProgress.completedTasks,
@@ -584,6 +662,7 @@ fun PlanScreen() {
                                         newStreak = 1
                                     }
 
+                                    // Optimize: Cache achievement calculations
                                     val updatedProgressForCheck = currentProgress.copy(completedTasks = currentTasks, streakCount = newStreak)
                                     val newUnlocked = AchievementDataSource.allAchievements.filter { achievement ->
                                         !currentProgress.unlockedAchievements.contains(achievement.id) && achievement.condition(updatedProgressForCheck)
@@ -622,27 +701,65 @@ fun PlanScreen() {
 @Composable
 fun MainHeader() {
     val context = LocalContext.current
+    val currentLanguage = remember { LanguageManager.getCurrentLanguage(context) }
+
+    // Cache frequently used strings
+    val appTitle = remember { context.getString(R.string.app_title) }
+
+// Move string caching to individual composables where needed
 
     // Surface ve Row yerine TopAppBar kullanıyoruz
     TopAppBar(
         title = {
             Text(
-                text = "Road to YDS",
+                text = appTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
         actions = {
-            IconButton(onClick = {
-                val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = "mailto:".toUri()
-                    putExtra(Intent.EXTRA_EMAIL, arrayOf("metelci@gmail.com"))
-                    putExtra(Intent.EXTRA_SUBJECT, "Road to YDS Uygulaması Geri Bildirimi")
+            // Dil değiştirme butonları
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "TR",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = if (currentLanguage == "tr") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .clickable {
+                            LanguageManager.setLanguage(context, "tr")
+                            (context as? MainActivity)?.recreate()
+                        }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+                Text(
+                    text = "EN",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = if (currentLanguage == "en") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .clickable {
+                            LanguageManager.setLanguage(context, "en")
+                            (context as? MainActivity)?.recreate()
+                        }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+                val emailSubject = remember { context.getString(R.string.email_subject) }
+                val emailChooserTitle = remember { context.getString(R.string.email_chooser_title) }
+                IconButton(onClick = {
+                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                        data = "mailto:".toUri()
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf(Constants.EMAIL_ADDRESS))
+                        putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+                    }
+                    context.startActivity(Intent.createChooser(intent, emailChooserTitle))
+                }) {
+                    Icon(imageVector = Icons.Default.Email, contentDescription = emailChooserTitle)
                 }
-                context.startActivity(Intent.createChooser(intent, "E-posta gönder..."))
-            }) {
-                Icon(imageVector = Icons.Default.Email, contentDescription = "E-posta ile İletişim")
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -653,6 +770,7 @@ fun MainHeader() {
 
 @Composable
 fun ExamCountdownCard() {
+    val context = LocalContext.current
     val nextExam = remember { ExamCalendarDataSource.getNextExam() }
     if (nextExam == null) return
 
@@ -660,47 +778,54 @@ fun ExamCountdownCard() {
     val daysToApplicationEnd = ChronoUnit.DAYS.between(today, nextExam.applicationEnd)
     val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
 
+    // Cache frequently used strings
+    val upcomingExam = remember { context.getString(R.string.upcoming_exam) }
+    val applicationDeadline = remember { context.getString(R.string.application_deadline) }
+    val timeUntilExam = remember { context.getString(R.string.time_until_exam) }
+    // val daysUnit = remember { context.getString(R.string.days_unit) } // Removed
+    // val timeExpired = remember { context.getString(R.string.time_expired) } // Removed
+    val osymButton = remember { context.getString(R.string.osym_button) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 14.dp, vertical = 4.dp),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = "Yaklaşan Sınav: ${nextExam.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.height(12.dp))
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(text = "$upcomingExam ${nextExam.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 CountdownItem(
                     icon = Icons.Default.EditCalendar,
-                    label = "Başvuru İçin Son",
+                    label = applicationDeadline,
                     days = daysToApplicationEnd + 1,
                     isExpired = daysToApplicationEnd < 0,
                     color = MaterialTheme.colorScheme.secondary
                 )
                 CountdownItem(
                     icon = Icons.Default.EventAvailable,
-                    label = "Sınava Kalan Süre",
+                    label = timeUntilExam,
                     days = daysToExam,
                     isExpired = daysToExam < 0,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            Spacer(modifier = Modifier.height(14.dp))
-            val context = LocalContext.current
-            val osymLink = "https://ais.osym.gov.tr/"
+            Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, osymLink.toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, Constants.OSYM_URL.toUri())
                     context.startActivity(intent)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(36.dp),
+                contentPadding = PaddingValues(vertical = 6.dp),
                 enabled = daysToExam >= 0
             ) {
-                Text("ÖSYM Sayfasına Git")
+                Text(osymButton, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -708,14 +833,20 @@ fun ExamCountdownCard() {
 
 @Composable
 fun CountdownItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, days: Long, isExpired: Boolean, color: Color) {
+    val context = LocalContext.current
+
+    // Cache frequently used strings
+    val daysUnit = remember { context.getString(R.string.days_unit) }
+    val timeExpired = remember { context.getString(R.string.time_expired) }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(imageVector = icon, contentDescription = label, tint = color, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(4.dp))
         if (!isExpired) {
-            Text("$days gün", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = color)
+            Text(daysUnit.format(days), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = color)
             Text(label, style = MaterialTheme.typography.bodySmall)
         } else {
-            Text("Süre Doldu", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+            Text(timeExpired, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
         }
     }
 }
@@ -724,12 +855,16 @@ fun CountdownItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AchievementsSheet(unlockedAchievementIds: Set<String>, onDismiss: () -> Unit) {
+    val context = LocalContext.current
     val allAchievements = remember { AchievementDataSource.allAchievements }
+
+    // Cache frequently used strings
+    val achievementsTitle = remember { context.getString(R.string.achievements_title) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 32.dp)) {
-            Text(text = "Başarımlar", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            Text(text = achievementsTitle, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
                 items(allAchievements) { achievement ->
                     val isUnlocked = unlockedAchievementIds.contains(achievement.id)
@@ -758,15 +893,22 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
 
 @Composable
 fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsClick: () -> Unit) {
+    val context = LocalContext.current
+
+    // Cache frequently used strings
+    val streakLabel = remember { context.getString(R.string.streak_label) }
+    val achievementsLabel = remember { context.getString(R.string.achievements_label) }
+    val daysUnit = remember { context.getString(R.string.days_unit) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        InfoChip(icon = Icons.Default.LocalFireDepartment, label = "Çalışma Serisi", value = "$streakCount gün", iconColor = MaterialTheme.colorScheme.error)
+        InfoChip(icon = Icons.Default.LocalFireDepartment, label = streakLabel, value = daysUnit.format(streakCount), iconColor = MaterialTheme.colorScheme.error)
         Box(modifier = Modifier.clickable { onAchievementsClick() }) {
-            InfoChip(icon = Icons.Default.WorkspacePremium, label = "Başarımlar", value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
+            InfoChip(icon = Icons.Default.WorkspacePremium, label = achievementsLabel, value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
         }
     }
 }
@@ -787,6 +929,12 @@ fun InfoChip(icon: androidx.compose.ui.graphics.vector.ImageVector, label: Strin
 
 @Composable
 fun OverallProgressCard(progress: Float) {
+    val context = LocalContext.current
+
+    // Cache frequently used strings
+    val overallProgress = remember { context.getString(R.string.overall_progress) }
+    val percentFormat = remember { context.getString(R.string.percent_format) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -796,8 +944,8 @@ fun OverallProgressCard(progress: Float) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Genel İlerleme", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(overallProgress, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(percentFormat.format((progress * 100).toInt()), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(12.dp))
             LinearProgressIndicator(progress = { progress }, modifier = Modifier
@@ -810,9 +958,18 @@ fun OverallProgressCard(progress: Float) {
 
 @Composable
 fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (String) -> Unit) {
+    val context = LocalContext.current
     var isExpanded by remember { mutableStateOf(weekPlan.week == 1) }
-    val weekTasks = remember { weekPlan.days.flatMap { it.tasks } }
-    val completedInWeek = weekTasks.count { completedTasks.contains(it.id) }
+
+    // Cache frequently used strings
+    val tasksCompleted = remember { context.getString(R.string.tasks_completed) }
+
+    // Optimize: Pre-calculate week tasks and completed count
+    val weekTasks = remember(weekPlan) { weekPlan.days.flatMap { it.tasks } }
+    val completedInWeek by remember(weekPlan, completedTasks) {
+        derivedStateOf { weekTasks.count { completedTasks.contains(it.id) } } // Removed <Int>
+    }
+
     val rotationAngle by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "Icon Rotation")
 
     val monthColors = remember {
@@ -837,7 +994,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
                 Column(modifier = Modifier.weight(1f)) {
                     Text(weekPlan.title, style = MaterialTheme.typography.titleMedium, color = titleColor, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("$completedInWeek / ${weekTasks.size} görev tamamlandı", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(tasksCompleted.format(completedInWeek, weekTasks.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Genişlet/Daralt", modifier = Modifier.rotate(rotationAngle))
             }
@@ -853,8 +1010,27 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
 
 @Composable
 fun DaySection(dayPlan: DayPlan, completedTasks: Set<String>, onToggleTask: (String) -> Unit) {
+    val context = LocalContext.current
     Column(modifier = Modifier.padding(bottom = 12.dp)) {
-        Text(dayPlan.day, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(bottom = 8.dp))
+        val dayResource = when (dayPlan.day) {
+            "Pazartesi" -> R.string.monday
+            "Salı" -> R.string.tuesday
+            "Çarşamba" -> R.string.wednesday
+            "Perşembe" -> R.string.thursday
+            "Cuma" -> R.string.friday
+            "Cumartesi" -> R.string.saturday
+            "Pazar" -> R.string.sunday
+            else -> null
+        }
+        val dayText = remember(dayResource, dayPlan.day) {
+            dayResource?.let { context.getString(it) } ?: dayPlan.day
+        }
+        Text(
+            text = dayText,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
         dayPlan.tasks.forEach { task -> TaskItem(task = task, isCompleted = completedTasks.contains(task.id), onToggleTask = onToggleTask) }
     }
 }

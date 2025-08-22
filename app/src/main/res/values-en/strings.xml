@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name">Study Plan</string>
+
+    <!-- Ana başlık ve genel metinler -->
+    <string name="app_title">Road to YDS</string>
+    <string name="email_subject">Road to YDS App Feedback</string>
+    <string name="email_chooser_title">Send email...</string>
+
+    <!-- Sınav bilgileri -->
+    <string name="upcoming_exam">Upcoming Exam:</string>
+    <string name="application_deadline">Application Deadline</string>
+    <string name="time_until_exam">Time Until Exam</string>
+    <string name="osym_button">Go to ÖSYM Website</string>
+    <string name="time_expired">Time Expired</string>
+
+    <!-- Başarımlar -->
+    <string name="achievements_title">Achievements</string>
+    <string name="first_task_title">First Step</string>
+    <string name="first_task_desc">You completed your first task!</string>
+    <string name="hundred_tasks_title">On Your Way</string>
+    <string name="hundred_tasks_desc">You completed 100 tasks!</string>
+    <string name="prep_complete_title">Preparation Period Complete!</string>
+    <string name="prep_complete_desc">You completed 6 months of preparation. Now it\'s time for practice exams!</string>
+    <string name="first_exam_week_title">Exam Camp Started!</string>
+    <string name="first_exam_week_desc">You started the final month of practice exam camp!</string>
+    <string name="ten_exams_title">10 Practice Exams Completed!</string>
+    <string name="ten_exams_desc">You solved a total of 10 full practice exams!</string>
+
+    <!-- Gamification -->
+    <string name="streak_label">Study Streak</string>
+    <string name="achievements_label">Achievements</string>
+    <string name="overall_progress">Overall Progress</string>
+    <string name="tasks_completed">%1$d / %2$d tasks completed</string>
+    <string name="new_achievement">New Achievement: %s</string>
+
+    <!-- Bildirimler -->
+    <string name="study_reminder_title">Study Time!</string>
+    <string name="study_reminder_text">Don\'t forget to complete today\'s goals.</string>
+    <string name="application_reminder_title">Exam Application Reminder</string>
+    <string name="application_started">applications started today!</string>
+    <string name="application_deadline_today">today is the last day for applications!</string>
+
+    <!-- Kitaplar ve konular -->
+    <string name="red_book">Red Book - Essential Grammar in Use</string>
+    <string name="blue_book">Blue Book - English Grammar in Use</string>
+    <string name="green_book">Green Book - Advanced Grammar in Use</string>
+
+    <!-- Hafta başlıkları -->
+    <string name="month_week_format">Month %1$d, Week %2$d: %3$s</string>
+    <string name="foundation_level">Solid Foundation</string>
+    <string name="development_level">B1-B2 Development</string>
+    <string name="advanced_level">C1 Mastery</string>
+    <string name="exam_camp">Exam Camp</string>
+
+    <!-- Günler -->
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <!-- Ders türleri -->
+    <string name="grammar_topics_lesson">1. Lesson: Grammar Topics</string>
+    <string name="quick_practice_lesson">2. Lesson: Quick Practice</string>
+    <string name="reading_vocabulary_lesson">1. Lesson: Reading and Vocabulary</string>
+    <string name="listening_repeat_lesson">2. Lesson: Listening and Review</string>
+    <string name="weekly_vocabulary_lesson">1. Lesson: Weekly Vocabulary Review</string>
+    <string name="entertainment_english_lesson">2. Lesson: English Entertainment (Series/Movie)</string>
+    <string name="weekly_general_repeat">1. Lesson: Weekly General Review</string>
+    <string name="free_reading_listening">2. Lesson: Free Reading/Listening</string>
+    <string name="full_exam">Full Practice Exam</string>
+    <string name="exam_analysis">Exam Analysis</string>
+
+    <!-- Diğer -->
+    <string name="days_unit">%d days</string>
+    <string name="percent_format">%d%%</string>
+
+    <!-- Eksik stringler -->
+    <string name="units">Units</string>
+    <string name="practice_description_1">Solve the exercises in the book for the topics you studied to reinforce them.</string>
+    <string name="reading_description_1">Read at least 3 news articles from Newsinlevels.com (Level 1-2) and extract 15 new words.</string>
+    <string name="listening_description_1">Listen to a podcast from ESL/British Council and review the words you learned.</string>
+    <string name="vocabulary_description_1">Review all the new words (approximately 40-50 words) you learned this week using a flashcard app.</string>
+    <string name="entertainment_description_1">Watch a series episode or movie with English subtitles. Focus on filling your ears, not understanding.</string>
+    <string name="general_repeat_description_1">Quickly review all grammar topics covered this week. Note down anything you don\'t understand.</string>
+    <string name="free_reading_description_1">Watch an English YouTube channel or read a blog about a topic that interests you.</string>
+</resources>

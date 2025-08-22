@@ -1,3 +1,88 @@
 <resources>
     <string name="app_name">Study Plan</string>
+
+    <!-- Ana başlık ve genel metinler -->
+    <string name="app_title">Road to YDS</string>
+    <string name="email_subject">Road to YDS Uygulaması Geri Bildirimi</string>
+    <string name="email_chooser_title">E-posta gönder...</string>
+
+    <!-- Sınav bilgileri -->
+    <string name="upcoming_exam">Yaklaşan Sınav:</string>
+    <string name="application_deadline">Başvuru İçin Son</string>
+    <string name="time_until_exam">Sınava Kalan Süre</string>
+    <string name="osym_button">ÖSYM Sayfasına Git</string>
+    <string name="time_expired">Süre Doldu</string>
+
+    <!-- Başarımlar -->
+    <string name="achievements_title">Başarımlar</string>
+    <string name="first_task_title">İlk Adım</string>
+    <string name="first_task_desc">İlk görevini tamamladın!</string>
+    <string name="hundred_tasks_title">Yola Çıktın</string>
+    <string name="hundred_tasks_desc">100 görevi tamamladın!</string>
+    <string name="prep_complete_title">Hazırlık Dönemi Bitti!</string>
+    <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!</string>
+    <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
+    <string name="first_exam_week_desc">Son ay deneme kampına başladın!</string>
+    <string name="ten_exams_title">10 Deneme Bitti!</string>
+    <string name="ten_exams_desc">Toplam 10 tam deneme sınavı çözdün!</string>
+
+    <!-- Gamification -->
+    <string name="streak_label">Çalışma Serisi</string>
+    <string name="achievements_label">Başarımlar</string>
+    <string name="overall_progress">Genel İlerleme</string>
+    <string name="tasks_completed">%1$d / %2$d görev tamamlandı</string>
+    <string name="new_achievement">Yeni Başarım: %s</string>
+
+    <!-- Bildirimler -->
+    <string name="application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
+    <string name="study_reminder_title">Çalışma Zamanı!</string>
+    <string name="study_reminder_text">Bugünkü hedeflerini tamamlamayı unutma.</string>
+    <string name="application_started">bugün başvurular başladı!</string>
+    <string name="application_deadline_today">bugün son başvuru günü!</string>
+
+    <!-- Kitaplar ve konular -->
+    <string name="red_book">Kırmızı Kitap - Essential Grammar in Use</string>
+    <string name="blue_book">Mavi Kitap - English Grammar in Use</string>
+    <string name="green_book">Yeşil Kitap - Advanced Grammar in Use</string>
+
+    <!-- Hafta başlıkları -->
+    <string name="month_week_format">%1$d. Ay, %2$d. Hafta: %3$s</string>
+    <string name="foundation_level">Sağlam Temel</string>
+    <string name="development_level">B1-B2 Gelişimi</string>
+    <string name="advanced_level">C1 Ustalağı</string>
+    <string name="exam_camp">Sınav Kampı</string>
+
+    <!-- Günler -->
+    <string name="monday">Pazartesi</string>
+    <string name="tuesday">Salı</string>
+    <string name="wednesday">Çarşamba</string>
+    <string name="thursday">Perşembe</string>
+    <string name="friday">Cuma</string>
+    <string name="saturday">Cumartesi</string>
+    <string name="sunday">Pazar</string>
+
+    <!-- Ders türleri -->
+    <string name="grammar_topics_lesson">1. Ders: Gramer Konuları</string>
+    <string name="quick_practice_lesson">2. Ders: Hızlı Pratik</string>
+    <string name="reading_vocabulary_lesson">1. Ders: Okuma ve Kelime</string>
+    <string name="listening_repeat_lesson">2. Ders: Dinleme ve Tekrar</string>
+    <string name="weekly_vocabulary_lesson">1. Ders: Haftalık Kelime Tekrarı</string>
+    <string name="entertainment_english_lesson">2. Ders: Keyif için İngilizce (Dizi/Film)</string>
+    <string name="weekly_general_repeat">1. Ders: Haftalık Genel Tekrar</string>
+    <string name="free_reading_listening">2. Ders: Serbest Okuma/Dinleme</string>
+    <string name="full_exam">Tam Deneme Sınavı</string>
+    <string name="exam_analysis">Deneme Analizi</string>
+    <!-- Diğer -->
+    <string name="days_unit">%d gün</string>
+    <string name="percent_format">%d%%</string>
+
+    <!-- Eksik stringler -->
+    <string name="units">Üniteler</string>
+    <string name="practice_description_1">Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.</string>
+    <string name="reading_description_1">Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar.</string>
+    <string name="listening_description_1">ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.</string>
+    <string name="vocabulary_description_1">Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et.</string>
+    <string name="entertainment_description_1">İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.</string>
+    <string name="general_repeat_description_1">Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al.</string>
+    <string name="free_reading_description_1">İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.</string>
 </resources>
