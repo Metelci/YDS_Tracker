@@ -191,71 +191,71 @@ object PlanDataSource {
         val miniExamDayPlan = DayPlan(
             day = "",
             tasks = listOf(
-                Task("$weekId-mini_exam", "1. Ders: Mini Deneme Sınavı", "40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et."),
-                Task("$weekId-mini_analysis", "2. Ders: Deneme Analizi ve Kelime Çalışması", "Tüm yanlışlarını ve boşlarını detaylıca analiz et. Bilmediğin kelimeleri not al ve kelime setine ekle.")
+                Task("$weekId-mini_exam", getAppContext().getString(R.string.mini_exam_lesson), getAppContext().getString(R.string.mini_exam_description)),
+                Task("$weekId-mini_analysis", getAppContext().getString(R.string.mini_exam_analysis), getAppContext().getString(R.string.mini_analysis_description))
             )
         )
 
         val regularDays = mutableListOf<DayPlan>()
 
         regularDays.add(DayPlan("Pazartesi", listOf(
-            Task("$weekId-t1", "1. Ders: Gramer Konusu", "Kaynak: $book. Haftanın konusu olan '$grammarTopics' üzerine detaylıca çalış."),
-            Task("$weekId-t2", "2. Ders: Okuma Pratiği ve Kelime", "Kaynak: $readingFocus. Okuma yaparken en az 10 yeni kelime belirle ve anlamlarıyla birlikte not al.")
+            Task("$weekId-t1", getAppContext().getString(R.string.grammar_topic_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $book. ${getAppContext().getString(R.string.topic_prefix)} '$grammarTopics' ${getAppContext().getString(R.string.topic_suffix)}"),
+            Task("$weekId-t2", getAppContext().getString(R.string.reading_practice_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $readingFocus. ${getAppContext().getString(R.string.reading_description_1)}")
         )))
         regularDays.add(DayPlan("Salı", listOf(
-            Task("$weekId-t3", "1. Ders: Gramer Alıştırmaları", "$book kitabından dünkü konunun alıştırmalarını eksiksiz tamamla."),
-            Task("$weekId-t4", "2. Ders: Dinleme Pratiği ve Tekrar", "Kaynak: $listeningFocus. Aktif dinleme yap ve dünkü kelimeleri tekrar et.")
+            Task("$weekId-t3", getAppContext().getString(R.string.grammar_exercises_lesson), "$book ${getAppContext().getString(R.string.yesterday_topic_exercises)}"),
+            Task("$weekId-t4", getAppContext().getString(R.string.listening_practice_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $listeningFocus. ${getAppContext().getString(R.string.active_listening)}")
         )))
         if (shouldStartAdvancedPractice) {
             regularDays.add(miniExamDayPlan.copy(day = "Çarşamba"))
         } else {
             regularDays.add(DayPlan("Çarşamba", listOf(
-                Task("$weekId-t5", "1. Ders: Gramer Pekiştirme", "Öğrendiğin gramer yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yap."),
-                Task("$weekId-t6", "2. Ders: Serbest Okuma", "İlgini çeken bir konuda İngilizce blog/makale oku.")
+                Task("$weekId-t5", getAppContext().getString(R.string.grammar_reinforcement_lesson), getAppContext().getString(R.string.grammar_structures_exercises)),
+                Task("$weekId-t6", getAppContext().getString(R.string.free_reading_lesson), getAppContext().getString(R.string.interesting_topic_blog))
             )))
         }
         regularDays.add(DayPlan("Perşembe", listOf(
-            Task("$weekId-t7", "1. Ders: Gramer Konusu (Devam)", "Haftanın gramer konusunu pekiştir ve ek alıştırmalar çöz."),
-            Task("$weekId-t8", "2. Ders: Zorlu Okuma ve Kelime", "Kaynak: $readingFocus (Zor seviye). Yeni 10 kelime daha öğren.")
+            Task("$weekId-t7", getAppContext().getString(R.string.grammar_topic_continue_lesson), getAppContext().getString(R.string.grammar_topic_reinforce)),
+            Task("$weekId-t8", getAppContext().getString(R.string.challenging_reading_lesson), getAppContext().getString(R.string.advanced_reading, readingFocus))
         )))
         if (shouldStartAdvancedPractice) {
             regularDays.add(DayPlan("Cuma", listOf(
-                Task("$weekId-t9", "1. Ders: Soru Tipi Pratiği", "$questionType soru tipinden en az 20 soru çöz."),
-                Task("$weekId-t10", "2. Ders: Soru Analizi ve Tekrar", "Çözdüğün sorulardaki yanlışlarını analiz et ve haftalık kelimeleri tekrar et.")
+                Task("$weekId-t9", getAppContext().getString(R.string.question_type_practice_lesson), getAppContext().getString(R.string.question_type_practice) + " " + questionType),
+                Task("$weekId-t10", getAppContext().getString(R.string.question_analysis_lesson), getAppContext().getString(R.string.question_analysis_review))
             )))
         } else {
             regularDays.add(DayPlan("Cuma", listOf(
-                Task("$weekId-t9", "1. Ders: Haftalık Gramer Tekrarı", "Bu hafta işlenen tüm gramer konularını ve kurallarını tekrar et."),
-                Task("$weekId-t10", "2. Ders: Serbest Dinleme", "İlgini çeken bir konuda İngilizce podcast/video izle.")
+                Task("$weekId-t9", getAppContext().getString(R.string.weekly_grammar_review_lesson), getAppContext().getString(R.string.weekly_grammar_review)),
+                Task("$weekId-t10", getAppContext().getString(R.string.free_listening_lesson), getAppContext().getString(R.string.interesting_topic_podcast))
             )))
         }
         regularDays.add(DayPlan("Cumartesi", listOf(
-            Task("$weekId-t11", "1. Ders: Gelecek Haftaya Hazırlık", "Gelecek haftanın konusu olan '$nextGrammarTopic' konusuna kısaca göz atarak ön hazırlık yap."),
-            Task("$weekId-t12", "2. Ders: Haftalık Kelime Tekrarı", "Bu hafta öğrendiğin tüm kelimeleri (yaklaşık 20-30 kelime) flashcard uygulamasıyla tekrar et.")
+            Task("$weekId-t11", getAppContext().getString(R.string.next_week_preparation_lesson), getAppContext().getString(R.string.next_week_topic_preview) + " " + nextGrammarTopic),
+            Task("$weekId-t12", getAppContext().getString(R.string.weekly_vocabulary_review_lesson), getAppContext().getString(R.string.weekly_vocabulary_review_count))
         )))
         if (shouldStartAdvancedPractice) {
             regularDays.add(miniExamDayPlan.copy(day = "Pazar"))
         } else {
             regularDays.add(DayPlan("Pazar", listOf(
-                Task("$weekId-t13", "1. Ders: Haftalık Analiz ve Planlama", "Haftanın genel bir değerlendirmesini yap. Güçlü ve zayıf yönlerini belirle."),
-                Task("$weekId-t14", "2. Ders: Keyif için İngilizce", "İngilizce bir film/dizi izle veya oyun oyna. Amaç sadece dilin keyfini çıkarmak.")
+                Task("$weekId-t13", getAppContext().getString(R.string.weekly_analysis_planning_lesson), getAppContext().getString(R.string.weekly_assessment)),
+                Task("$weekId-t14", getAppContext().getString(R.string.english_entertainment_lesson), getAppContext().getString(R.string.english_entertainment_purpose))
             )))
         }
 
-        return WeekPlan(week, month, "$month. Ay, $week. Hafta: $level Seviyesi", regularDays)
+        return WeekPlan(week, month, getAppContext().getString(R.string.level_week_format, month, week, level), regularDays)
     }
 
     private fun createExamCampWeek(week: Int): WeekPlan {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
-        return WeekPlan(week, month, "$month. Ay, $week. Hafta: Sınav Kampı", listOf(
-            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", "Tam Deneme Sınavı", "Kaynak: Son yıllara ait çıkmış bir YDS/YÖKDİL sınavı. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-1", "Deneme Analizi", "Sınav sonrası en az 1 saat ara ver. Ardından yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını detaylıca analiz et. Bilmediğin kelimeleri listele."))),
-            DayPlan("Salı", listOf(Task("$weekId-exam-2", "Tam Deneme Sınavı", "Kaynak: Güvenilir bir yayınevinin deneme sınavı. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-2", "Deneme Analizi", "Dünkü gibi detaylı analiz yap. Özellikle tekrar eden hata tiplerine odaklan."))),
-            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-3", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
-            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-4", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
-            DayPlan("Cuma", listOf(Task("$weekId-exam-5", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-analysis-5", "Deneme Analizi", "Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et."))),
-            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", "Tam Deneme Sınavı", "Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz."), Task("$weekId-t12", "Haftalık Kelime Tekrarı", "Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri flashcard uygulaması üzerinden tekrar et."))),
-            DayPlan("Pazar", listOf(Task("$weekId-t13", "Genel Tekrar ve Dinlenme", "Haftanın denemelerindeki genel hata tiplerini (örn: zaman yönetimi, belirli soru tipi) gözden geçir."), Task("$weekId-t14", "Strateji ve Motivasyon", "Gelecek haftanın stratejisini belirle ve zihnini dinlendir. Sınava az kaldı!")))
+        return WeekPlan(week, month, getAppContext().getString(R.string.exam_camp_week_format, month, week), listOf(
+            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-1", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
+            DayPlan("Salı", listOf(Task("$weekId-exam-2", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-2", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
+            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-3", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
+            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-4", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
+            DayPlan("Cuma", listOf(Task("$weekId-exam-5", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-5", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
+            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-t12", getAppContext().getString(R.string.weekly_vocabulary_review_lesson), getAppContext().getString(R.string.general_error_types)))),
+            DayPlan("Pazar", listOf(Task("$weekId-t13", getAppContext().getString(R.string.general_review_rest_lesson), getAppContext().getString(R.string.general_error_types)), Task("$weekId-t14", getAppContext().getString(R.string.strategy_motivation_lesson), getAppContext().getString(R.string.strategy_motivation_content))))
         ))
     }
 
@@ -399,8 +399,8 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID_REMINDER)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Çalışma Zamanı!")
-            .setContentText("Bugünkü hedeflerini tamamlamayı unutma.")
+            .setContentTitle(context.getString(R.string.notification_study_reminder_title))
+            .setContentText(context.getString(R.string.notification_study_reminder_text))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent) // <-- 3. Adım: PendingIntent'i bildirime ekle.
@@ -452,11 +452,11 @@ class ReminderWorker(
         var wasSpecialNotificationSent = false
         if (examsWithEventsToday.isNotEmpty()) {
             examsWithEventsToday.forEach { exam ->
-                val title = "Sınav Başvuru Hatırlatıcısı"
+                val title = applicationContext.getString(R.string.notification_application_reminder_title)
                 val message = if (today == exam.applicationStart) {
-                    "${exam.name} için başvurular bugün başladı!"
+                    "${exam.name} ${applicationContext.getString(R.string.notification_application_started)}"
                 } else {
-                    "${exam.name} için bugün son başvuru günü!"
+                    "${exam.name} ${applicationContext.getString(R.string.notification_application_deadline_today)}"
                 }
                 NotificationHelper.showApplicationReminderNotification(
                     applicationContext,
@@ -748,7 +748,7 @@ fun MainHeader() {
                         }
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
-                val emailSubject = remember { context.getString(R.string.email_subject) }
+                val emailSubject = remember { context.getString(R.string.email_subject_hardcoded) }
                 val emailChooserTitle = remember { context.getString(R.string.email_chooser_title) }
                 IconButton(onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
@@ -882,7 +882,7 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = "Başarım İkonu", tint = iconColor, modifier = Modifier.size(40.dp))
+        Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = null, tint = iconColor, modifier = Modifier.size(40.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = achievement.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha))
@@ -996,7 +996,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(tasksCompleted.format(completedInWeek, weekTasks.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Genişlet/Daralt", modifier = Modifier.rotate(rotationAngle))
+                Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null, modifier = Modifier.rotate(rotationAngle))
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column {
