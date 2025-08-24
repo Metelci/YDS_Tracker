@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Study Plan</string>
 
@@ -96,61 +97,6 @@
     <string name="general_repeat_description_1">Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al.</string>
     <string name="free_reading_description_1">İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.</string>
 
-<<<<<<< Updated upstream
-    <!-- Sabit metinler -->
-    <string name="email_subject_hardcoded">Road to YDS Uygulaması Geri Bildirimi</string>
-    <string name="notification_study_reminder_title">Çalışma Zamanı!</string>
-    <string name="notification_study_reminder_text">Bugünkü hedeflerini tamamlamayı unutma.</string>
-    <string name="notification_application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
-    <string name="notification_application_started">için başvurular bugün başladı!</string>
-    <string name="notification_application_deadline_today">için bugün son başvuru günü!</string>
-    <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
-    <string name="mini_exam_analysis">2. Ders: Deneme Analizi ve Kelime Çalışması</string>
-    <string name="mini_exam_description">40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et.</string>
-    <string name="mini_analysis_description">Tüm yanlışlarını ve boşlarını detaylıca analiz et. Bilmediğin kelimeleri not al ve kelime setine ekle.</string>
-    <string name="grammar_topic_lesson">1. Ders: Gramer Konusu</string>
-    <string name="reading_practice_lesson">2. Ders: Okuma Pratiği ve Kelime</string>
-    <string name="grammar_exercises_lesson">1. Ders: Gramer Alıştırmaları</string>
-    <string name="listening_practice_lesson">2. Ders: Dinleme Pratiği ve Tekrar</string>
-    <string name="grammar_reinforcement_lesson">1. Ders: Gramer Pekiştirme</string>
-    <string name="free_reading_lesson">2. Ders: Serbest Okuma</string>
-    <string name="grammar_topic_continue_lesson">1. Ders: Gramer Konusu (Devam)</string>
-    <string name="challenging_reading_lesson">2. Ders: Zorlu Okuma ve Kelime</string>
-    <string name="question_type_practice_lesson">1. Ders: Soru Tipi Pratiği</string>
-    <string name="question_analysis_lesson">2. Ders: Soru Analizi ve Tekrar</string>
-    <string name="weekly_grammar_review_lesson">1. Ders: Haftalık Gramer Tekrarı</string>
-    <string name="free_listening_lesson">2. Ders: Serbest Dinleme</string>
-    <string name="next_week_preparation_lesson">1. Ders: Gelecek Haftaya Hazırlık</string>
-    <string name="weekly_vocabulary_review_lesson">2. Ders: Haftalık Kelime Tekrarı</string>
-    <string name="weekly_analysis_planning_lesson">1. Ders: Haftalık Analiz ve Planlama</string>
-    <string name="english_entertainment_lesson">2. Ders: Keyif için İngilizce</string>
-    <string name="general_review_rest_lesson">1. Ders: Genel Tekrar ve Dinlenme</string>
-    <string name="strategy_motivation_lesson">2. Ders: Strateji ve Motivasyon</string>
-    <string name="full_exam_description">Kaynak: Son yıllara ait çıkmış bir YDS/YÖKDİL sınavı. 80 soruyu tam 180 dakika içinde çöz.</string>
-    <string name="exam_analysis_description">Sınav sonrası en az 1 saat ara ver. Ardından yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını detaylıca analiz et. Bilmediğin kelimeleri listele.</string>
-    <string name="source_book_prefix">Kaynak:</string>
-    <string name="topic_prefix">Haftanın konusu olan</string>
-    <string name="next_topic_prefix">Gelecek haftanın konusu olan</string>
-    <string name="topic_suffix">üzerine detaylıca çalış.</string>
-    <string name="yesterday_topic_exercises">kitabından dünkü konunun alıştırmalarını eksiksiz tamamla.</string>
-    <string name="active_listening">Aktif dinleme yap ve dünkü kelimeleri tekrar et.</string>
-    <string name="grammar_structures_exercises">Öğrendiğin gramer yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yap.</string>
-    <string name="interesting_topic_blog">İlgini çeken bir konuda İngilizce blog/makale oku.</string>
-    <string name="grammar_topic_reinforce">Haftanın gramer konusunu pekiştir ve ek alıştırmalar çöz.</string>
-    <string name="advanced_reading">Kaynak: %1$s (Zor seviye). Yeni 10 kelime daha öğren.</string>
-    <string name="question_type_practice">soru tipinden en az 20 soru çöz.</string>
-    <string name="question_analysis_review">Çözdüğün sorulardaki yanlışlarını analiz et ve haftalık kelimeleri tekrar et.</string>
-    <string name="weekly_grammar_review">Bu hafta işlenen tüm gramer konularını ve kurallarını tekrar et.</string>
-    <string name="interesting_topic_podcast">İlgini çeken bir konuda İngilizce podcast/video izle.</string>
-    <string name="next_week_topic_preview">konusuna kısaca göz atarak ön hazırlık yap.</string>
-    <string name="weekly_vocabulary_review_count">Bu hafta öğrendiğin tüm kelimeleri (yaklaşık 20-30 kelime) flashcard uygulamasıyla tekrar et.</string>
-    <string name="weekly_assessment">Haftanın genel bir değerlendirmesini yap. Güçlü ve zayıf yönlerini belirle.</string>
-    <string name="english_entertainment_purpose">İngilizce bir film/dizi izle veya oyun oyna. Amaç sadece dilin keyfini çıkarmak.</string>
-    <string name="general_error_types">Haftanın denemelerindeki genel hata tiplerini (örn: zaman yönetimi, belirli soru tipi) gözden geçir.</string>
-    <string name="strategy_motivation_content">Gelecek haftanın stratejisini belirle ve zihnini dinlendir. Sınava az kaldı!</string>
-    <string name="exam_camp_week_format">%1$d. Ay, %2$d. Hafta: Sınav Kampı</string>
-    <string name="level_week_format">%1$d. Ay, %2$d. Hafta: %3$s Seviyesi</string>
-=======
     <!-- Ders başlıkları -->
     <string name="grammar_topic_lesson">1. Ders: Gramer Konusu</string>
     <string name="grammar_exercises_lesson">1. Ders: Gramer Alıştırmaları</string>
@@ -256,5 +202,4 @@
     <string name="final_review_exam_camp_short">Genel Tekrar ve Sınav Kampı</string>
     <string name="prep_period_note">Hazırlık dönemi artık ilk 26 hafta</string>
     <string name="expand_collapse">Genişlet/Daralt</string>
->>>>>>> Stashed changes
 </resources>

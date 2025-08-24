@@ -22,7 +22,7 @@ object Constants {
     const val OSYM_URL = "https://ais.osym.gov.tr/"
 
     // Email
-    // EMAIL_SUBJECT is now handled via string resources (R.string.email_subject_hardcoded)
+    // EMAIL_SUBJECT is now handled via string resources (R.string.email_subject)
     const val EMAIL_ADDRESS = "metelci@gmail.com"
 
     // Achievement conditions

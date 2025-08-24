@@ -6,19 +6,14 @@ plugins {
 
 android {
     namespace = "com.mtlc.studyplan"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-<<<<<<< Updated upstream
-        versionCode = 21
-        versionName = "1.5.2" //major improvements and localization fixes
-=======
         versionCode = 23
         versionName = "1.5.4"
->>>>>>> Stashed changes
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,10 +36,9 @@ android {
     }
     kotlin {
         jvmToolchain(11)
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+        }
     }
 
     buildFeatures {
@@ -79,10 +73,10 @@ dependencies {
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
-    testImplementation("androidx.test:core:1.5.0")
+    testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.coroutines.test)
-    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation(libs.robolectric)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

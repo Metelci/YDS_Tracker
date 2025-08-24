@@ -184,27 +184,13 @@ object PlanDataSource {
         val miniExamDayPlan = DayPlan(
             day = "",
             tasks = listOf(
-<<<<<<< Updated upstream
-                Task("$weekId-mini_exam", getAppContext().getString(R.string.mini_exam_lesson), getAppContext().getString(R.string.mini_exam_description)),
-                Task("$weekId-mini_analysis", getAppContext().getString(R.string.mini_exam_analysis), getAppContext().getString(R.string.mini_analysis_description))
-=======
 Task("$weekId-mini_exam", PlanDataSource.getAppContext().getString(R.string.mini_exam_lesson), PlanDataSource.getAppContext().getString(R.string.mini_exam_description)),
 Task("$weekId-mini_analysis", PlanDataSource.getAppContext().getString(R.string.mini_analysis_lesson), PlanDataSource.getAppContext().getString(R.string.mini_analysis_description)),
->>>>>>> Stashed changes
             )
         )
 
         val regularDays = mutableListOf<DayPlan>()
 
-<<<<<<< Updated upstream
-        regularDays.add(DayPlan("Pazartesi", listOf(
-            Task("$weekId-t1", getAppContext().getString(R.string.grammar_topic_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $book. ${getAppContext().getString(R.string.topic_prefix)} '$grammarTopics' ${getAppContext().getString(R.string.topic_suffix)}"),
-            Task("$weekId-t2", getAppContext().getString(R.string.reading_practice_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $readingFocus. ${getAppContext().getString(R.string.reading_description_1)}")
-        )))
-        regularDays.add(DayPlan("Salı", listOf(
-            Task("$weekId-t3", getAppContext().getString(R.string.grammar_exercises_lesson), "$book ${getAppContext().getString(R.string.yesterday_topic_exercises)}"),
-            Task("$weekId-t4", getAppContext().getString(R.string.listening_practice_lesson), "${getAppContext().getString(R.string.source_book_prefix)} $listeningFocus. ${getAppContext().getString(R.string.active_listening)}")
-=======
         regularDays.add(DayPlan(PlanDataSource.getAppContext().getString(R.string.monday), listOf(
             Task("$weekId-t1", PlanDataSource.getAppContext().getString(R.string.grammar_topic_lesson), PlanDataSource.getAppContext().getString(R.string.grammar_topic_description, book, grammarTopics)),
             Task("$weekId-t2", PlanDataSource.getAppContext().getString(R.string.quick_practice_lesson), PlanDataSource.getAppContext().getString(R.string.practice_description_1))
@@ -212,36 +198,10 @@ Task("$weekId-mini_analysis", PlanDataSource.getAppContext().getString(R.string.
         regularDays.add(DayPlan(PlanDataSource.getAppContext().getString(R.string.tuesday), listOf(
             Task("$weekId-t3", PlanDataSource.getAppContext().getString(R.string.grammar_exercises_lesson), PlanDataSource.getAppContext().getString(R.string.grammar_exercises_description, book)),
             Task("$weekId-t4", PlanDataSource.getAppContext().getString(R.string.listening_repeat_lesson), PlanDataSource.getAppContext().getString(R.string.listening_description_1))
->>>>>>> Stashed changes
         )))
         if (shouldStartAdvancedPractice) {
             regularDays.add(miniExamDayPlan.copy(day = PlanDataSource.getAppContext().getString(R.string.wednesday)))
         } else {
-<<<<<<< Updated upstream
-            regularDays.add(DayPlan("Çarşamba", listOf(
-                Task("$weekId-t5", getAppContext().getString(R.string.grammar_reinforcement_lesson), getAppContext().getString(R.string.grammar_structures_exercises)),
-                Task("$weekId-t6", getAppContext().getString(R.string.free_reading_lesson), getAppContext().getString(R.string.interesting_topic_blog))
-            )))
-        }
-        regularDays.add(DayPlan("Perşembe", listOf(
-            Task("$weekId-t7", getAppContext().getString(R.string.grammar_topic_continue_lesson), getAppContext().getString(R.string.grammar_topic_reinforce)),
-            Task("$weekId-t8", getAppContext().getString(R.string.challenging_reading_lesson), getAppContext().getString(R.string.advanced_reading, readingFocus))
-        )))
-        if (shouldStartAdvancedPractice) {
-            regularDays.add(DayPlan("Cuma", listOf(
-                Task("$weekId-t9", getAppContext().getString(R.string.question_type_practice_lesson), getAppContext().getString(R.string.question_type_practice) + " " + questionType),
-                Task("$weekId-t10", getAppContext().getString(R.string.question_analysis_lesson), getAppContext().getString(R.string.question_analysis_review))
-            )))
-        } else {
-            regularDays.add(DayPlan("Cuma", listOf(
-                Task("$weekId-t9", getAppContext().getString(R.string.weekly_grammar_review_lesson), getAppContext().getString(R.string.weekly_grammar_review)),
-                Task("$weekId-t10", getAppContext().getString(R.string.free_listening_lesson), getAppContext().getString(R.string.interesting_topic_podcast))
-            )))
-        }
-        regularDays.add(DayPlan("Cumartesi", listOf(
-            Task("$weekId-t11", getAppContext().getString(R.string.next_week_preparation_lesson), getAppContext().getString(R.string.next_week_topic_preview) + " " + nextGrammarTopic),
-            Task("$weekId-t12", getAppContext().getString(R.string.weekly_vocabulary_review_lesson), getAppContext().getString(R.string.weekly_vocabulary_review_count))
-=======
             regularDays.add(DayPlan(PlanDataSource.getAppContext().getString(R.string.wednesday), listOf(
                 Task("$weekId-t5", PlanDataSource.getAppContext().getString(R.string.grammar_reinforcement_lesson), PlanDataSource.getAppContext().getString(R.string.grammar_reinforcement_description)),
                 Task("$weekId-t6", PlanDataSource.getAppContext().getString(R.string.free_reading_listening), PlanDataSource.getAppContext().getString(R.string.free_reading_description_1))
@@ -265,20 +225,10 @@ Task("$weekId-mini_analysis", PlanDataSource.getAppContext().getString(R.string.
         regularDays.add(DayPlan(PlanDataSource.getAppContext().getString(R.string.saturday), listOf(
             Task("$weekId-t11", PlanDataSource.getAppContext().getString(R.string.next_week_preparation_lesson), PlanDataSource.getAppContext().getString(R.string.next_week_preparation_description, nextGrammarTopic)),
             Task("$weekId-t12", PlanDataSource.getAppContext().getString(R.string.weekly_vocabulary_lesson), PlanDataSource.getAppContext().getString(R.string.vocabulary_description_1))
->>>>>>> Stashed changes
         )))
         if (shouldStartAdvancedPractice) {
             regularDays.add(miniExamDayPlan.copy(day = PlanDataSource.getAppContext().getString(R.string.sunday)))
         } else {
-<<<<<<< Updated upstream
-            regularDays.add(DayPlan("Pazar", listOf(
-                Task("$weekId-t13", getAppContext().getString(R.string.weekly_analysis_planning_lesson), getAppContext().getString(R.string.weekly_assessment)),
-                Task("$weekId-t14", getAppContext().getString(R.string.english_entertainment_lesson), getAppContext().getString(R.string.english_entertainment_purpose))
-            )))
-        }
-
-        return WeekPlan(week, month, getAppContext().getString(R.string.level_week_format, month, week, level), regularDays)
-=======
             regularDays.add(DayPlan(PlanDataSource.getAppContext().getString(R.string.sunday), listOf(
                 Task("$weekId-t13", PlanDataSource.getAppContext().getString(R.string.weekly_analysis_planning_lesson), PlanDataSource.getAppContext().getString(R.string.weekly_analysis_planning_description)),
                 Task("$weekId-t14", PlanDataSource.getAppContext().getString(R.string.entertainment_english_lesson), PlanDataSource.getAppContext().getString(R.string.entertainment_description_1)),
@@ -286,22 +236,11 @@ Task("$weekId-mini_analysis", PlanDataSource.getAppContext().getString(R.string.
         }
 
         return WeekPlan(week, month, PlanDataSource.getAppContext().getString(R.string.month_week_format, month, week, level), regularDays)
->>>>>>> Stashed changes
     }
 
     private fun createExamCampWeek(week: Int): WeekPlan {
         val month = ((week - 1) / 4) + 1
         val weekId = "w${week}"
-<<<<<<< Updated upstream
-        return WeekPlan(week, month, getAppContext().getString(R.string.exam_camp_week_format, month, week), listOf(
-            DayPlan("Pazartesi", listOf(Task("$weekId-exam-1", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-1", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
-            DayPlan("Salı", listOf(Task("$weekId-exam-2", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-2", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
-            DayPlan("Çarşamba", listOf(Task("$weekId-exam-3", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-3", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
-            DayPlan("Perşembe", listOf(Task("$weekId-exam-4", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-4", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
-            DayPlan("Cuma", listOf(Task("$weekId-exam-5", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-5", getAppContext().getString(R.string.exam_analysis), getAppContext().getString(R.string.exam_analysis_description)))),
-            DayPlan("Cumartesi", listOf(Task("$weekId-exam-6", getAppContext().getString(R.string.full_exam), getAppContext().getString(R.string.full_exam_description)), Task("$weekId-t12", getAppContext().getString(R.string.weekly_vocabulary_review_lesson), getAppContext().getString(R.string.general_error_types)))),
-            DayPlan("Pazar", listOf(Task("$weekId-t13", getAppContext().getString(R.string.general_review_rest_lesson), getAppContext().getString(R.string.general_error_types)), Task("$weekId-t14", getAppContext().getString(R.string.strategy_motivation_lesson), getAppContext().getString(R.string.strategy_motivation_content))))
-=======
         return WeekPlan(week, month, PlanDataSource.getAppContext().getString(R.string.exam_camp_week_title, month, week), listOf(
             DayPlan(PlanDataSource.getAppContext().getString(R.string.monday), listOf(Task("$weekId-exam-1", PlanDataSource.getAppContext().getString(R.string.full_exam), PlanDataSource.getAppContext().getString(R.string.full_exam_description)), Task("$weekId-analysis-1", PlanDataSource.getAppContext().getString(R.string.exam_analysis), PlanDataSource.getAppContext().getString(R.string.exam_analysis_description)))),
             DayPlan(PlanDataSource.getAppContext().getString(R.string.tuesday), listOf(Task("$weekId-exam-2", PlanDataSource.getAppContext().getString(R.string.full_exam), PlanDataSource.getAppContext().getString(R.string.full_exam_description_2)), Task("$weekId-analysis-2", PlanDataSource.getAppContext().getString(R.string.exam_analysis), PlanDataSource.getAppContext().getString(R.string.exam_analysis_description_2)))),
@@ -310,7 +249,6 @@ Task("$weekId-mini_analysis", PlanDataSource.getAppContext().getString(R.string.
             DayPlan(PlanDataSource.getAppContext().getString(R.string.friday), listOf(Task("$weekId-exam-5", PlanDataSource.getAppContext().getString(R.string.full_exam), PlanDataSource.getAppContext().getString(R.string.full_exam_description_3)), Task("$weekId-analysis-5", PlanDataSource.getAppContext().getString(R.string.exam_analysis), PlanDataSource.getAppContext().getString(R.string.exam_analysis_description_3)))),
             DayPlan(PlanDataSource.getAppContext().getString(R.string.saturday), listOf(Task("$weekId-exam-6", PlanDataSource.getAppContext().getString(R.string.full_exam), PlanDataSource.getAppContext().getString(R.string.full_exam_description_3)), Task("$weekId-t12", PlanDataSource.getAppContext().getString(R.string.weekly_vocabulary_lesson), PlanDataSource.getAppContext().getString(R.string.weekly_vocabulary_review_description)))),
             DayPlan(PlanDataSource.getAppContext().getString(R.string.sunday), listOf(Task("$weekId-t13", PlanDataSource.getAppContext().getString(R.string.general_repeat), PlanDataSource.getAppContext().getString(R.string.general_review_description)), Task("$weekId-t14", PlanDataSource.getAppContext().getString(R.string.strategy_motivation), PlanDataSource.getAppContext().getString(R.string.strategy_motivation_description))))
->>>>>>> Stashed changes
         ))
     }
 
@@ -456,13 +394,8 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID_REMINDER)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-<<<<<<< Updated upstream
-            .setContentTitle(context.getString(R.string.notification_study_reminder_title))
-            .setContentText(context.getString(R.string.notification_study_reminder_text))
-=======
             .setContentTitle(PlanDataSource.getAppContext().getString(R.string.study_time_title))
             .setContentText(PlanDataSource.getAppContext().getString(R.string.study_time_message))
->>>>>>> Stashed changes
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent) // <-- 3. Adım: PendingIntent'i bildirime ekle.
@@ -514,19 +447,11 @@ class ReminderWorker(
         var wasSpecialNotificationSent = false
         if (examsWithEventsToday.isNotEmpty()) {
             examsWithEventsToday.forEach { exam ->
-<<<<<<< Updated upstream
-                val title = applicationContext.getString(R.string.notification_application_reminder_title)
-                val message = if (today == exam.applicationStart) {
-                    "${exam.name} ${applicationContext.getString(R.string.notification_application_started)}"
-                } else {
-                    "${exam.name} ${applicationContext.getString(R.string.notification_application_deadline_today)}"
-=======
                 val title = PlanDataSource.getAppContext().getString(R.string.exam_reminder_title)
                 val message = if (today == exam.applicationStart) {
                     PlanDataSource.getAppContext().getString(R.string.exam_applications_started, exam.name)
                 } else {
                     PlanDataSource.getAppContext().getString(R.string.exam_last_day_applications, exam.name)
->>>>>>> Stashed changes
                 }
                 NotificationHelper.showApplicationReminderNotification(
                     applicationContext,
@@ -818,7 +743,7 @@ fun MainHeader() {
                         }
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
-                val emailSubject = remember { context.getString(R.string.email_subject_hardcoded) }
+                val emailSubject = remember { context.getString(R.string.email_subject) }
                 val emailChooserTitle = remember { context.getString(R.string.email_chooser_title) }
                 IconButton(onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
@@ -952,11 +877,7 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-<<<<<<< Updated upstream
-        Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = null, tint = iconColor, modifier = Modifier.size(40.dp))
-=======
         Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = PlanDataSource.getAppContext().getString(R.string.achievement_icon_description), tint = iconColor, modifier = Modifier.size(40.dp))
->>>>>>> Stashed changes
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = achievement.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha))
@@ -1070,11 +991,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, onToggleTask: (Str
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(tasksCompleted.format(completedInWeek, weekTasks.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-<<<<<<< Updated upstream
-                Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null, modifier = Modifier.rotate(rotationAngle))
-=======
                 Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = PlanDataSource.getAppContext().getString(R.string.expand_collapse), modifier = Modifier.rotate(rotationAngle))
->>>>>>> Stashed changes
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column {
