@@ -13,6 +13,14 @@ lifecycleViewmodelCompose = "2.9.2"
 workRuntimeKtx = "2.10.2"
 desugarJdkLibs = "2.1.4"
 
+# Security dependencies
+securityCrypto = "1.1.0-alpha06"
+okhttp = "4.12.0"
+biometric = "1.1.0"
+kotlinxSerialization = "1.6.3"
+mockito = "5.8.0"
+coroutinesTest = "1.8.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
@@ -34,8 +42,20 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 
+# Security dependencies
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# Testing dependencies
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

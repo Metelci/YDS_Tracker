@@ -12,8 +12,13 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
+<<<<<<< Updated upstream
         versionCode = 21
         versionName = "1.5.2" //major improvements and localization fixes
+=======
+        versionCode = 23
+        versionName = "1.5.4"
+>>>>>>> Stashed changes
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,6 +55,7 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -62,14 +68,26 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
+
+    // Security dependencies
+    implementation(libs.security.crypto)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.biometric)
+    implementation(libs.kotlinx.serialization)
+
+    // Testing dependencies
     testImplementation(libs.junit)
+    testImplementation(libs.mockito)
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation("org.robolectric:robolectric:4.10.3")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-
 }
