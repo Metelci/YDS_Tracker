@@ -12,6 +12,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import com.mtlc.studyplan.security.CertificatePinRetriever
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -510,6 +511,10 @@ class MainActivity : ComponentActivity() {
 
         // PlanDataSource'u initialize et
         PlanDataSource.initialize(this)
+
+        // Get real certificate pins for network security configuration
+        // UNCOMMENT THIS LINE IN DEBUG MODE TO GET ACTUAL CERTIFICATE HASHES
+        // CertificatePinRetriever.getCertificatePins()
 
         enableEdgeToEdge()
         setContent {

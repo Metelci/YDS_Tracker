@@ -1,0 +1,38 @@
+🔒 StudyPlan v1.5.5 - Critical Security Update
+
+🛡️ SECURITY ENHANCEMENTS:
+• Fixed network security vulnerabilities
+• Enhanced TLS certificate validation
+• Added backup certificate pins
+• Removed user certificates in production
+• Enterprise-grade security configuration
+
+📱 PERFORMANCE IMPROVEMENTS:
+• Optimized notification system
+• Better background task scheduling
+• Enhanced app stability
+• Improved memory management
+
+🎯 STUDY FEATURES:
+• 30-week YDS preparation program
+• Red Book Foundation (8 weeks)
+• Blue Book Development (10 weeks) 
+• Green Book Mastery (8 weeks)
+• 4-week Exam Camp
+• Smart achievement system
+• Daily progress tracking
+
+📊 TRACKING & ANALYTICS:
+• Comprehensive progress tracking
+• Streak counter with gamification
+• Achievement unlock system
+• Exam countdown reminders
+
+🌐 MULTILINGUAL:
+• Turkish & English support
+• Dynamic language switching
+• Localized content
+
+Perfect for YDS, YÖKDİL, and university entrance exam preparation!
+
+#StudyPlan #YDS #YÖKDİL #EnglishExam #Education
