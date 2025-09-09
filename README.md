@@ -33,11 +33,18 @@ See `google-play-store-description.md` and `github-changelog.md` for product det
 ## Features
 
 ### Core Features
-- **30‑Week Plan:** Guided curriculum with daily tasks and progress.
+- **30-Week Plan:** Guided curriculum with daily tasks and progress.
+- **Customizable Plans (New in 1.6.0):** Hide/edit tasks and add your own per day. Opens from the top bar “Customize” action; changes persist on device and apply across the app.
 - **Gamification:** Study streaks and achievement badges.
 - **Reminders:** Exam date countdowns and smart notifications.
-- **Analytics:** Progress stats and weak‑area insights.
+- **Analytics:** Progress stats and weak-area insights.
 - **Offline First:** Full functionality without network.
+
+### Screenshots
+- Customize entry: `docs/screenshots/topbar_customize.png`
+- Customize editor: `docs/screenshots/customize_editor.png`
+
+Place your screenshots at the above paths to render inline in GitHub.
 
 ## Security
 
@@ -149,14 +156,12 @@ Refer to `github-changelog.md` for test‑related updates and coverage improveme
 - `github-changelog.md` — Changelog
 
 ### Extending Features
-To add custom weeks, modify `PlanDataSource.planData` in `PlanDataSource.kt`. For example, append new `WeekPlan` objects to the list in the `planData` property.
+- To add custom weeks in code, modify `PlanDataSource.planData` in `PlanDataSource.kt` (append new `WeekPlan`s).
+- For end users, use the in-app “Customize” action (top bar) to hide/edit tasks or add custom tasks per day. Overrides are persisted in `DataStore` and merged at runtime.
 
-Suggested new features:
+Suggested future features:
 - **Progress Export**: Implement progress export via `ProgressRepository` for PDF generation. Add a new composable in `MainActivity.kt` that queries the repository and uses a PDF library like iText or Android's PdfDocument.
-- **Customizable Plans**: Allow users to modify study plans dynamically through a settings screen.
-
-Extensibility roadmap:
-- **Future**: User-customizable plans, encrypted cloud sync for progress backup (using Firebase or similar with end-to-end encryption).
+- **Backup/Sync**: Encrypted cloud backup of progress (end-to-end encryption) for multi-device continuity.
 
 ## Privacy
 

@@ -2,6 +2,9 @@
 
 Transform your English proficiency and conquer English proficiency exams with Road to YDS, the most comprehensive study app designed for learners worldwide.
 
+## New in 1.6.0
+- Customizable Study Plans: Hide/edit tasks and add your own per day. Open via the top bar “Customize” action; changes persist on device.
+
 ## 🎯 MASTER YOUR ENGLISH IN 30 WEEKS
 
 Our scientifically structured 30-week program takes you from foundational grammar to exam mastery:
@@ -59,7 +62,7 @@ Start your journey to English mastery today with Road to YDS!
 
 *Note: This app focuses on structured grammar learning and exam preparation. For best results, combine with regular reading, listening, and speaking practice.*
 
-**Version:** 1.5.4
-**Updated:** August 2025
+**Version:** 1.6.0
+**Updated:** September 2025
 **Size:** ~3 MB
 **Requires Android:** 11.0 and up

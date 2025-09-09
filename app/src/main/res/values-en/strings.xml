@@ -189,4 +189,13 @@
     <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly...)</string>
     <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
     <string name="participle_clauses_topic">Participle Clauses (-ing and -ed clauses)</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_feature_customize_title">Configurable Study Plans</string>
+    <string name="about_feature_customize_desc">Hide/edit tasks and add your own per day.</string>
+    <string name="about_data_persistence">Changes are stored on device and apply across the app.</string>
+    <string name="about_contact">Send email for feedback.</string>
+    <string name="customize_cd">Customize plan</string>
 </resources>

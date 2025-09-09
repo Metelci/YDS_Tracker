@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hakkında / About -->
+    <string name="about_title">Hakkında</string>
+    <string name="about_version">Sürüm: %s</string>
+    <string name="about_feature_customize_title">Özelleştirilebilir Çalışma Planları</string>
+    <string name="about_feature_customize_desc">Görevleri gizle/düzenle ve güne göre kendi görevlerini ekle.</string>
+    <string name="about_data_persistence">Değişiklikler cihazda saklanır ve uygulama genelinde geçerlidir.</string>
+    <string name="about_contact">Geri bildirim için e‑posta gönderin.</string>
+    <string name="customize_cd">Planı özelleştir</string>
+</resources>

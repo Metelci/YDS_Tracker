@@ -5,6 +5,20 @@ All notable changes to the Road to YDS application will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2025-09-09
+### Added
+- Configurable Study Plans: hide/show built‑in tasks, edit task titles/details, and add custom tasks per day.
+- “Customize” action in the top app bar to quickly open the editor.
+- Edit dialog for updating task text inline.
+
+### Changed
+- Main plan view now merges and reflects user overrides instantly.
+- Overrides persist on device using DataStore (JSON) and survive app restarts.
+- Internal: Added DataStore‑backed overrides models, merge repository, and simple editor UI.
+
+### Fixed
+- Minor UI polish and stability improvements in plan rendering.
+
 ## [1.5.4] - 2025-08-24
 ### Added
 - Enhanced security logging with improved sanitization

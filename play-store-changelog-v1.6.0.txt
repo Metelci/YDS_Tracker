@@ -1,0 +1,13 @@
+Road to YDS v1.6.0
+
+New
+- Configurable Study Plans: hide/show built-in tasks, edit task titles/details, and add your own tasks per day.
+- “Customize” action in the top app bar for quick access to the editor.
+
+Improvements
+- Main plan view now reflects user overrides instantly and persists on device.
+- Minor UI polish and internal code cleanups.
+
+Developer Notes
+- Added DataStore-backed overrides, merge repository, and unit/UI tests.
+

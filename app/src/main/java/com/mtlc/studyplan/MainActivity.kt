@@ -12,7 +12,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import com.mtlc.studyplan.security.CertificatePinRetriever
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -42,6 +41,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -59,6 +59,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -100,6 +101,11 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import com.mtlc.studyplan.data.PlanOverridesStore
+import com.mtlc.studyplan.data.PlanRepository
+import com.mtlc.studyplan.data.UserPlanOverrides
+import com.mtlc.studyplan.ui.CustomizePlanScreen
+import com.mtlc.studyplan.ui.EditTaskDialog
 
 //region VERİ MODELLERİ
 data class Task(val id: String, val desc: String, val details: String? = null)
@@ -584,6 +590,19 @@ fun PlanScreen() {
     val userProgress by repository.userProgressFlow.collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
 
+    // Overrides + merged plan
+    val overridesStore = remember { PlanOverridesStore(context.dataStore) }
+    val planRepo = remember { PlanRepository(overridesStore) }
+    val mergedPlanData by planRepo.planFlow.collectAsState(initial = emptyList<com.mtlc.studyplan.data.WeekPlan>())
+    val mergedPlanUi = remember(mergedPlanData) {
+        mergedPlanData.map { it.toUiWeekPlan() }
+    }
+    val overrides by overridesStore.overridesFlow.collectAsState(initial = UserPlanOverrides())
+
+    var showCustomize by remember { mutableStateOf(false) }
+    var editState by remember { mutableStateOf<Triple<String, String?, String?>?>(null) }
+    var showAbout by remember { mutableStateOf(false) }
+
     // Optimize: Pre-calculate all tasks
     val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
     val totalTasks = remember(allTasks) { allTasks.size }
@@ -607,7 +626,7 @@ fun PlanScreen() {
     }
 
     Scaffold(
-        topBar = { MainHeader() },
+        topBar = { if (!showCustomize) MainHeader(onOpenCustomize = { showCustomize = true }, onOpenAbout = { showAbout = true }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
@@ -615,7 +634,31 @@ fun PlanScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (userProgress == null) {
+            if (showCustomize) {
+                // Customize screen with edit dialog
+                CustomizePlanScreen(
+                    plan = mergedPlanData,
+                    overrides = overrides,
+                    onBack = { showCustomize = false },
+                    onToggleHidden = { id, hidden -> coroutineScope.launch { planRepo.setTaskHidden(id, hidden) } },
+                    onRequestEdit = { id, currentDesc, currentDetails -> editState = Triple(id, currentDesc, currentDetails) },
+                    onAddTask = { week, dayIndex -> coroutineScope.launch { planRepo.addCustomTask(week, dayIndex, "New task", null) } },
+                )
+                editState?.let { (taskId, curDesc, curDetails) ->
+                    EditTaskDialog(
+                        initialDesc = curDesc ?: "",
+                        initialDetails = curDetails ?: "",
+                        onDismiss = { editState = null },
+                        onSave = { newDesc, newDetails ->
+                            coroutineScope.launch { planRepo.updateTaskText(taskId, newDesc, newDetails) }
+                            editState = null
+                        }
+                    )
+                }
+                if (showAbout) {
+                    AboutSheet(onDismiss = { showAbout = false })
+                }
+            } else if (userProgress == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -633,7 +676,7 @@ fun PlanScreen() {
                         }
                     }
                     items(
-                        items = PlanDataSource.planData,
+                        items = mergedPlanUi,
                         key = { it.week }
                     ) { weekPlan ->
                         WeekCard(
@@ -699,7 +742,7 @@ fun PlanScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class) // Bu satırı ekleyin
 @Composable
-fun MainHeader() {
+fun MainHeader(onOpenCustomize: () -> Unit, onOpenAbout: () -> Unit) {
     val context = LocalContext.current
     val currentLanguage = remember { LanguageManager.getCurrentLanguage(context) }
 
@@ -724,6 +767,12 @@ fun MainHeader() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                IconButton(onClick = onOpenCustomize) {
+                    Icon(imageVector = Icons.Default.EditCalendar, contentDescription = PlanDataSource.getAppContext().getString(R.string.customize_cd))
+                }
+                IconButton(onClick = onOpenAbout) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = PlanDataSource.getAppContext().getString(R.string.about_title))
+                }
                 Text(
                     text = "TR",
                     style = MaterialTheme.typography.titleSmall,
@@ -1075,4 +1124,54 @@ fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AboutSheet(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val versionName = remember {
+        try {
+            val pm = context.packageManager
+            val pkg = context.packageName
+            @Suppress("DEPRECATION")
+            val info = pm.getPackageInfo(pkg, 0)
+            info.versionName ?: ""
+        } catch (e: Exception) { "" }
+    }
+    val aboutTitle = remember { context.getString(R.string.about_title) }
+    val aboutVersion = remember(versionName) { context.getString(R.string.about_version, versionName) }
+    val featureTitle = remember { context.getString(R.string.about_feature_customize_title) }
+    val featureDesc = remember { context.getString(R.string.about_feature_customize_desc) }
+    val persistence = remember { context.getString(R.string.about_data_persistence) }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = aboutTitle, style = MaterialTheme.typography.headlineSmall)
+            Spacer(Modifier.height(8.dp))
+            Text(text = aboutVersion, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(12.dp))
+            Text(text = featureTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(text = featureDesc, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+            Text(text = persistence, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = onDismiss) { Text("OK") }
+            }
+        }
+    }
+}
+
+// Map data-layer plan models to UI models defined in this file
+private fun com.mtlc.studyplan.data.WeekPlan.toUiWeekPlan(): WeekPlan =
+    WeekPlan(
+        week = this.week,
+        month = this.month,
+        title = this.title,
+        days = this.days.map { d -> DayPlan(d.day, d.tasks.map { t -> Task(t.id, t.desc, t.details) }) }
+    )
 //endregion
