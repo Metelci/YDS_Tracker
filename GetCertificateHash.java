@@ -1,8 +1,13 @@
-import javax.net.ssl.HttpsURLConnection;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class GetCertificateHash {
     public static void main(String[] args) {
@@ -47,7 +52,10 @@ public class GetCertificateHash {
                 connection.disconnect();
                 System.out.println();
                 
-            } catch (Exception e) {
+            } catch (MalformedURLException | NoSuchAlgorithmException | CertificateEncodingException e) {
+                System.out.println("Error: " + e.getMessage());
+                System.out.println();
+            } catch (IOException e) {
                 System.out.println("Error: " + e.getMessage());
                 System.out.println();
             }
