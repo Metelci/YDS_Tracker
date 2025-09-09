@@ -1,12 +1,19 @@
 package com.mtlc.studyplan.data
 
+import com.mtlc.studyplan.R
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
-class PlanRepository(private val store: PlanOverridesStore) {
+class PlanRepository(
+    private val store: PlanOverridesStore,
+    private val settings: PlanSettingsStore,
+) {
 
-    val planFlow: Flow<List<WeekPlan>> = store.overridesFlow.map { ov ->
-        mergePlans(PlanDataSource.planData, ov)
+    val planFlow: Flow<List<WeekPlan>> = combine(settings.settingsFlow, store.overridesFlow) { cfg, ov ->
+        val base = PlanDataSource.planData
+        val sized = adaptPlanDuration(base, cfg)
+        mergePlans(sized, ov)
     }
 
     suspend fun setTaskHidden(taskId: String, hidden: Boolean) = store.update { cur ->
@@ -69,5 +76,44 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
             DayPlan(day.day, visibleTasks + additions)
         }
         WeekPlan(week.week, week.month, week.title, days)
+    }
+}
+
+internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings): List<WeekPlan> {
+    val total = cfg.totalWeeks.coerceAtLeast(1)
+    if (base.isEmpty()) return emptyList()
+
+    val lastIdx = base.size - 1
+    val ctx = com.mtlc.studyplan.PlanDataSource.getAppContext()
+
+    fun phaseLabelForIndex(i: Int): String {
+        return when {
+            i < 8 -> ctx.getString(R.string.foundation_level)
+            i < 18 -> ctx.getString(R.string.development_level)
+            i < 26 -> ctx.getString(R.string.advanced_level)
+            else -> ctx.getString(R.string.exam_camp)
+        }
+    }
+
+    fun remapId(oldId: String, newWeek: Int): String {
+        // Replace leading week marker like w12-...
+        return oldId.replaceFirst(Regex("^w\\d+"), "w$newWeek")
+    }
+
+    return (0 until total).map { i ->
+        val mapped = kotlin.math.round(i * (lastIdx.toDouble() / (total - 1).coerceAtLeast(1)))
+            .toInt()
+            .coerceIn(0, lastIdx)
+        val baseWeek = base[mapped]
+        val weekNum = i + 1
+        val monthNum = (i / 4) + 1
+        val title = ctx.getString(R.string.month_week_format, monthNum, weekNum, phaseLabelForIndex(mapped))
+
+        val days = baseWeek.days.mapIndexed { dayIdx, day ->
+            DayPlan(day = day.day, tasks = day.tasks.map { t ->
+                Task(id = remapId(t.id, weekNum), desc = t.desc, details = t.details)
+            })
+        }
+        WeekPlan(week = weekNum, month = monthNum, title = title, days = days)
     }
 }

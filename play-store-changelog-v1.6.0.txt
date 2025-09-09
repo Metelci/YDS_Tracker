@@ -8,6 +8,14 @@ Improvements
 - Main plan view now reflects user overrides instantly and persists on device.
 - Minor UI polish and internal code cleanups.
 
+Fixes
+- Customize Plan: Added Back button to exit the editor.
+- Customize Plan: Added Cancel action to dismiss without continuing.
+- Customize Plan: Info icon now opens a help dialog with guidance.
+
+Flexible Duration
+- New Plan Settings: choose a start date and total weeks, or specify an end date or total months to auto-calculate the schedule.
+- Week/day labels now include calendar dates based on your selected start date.
+
 Developer Notes
 - Added DataStore-backed overrides, merge repository, and unit/UI tests.
-

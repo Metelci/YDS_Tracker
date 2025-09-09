@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plan_settings_title">Plan Ayarları</string>
+    <string name="plan_settings_start_date">Başlangıç tarihi</string>
+    <string name="plan_settings_total_weeks">Toplam hafta</string>
+    <string name="plan_settings_end_date_optional">Bitiş tarihi (isteğe bağlı)</string>
+    <string name="plan_settings_total_months_optional">Toplam ay (isteğe bağlı)</string>
+    <string name="plan_settings_invalid_input">Lütfen geçerli bir tarih (YYYY-AA-GG) ve hafta sayısı girin.</string>
+    <string name="save">Kaydet</string>
+</resources>

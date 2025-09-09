@@ -13,8 +13,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.6.0"
+        versionCode = 26
+        versionName = "1.6.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,7 +67,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
-
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
     // Security dependencies
     implementation(libs.security.crypto)
     implementation(libs.okhttp)

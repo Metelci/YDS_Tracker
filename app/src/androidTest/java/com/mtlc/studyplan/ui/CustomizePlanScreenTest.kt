@@ -27,6 +27,7 @@ class CustomizePlanScreenTest {
             CustomizePlanScreen(
                 plan = listOf(week),
                 overrides = UserPlanOverrides(),
+                startEpochDay = java.time.LocalDate.of(2025,1,1).toEpochDay(),
                 onBack = {},
                 onToggleHidden = { _, _ -> },
                 onRequestEdit = { _, _, _ -> },
@@ -38,4 +39,3 @@ class CustomizePlanScreenTest {
         composeTestRule.onNodeWithText("Add Task").assertIsDisplayed()
     }
 }
-

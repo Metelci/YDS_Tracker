@@ -1,0 +1,7 @@
+Version 1.6.1 brings important architectural improvements and modernization:
+
+• Implemented Navigation Compose framework for improved screen navigation
+• Removed deprecated manifest package attribute in favor of Gradle namespace
+• Set up NavHost for centralized navigation management
+• Fixed Activity configuration to use proper themes
+• Enhanced overall app stability and performance

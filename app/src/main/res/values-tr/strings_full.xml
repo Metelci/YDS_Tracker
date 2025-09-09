@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Study Plan</string>
+  <!-- Ana baslik ve genel metinler -->
+  <string name="app_title">Road to YDS</string>
+  <string name="email_subject">Road to YDS Uygulamasi Geri Bildirimi</string>
+  <string name="email_chooser_title">E-posta gönder...</string>
+  <!-- Sinav bilgileri -->
+  <string name="upcoming_exam">Yaklaşan Sınav:</string>
+  <string name="application_deadline">Başvuru İçin Son</string>
+  <string name="time_until_exam">Sınava Kalan Süre</string>
+  <string name="osym_button">ÖSYM Sayfasına Git</string>
+  <string name="time_expired">Süre Doldu</string>
+  <!-- Basarimlar -->
+  <string name="achievements_title">Başarımlar</string>
+  <string name="first_task_title">İlk Adım</string>
+  <string name="first_task_desc">İlk görevini tamamladın!</string>
+  <string name="hundred_tasks_title">Yola Çıktın</string>
+  <string name="hundred_tasks_desc">100 görevi tamamladın!</string>
+  <string name="prep_complete_title">Hazırlık Dönemi Bitti!</string>
+  <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!</string>
+  <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
+  <string name="first_exam_week_desc">Son ay deneme kampına başladın!</string>
+  <string name="ten_exams_title">10 Deneme Bitti!</string>
+  <string name="ten_exams_desc">Toplam 10 tam deneme sınavı çözdün!</string>
+  <!-- Gamification -->
+  <string name="streak_label">Çalışma Serisi</string>
+  <string name="achievements_label">Başarımlar</string>
+  <string name="overall_progress">Genel İlerleme</string>
+  <string name="tasks_completed">%1$d / %2$d görev tamamlandı</string>
+  <string name="new_achievement">Yeni Başarım: %s</string>
+  <!-- Bildirimler -->
+  <string name="application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
+  <string name="study_reminder_title">Çalışma Zamanı!</string>
+  <string name="study_reminder_text">Bugünkü hedeflerini tamamlamayı unutma.</string>
+  <string name="application_started">bugün başvurular başladı!</string>
+  <string name="application_deadline_today">bugün son başvuru günü!</string>
+  <!-- Kitaplar ve konular -->
+  <string name="red_book">Kırmızı Kitap - Essential Grammar in Use</string>
+  <string name="blue_book">Mavi Kitap - English Grammar in Use</string>
+  <string name="green_book">Yeşil Kitap - Advanced Grammar in Use</string>
+  <!-- Hafta basliklari -->
+  <string name="month_week_format">%1$d. Ay, %2$d. Hafta: %3$s</string>
+  <string name="foundation_level">Sağlam Temel</string>
+  <string name="development_level">B1-B2 Gelişimi</string>
+  <string name="advanced_level">C1 Ustalığı</string>
+  <string name="exam_camp">Sınav Kampı</string>
+  <!-- Günler -->
+  <string name="monday">Pazartesi</string>
+  <string name="tuesday">Salı</string>
+  <string name="wednesday">Çarşamba</string>
+  <string name="thursday">Perşembe</string>
+  <string name="friday">Cuma</string>
+  <string name="saturday">Cumartesi</string>
+  <string name="sunday">Pazar</string>
+  <!-- Ders türleri -->
+  <string name="grammar_topics_lesson">1. Ders: Gramer Konuları</string>
+  <string name="quick_practice_lesson">2. Ders: Hızlı Pratik</string>
+  <string name="reading_vocabulary_lesson">1. Ders: Okuma ve Kelime</string>
+  <string name="listening_repeat_lesson">2. Ders: Dinleme ve Tekrar</string>
+  <string name="weekly_vocabulary_lesson">1. Ders: Haftalık Kelime Tekrarı</string>
+  <string name="entertainment_english_lesson">2. Ders: Keyif için İngilizce (Dizi/Film)</string>
+  <string name="weekly_general_repeat">1. Ders: Haftalık Genel Tekrar</string>
+  <string name="free_reading_listening">2. Ders: Serbest Okuma/Dinleme</string>
+  <string name="full_exam">Tam Deneme Sınavı</string>
+  <string name="exam_analysis">Deneme Analizi</string>
+  <!-- Diğer -->
+  <string name="days_unit">%d gün</string>
+  <string name="percent_format">%d%%</string>
+  <!-- Sınav bildirimleri -->
+  <string name="application_started_format">%s için başvurular bugün başladı!</string>
+  <string name="application_deadline_today_format">%s için bugün son başvuru günü!</string>
+  <!-- Mini deneme sınavı -->
+  <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
+  <string name="mini_exam_description">40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et.</string>
+  <string name="mini_analysis_lesson">2. Ders: Deneme Analizi ve Kelime Çalışması</string>
+  <string name="mini_analysis_description">Tüm yanlışlarını ve boşlarını detaylıca analiz et. Bilmediğin kelimeleri not al ve kelime setine ekle.</string>
+  <!-- Eksik stringler -->
+  <string name="units">Üniteler</string>
+  <string name="practice_description_1">Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.</string>
+  <string name="reading_description_1">Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar.</string>
+  <string name="listening_description_1">ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.</string>
+  <string name="vocabulary_description_1">Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) bir flashcard uygulamasıyla tekrar et.</string>
+  <string name="entertainment_description_1">İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.</string>
+  <string name="general_repeat_description_1">Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al.</string>
+  <string name="free_reading_description_1">İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.</string>
+  <!-- Daha fazla açıklama -->
+  <string name="exam_applications_started">%s için başvurular bugün başladı!</string>
+  <string name="exam_last_day_applications">%s için bugün son başvuru günü!</string>
+  <string name="new_achievement_unlocked">Yeni Başarım: %s</string>
+  <string name="achievement_icon_description">Başarım İkonu</string>
+  <!-- Kitap isimleri -->
+  <string name="blue_book_full">Mavi Kitap - English Grammar in Use</string>
+  <string name="green_book_full">Yeşil Kitap - Advanced Grammar in Use</string>
+  <string name="green_book_advanced_tenses">Yeşil Kitap - Advanced Tenses</string>
+  <!-- Mavi kitap konuları -->
+  <string name="tenses_review_topic">Tenses Review (Tüm Zamanların Karşılaştırması)</string>
+  <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
+  <string name="modals_1_topic">Modals 1 (Ability, Permission, Advice)</string>
+  <string name="modals_2_topic">Modals 2 (Deduction, Obligation, Regret)</string>
+  <string name="conditionals_wish_topic">Conditionals &amp; Wish (Tüm Tipler &amp; İleri Düzey)</string>
+  <string name="passive_voice_topic">Passive Voice (Tüm Zamanlar) &amp; \'have something done\'</string>
+  <string name="reported_speech_topic">Reported Speech (Sorular, Komutlar, İleri Düzey)</string>
+  <string name="noun_clauses_topic">Noun Clauses &amp; Relative Clauses</string>
+  <string name="gerunds_infinitives_topic">Gerunds &amp; Infinitives (İleri kalıplar)</string>
+  <string name="conjunctions_connectors_topic">Conjunctions &amp; Connectors</string>
+  <!-- Yeşil kitap konuları -->
+  <string name="advanced_connectors_topic">Advanced Connectors &amp; Discourse Markers</string>
+  <string name="hypothetical_meaning_topic">Hypothetical Meaning &amp; Subjunctives</string>
+  <string name="adjectives_adverbs_topic">Adjectives &amp; Adverbs (İleri Kullanımlar)</string>
+  <string name="prepositions_phrasal_verbs_topic">Prepositions &amp; Phrasal Verbs (İleri Düzey)</string>
+  <!-- Yeşil kitap konuları devamı -->
+  <string name="advanced_tense_nuances_topic">Advanced Tense Nuances &amp; Narrative Tenses</string>
+  <string name="inversion_emphasis_topic">Inversion &amp; Emphasis (Not only, Hardly...)</string>
+  <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
+  <string name="participle_clauses_topic">Participle Clauses (-ing ve -ed clauses)</string>
+  <!-- Diğer -->
+  <string name="sentence_completion">Cümle Tamamlama</string>
+  <string name="paragraph_completion">Paragraf Tamamlama &amp; Anlam Bütünlüğünü Bozan Cümle</string>
+  <string name="final_review_exam_camp_short">Genel Tekrar ve Sınav Kampı</string>
+  <string name="prep_period_note">Hazırlık dönemi artık ilk 26 hafta</string>
+  <string name="expand_collapse">Genişlet/Daralt</string>
+  <!-- About kısmı tr klasöründe mevcut -->
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plan_settings_title">Plan Settings</string>
+    <string name="plan_settings_start_date">Start date</string>
+    <string name="plan_settings_total_weeks">Total weeks</string>
+    <string name="plan_settings_end_date_optional">End date (optional)</string>
+    <string name="plan_settings_total_months_optional">Total months (optional)</string>
+    <string name="plan_settings_invalid_input">Please enter a valid date (YYYY-MM-DD) and week count.</string>
+    <string name="save">Save</string>
+</resources>
