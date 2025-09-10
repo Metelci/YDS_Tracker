@@ -58,8 +58,9 @@ fun ReaderScreen(
     var definition by remember { mutableStateOf<String?>(null) }
     var selectedWord by remember { mutableStateOf<String?>(null) }
 
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     val isDark = when (prefs.theme) {
-        ReaderTheme.System -> when (LocalContext.current.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        ReaderTheme.System -> when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> true
             else -> false
         }
