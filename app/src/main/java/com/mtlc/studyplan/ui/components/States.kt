@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,9 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.R
 
 @Composable
 fun EmptyState(
@@ -38,13 +39,13 @@ fun EmptyState(
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null)
-            Spacer(Modifier.height(12.dp))
-        }
-        Text(title, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-        Text(message, style = MaterialTheme.typography.bodyMedium)
-        if (action != null) {
             Spacer(Modifier.height(16.dp))
+        }
+        Text(title, style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (action != null) {
+            Spacer(Modifier.height(24.dp))
             action()
         }
     }
@@ -66,15 +67,19 @@ fun ErrorState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-        Text(message, style = MaterialTheme.typography.bodyMedium)
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_foreground),
+            contentDescription = null
+        )
         Spacer(Modifier.height(16.dp))
-        Button(onClick = onRetry) { Text("Retry") }
+        Text(title, style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(24.dp))
+        ElevatedButton(onClick = onRetry) { Text("Retry") }
         if (onDiagnostics != null) {
             Spacer(Modifier.height(8.dp))
             OutlinedButton(onClick = onDiagnostics) { Text("Diagnostics") }
         }
     }
 }
-

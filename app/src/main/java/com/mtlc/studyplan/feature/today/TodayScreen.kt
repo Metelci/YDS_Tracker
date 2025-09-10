@@ -19,6 +19,8 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.navigation.NavController
 import com.mtlc.studyplan.ui.components.EmptyState
+import com.mtlc.studyplan.ui.components.ErrorState
+import androidx.compose.material.icons.outlined.EventNote
 import kotlinx.coroutines.launch
 
 @Composable
@@ -111,13 +113,23 @@ fun TodayScreen(
                         CircularProgressIndicator()
                     }
                 }
+                state.snackbar?.let { it.contains("error", ignoreCase = true) } == true -> {
+                    ErrorState(
+                        modifier = Modifier.fillMaxSize(),
+                        title = "Couldn't load today",
+                        message = state.snackbar ?: "",
+                        onRetry = onRefresh,
+                        onDiagnostics = { }
+                    )
+                }
                 state.sessions.isEmpty() -> {
                     EmptyState(
                         modifier = Modifier.fillMaxSize(),
+                        icon = Icons.Outlined.EventNote,
                         title = "No sessions today",
                         message = "Create or customize your plan to start.",
                         action = {
-                            TextButton(onClick = onViewPlan) { Text("View Plan") }
+                            ElevatedButton(onClick = onViewPlan) { Text("View Plan") }
                         }
                     )
                 }
