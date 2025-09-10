@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools=\ http://schemas.android.com/tools\>
+  <string name="app_name">Study Plan</string>
+  <!-- Ana ba┼ƒl─▒k ve genel metinler -->
+  <string name="app_title">Road to YDS</string>
+  <string name="email_subject">Road to YDS Uygulamas─▒ Geri Bildirimi</string>
+  <string name="email_chooser_title">E-posta g├╢nder...</string>
+  <!-- S─▒nav bilgileri -->
+  <string name="upcoming_exam">Yakla┼ƒan S─▒nav:</string>
+  <string name="application_deadline">Ba┼ƒvuru ─░├ºin Son</string>
+  <string name="time_until_exam">S─▒nava Kalan S├╝re</string>
+  <string name="osym_button">├ûSYM Sayfas─▒na Git</string>
+  <string name="time_expired">S├╝re Doldu</string>
+  <!-- Ba┼ƒar─▒mlar -->
+  <string name="achievements_title">Ba┼ƒar─▒mlar</string>
+  <string name="first_task_title">─░lk Ad─▒m</string>
+  <string name="first_task_desc">─░lk g├╢revini tamamlad─▒n!</string>
+  <string name="hundred_tasks_title">Yola ├ç─▒kt─▒n</string>
+  <string name="hundred_tasks_desc">100 g├╢revi tamamlad─▒n!</string>
+  <string name="prep_complete_title">Haz─▒rl─▒k D├╢nemi Bitti!</string>
+  <string name="prep_complete_desc">6 ayl─▒k haz─▒rl─▒k d├╢nemini tamamlad─▒n. ┼₧imdi s─▒ra denemelerde!</string>
+  <string name="first_exam_week_title">S─▒nav Kamp─▒ Ba┼ƒlad─▒!</string>
+  <string name="first_exam_week_desc">Son ay deneme kamp─▒na ba┼ƒlad─▒n!</string>
+  <string name="ten_exams_title">10 Deneme Bitti!</string>
+  <string name="ten_exams_desc">Toplam 10 tam deneme s─▒nav─▒ ├º├╢zd├╝n!</string>
+  <!-- Gamification -->
+  <string name="streak_label">├çal─▒┼ƒma Serisi</string>
+  <string name="achievements_label">Ba┼ƒar─▒mlar</string>
+  <string name="overall_progress">Genel ─░lerleme</string>
+  <string name="tasks_completed">%1$d / %2$d g├╢rev tamamland─▒</string>
+  <string name="new_achievement">Yeni Ba┼ƒar─▒m: %s</string>
+  <!-- Bildirimler -->
+  <string name="application_reminder_title">S─▒nav Ba┼ƒvuru Hat─▒rlat─▒c─▒s─▒</string>
+  <string name="study_reminder_title">├çal─▒┼ƒma Zaman─▒!</string>
+  <string name="study_reminder_text">Bug├╝nk├╝ hedeflerini tamamlamay─▒ unutma.</string>
+  <string name="application_started">bug├╝n ba┼ƒvurular ba┼ƒlad─▒!</string>
+  <string name="application_deadline_today">bug├╝n son ba┼ƒvuru g├╝n├╝!</string>
+  <!-- Kitaplar ve konular -->
+  <string name="red_book">K─▒rm─▒z─▒ Kitap - Essential Grammar in Use</string>
+  <string name="blue_book">Mavi Kitap - English Grammar in Use</string>
+  <string name="green_book">Ye┼ƒil Kitap - Advanced Grammar in Use</string>
+  <!-- Hafta ba┼ƒl─▒klar─▒ -->
+  <string name="month_week_format">%1$d. Ay, %2$d. Hafta: %3$s</string>
+  <string name="foundation_level">Sa─ƒlam Temel</string>
+  <string name="development_level">B1-B2 Geli┼ƒimi</string>
+  <string name="advanced_level">C1 Ustala─ƒ─▒</string>
+  <string name="exam_camp">S─▒nav Kamp─▒</string>
+  <!-- G├╝nler -->
+  <string name="monday">Pazartesi</string>
+  <string name="tuesday">Sal─▒</string>
+  <string name="wednesday">├çar┼ƒamba</string>
+  <string name="thursday">Per┼ƒembe</string>
+  <string name="friday">Cuma</string>
+  <string name="saturday">Cumartesi</string>
+  <string name="sunday">Pazar</string>
+  <!-- Ders t├╝rleri -->
+  <string name="grammar_topics_lesson">1. Ders: Gramer Konular─▒</string>
+  <string name="quick_practice_lesson">2. Ders: H─▒zl─▒ Pratik</string>
+  <string name="reading_vocabulary_lesson">1. Ders: Okuma ve Kelime</string>
+  <string name="listening_repeat_lesson">2. Ders: Dinleme ve Tekrar</string>
+  <string name="weekly_vocabulary_lesson">1. Ders: Haftal─▒k Kelime Tekrar─▒</string>
+  <string name="entertainment_english_lesson">2. Ders: Keyif i├ºin ─░ngilizce (Dizi/Film)</string>
+  <string name="weekly_general_repeat">1. Ders: Haftal─▒k Genel Tekrar</string>
+  <string name="free_reading_listening">2. Ders: Serbest Okuma/Dinleme</string>
+  <string name="full_exam">Tam Deneme S─▒nav─▒</string>
+  <string name="exam_analysis">Deneme Analizi</string>
+  <!-- Di─ƒer -->
+  <string name="days_unit">%d g├╝n</string>
+  <string name="percent_format">%d%%</string>
+  <!-- S─▒nav bildirimleri -->
+  <string name="application_started_format">%s i├ºin ba┼ƒvurular bug├╝n ba┼ƒlad─▒!</string>
+  <string name="application_deadline_today_format">%s i├ºin bug├╝n son ba┼ƒvuru g├╝n├╝!</string>
+  <!-- Mini deneme s─▒nav─▒ -->
+  <string name="mini_exam_lesson">1. Ders: Mini Deneme S─▒nav─▒</string>
+  <string name="mini_exam_description">40-50 soruluk bir deneme ├º├╢z (S├╝re: 60-75 dk). Okuma, gramer ve kelime a─ƒ─▒rl─▒kl─▒ olmas─▒na dikkat et.</string>
+  <string name="mini_analysis_lesson">2. Ders: Deneme Analizi ve Kelime ├çal─▒┼ƒmas─▒</string>
+  <string name="mini_analysis_description">T├╝m yanl─▒┼ƒlar─▒n─▒ ve bo┼ƒlar─▒n─▒ detayl─▒ca analiz et. Bilmedi─ƒin kelimeleri not al ve kelime setine ekle.</string>
+  <!-- Eksik stringler -->
+  <string name="units">├£niteler</string>
+  <string name="practice_description_1">├çal─▒┼ƒt─▒─ƒ─▒n konular─▒n kitaptaki al─▒┼ƒt─▒rmalar─▒n─▒ ├º├╢zerek peki┼ƒtir.</string>
+  <string name="reading_description_1">Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime ├º─▒kar.</string>
+  <string name="listening_description_1">ESL/British Council podcastlerinden bir b├╢l├╝m dinle ve ├╢─ƒrendi─ƒin kelimeleri tekrar et.</string>
+  <string name="vocabulary_description_1">Bu hafta ├╢─ƒrendi─ƒin t├╝m yeni kelimeleri (yakla┼ƒ─▒k 40-50 kelime) flashcard uygulamas─▒yla tekrar et.</string>
+  <string name="entertainment_description_1">─░ngilizce altyaz─▒l─▒ bir dizi b├╢l├╝m├╝ veya film izle. Anlamaya de─ƒil, kula─ƒ─▒n─▒ doldurmaya odaklan.</string>
+  <string name="general_repeat_description_1">Bu hafta i┼ƒlenen t├╝m gramer konular─▒n─▒ h─▒zl─▒ca g├╢zden ge├ºir. Anlamad─▒─ƒ─▒n yerleri not al.</string>
+  <string name="free_reading_description_1">─░lgini ├ºeken bir konuda ─░ngilizce bir YouTube kanal─▒ izle veya blog oku.</string>
+  <!-- Ders ba┼ƒl─▒klar─▒ -->
+  <string name="grammar_topic_lesson">1. Ders: Gramer Konusu</string>
+  <string name="grammar_exercises_lesson">1. Ders: Gramer Al─▒┼ƒt─▒rmalar─▒</string>
+  <string name="grammar_reinforcement_lesson">1. Ders: Gramer Peki┼ƒtirme</string>
+  <string name="grammar_topic_continuation_lesson">1. Ders: Gramer Konusu (Devam)</string>
+  <string name="question_type_practice_lesson">1. Ders: Soru Tipi Prati─ƒi</string>
+  <string name="weekly_grammar_review_lesson">1. Ders: Haftal─▒k Gramer Tekrar─▒</string>
+  <string name="next_week_preparation_lesson">1. Ders: Gelecek Haftaya Haz─▒rl─▒k</string>
+  <string name="weekly_analysis_planning_lesson">1. Ders: Haftal─▒k Analiz ve Planlama</string>
+  <!-- Ders a├º─▒klamalar─▒ -->
+  <string name="grammar_topic_description">Kaynak: %1$s. Haftan─▒n konusu olan \'%2$s\' ├╝zerine detayl─▒ca ├ºal─▒┼ƒ.</string>
+  <string name="grammar_exercises_description">%1$s kitab─▒ndan d├╝nk├╝ konunun al─▒┼ƒt─▒rmalar─▒n─▒ eksiksiz tamamla.</string>
+  <string name="grammar_reinforcement_description">├û─ƒrendi─ƒin gramer yap─▒lar─▒n─▒ kullanarak ├ºeviri veya c├╝mle kurma al─▒┼ƒt─▒rmalar─▒ yap.</string>
+  <string name="grammar_topic_continuation_description">Haftan─▒n gramer konusunu peki┼ƒtir ve ek al─▒┼ƒt─▒rmalar ├º├╢z.</string>
+  <string name="question_type_practice_description">%1$s soru tipinden en az 20 soru ├º├╢z.</string>
+  <string name="weekly_grammar_review_description">Bu hafta i┼ƒlenen t├╝m gramer konular─▒n─▒ ve kurallar─▒n─▒ tekrar et.</string>
+  <string name="next_week_preparation_description">Gelecek haftan─▒n konusu olan \'%1$s\' konusuna k─▒saca g├╢z atarak ├╢n haz─▒rl─▒k yap.</string>
+  <string name="weekly_analysis_planning_description">Haftan─▒n genel bir de─ƒerlendirmesini yap. G├╝├ºl├╝ ve zay─▒f y├╢nlerini belirle.</string>
+  <!-- S─▒nav haftas─▒ a├º─▒klamalar─▒ -->
+  <string name="full_exam_description">Kaynak: Son y─▒llara ait ├º─▒km─▒┼ƒ bir YDS/Y├ûKD─░L s─▒nav─▒. 80 soruyu tam 180 dakika i├ºinde ├º├╢z.</string>
+  <string name="exam_analysis_description">S─▒nav sonras─▒ en az 1 saat ara ver. Ard─▒ndan yanl─▒┼ƒlar─▒n─▒, bo┼ƒlar─▒n─▒ ve do─ƒru yapsan bile emin olmad─▒klar─▒n─▒ detayl─▒ca analiz et. Bilmedi─ƒin kelimeleri listele.</string>
+  <string name="full_exam_description_2">Kaynak: G├╝venilir bir yay─▒nevinin deneme s─▒nav─▒. 80 soruyu tam 180 dakika i├ºinde ├º├╢z.</string>
+  <string name="exam_analysis_description_2">D├╝nk├╝ gibi detayl─▒ analiz yap. ├ûzellikle tekrar eden hata tiplerine odaklan.</string>
+  <string name="full_exam_description_3">Kaynak: ├ç─▒km─▒┼ƒ bir s─▒nav. 80 soruyu tam 180 dakika i├ºinde ├º├╢z.</string>
+  <string name="exam_analysis_description_3">Analizini yap ve bu denemede ├╢─ƒrendi─ƒin yeni kelimeleri tekrar et.</string>
+  <string name="weekly_vocabulary_review_description">Bu hafta denemelerde ├º─▒kan bilmedi─ƒin t├╝m kelimeleri flashcard uygulamas─▒ ├╝zerinden tekrar et.</string>
+  <string name="general_review_description">Haftan─▒n denemelerindeki genel hata tiplerini (├╢rn: zaman y├╢netimi, belirli soru tipi) g├╢zden ge├ºir.</string>
+  <string name="strategy_motivation_description">Gelecek haftan─▒n stratejisini belirle ve zihnini dinlendir. S─▒nava az kald─▒!</string>
+  <!-- Ek ders ba┼ƒl─▒klar─▒ -->
+  <string name="general_repeat">Genel Tekrar ve Dinlenme</string>
+  <string name="strategy_motivation">Strateji ve Motivasyon</string>
+  <!-- Hafta ba┼ƒl─▒klar─▒ -->
+  <string name="exam_camp_week_title">%1$d. Ay, %2$d. Hafta: S─▒nav Kamp─▒</string>
+  <string name="general_review_1_50">Genel Tekrar 1-50</string>
+  <string name="general_review_51_115">Genel Tekrar 51-115</string>
+  <string name="weak_topic_analysis">Zay─▒f Konu Analizi</string>
+  <string name="advanced_tenses">Ye┼ƒil Kitap - Advanced Tenses</string>
+  <string name="final_review_exam_camp">Genel Tekrar ve S─▒nav Kamp─▒</string>
+  <!-- Ba┼ƒar─▒mlar -->
+  <string name="first_step_achievement_title">─░lk Ad─▒m</string>
+  <string name="first_step_achievement_desc">─░lk g├╢revini tamamlad─▒n!</string>
+  <string name="hundred_tasks_achievement_title">Yola ├ç─▒kt─▒n</string>
+  <string name="hundred_tasks_achievement_desc">100 g├╢revi tamamlad─▒n!</string>
+  <string name="prep_complete_achievement_title">Haz─▒rl─▒k D├╢nemi Bitti!</string>
+  <string name="prep_complete_achievement_desc">6 ayl─▒k haz─▒rl─▒k d├╢nemini tamamlad─▒n. ┼₧imdi s─▒ra denemelerde!</string>
+  <string name="first_exam_week_achievement_title">S─▒nav Kamp─▒ Ba┼ƒlad─▒!</string>
+  <string name="first_exam_week_achievement_desc">Son ay deneme kamp─▒na ba┼ƒlad─▒n!</string>
+  <string name="ten_exams_achievement_title">10 Deneme Bitti!</string>
+  <string name="ten_exams_achievement_desc">Toplam 10 tam deneme s─▒nav─▒ ├º├╢zd├╝n!</string>
+  <!-- S─▒nav isimleri -->
+  <string name="yokdil_spring">Y├ûKD─░L/1 (─░lkbahar)</string>
+  <string name="yds_spring">YDS/1 (─░lkbahar)</string>
+  <string name="yokdil_fall">Y├ûKD─░L/2 (Sonbahar)</string>
+  <string name="yds_fall">YDS/2 (Sonbahar)</string>
+  <!-- Bildirim metinleri -->
+  <string name="study_time_title">├çal─▒┼ƒma Zaman─▒!</string>
+  <string name="study_time_message">Bug├╝nk├╝ hedeflerini tamamlamay─▒ unutma.</string>
+  <string name="exam_reminder_title">S─▒nav Ba┼ƒvuru Hat─▒rlat─▒c─▒s─▒</string>
+  <string name="exam_applications_started">%s i├ºin ba┼ƒvurular bug├╝n ba┼ƒlad─▒!</string>
+  <string name="exam_last_day_applications">%s i├ºin bug├╝n son ba┼ƒvuru g├╝n├╝!</string>
+  <string name="new_achievement_unlocked">Yeni Ba┼ƒar─▒m: %s</string>
+  <string name="achievement_icon_description">Ba┼ƒar─▒m ─░konu</string>
+  <!-- Kitap isimleri -->
+  <string name="blue_book_full">Mavi Kitap - English Grammar in Use</string>
+  <string name="green_book_full">Ye┼ƒil Kitap - Advanced Grammar in Use</string>
+  <string name="green_book_advanced_tenses">Ye┼ƒil Kitap - Advanced Tenses</string>
+  <!-- Mavi kitap konular─▒ -->
+  <string name="tenses_review_topic">Tenses Review (T├╝m Zamanlar─▒n Kar┼ƒ─▒la┼ƒt─▒rmas─▒)</string>
+  <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
+  <string name="modals_1_topic">Modals 1 (Ability, Permission, Advice)</string>
+  <string name="modals_2_topic">Modals 2 (Deduction, Obligation, Regret)</string>
+  <string name="conditionals_wish_topic">Conditionals &amp; Wish (T├╝m Tipler &amp; ─░leri D├╝zey)</string>
+  <string name="passive_voice_topic">Passive Voice (T├╝m Zamanlar) &amp; \'have something done\'</string>
+  <string name="reported_speech_topic">Reported Speech (Sorular, Komutlar, ─░leri D├╝zey)</string>
+  <string name="noun_clauses_topic">Noun Clauses &amp; Relative Clauses</string>
+  <string name="gerunds_infinitives_topic">Gerunds &amp; Infinitives (─░leri kal─▒plar)</string>
+  <string name="conjunctions_connectors_topic">Conjunctions &amp; Connectors</string>
+  <!-- Ye┼ƒil kitap konular─▒ -->
+  <string name="advanced_connectors_topic">Advanced Connectors &amp; Discourse Markers</string>
+  <string name="hypothetical_meaning_topic">Hypothetical Meaning &amp; Subjunctives</string>
+  <string name="adjectives_adverbs_topic">Adjectives &amp; Adverbs (─░leri Kullan─▒mlar)</string>
+  <string name="prepositions_phrasal_verbs_topic">Prepositions &amp; Phrasal Verbs (─░leri D├╝zey)</string>
+  <!-- Ye┼ƒil kitap konular─▒ devam─▒ -->
+  <string name="advanced_tense_nuances_topic">Advanced Tense Nuances &amp; Narrative Tenses</string>
+  <string name="inversion_emphasis_topic">Inversion &amp; Emphasis (Not only, Hardly...)</string>
+  <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
+  <string name="participle_clauses_topic">Participle Clauses (-ing ve -ed clauses)</string>
+  <!-- Di─ƒer -->
+  <string name="sentence_completion">C├╝mle Tamamlama</string>
+  <string name="paragraph_completion">Paragraf Tamamlama &amp; Anlam B├╝t├╝nl├╝─ƒ├╝n├╝ Bozan C├╝mle</string>
+  <string name="final_review_exam_camp_short">Genel Tekrar ve S─▒nav Kamp─▒</string>
+  <string name="prep_period_note">Haz─▒rl─▒k d├╢nemi art─▒k ilk 26 hafta</string>
+  <string name="expand_collapse">Geni┼ƒlet/Daralt</string>
+  <!--About-->
+  <string name="about_title">Hakk─▒nda</string>
+  <string name="about_version">S├╝r├╝m: %s</string>
+  <string name="about_feature_customize_title">├ûzelle┼ƒtirilebilir ├çal─▒┼ƒma Planlar─▒</string>
+  <string name="about_feature_customize_desc">G├╢revleri gizle/d├╝zenle ve g├╝ne g├╢re kendi g├╢revlerini ekle.</string>
+  <string name="about_data_persistence">De─ƒi┼ƒiklikler cihazda saklan─▒r ve uygulama genelinde ge├ºerlidir.</string>
+  <string name="about_contact">Geri bildirim i├ºin eΓÇæposta g├╢nderin.</string>
+  <string name="customize_cd">Plan─▒ ├╢zelle┼ƒtir</string>
+</resources>
+
+

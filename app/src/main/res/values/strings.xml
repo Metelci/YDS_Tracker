@@ -1,167 +1,203 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <string name="app_name">Study Plan</string>
-  <!-- Ana başlık ve genel metinler -->
-  <string name="app_title">Road to YDS</string>
-  <string name="email_subject">Road to YDS Uygulaması Geri Bildirimi</string>
-  <string name="email_chooser_title">E-posta gönder...</string>
-  <!-- Sınav bilgileri -->
-  <string name="upcoming_exam">Yaklaşan Sınav:</string>
-  <string name="application_deadline">Başvuru İçin Son</string>
-  <string name="time_until_exam">Sınava Kalan Süre</string>
-  <string name="osym_button">ÖSYM Sayfasına Git</string>
-  <string name="time_expired">Süre Doldu</string>
-  <!-- Başarımlar -->
-  <string name="achievements_title">Başarımlar</string>
-  <string name="first_task_title">İlk Adım</string>
-  <string name="first_task_desc">İlk görevini tamamladın!</string>
-  <string name="hundred_tasks_title">Yola Çıktın</string>
-  <string name="hundred_tasks_desc">100 görevi tamamladın!</string>
-  <string name="prep_complete_title">Hazırlık Dönemi Bitti!</string>
-  <!-- Gamification -->
-  <string name="streak_label">Çalışma Serisi</string>
-  <string name="achievements_label">Başarımlar</string>
-  <string name="overall_progress">Genel İlerleme</string>
-  <string name="tasks_completed" tools:ignore="PluralsCandidate">%1$d / %2$d görev tamamlandı</string>
-  <!-- Bildirimler -->
-  <!-- Kitaplar ve konular -->
-  <string name="red_book">Kırmızı Kitap - Essential Grammar in Use</string>
-  <string name="green_book">Yeşil Kitap - Advanced Grammar in Use</string>
-  <!-- Hafta başlıkları -->
-  <string name="month_week_format">%1$d. Ay, %2$d. Hafta: %3$s</string>
-  <string name="foundation_level">Sağlam Temel</string>
-  <string name="development_level">B1-B2 Gelişimi</string>
-  <string name="advanced_level">C1 Ustalağı</string>
-  <string name="exam_camp">Sınav Kampı</string>
-  <!-- Günler -->
-  <string name="monday">Pazartesi</string>
-  <string name="tuesday">Salı</string>
-  <string name="wednesday">Çarşamba</string>
-  <string name="thursday">Perşembe</string>
-  <string name="friday">Cuma</string>
-  <string name="saturday">Cumartesi</string>
-  <string name="sunday">Pazar</string>
-  <!-- Ders türleri -->
-  <string name="grammar_topics_lesson">1. Ders: Gramer Konuları</string>
-  <string name="quick_practice_lesson">2. Ders: Hızlı Pratik</string>
-  <string name="reading_vocabulary_lesson">1. Ders: Okuma ve Kelime</string>
-  <string name="listening_repeat_lesson">2. Ders: Dinleme ve Tekrar</string>
-  <string name="weekly_vocabulary_lesson">1. Ders: Haftalık Kelime Tekrarı</string>
-  <string name="entertainment_english_lesson">2. Ders: Keyif için İngilizce (Dizi/Film)</string>
-  <string name="weekly_general_repeat">1. Ders: Haftalık Genel Tekrar</string>
-  <string name="free_reading_listening">2. Ders: Serbest Okuma/Dinleme</string>
-  <string name="full_exam">Tam Deneme Sınavı</string>
-  <string name="exam_analysis">Deneme Analizi</string>
-  <!-- Diğer -->
-  <string name="days_unit">%d gün</string>
-  <string name="percent_format">%d%%</string>
-  <!-- Sınav bildirimleri -->
-  <!-- Mini deneme sınavı -->
-  <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
-  <string name="mini_exam_description">40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et.</string>
-  <string name="mini_analysis_lesson">2. Ders: Deneme Analizi ve Kelime Çalışması</string>
-  <string name="mini_analysis_description">Tüm yanlışlarını ve boşlarını detaylıca analiz et. Bilmediğin kelimeleri not al ve kelime setine ekle.</string>
-  <!-- Eksik stringler -->
-  <string name="units">Üniteler</string>
-  <string name="practice_description_1">Çalıştığın konuların kitaptaki alıştırmalarını çözerek pekiştir.</string>
-  <string name="reading_description_1">Newsinlevels.com (Level 1-2) sitesinden en az 3 haber oku ve 15 yeni kelime çıkar.</string>
-  <string name="listening_description_1">ESL/British Council podcastlerinden bir bölüm dinle ve öğrendiğin kelimeleri tekrar et.</string>
-  <string name="vocabulary_description_1">Bu hafta öğrendiğin tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulamasıyla tekrar et.</string>
-  <string name="entertainment_description_1">İngilizce altyazılı bir dizi bölümü veya film izle. Anlamaya değil, kulağını doldurmaya odaklan.</string>
-  <string name="general_repeat_description_1">Bu hafta işlenen tüm gramer konularını hızlıca gözden geçir. Anlamadığın yerleri not al.</string>
-  <string name="free_reading_description_1">İlgini çeken bir konuda İngilizce bir YouTube kanalı izle veya blog oku.</string>
-  <!-- Ders başlıkları -->
-  <string name="grammar_topic_lesson">1. Ders: Gramer Konusu</string>
-  <string name="grammar_exercises_lesson">1. Ders: Gramer Alıştırmaları</string>
-  <string name="grammar_reinforcement_lesson">1. Ders: Gramer Pekiştirme</string>
-  <string name="grammar_topic_continuation_lesson">1. Ders: Gramer Konusu (Devam)</string>
-  <string name="question_type_practice_lesson">1. Ders: Soru Tipi Pratiği</string>
-  <string name="weekly_grammar_review_lesson">1. Ders: Haftalık Gramer Tekrarı</string>
-  <string name="next_week_preparation_lesson">1. Ders: Gelecek Haftaya Hazırlık</string>
-  <string name="weekly_analysis_planning_lesson">1. Ders: Haftalık Analiz ve Planlama</string>
-  <!-- Ders açıklamaları -->
-  <string name="grammar_topic_description">Kaynak: %1$s. Haftanın konusu olan \'%2$s\' üzerine detaylıca çalış.</string>
-  <string name="grammar_exercises_description">%1$s kitabından dünkü konunun alıştırmalarını eksiksiz tamamla.</string>
-  <string name="grammar_reinforcement_description">Öğrendiğin gramer yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yap.</string>
-  <string name="grammar_topic_continuation_description">Haftanın gramer konusunu pekiştir ve ek alıştırmalar çöz.</string>
-  <string name="question_type_practice_description">%1$s soru tipinden en az 20 soru çöz.</string>
-  <string name="weekly_grammar_review_description">Bu hafta işlenen tüm gramer konularını ve kurallarını tekrar et.</string>
-  <string name="next_week_preparation_description">Gelecek haftanın konusu olan \'%1$s\' konusuna kısaca göz atarak ön hazırlık yap.</string>
-  <string name="weekly_analysis_planning_description">Haftanın genel bir değerlendirmesini yap. Güçlü ve zayıf yönlerini belirle.</string>
-  <!-- Sınav haftası açıklamaları -->
-  <string name="full_exam_description">Kaynak: Son yıllara ait çıkmış bir YDS/YÖKDİL sınavı. 80 soruyu tam 180 dakika içinde çöz.</string>
-  <string name="exam_analysis_description">Sınav sonrası en az 1 saat ara ver. Ardından yanlışlarını, boşlarını ve doğru yapsan bile emin olmadıklarını detaylıca analiz et. Bilmediğin kelimeleri listele.</string>
-  <string name="full_exam_description_2">Kaynak: Güvenilir bir yayınevinin deneme sınavı. 80 soruyu tam 180 dakika içinde çöz.</string>
-  <string name="exam_analysis_description_2">Dünkü gibi detaylı analiz yap. Özellikle tekrar eden hata tiplerine odaklan.</string>
-  <string name="full_exam_description_3">Kaynak: Çıkmış bir sınav. 80 soruyu tam 180 dakika içinde çöz.</string>
-  <string name="exam_analysis_description_3">Analizini yap ve bu denemede öğrendiğin yeni kelimeleri tekrar et.</string>
-  <string name="weekly_vocabulary_review_description">Bu hafta denemelerde çıkan bilmediğin tüm kelimeleri flashcard uygulaması üzerinden tekrar et.</string>
-  <string name="general_review_description">Haftanın denemelerindeki genel hata tiplerini (örn: zaman yönetimi, belirli soru tipi) gözden geçir.</string>
-  <string name="strategy_motivation_description">Gelecek haftanın stratejisini belirle ve zihnini dinlendir. Sınava az kaldı!</string>
-  <!-- Ek ders başlıkları -->
-  <string name="general_repeat">Genel Tekrar ve Dinlenme</string>
-  <string name="strategy_motivation">Strateji ve Motivasyon</string>
-  <!-- Hafta başlıkları -->
-  <string name="exam_camp_week_title">%1$d. Ay, %2$d. Hafta: Sınav Kampı</string>
-  <string name="general_review_1_50">Genel Tekrar 1-50</string>
-  <string name="general_review_51_115">Genel Tekrar 51-115</string>
-  <string name="weak_topic_analysis">Zayıf Konu Analizi</string>
-  <string name="advanced_tenses">Yeşil Kitap - Advanced Tenses</string>
-  <string name="final_review_exam_camp">Genel Tekrar ve Sınav Kampı</string>
-  <!-- Başarımlar -->
-  <string name="first_step_achievement_title">İlk Adım</string>
-  <string name="first_step_achievement_desc">İlk görevini tamamladın!</string>
-  <string name="hundred_tasks_achievement_title">Yola Çıktın</string>
-  <string name="hundred_tasks_achievement_desc">100 görevi tamamladın!</string>
-  <string name="prep_complete_achievement_title">Hazırlık Dönemi Bitti!</string>
-  <string name="prep_complete_achievement_desc">6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!</string>
-  <string name="first_exam_week_achievement_title">Sınav Kampı Başladı!</string>
-  <string name="first_exam_week_achievement_desc">Son ay deneme kampına başladın!</string>
-  <string name="ten_exams_achievement_title">10 Deneme Bitti!</string>
-  <string name="ten_exams_achievement_desc">Toplam 10 tam deneme sınavı çözdün!</string>
-  <!-- Sınav isimleri -->
-  <string name="yokdil_spring">YÖKDİL/1 (İlkbahar)</string>
-  <string name="yds_spring">YDS/1 (İlkbahar)</string>
-  <string name="yokdil_fall">YÖKDİL/2 (Sonbahar)</string>
-  <string name="yds_fall">YDS/2 (Sonbahar)</string>
-  <!-- Bildirim metinleri -->
-  <!-- Kitap isimleri -->
-  <!-- Mavi kitap konuları -->
-  <string name="tenses_review_topic">Tenses Review (Tüm Zamanların Karşılaştırması)</string>
-  <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
-  <string name="modals_1_topic">Modals 1 (Ability, Permission, Advice)</string>
-  <string name="modals_2_topic">Modals 2 (Deduction, Obligation, Regret)</string>
-  <string name="conditionals_wish_topic">Conditionals &amp; Wish (Tüm Tipler &amp; İleri Düzey)</string>
-  <string name="passive_voice_topic">Passive Voice (Tüm Zamanlar) &amp; \'have something done\'</string>
-  <string name="reported_speech_topic">Reported Speech (Sorular, Komutlar, İleri Düzey)</string>
-  <string name="noun_clauses_topic">Noun Clauses &amp; Relative Clauses</string>
-  <string name="gerunds_infinitives_topic">Gerunds &amp; Infinitives (İleri kalıplar)</string>
-  <string name="conjunctions_connectors_topic">Conjunctions &amp; Connectors</string>
-  <!-- Yeşil kitap konuları -->
-  <string name="advanced_connectors_topic">Advanced Connectors &amp; Discourse Markers</string>
-  <string name="hypothetical_meaning_topic">Hypothetical Meaning &amp; Subjunctives</string>
-  <string name="adjectives_adverbs_topic">Adjectives &amp; Adverbs (İleri Kullanımlar)</string>
-  <string name="prepositions_phrasal_verbs_topic">Prepositions &amp; Phrasal Verbs (İleri Düzey)</string>
-  <!-- Yeşil kitap konuları devamı -->
-  <string name="advanced_tense_nuances_topic">Advanced Tense Nuances &amp; Narrative Tenses</string>
-  <string name="inversion_emphasis_topic">Inversion &amp; Emphasis (Not only, Hardly...)</string>
-  <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
-  <string name="participle_clauses_topic">Participle Clauses (-ing ve -ed clauses)</string>
-  <!-- Diğer -->
-  <string name="sentence_completion">Cümle Tamamlama</string>
-  <string name="paragraph_completion">Paragraf Tamamlama &amp; Anlam Bütünlüğünü Bozan Cümle</string>
-  <string name="final_review_exam_camp_short">Genel Tekrar ve Sınav Kampı</string>
-  <string name="prep_period_note">Hazırlık dönemi artık ilk 26 hafta</string>
-  <string name="expand_collapse">Genişlet/Daralt</string>
-  <!--About-->
-  <string name="about_title">Hakkında</string>
-  <string name="about_version">Sürüm: %s</string>
-  <string name="about_feature_customize_title">Özelleştirilebilir Çalışma Planları</string>
-  <string name="about_feature_customize_desc">Görevleri gizle/düzenle ve güne göre kendi görevlerini ekle.</string>
-  <string name="about_data_persistence">Değişiklikler cihazda saklanır ve uygulama genelinde geçerlidir.</string>
-  <string name="about_contact">Geri bildirim için e‑posta gönderin.</string>
-  <string name="customize_cd">Planı özelleştir</string>
-  <string name="blue_book_full">Mavi Kitap - B1-B2 Gelişimi</string>
-  <string name="new_achievement_unlocked">Yeni başarı açıldı: %s</string>
-  <string name="achievement_icon_description">Başarı ikonu</string>
+    <string name="app_name">Study Plan</string>
+    <string name="app_title">Road to YDS</string>
+    <string name="email_subject">Road to YDS App Feedback</string>
+    <string name="email_chooser_title">Send email...</string>
+
+    <string name="upcoming_exam">Upcoming Exam:</string>
+    <string name="application_deadline">Application Deadline</string>
+    <string name="time_until_exam">Time Until Exam</string>
+    <string name="osym_button">Go to Official Exam Board Website</string>
+    <string name="time_expired">Time Expired</string>
+
+    <string name="achievements_title">Achievements</string>
+    <string name="first_task_title">First Step</string>
+    <string name="first_task_desc">You completed your first task!</string>
+    <string name="hundred_tasks_title">On Your Way</string>
+    <string name="hundred_tasks_desc">You completed 100 tasks!</string>
+    <string name="prep_complete_title">Preparation Period Complete!</string>
+    <string name="prep_complete_desc">You completed 6 months of preparation. Now it\'s time for practice exams!</string>
+    <string name="first_exam_week_title">Exam Camp Started!</string>
+    <string name="first_exam_week_desc">You started the final month of practice exam camp!</string>
+    <string name="ten_exams_title">10 Practice Exams Completed!</string>
+    <string name="ten_exams_desc">You solved a total of 10 full practice exams!</string>
+
+    <string name="streak_label">Study Streak</string>
+    <string name="achievements_label">Achievements</string>
+    <string name="overall_progress">Overall Progress</string>
+    <plurals name="tasks_completed">
+        <item quantity="one">%1$d / %2$d task completed</item>
+        <item quantity="other">%1$d / %2$d tasks completed</item>
+    </plurals>
+    <string name="new_achievement">New Achievement: %s</string>
+
+    <string name="application_reminder_title">Exam Application Reminder</string>
+    <string name="study_reminder_title">Study Time!</string>
+    <string name="study_reminder_text">Don\'t forget to complete today\'s goals.</string>
+    <string name="application_started">applications started today!</string>
+    <string name="application_deadline_today">today is the last day for applications!</string>
+
+    <string name="red_book">Red Book - Essential Grammar in Use</string>
+    <string name="blue_book">Blue Book - English Grammar in Use</string>
+    <string name="green_book">Green Book - Advanced Grammar in Use</string>
+
+    <string name="month_week_format">Month %1$d, Week %2$d: %3$s</string>
+    <string name="foundation_level">Solid Foundation</string>
+    <string name="development_level">B1-B2 Development</string>
+    <string name="advanced_level">C1 Mastery</string>
+    <string name="exam_camp">Exam Camp</string>
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <string name="grammar_topics_lesson">1. Lesson: Grammar Topics</string>
+    <string name="quick_practice_lesson">2. Lesson: Quick Practice</string>
+    <string name="reading_vocabulary_lesson">1. Lesson: Reading and Vocabulary</string>
+    <string name="listening_repeat_lesson">2. Lesson: Listening and Review</string>
+    <string name="weekly_vocabulary_lesson">1. Lesson: Weekly Vocabulary Review</string>
+    <string name="entertainment_english_lesson">2. Lesson: English Entertainment (Series/Movie)</string>
+    <string name="weekly_general_repeat">1. Lesson: Weekly General Review</string>
+    <string name="free_reading_listening">2. Lesson: Free Reading/Listening</string>
+    <string name="full_exam">Full Practice Exam</string>
+    <string name="exam_analysis">Exam Analysis</string>
+
+    <plurals name="days_unit">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="percent_format">%d%%</string>
+
+    <string name="units">Units</string>
+    <string name="practice_description_1">Solve the exercises in the book for the topics you studied to reinforce them.</string>
+    <string name="reading_description_1">Read at least 3 news articles from Newsinlevels.com (Level 1-2) and extract 15 new words.</string>
+    <string name="listening_description_1">Listen to a podcast from ESL/British Council and review the words you learned.</string>
+    <string name="vocabulary_description_1">Review all the new words (approximately 40-50 words) you learned this week using a flashcard app.</string>
+    <string name="entertainment_description_1">Watch a series episode or movie with English subtitles. Focus on filling your ears, not understanding.</string>
+    <string name="general_repeat_description_1">Quickly review all grammar topics covered this week. Note down anything you don\'t understand.</string>
+    <string name="free_reading_description_1">Watch an English YouTube channel or read a blog about a topic that interests you.</string>
+
+    <string name="application_started_format">Applications for %s started today!</string>
+    <string name="application_deadline_today_format">Today is the last day for %s applications!</string>
+
+    <!-- Lesson titles -->
+    <string name="grammar_topic_lesson">1. Lesson: Grammar Topic</string>
+    <string name="grammar_exercises_lesson">1. Lesson: Grammar Exercises</string>
+    <string name="grammar_reinforcement_lesson">1. Lesson: Grammar Reinforcement</string>
+    <string name="grammar_topic_continuation_lesson">1. Lesson: Grammar Topic (Continuation)</string>
+    <string name="question_type_practice_lesson">1. Lesson: Question Type Practice</string>
+    <string name="weekly_grammar_review_lesson">1. Lesson: Weekly Grammar Review</string>
+    <string name="next_week_preparation_lesson">1. Lesson: Next Week Preparation</string>
+    <string name="weekly_analysis_planning_lesson">1. Lesson: Weekly Analysis and Planning</string>
+
+    <!-- Lesson descriptions -->
+    <string name="grammar_topic_description">Source: %1$s. Study in detail on this week\'s topic \'%2$s\'.</string>
+    <string name="grammar_exercises_description">%1$s book exercises on yesterday\'s topic. Complete all without skipping.</string>
+    <string name="grammar_reinforcement_description">Do translation or sentence construction exercises using the grammar structures you learned.</string>
+    <string name="grammar_topic_continuation_description">Reinforce this week\'s grammar topic and solve additional exercises.</string>
+    <string name="question_type_practice_description">Solve at least 20 questions from the %1$s question type.</string>
+    <string name="weekly_grammar_review_description">Review all grammar topics and rules covered this week.</string>
+    <string name="next_week_preparation_description">Briefly review next week\'s topic \'%1$s\' to prepare in advance.</string>
+    <string name="weekly_analysis_planning_description">Make a general assessment of the week. Identify your strengths and weaknesses.</string>
+
+    <!-- Exam week descriptions -->
+    <string name="full_exam_description">Source: A recent YDS/Y�KDIL exam from past years. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description">Take at least 1 hour break after the exam. Then thoroughly analyze your wrong answers, blanks, and correct answers you weren\'t confident about. List unknown words.</string>
+    <string name="full_exam_description_2">Source: A practice exam from a reliable publisher. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description_2">Perform detailed analysis like yesterday. Focus especially on recurring error types.</string>
+    <string name="full_exam_description_3">Source: A past exam. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description_3">Analyze your results and review new words you learned in this practice exam.</string>
+    <string name="weekly_vocabulary_review_description">Review all unknown words from this week\'s practice exams using a flashcard app.</string>
+    <string name="general_review_description">Review general error patterns from this week\'s practice exams (e.g., time management, specific question types).</string>
+    <string name="strategy_motivation_description">Determine next week\'s strategy and relax your mind. The exam is coming soon!</string>
+
+    <!-- Additional lesson titles -->
+    <string name="general_repeat">General Review and Rest</string>
+    <string name="strategy_motivation">Strategy and Motivation</string>
+
+    <!-- Week titles -->
+    <string name="exam_camp_week_title">%1$d. Month, %2$d. Week: Exam Camp</string>
+    <string name="general_review_1_50">General Review 1-50</string>
+    <string name="general_review_51_115">General Review 51-115</string>
+    <string name="weak_topic_analysis">Weak Topic Analysis</string>
+    <string name="advanced_tenses">Green Book - Advanced Tenses</string>
+    <string name="final_review_exam_camp">Final Review and Exam Camp</string>
+
+    <!-- Achievements -->
+    <string name="first_step_achievement_title">First Step</string>
+    <string name="first_step_achievement_desc">You completed your first task!</string>
+    <string name="hundred_tasks_achievement_title">On Your Way</string>
+    <string name="hundred_tasks_achievement_desc">You completed 100 tasks!</string>
+    <string name="prep_complete_achievement_title">Preparation Period Complete!</string>
+    <string name="prep_complete_achievement_desc">You completed 6 months of preparation. Now it\'s time for practice exams!</string>
+    <string name="first_exam_week_achievement_title">Exam Camp Started!</string>
+    <string name="first_exam_week_achievement_desc">You started the final month of practice exam camp!</string>
+    <string name="ten_exams_achievement_title">10 Practice Exams Completed!</string>
+    <string name="ten_exams_achievement_desc">You solved a total of 10 full practice exams!</string>
+
+    <!-- Exam names -->
+    <string name="yokdil_spring">Y�KDIL/1 (Spring)</string>
+    <string name="yds_spring">YDS/1 (Spring)</string>
+    <string name="yokdil_fall">Y�KDIL/2 (Fall)</string>
+    <string name="yds_fall">YDS/2 (Fall)</string>
+
+    <!-- Notification texts -->
+    <string name="study_time_title">Study Time!</string>
+    <string name="study_time_message">Don\'t forget to complete today\'s goals.</string>
+    <string name="exam_reminder_title">Exam Application Reminder</string>
+    <string name="exam_applications_started">applications for %s started today!</string>
+    <string name="exam_last_day_applications">today is the last day for %s applications!</string>
+    <string name="new_achievement_unlocked">New Achievement: %s</string>
+    <string name="achievement_icon_description">Achievement Icon</string>
+
+    <!-- Book names -->
+    <string name="blue_book_full">Blue Book - English Grammar in Use</string>
+    <string name="green_book_full">Green Book - Advanced Grammar in Use</string>
+    <string name="green_book_advanced_tenses">Green Book - Advanced Tenses</string>
+
+    <!-- Blue book topics -->
+    <string name="tenses_review_topic">Tenses Review (Comparison of All Tenses)</string>
+    <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
+    <string name="modals_1_topic">Modals 1 (Ability, Permission, Advice)</string>
+    <string name="modals_2_topic">Modals 2 (Deduction, Obligation, Regret)</string>
+    <string name="conditionals_wish_topic">Conditionals and Wish (All Types and Advanced Level)</string>
+    <string name="passive_voice_topic">Passive Voice (All Tenses) and \'have something done\'</string>
+    <string name="reported_speech_topic">Reported Speech (Questions, Commands, Advanced Level)</string>
+    <string name="noun_clauses_topic">Noun Clauses and Relative Clauses</string>
+    <string name="gerunds_infinitives_topic">Gerunds and Infinitives (Advanced Patterns)</string>
+    <string name="conjunctions_connectors_topic">Conjunctions and Connectors</string>
+
+    <!-- Green book topics -->
+    <string name="advanced_connectors_topic">Advanced Connectors and Discourse Markers</string>
+    <string name="hypothetical_meaning_topic">Hypothetical Meaning and Subjunctives</string>
+    <string name="adjectives_adverbs_topic">Adjectives and Adverbs (Advanced Usage)</string>
+    <string name="prepositions_phrasal_verbs_topic">Prepositions and Phrasal Verbs (Advanced Level)</string>
+
+    <!-- Other -->
+    <string name="sentence_completion">Sentence Completion</string>
+    <string name="paragraph_completion">Paragraph Completion and Sentence Breaking Coherence</string>
+    <string name="final_review_exam_camp_short">Final Review and Exam Camp</string>
+    <string name="prep_period_note">Preparation period is now the first 26 weeks</string>
+    <string name="expand_collapse">Expand/Collapse</string>
+
+    <!-- Green book topics continuation -->
+    <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>
+    <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly...)</string>
+    <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
+    <string name="participle_clauses_topic">Participle Clauses (-ing and -ed clauses)</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_feature_customize_title">Configurable Study Plans</string>
+    <string name="about_feature_customize_desc">Hide/edit tasks and add your own per day.</string>
+    <string name="about_data_persistence">Changes are stored on device and apply across the app.</string>
+    <string name="about_contact">Send email for feedback.</string>
+    <string name="customize_cd">Customize plan</string>
 </resources>
+
