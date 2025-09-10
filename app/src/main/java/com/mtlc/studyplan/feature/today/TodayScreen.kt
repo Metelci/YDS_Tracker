@@ -14,6 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
@@ -42,10 +45,11 @@ fun TodayRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
 fun TodayScreen(
     state: TodayUiState,
+    modifier: Modifier = Modifier,
     onStart: (String) -> Unit,
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
@@ -53,12 +57,18 @@ fun TodayScreen(
     onViewPlan: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onReschedule: (String, java.time.LocalDateTime) -> Unit = {_, _ -> },
-    modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
-    val swipeRefreshState = com.google.accompanist.swiperefresh.rememberSwipeRefreshState(isRefreshing = refreshing)
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = {
+        refreshing = true
+        onRefresh()
+        scope.launch {
+            kotlinx.coroutines.delay(400)
+            refreshing = false
+        }
+    })
 
     LaunchedEffect(state.snackbar) {
         state.snackbar?.let { msg ->
@@ -117,21 +127,14 @@ fun TodayScreen(
                             )
                             AssistChip(onClick = { /*no-op*/ }, label = { Text("Adherence ${adherence}%") })
                         }
-                        com.google.accompanist.swiperefresh.SwipeRefresh(
-                            state = swipeRefreshState,
-                            onRefresh = {
-                                refreshing = true
-                                onRefresh()
-                                scope.launch {
-                                    kotlinx.coroutines.delay(400)
-                                    refreshing = false
-                                }
-                            },
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
+                                .pullRefresh(pullRefreshState)
                         ) {
                             LazyColumn(
-                                modifier = modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp),
+                                modifier = modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 items(state.sessions, key = { it.id }) { item ->
@@ -143,6 +146,11 @@ fun TodayScreen(
                                     )
                                 }
                             }
+                            PullRefreshIndicator(
+                                refreshing = refreshing,
+                                state = pullRefreshState,
+                                modifier = Modifier.align(Alignment.TopCenter)
+                            )
                         }
                     }
                 }

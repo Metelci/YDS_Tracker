@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 27
         versionName = "1.7.0"
 
@@ -65,7 +65,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)

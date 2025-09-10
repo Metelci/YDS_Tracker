@@ -39,7 +39,7 @@ fun ReaderScreen(
     var showControls by remember { mutableStateOf(false) }
 
     // Timer
-    var seconds by remember { mutableStateOf(0) }
+    var seconds by remember { mutableIntStateOf(0) }
     LaunchedEffect(passage.id) {
         seconds = 0
         while (true) {
@@ -51,8 +51,8 @@ fun ReaderScreen(
     val words = remember(passage.body) {
         passage.body.split(Regex("\\s+")).filter { it.isNotBlank() }
     }
-    val wpm by remember(seconds, words) {
-        mutableStateOf(if (seconds > 0) (words.size * 60 / seconds).coerceAtLeast(0) else 0)
+    val wpm by remember(seconds, words.size) {
+        derivedStateOf { if (seconds > 0) (words.size * 60 / seconds).coerceAtLeast(0) else 0 }
     }
 
     var definition by remember { mutableStateOf<String?>(null) }

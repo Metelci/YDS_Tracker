@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +110,7 @@ fun FocusModeScreen(
 private fun BigTimer(secondsLeft: Int) {
     val minutes = secondsLeft / 60
     val seconds = secondsLeft % 60
-    val text = String.format("%02d:%02d", minutes, seconds)
+    val text = String.format(Locale.ROOT, "%02d:%02d", minutes, seconds)
     Text(text, fontSize = 64.sp, fontWeight = FontWeight.Bold)
 }
 
@@ -146,4 +147,3 @@ private fun ExitDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
         text = { Text("Your timer will stop. You can resume later.") }
     )
 }
-
