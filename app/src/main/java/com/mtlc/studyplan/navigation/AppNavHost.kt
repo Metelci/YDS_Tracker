@@ -13,6 +13,8 @@ import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.mock.MockExamRoute
 import com.mtlc.studyplan.feature.review.MockResultUi
 import com.mtlc.studyplan.feature.review.ReviewScreen
+import com.mtlc.studyplan.feature.practice.PracticeScreen
+import com.mtlc.studyplan.feature.progress.ProgressScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +50,10 @@ fun AppNavHost() {
                 onBack = { navController.popBackStack() }
             )
         }
+
+        // Large-screen two-pane demos
+        composable("practice") { PracticeScreen() }
+        composable("progress") { ProgressScreen() }
         // Mock exam start route
         composable("mock/start") {
             MockExamRoute(onSubmit = { result ->
