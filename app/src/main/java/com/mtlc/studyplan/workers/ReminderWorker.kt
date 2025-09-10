@@ -8,6 +8,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.mtlc.studyplan.data.ExamCalendarDataSource
 import com.mtlc.studyplan.notifications.NotificationHelper
+import com.mtlc.studyplan.data.isMutedToday
+import com.mtlc.studyplan.data.isQuietNow
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -18,6 +20,10 @@ class ReminderWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
+        // Respect quiet hours and mute-today
+        if (isMutedToday(applicationContext) || isQuietNow(applicationContext)) {
+            return Result.success()
+        }
         val today = LocalDate.now()
 
         val examsWithEventsToday = ExamCalendarDataSource.upcomingExams.filter {

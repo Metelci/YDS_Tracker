@@ -27,7 +27,29 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="yds" android:host="today" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="yds" android:host="mock" android:path="/start" />
+            </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".notifications.NotificationActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.mtlc.studyplan.action.SNOOZE_30M" />
+                <action android:name="com.mtlc.studyplan.action.MUTE_TODAY" />
+            </intent-filter>
+        </receiver>
 
         <!-- Today screens are hosted within MainActivity via Compose navigation. -->
     </application>
