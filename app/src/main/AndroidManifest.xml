@@ -29,9 +29,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Keep TodayActivity registered without launcher while developing -->
-        <activity
-            android:name=".feature.today.TodayActivity"
-            android:exported="false" />
+        <!-- Today screens are hosted within MainActivity via Compose navigation. -->
     </application>
 </manifest>
