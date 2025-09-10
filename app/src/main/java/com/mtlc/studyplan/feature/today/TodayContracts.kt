@@ -24,10 +24,11 @@ val snackbar: String? = null
 
 
 sealed interface TodayIntent {
-data object Load : TodayIntent
-data class StartSession(val id: String) : TodayIntent
-data class Complete(val id: String) : TodayIntent
-data class Skip(val id: String) : TodayIntent
+    data object Load : TodayIntent
+    data class StartSession(val id: String) : TodayIntent
+    data class Complete(val id: String) : TodayIntent
+    data class Skip(val id: String) : TodayIntent
+    data class Reschedule(val id: String, val at: java.time.LocalDateTime) : TodayIntent
 }
 
 

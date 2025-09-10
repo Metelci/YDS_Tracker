@@ -15,14 +15,15 @@ private val _state = MutableStateFlow(TodayUiState(isLoading = true))
 val state: StateFlow<TodayUiState> = _state.asStateFlow()
 
 
-fun dispatch(intent: TodayIntent) {
-when (intent) {
-is TodayIntent.Load -> load()
-is TodayIntent.StartSession -> start(intent.id)
-is TodayIntent.Complete -> complete(intent.id)
-is TodayIntent.Skip -> skip(intent.id)
-}
-}
+    fun dispatch(intent: TodayIntent) {
+        when (intent) {
+            is TodayIntent.Load -> load()
+            is TodayIntent.StartSession -> start(intent.id)
+            is TodayIntent.Complete -> complete(intent.id)
+            is TodayIntent.Skip -> skip(intent.id)
+            is TodayIntent.Reschedule -> reschedule(intent.id, intent.at)
+        }
+    }
 
 
 private fun load() {
@@ -46,10 +47,14 @@ s.copy(sessions = updated, snackbar = "Completed session $id")
 }
 
 
-private fun skip(id: String) {
-_state.update { it.copy(snackbar = "Skipped session $id") }
-}
+    private fun skip(id: String) {
+        _state.update { it.copy(snackbar = "Skipped session $id") }
+    }
 
 
-fun consumeSnackbar() { _state.update { it.copy(snackbar = null) } }
+    fun consumeSnackbar() { _state.update { it.copy(snackbar = null) } }
+
+    private fun reschedule(id: String, at: java.time.LocalDateTime) {
+        _state.update { it.copy(snackbar = "Rescheduled $id to ${at.toLocalDate()} ${at.toLocalTime()}") }
+    }
 }
