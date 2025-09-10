@@ -18,6 +18,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.navigation.NavController
+import com.mtlc.studyplan.ui.components.EmptyState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -111,7 +112,14 @@ fun TodayScreen(
                     }
                 }
                 state.sessions.isEmpty() -> {
-                    EmptyState(Modifier.fillMaxSize())
+                    EmptyState(
+                        modifier = Modifier.fillMaxSize(),
+                        title = "No sessions today",
+                        message = "Create or customize your plan to start.",
+                        action = {
+                            TextButton(onClick = onViewPlan) { Text("View Plan") }
+                        }
+                    )
                 }
                 else -> {
                     val total = state.sessions.size.coerceAtLeast(1)
