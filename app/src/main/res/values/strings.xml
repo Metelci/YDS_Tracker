@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools=\ http://schemas.android.com/tools\>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="app_name">Study Plan</string>
   <!-- Ana başlık ve genel metinler -->
   <string name="app_title">Road to YDS</string>
@@ -18,26 +18,14 @@
   <string name="hundred_tasks_title">Yola Çıktın</string>
   <string name="hundred_tasks_desc">100 görevi tamamladın!</string>
   <string name="prep_complete_title">Hazırlık Dönemi Bitti!</string>
-  <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladın. Şimdi sıra denemelerde!</string>
-  <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
-  <string name="first_exam_week_desc">Son ay deneme kampına başladın!</string>
-  <string name="ten_exams_title">10 Deneme Bitti!</string>
-  <string name="ten_exams_desc">Toplam 10 tam deneme sınavı çözdün!</string>
   <!-- Gamification -->
   <string name="streak_label">Çalışma Serisi</string>
   <string name="achievements_label">Başarımlar</string>
   <string name="overall_progress">Genel İlerleme</string>
-  <string name="tasks_completed">%1$d / %2$d görev tamamlandı</string>
-  <string name="new_achievement">Yeni Başarım: %s</string>
+  <string name="tasks_completed" tools:ignore="PluralsCandidate">%1$d / %2$d görev tamamlandı</string>
   <!-- Bildirimler -->
-  <string name="application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
-  <string name="study_reminder_title">Çalışma Zamanı!</string>
-  <string name="study_reminder_text">Bugünkü hedeflerini tamamlamayı unutma.</string>
-  <string name="application_started">bugün başvurular başladı!</string>
-  <string name="application_deadline_today">bugün son başvuru günü!</string>
   <!-- Kitaplar ve konular -->
   <string name="red_book">Kırmızı Kitap - Essential Grammar in Use</string>
-  <string name="blue_book">Mavi Kitap - English Grammar in Use</string>
   <string name="green_book">Yeşil Kitap - Advanced Grammar in Use</string>
   <!-- Hafta başlıkları -->
   <string name="month_week_format">%1$d. Ay, %2$d. Hafta: %3$s</string>
@@ -68,8 +56,6 @@
   <string name="days_unit">%d gün</string>
   <string name="percent_format">%d%%</string>
   <!-- Sınav bildirimleri -->
-  <string name="application_started_format">%s için başvurular bugün başladı!</string>
-  <string name="application_deadline_today_format">%s için bugün son başvuru günü!</string>
   <!-- Mini deneme sınavı -->
   <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
   <string name="mini_exam_description">40-50 soruluk bir deneme çöz (Süre: 60-75 dk). Okuma, gramer ve kelime ağırlıklı olmasına dikkat et.</string>
@@ -139,17 +125,7 @@
   <string name="yokdil_fall">YÖKDİL/2 (Sonbahar)</string>
   <string name="yds_fall">YDS/2 (Sonbahar)</string>
   <!-- Bildirim metinleri -->
-  <string name="study_time_title">Çalışma Zamanı!</string>
-  <string name="study_time_message">Bugünkü hedeflerini tamamlamayı unutma.</string>
-  <string name="exam_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
-  <string name="exam_applications_started">%s için başvurular bugün başladı!</string>
-  <string name="exam_last_day_applications">%s için bugün son başvuru günü!</string>
-  <string name="new_achievement_unlocked">Yeni Başarım: %s</string>
-  <string name="achievement_icon_description">Başarım İkonu</string>
   <!-- Kitap isimleri -->
-  <string name="blue_book_full">Mavi Kitap - English Grammar in Use</string>
-  <string name="green_book_full">Yeşil Kitap - Advanced Grammar in Use</string>
-  <string name="green_book_advanced_tenses">Yeşil Kitap - Advanced Tenses</string>
   <!-- Mavi kitap konuları -->
   <string name="tenses_review_topic">Tenses Review (Tüm Zamanların Karşılaştırması)</string>
   <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
@@ -185,6 +161,7 @@
   <string name="about_data_persistence">Değişiklikler cihazda saklanır ve uygulama genelinde geçerlidir.</string>
   <string name="about_contact">Geri bildirim için e‑posta gönderin.</string>
   <string name="customize_cd">Planı özelleştir</string>
+  <string name="blue_book_full">Mavi Kitap - B1-B2 Gelişimi</string>
+  <string name="new_achievement_unlocked">Yeni başarı açıldı: %s</string>
+  <string name="achievement_icon_description">Başarı ikonu</string>
 </resources>
-
-
