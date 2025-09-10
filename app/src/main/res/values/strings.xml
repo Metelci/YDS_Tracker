@@ -30,6 +30,8 @@
         <item quantity="one">%1$d / %2$d task completed</item>
         <item quantity="other">%1$d / %2$d tasks completed</item>
     </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="tasks_completed">%1$d / %2$d tasks completed</string>
     <string name="new_achievement">New Achievement: %s</string>
 
     <string name="application_reminder_title">Exam Application Reminder</string>
@@ -71,6 +73,8 @@
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
     </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="days_unit">%d days</string>
     <string name="percent_format">%d%%</string>
 
     <string name="units">Units</string>
@@ -84,6 +88,12 @@
 
     <string name="application_started_format">Applications for %s started today!</string>
     <string name="application_deadline_today_format">Today is the last day for %s applications!</string>
+
+    <!-- Mini exam strings referenced in code -->
+    <string name="mini_exam_lesson">1. Lesson: Mini Practice Exam</string>
+    <string name="mini_exam_description">Solve a 40-50 question practice exam (Time: 60-75 min). Pay attention to reading, grammar and vocabulary focus.</string>
+    <string name="mini_analysis_lesson">2. Lesson: Exam Analysis and Vocabulary Study</string>
+    <string name="mini_analysis_description">Thoroughly analyze mistakes and unknown words; add words to your vocabulary set.</string>
 
     <!-- Lesson titles -->
     <string name="grammar_topic_lesson">1. Lesson: Grammar Topic</string>
@@ -200,4 +210,3 @@
     <string name="about_contact">Send email for feedback.</string>
     <string name="customize_cd">Customize plan</string>
 </resources>
-

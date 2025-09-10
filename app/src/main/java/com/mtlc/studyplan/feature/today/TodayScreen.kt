@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 fun TodayRoute(
     vm: TodayViewModel = viewModel(),
     onNavigateToPlan: () -> Unit = {},
-    onNavigateToLesson: (String) -> Unit = {}
+    onNavigateToLesson: (String) -> Unit = {},
+    onNavigateToMock: () -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
 
@@ -40,6 +41,7 @@ fun TodayRoute(
         onSkip = { vm.dispatch(TodayIntent.Skip(it)) },
         onSnackbarShown = { vm.consumeSnackbar() },
         onViewPlan = onNavigateToPlan,
+        onNavigateToMock = onNavigateToMock,
         onRefresh = { vm.dispatch(TodayIntent.Load) },
         onReschedule = { id, at -> vm.dispatch(TodayIntent.Reschedule(id, at)) }
     )
@@ -55,6 +57,7 @@ fun TodayScreen(
     onSkip: (String) -> Unit,
     onSnackbarShown: () -> Unit,
     onViewPlan: () -> Unit = {},
+    onNavigateToMock: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onReschedule: (String, java.time.LocalDateTime) -> Unit = {_, _ -> },
 ) {
@@ -84,6 +87,9 @@ fun TodayScreen(
                 actions = {
                     TextButton(onClick = onViewPlan) {
                         Text("View Full Plan")
+                    }
+                    TextButton(onClick = onNavigateToMock) {
+                        Text("Mock Exam")
                     }
                 }
             )

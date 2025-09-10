@@ -1,6 +1,10 @@
 package com.mtlc.studyplan.feature.mock
 
 import android.widget.Toast
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -169,16 +173,19 @@ private fun QuestionCard(
     }
 }
 
+@Serializable
 data class MockResult(
     val correct: Int,
     val total: Int,
     val avgSecPerQ: Int,
-    val perSection: Map<String, Pair<Int, Int>> // section -> (correct, total)
+    val perSection: Map<String, Pair<Int, Int>>, // section -> (correct, total)
+    val wrongIds: List<Int> = emptyList()
 )
 
 private fun computeResult(state: MockExamState): MockResult {
     val total = state.questions.size
     val answeredCorrect = state.questions.count { q -> state.selections[q.id] == q.correctIndex }
+    val wrongIds = state.questions.filter { q -> state.selections[q.id] != null && state.selections[q.id] != q.correctIndex }.map { it.id }
     val elapsed = 180 * 60 - state.remainingSeconds
     val avg = if (total > 0 && elapsed >= 0) (elapsed / total) else 0
     val per = state.questions.groupBy({ it.section }) { it }
@@ -186,6 +193,5 @@ private fun computeResult(state: MockExamState): MockResult {
             val correct = qs.count { q -> state.selections[q.id] == q.correctIndex }
             correct to qs.size
         }
-    return MockResult(answeredCorrect, total, avg, per)
+    return MockResult(answeredCorrect, total, avg, per, wrongIds)
 }
-

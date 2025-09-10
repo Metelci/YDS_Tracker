@@ -1,3 +1,4 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.navigation
 
 import androidx.compose.runtime.Composable
@@ -10,6 +11,8 @@ import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.mock.MockExamRoute
+import com.mtlc.studyplan.feature.review.MockResultUi
+import com.mtlc.studyplan.feature.review.ReviewScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,17 +48,24 @@ fun AppNavHost() {
                 onBack = { navController.popBackStack() }
             )
         }
-
         // Mock exam start route
         composable("mock/start") {
             MockExamRoute(onSubmit = { result ->
-                navController.navigate("mock/result/${'$'}{result.correct}/${'$'}{result.total}/${'$'}{result.avgSecPerQ}")
+                val json = java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(com.mtlc.studyplan.feature.mock.MockResult.serializer(), result), "UTF-8")
+                navController.navigate("mock/result/${'$'}json")
             })
         }
-        composable("mock/result/{correct}/{total}/{avg}") { backStackEntry ->
-            val correct = backStackEntry.arguments?.getString("correct")?.toIntOrNull() ?: 0
-            val total = backStackEntry.arguments?.getString("total")?.toIntOrNull() ?: 0
-            val avg = backStackEntry.arguments?.getString("avg")?.toIntOrNull() ?: 0
+        composable("mock/result/{data}") { backStackEntry ->
+            val encoded = backStackEntry.arguments?.getString("data").orEmpty()
+            val json = java.net.URLDecoder.decode(encoded, "UTF-8")
+            val mock = kotlinx.serialization.json.Json.decodeFromString<com.mtlc.studyplan.feature.mock.MockResult>(json)
+            val review = MockResultUi(
+                correct = mock.correct,
+                total = mock.total,
+                avgSecPerQ = mock.avgSecPerQ,
+                perSection = mock.perSection.map { (sec, pair) -> com.mtlc.studyplan.feature.review.SectionStatUi(sec, pair.first, pair.second, if (mock.total>0) mock.avgSecPerQ else 0) },
+                wrongIds = mock.wrongIds
+            )
             androidx.compose.material3.Scaffold(topBar = {
                 androidx.compose.material3.TopAppBar(title = { androidx.compose.material3.Text("Exam Result") })
             }) { padding ->
@@ -66,13 +76,23 @@ fun AppNavHost() {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    androidx.compose.material3.Text("Correct: ${'$'}correct / ${'$'}total")
-                    androidx.compose.material3.Text("Avg sec per Q: ${'$'}avg")
+                    androidx.compose.material3.Text("Correct: ${'$'}{review.correct} / ${'$'}{review.total}")
+                    androidx.compose.material3.Text("Avg sec per Q: ${'$'}{review.avgSecPerQ}")
+                    androidx.compose.material3.Button(onClick = {
+                        val data = java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(MockResultUi.serializer(), review), "UTF-8")
+                        navController.navigate("mock/review/${'$'}data")
+                    }) { androidx.compose.material3.Text("Open Insights") }
                     androidx.compose.material3.Button(onClick = { navController.popBackStack(TODAY_ROUTE, inclusive = false) }) {
                         androidx.compose.material3.Text("Back to Today")
                     }
                 }
             }
+        }
+        composable("mock/review/{data}") { backStackEntry ->
+            val enc = backStackEntry.arguments?.getString("data").orEmpty()
+            val json2 = java.net.URLDecoder.decode(enc, "UTF-8")
+            val ui = kotlinx.serialization.json.Json.decodeFromString<MockResultUi>(json2)
+            ReviewScreen(result = ui, onRetrySet = { ids -> navController.navigate("mock/start") }, onBack = { navController.popBackStack() })
         }
     }
 }
