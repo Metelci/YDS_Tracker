@@ -5,7 +5,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import java.security.KeyStore
@@ -57,7 +57,6 @@ object SecurityUtils {
     /**
      * AES anahtarı oluşturur ve Android Keystore'da saklar
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun generateAESKey(): SecretKey {
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
 
@@ -78,6 +77,7 @@ object SecurityUtils {
     /**
      * Android Keystore'dan AES anahtarını alır
      */
+    @SuppressLint("ObsoleteSdkInt")
     private fun getAESKey(): SecretKey {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)

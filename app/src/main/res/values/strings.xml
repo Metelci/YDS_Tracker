@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools=\ http://schemas.android.com/tools\>
   <string name="app_name">Study Plan</string>
   <!-- Ana başlık ve genel metinler -->
   <string name="app_title">Road to YDS</string>
@@ -186,3 +186,5 @@
   <string name="about_contact">Geri bildirim için e‑posta gönderin.</string>
   <string name="customize_cd">Planı özelleştir</string>
 </resources>
+
+

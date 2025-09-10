@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.security
 
 import android.content.Context
+import android.annotation.SuppressLint
 import com.mtlc.studyplan.utils.SecurityUtils
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
@@ -139,6 +140,7 @@ class NetworkSecurityManager(private val context: Context) {
     /**
      * Creates a secure Trust Manager
      */
+    @SuppressLint("CustomX509TrustManager")
     private fun getTrustManager(): X509TrustManager {
         return try {
             val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())

@@ -1,6 +1,7 @@
 package com.mtlc.studyplan
 
 import android.app.NotificationManager
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -428,6 +429,7 @@ object LanguageManager {
         sharedPrefs.edit().putString(Constants.PREF_SELECTED_LANGUAGE, language).apply()
     }
 
+    @SuppressLint("AppBundleLocaleChanges")
     fun updateLocale(context: Context, language: String): Context {
         val locale = java.util.Locale.forLanguageTag(language)
         java.util.Locale.setDefault(locale)
