@@ -85,11 +85,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.work.CoroutineWorker
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
 import com.mtlc.studyplan.data.PlanOverridesStore
 import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.UserPlanOverrides
@@ -102,7 +97,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 //region VERİ MODELLERİ
 data class Task(val id: String, val desc: String, val details: String? = null)
@@ -392,36 +386,6 @@ object NotificationHelper {
 
     private const val CHANNEL_ID_APPLICATION = "YDS_APPLICATION_CHANNEL"
 
-    // GÜNLÜK HATIRLATICI BİLDİRİMİ İÇİN DÜZELTME
-    fun showStudyReminderNotification(context: Context) {
-        // 1. Adım: Uygulamayı açacak olan Intent'i oluştur.
-        // Bu, MainActivity'yi hedef alır.
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        // 2. Adım: Intent'i bir PendingIntent'e sar.
-        // Bu, bildirimin başka bir uygulamadan (sistem arayüzü) sizin uygulamanızı güvenli bir şekilde başlatmasını sağlar.
-        val pendingIntent: android.app.PendingIntent = android.app.PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            android.app.PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID_REMINDER)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(PlanDataSource.getAppContext().getString(R.string.study_time_title))
-            .setContentText(PlanDataSource.getAppContext().getString(R.string.study_time_message))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent) // <-- 3. Adım: PendingIntent'i bildirime ekle.
-
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID_REMINDER, builder.build())
-    }
-
     // SINAV BAŞVURU BİLDİRİMİ İÇİN DE AYNI DÜZELTME
     fun showApplicationReminderNotification(context: Context, title: String, message: String, notificationId: Int) {
         // Aynı şekilde bu bildirim için de bir PendingIntent oluşturuyoruz.
@@ -447,44 +411,6 @@ object NotificationHelper {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notificationId, builder.build())
-    }
-}
-class ReminderWorker(
-    context: Context,
-    workerParams: WorkerParameters,
-) : CoroutineWorker(context, workerParams) {
-
-    override suspend fun doWork(): Result {
-        val today = LocalDate.now()
-
-        val examsWithEventsToday = ExamCalendarDataSource.upcomingExams.filter {
-            it.applicationStart == today || it.applicationEnd == today
-        }
-
-        var wasSpecialNotificationSent = false
-        if (examsWithEventsToday.isNotEmpty()) {
-            examsWithEventsToday.forEach { exam ->
-                val title = PlanDataSource.getAppContext().getString(R.string.exam_reminder_title)
-                val message = if (today == exam.applicationStart) {
-                    PlanDataSource.getAppContext().getString(R.string.exam_applications_started, exam.name)
-                } else {
-                    PlanDataSource.getAppContext().getString(R.string.exam_last_day_applications, exam.name)
-                }
-                NotificationHelper.showApplicationReminderNotification(
-                    applicationContext,
-                    title,
-                    message,
-                    exam.name.hashCode()
-                )
-            }
-            wasSpecialNotificationSent = true
-        }
-
-        if (!wasSpecialNotificationSent) {
-            NotificationHelper.showStudyReminderNotification(applicationContext)
-        }
-
-        return Result.success()
     }
 }
 //endregion
@@ -541,39 +467,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun scheduleDailyReminder(context: Context) {
-    val hour = Constants.NOTIFICATION_REMINDER_HOUR
-    val minute = Constants.NOTIFICATION_REMINDER_MINUTE
-
-    val now = Calendar.getInstance()
-    val nextNotificationTime = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, hour)
-        set(Calendar.MINUTE, minute)
-        set(Calendar.SECOND, 0)
-        if (before(now)) {
-            add(Calendar.DAY_OF_MONTH, 1)
-        }
-    }
-    val initialDelay = nextNotificationTime.timeInMillis - now.timeInMillis
-
-    // Use OneTimeWorkRequest for initial delay, then PeriodicWorkRequest for daily repeats
-    val initialWorkRequest = androidx.work.OneTimeWorkRequest.Builder(ReminderWorker::class.java)
-        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-        .addTag(Constants.DAILY_REMINDER_WORK + "_initial")
-        .build()
-
-    val periodicWorkRequest = PeriodicWorkRequest.Builder(
-        ReminderWorker::class.java,
-        Constants.REMINDER_INTERVAL_HOURS, // Removed .toLong()
-        TimeUnit.HOURS
-    )
-        .addTag(Constants.DAILY_REMINDER_WORK)
-        .build()
-
-    val workManager = WorkManager.getInstance(context)
-    workManager.enqueue(initialWorkRequest)
-    workManager.enqueueUniquePeriodicWork(Constants.DAILY_REMINDER_WORK, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest)
-}
 //endregion
 
 //region EKRAN COMPOSABLE'LARI
@@ -623,6 +516,10 @@ fun PlanScreen() {
         AchievementsSheet(unlockedAchievementIds = currentProgress.unlockedAchievements, onDismiss = { showAchievementsSheet = false })
     }
 
+    if (showAbout) {
+        AboutSheet(onDismiss = { showAbout = false })
+    }
+
     Scaffold(
         topBar = { if (!showCustomize) MainHeader(onOpenCustomize = { showCustomize = true }, onOpenAbout = { showAbout = true }, onOpenPlanSettings = { showPlanSettings = true }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -653,9 +550,6 @@ fun PlanScreen() {
                             editState = null
                         }
                     )
-                }
-                if (showAbout) {
-                    AboutSheet(onDismiss = { showAbout = false })
                 }
             } else if (userProgress == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -755,6 +649,7 @@ fun PlanScreen() {
             }
         )
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class) // Bu satırı ekleyin
@@ -1051,7 +946,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
     val titleColor = monthColors[(weekPlan.month - 1) % monthColors.size]
 
     val weekStartDate = remember(startEpochDay, weekPlan.week) {
-        java.time.LocalDate.ofEpochDay(startEpochDay).plusDays(((weekPlan.week - 1) * 7L))
+        LocalDate.ofEpochDay(startEpochDay).plusDays(((weekPlan.week - 1) * 7L))
     }
     val weekEndDate = remember(weekStartDate) { weekStartDate.plusDays(6) }
     val dateFormatterShort = remember { java.time.format.DateTimeFormatter.ofPattern("MMM d") }
@@ -1092,7 +987,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
 }
 
 @Composable
-fun DaySection(dayPlan: DayPlan, dayIndex: Int, weekStartDate: java.time.LocalDate, completedTasks: Set<String>, onToggleTask: (String) -> Unit) {
+fun DaySection(dayPlan: DayPlan, dayIndex: Int, weekStartDate: LocalDate, completedTasks: Set<String>, onToggleTask: (String) -> Unit) {
     val context = LocalContext.current
     val dayDate = remember(weekStartDate, dayIndex) { weekStartDate.plusDays(dayIndex.toLong()) }
     val dateFormatter = remember { java.time.format.DateTimeFormatter.ofPattern("MMM d") }

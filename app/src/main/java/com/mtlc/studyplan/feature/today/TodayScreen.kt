@@ -11,11 +11,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
 @Composable
 fun TodayRoute(
-    vm: TodayViewModel = viewModel()
+    vm: TodayViewModel = viewModel(),
+    onNavigateToPlan: () -> Unit = {},
+    onNavigateToLesson: (String) -> Unit = {}
 ) {
     val state by vm.state.collectAsState() // avoids lifecycle-compose dep
 
@@ -23,10 +26,14 @@ fun TodayRoute(
 
     TodayScreen(
         state = state,
-        onStart = { vm.dispatch(TodayIntent.StartSession(it)) },
+        onStart = {
+            vm.dispatch(TodayIntent.StartSession(it))
+            onNavigateToLesson(it)
+        },
         onComplete = { vm.dispatch(TodayIntent.Complete(it)) },
         onSkip = { vm.dispatch(TodayIntent.Skip(it)) },
-        onSnackbarShown = { vm.consumeSnackbar() }
+        onSnackbarShown = { vm.consumeSnackbar() },
+        onViewPlan = onNavigateToPlan
     )
 }
 
@@ -38,6 +45,7 @@ fun TodayScreen(
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
     onSnackbarShown: () -> Unit,
+    onViewPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -51,7 +59,16 @@ fun TodayScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Today") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Today") },
+                actions = {
+                    TextButton(onClick = onViewPlan) {
+                        Text("View Full Plan")
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (state.sessions.isNotEmpty()) {
