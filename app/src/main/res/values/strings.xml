@@ -7,6 +7,10 @@
     <string name="email_subject">Road to YDS Uygulaması Geri Bildirimi</string>
     <string name="email_chooser_title">E-posta gönder...</string>
 
+    <!-- Welcome Screen -->
+    <string name="welcome_message">Çalışma planına hoş geldiniz!</string>
+    <string name="get_started">Başla</string>
+
     <!-- Sınav bilgileri -->
     <string name="upcoming_exam">Yaklaşan Sınav:</string>
     <string name="application_deadline">Başvuru İçin Son</string>

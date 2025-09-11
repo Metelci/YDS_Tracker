@@ -92,6 +92,9 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.data.ProgressRepository
+import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.ui.WelcomeScreen
 import com.mtlc.studyplan.utils.Constants
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -514,22 +517,36 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             StudyPlanTheme {
-                val permissionLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestPermission(),
-                    onResult = { isGranted ->
-                        if (isGranted) {
-                            scheduleDailyReminder(this)
+                val repository = remember { ProgressRepository(this@MainActivity.dataStore) }
+                val hasSeenWelcome by repository.hasSeenWelcomeFlow.collectAsState(initial = false)
+                val coroutineScope = rememberCoroutineScope()
+
+                if (hasSeenWelcome) {
+                    val permissionLauncher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.RequestPermission(),
+                        onResult = { isGranted ->
+                            if (isGranted) {
+                                scheduleDailyReminder(this)
+                            }
+                        }
+                    )
+                    LaunchedEffect(key1 = true) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            scheduleDailyReminder(this@MainActivity)
                         }
                     }
-                )
-                LaunchedEffect(key1 = true) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        scheduleDailyReminder(this@MainActivity)
-                    }
+                    PlanScreen()
+                } else {
+                    WelcomeScreen(
+                        onGetStarted = {
+                            coroutineScope.launch {
+                                repository.setHasSeenWelcome(true)
+                            }
+                        }
+                    )
                 }
-                PlanScreen()
             }
         }
     }

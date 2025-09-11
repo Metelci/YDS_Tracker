@@ -5,6 +5,10 @@
     <string name="email_subject">Road to YDS App Feedback</string>
     <string name="email_chooser_title">Send email...</string>
 
+    <!-- Welcome Screen -->
+    <string name="welcome_message">Welcome to your study plan!</string>
+    <string name="get_started">Get Started</string>
+
     <string name="upcoming_exam">Upcoming Exam:</string>
     <string name="application_deadline">Application Deadline</string>
     <string name="time_until_exam">Time Until Exam</string>

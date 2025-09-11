@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
 
@@ -19,6 +20,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         val STREAK_COUNT = intPreferencesKey("streak_count")
         val LAST_COMPLETION_DATE = longPreferencesKey("last_completion_date")
         val UNLOCKED_ACHIEVEMENTS = stringSetPreferencesKey("unlocked_achievements")
+        val HAS_SEEN_WELCOME = booleanPreferencesKey("has_seen_welcome")
     }
 
     val userProgressFlow = dataStore.data.map { preferences ->
@@ -28,6 +30,16 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
             lastCompletionDate = preferences[Keys.LAST_COMPLETION_DATE] ?: 0L,
             unlockedAchievements = preferences[Keys.UNLOCKED_ACHIEVEMENTS] ?: emptySet()
         )
+    }
+
+    val hasSeenWelcomeFlow = dataStore.data.map { preferences ->
+        preferences[Keys.HAS_SEEN_WELCOME] ?: false
+    }
+
+    suspend fun setHasSeenWelcome(seen: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.HAS_SEEN_WELCOME] = seen
+        }
     }
 
     suspend fun saveProgress(progress: UserProgress) {
