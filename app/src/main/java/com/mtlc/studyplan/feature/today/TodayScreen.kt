@@ -9,9 +9,13 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.theme.Elevations
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -22,6 +26,8 @@ import com.mtlc.studyplan.ui.components.EmptyState
 import com.mtlc.studyplan.ui.components.ErrorState
 import androidx.compose.material.icons.outlined.EventNote
 import kotlinx.coroutines.launch
+import com.mtlc.studyplan.ui.a11y.largeTouchTarget
+import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
 
 @Composable
 fun TodayRoute(
@@ -31,17 +37,28 @@ fun TodayRoute(
     onNavigateToMock: () -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
-    LaunchedEffect(Unit) { vm.dispatch(TodayIntent.Load) }
+    LaunchedEffect(Unit) {
+        vm.dispatch(TodayIntent.Load)
+        com.mtlc.studyplan.metrics.Analytics.track(context, "today_open")
+    }
 
     TodayScreen(
         state = state,
         onStart = {
+            com.mtlc.studyplan.metrics.Analytics.track(context, "session_start", mapOf("id" to it))
             vm.dispatch(TodayIntent.StartSession(it))
             onNavigateToLesson(it)
         },
-        onComplete = { vm.dispatch(TodayIntent.Complete(it)) },
-        onSkip = { vm.dispatch(TodayIntent.Skip(it)) },
+        onComplete = {
+            com.mtlc.studyplan.metrics.Analytics.track(context, "session_complete", mapOf("id" to it))
+            vm.dispatch(TodayIntent.Complete(it))
+        },
+        onSkip = {
+            com.mtlc.studyplan.metrics.Analytics.track(context, "session_skip", mapOf("id" to it))
+            vm.dispatch(TodayIntent.Skip(it))
+        },
         onSnackbarShown = { vm.consumeSnackbar() },
         onViewPlan = onNavigateToPlan,
         onNavigateToMock = onNavigateToMock,
@@ -83,15 +100,16 @@ fun TodayScreen(
         }
     }
 
+    val sTokens = LocalSpacing.current
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Today") },
                 actions = {
-                    TextButton(onClick = onViewPlan) {
+                    TextButton(onClick = onViewPlan, modifier = Modifier.largeTouchTarget()) {
                         Text("View Full Plan")
                     }
-                    TextButton(onClick = onNavigateToMock) {
+                    TextButton(onClick = onNavigateToMock, modifier = Modifier.largeTouchTarget()) {
                         Text("Mock Exam")
                     }
                 }
@@ -100,7 +118,10 @@ fun TodayScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (state.sessions.isNotEmpty()) {
-                FloatingActionButton(onClick = { onStart(state.sessions.first().id) }) {
+                FloatingActionButton(
+                    onClick = { onStart(state.sessions.first().id) },
+                    modifier = Modifier.semantics { contentDescription = "Start next session" }
+                ) {
                     Text("Start next")
                 }
             }
@@ -143,25 +164,29 @@ fun TodayScreen(
                         Row(
                             Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = sTokens.md, vertical = sTokens.xs),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(sTokens.sm)
                         ) {
                             Text(
                                 "Time left today: ${timeLeft} min",
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            AssistChip(onClick = { /*no-op*/ }, label = { Text("Adherence ${adherence}%") })
+                            AssistChip(
+                                onClick = { /*no-op*/ },
+                                label = { Text("Adherence ${adherence}%") },
+                                modifier = Modifier.largeTouchTarget()
+                            )
                         }
                         Box(
                             Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = sTokens.md)
                                 .pullRefresh(pullRefreshState)
                         ) {
                             LazyColumn(
                                 modifier = modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                verticalArrangement = Arrangement.spacedBy(sTokens.sm)
                             ) {
                                 items(state.sessions, key = { it.id }) { item ->
                                     SwipeableSession(
@@ -193,8 +218,8 @@ private fun SessionCard(
     onSkip: (String) -> Unit,
     onReschedule: (java.time.LocalDateTime) -> Unit = {}
 ) {
-    Card {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+    Card(shape = MaterialTheme.shapes.large, elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = Elevations.level1)) {
+        Column(Modifier.fillMaxWidth().padding(LocalSpacing.current.md)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     s.title,
@@ -204,15 +229,15 @@ private fun SessionCard(
                 )
                 AssistChip(onClick = { /* no-op */ }, label = { Text(s.section) })
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(LocalSpacing.current.xs))
             Text("~${s.estMinutes} min  •  difficulty ${s.difficulty}", style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(LocalSpacing.current.sm))
             var menuExpanded by remember { mutableStateOf(false) }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { onStart(s.id) }) { Text("Start") }
                 TextButton(onClick = { onSkip(s.id) }) { Text("Skip") }
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = { menuExpanded = true }) {
+                IconButton(onClick = { menuExpanded = true }, modifier = Modifier.largeTouchTarget()) {
                     Icon(Icons.Filled.MoreVert, contentDescription = "More")
                 }
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
@@ -238,6 +263,7 @@ private fun SwipeableSession(
     onComplete: (String) -> Unit,
     onReschedule: (java.time.LocalDateTime) -> Unit
 ) {
+    val reducedMotion = LocalReducedMotion.current
     val context = androidx.compose.ui.platform.LocalContext.current
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     val notificationManager = remember { context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager }
@@ -260,19 +286,29 @@ private fun SwipeableSession(
             }
         }
     )
-    androidx.compose.material.SwipeToDismiss(
-        state = dismissState,
-        background = {},
-        dismissContent = {
-            SessionCard(
-                s = session,
-                onStart = onStart,
-                onComplete = onComplete,
-                onSkip = { /* handled */ },
-                onReschedule = onReschedule
-            )
-        }
-    )
+    if (reducedMotion) {
+        SessionCard(
+            s = session,
+            onStart = onStart,
+            onComplete = onComplete,
+            onSkip = { /* handled */ },
+            onReschedule = onReschedule
+        )
+    } else {
+        androidx.compose.material.SwipeToDismiss(
+            state = dismissState,
+            background = {},
+            dismissContent = {
+                SessionCard(
+                    s = session,
+                    onStart = onStart,
+                    onComplete = onComplete,
+                    onSkip = { /* handled */ },
+                    onReschedule = onReschedule
+                )
+            }
+        )
+    }
 }
 
 @Composable

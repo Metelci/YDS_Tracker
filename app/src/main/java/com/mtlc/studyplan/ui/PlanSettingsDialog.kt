@@ -14,6 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.mtlc.studyplan.R
 import java.time.LocalDate
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +48,11 @@ fun PlanSettingsDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = title) },
         text = {
-            androidx.compose.foundation.layout.Column {
+            val s = LocalSpacing.current
+            androidx.compose.foundation.layout.Column(
+                modifier = androidx.compose.ui.Modifier.padding(s.md),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(s.sm)
+            ) {
                 TextField(
                     value = startDateText,
                     onValueChange = { startDateText = it },

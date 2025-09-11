@@ -19,14 +19,15 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: () -> Unit = {}) {
     Scaffold(topBar = { TopAppBar(title = { Text("Review & Insights") }) }) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            Modifier.fillMaxSize().padding(padding).padding(LocalSpacing.current.md).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.md)
         ) {
             Text("Summary", style = MaterialTheme.typography.titleMedium)
             Text("Correct: ${result.correct}/${result.total}")
@@ -46,7 +47,7 @@ fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: 
                 Text("No wrong answers. Great job!")
             } else {
                 result.wrongIds.chunked(5).forEach { row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(LocalSpacing.current.xs)) {
                         row.forEach { id ->
                             Text("Q$id", modifier = Modifier.semantics { contentDescription = "Wrong question $id" })
                         }
@@ -60,7 +61,7 @@ fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: 
 
 @Composable
 private fun AccuracyBar(section: String, percent: Int, avgSec: Int, max: Int) {
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.xs / 2)) {
         Text("$section: $percent% • ${avgSec}s/Q", fontWeight = FontWeight.SemiBold)
         val barMaxWidth = 1f
         val normalized = if (max > 0) percent.toFloat() / max.toFloat() else 0f
@@ -83,3 +84,5 @@ private fun AccuracyBar(section: String, percent: Int, avgSec: Int, max: Int) {
         }
     }
 }
+
+

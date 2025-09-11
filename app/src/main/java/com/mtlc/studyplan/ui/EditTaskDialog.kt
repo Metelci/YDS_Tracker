@@ -9,6 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 
 @Composable
 fun EditTaskDialog(
@@ -24,7 +27,11 @@ fun EditTaskDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edit Task") },
         text = {
-            androidx.compose.foundation.layout.Column {
+            val s = LocalSpacing.current
+            androidx.compose.foundation.layout.Column(
+                modifier = androidx.compose.ui.Modifier.padding(s.md),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(s.sm)
+            ) {
                 TextField(
                     value = desc,
                     onValueChange = { desc = it },
@@ -45,4 +52,3 @@ fun EditTaskDialog(
         }
     )
 }
-

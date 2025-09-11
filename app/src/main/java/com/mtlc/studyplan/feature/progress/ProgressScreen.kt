@@ -10,6 +10,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.components.TwoPaneScaffold
 import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.data.ProgressRepository
@@ -17,6 +18,7 @@ import com.mtlc.studyplan.data.UserProgress
 
 @Composable
 fun ProgressScreen() {
+    val s = LocalSpacing.current
     var selected by remember { mutableStateOf(0) }
     val items = remember { listOf("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7") }
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -26,10 +28,10 @@ fun ProgressScreen() {
     TwoPaneScaffold(
         list = {
             Text("Progress", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(s.xs))
             LazyColumn(
                 Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(s.xs)
             ) {
                 itemsIndexed(items) { idx, label ->
                     ListItem(
@@ -43,9 +45,9 @@ fun ProgressScreen() {
         },
         detail = {
             Text("Details", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(s.xs))
             Text("Selected: ${items.getOrNull(selected) ?: "None"}", style = MaterialTheme.typography.bodyLarge)
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(s.sm))
             Text("Completed tasks: ${userProgress.completedTasks.size}")
             Text("Streak: ${userProgress.streakCount}")
             LinearProgressIndicator(progress = { (selected + 1) / (items.size.toFloat()) })

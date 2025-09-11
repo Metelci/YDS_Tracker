@@ -12,19 +12,22 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.theme.Elevations
 import com.mtlc.studyplan.ui.components.TwoPaneScaffold
 
 @Composable
 fun PracticeScreen() {
+    val s = LocalSpacing.current
     var selected by remember { mutableStateOf(0) }
     val items = remember { List(20) { "Practice Set #${it + 1}" } }
     TwoPaneScaffold(
         list = {
             Text("Practice", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(s.xs))
             LazyColumn(
                 Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(s.xs)
             ) {
                 itemsIndexed(items) { idx, label ->
                     ElevatedCard(
@@ -32,18 +35,20 @@ fun PracticeScreen() {
                         modifier = Modifier.fillMaxWidth().focusable(),
                         colors = CardDefaults.elevatedCardColors(
                             containerColor = if (idx == selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-                        )
+                        ),
+                        shape = MaterialTheme.shapes.large,
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = Elevations.level1)
                     ) {
-                        Text(label, Modifier.padding(12.dp))
+                        Text(label, Modifier.padding(s.sm))
                     }
                 }
             }
         },
         detail = {
             Text("Details", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(s.xs))
             Text("Selected: ${items.getOrNull(selected) ?: "None"}", style = MaterialTheme.typography.bodyLarge)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(s.lg))
             ElevatedButton(onClick = { /* start practice */ }) { Text("Start") }
         }
     )

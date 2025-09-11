@@ -17,6 +17,7 @@ Road to YDS is a 30‑week English study plan app to prepare for YDS/YÖKDİL an
 - [Release](#release)
 - [Project Structure](#project-structure)
   - [Extending Features](#extending-features)
+- [Metrics & Analytics](#metrics--analytics)
 - [Privacy](#privacy)
 - [Contributing](#contributing)
 
@@ -185,4 +186,31 @@ Suggested future features:
 - Security changes require review by project maintainer.
 
 Open issues and PRs are welcome. Please follow the security guidance in `SECURITY_POLICY.md` and reference `SECURITY_INTEGRATION_GUIDE.md` for any feature touching authentication, storage, or networking.
+
+## Metrics & Analytics
+
+This app implements lightweight, privacy-respecting analytics for internal instrumentation. There is no third-party SDK and no network transmission in release builds.
+
+- Design: `Analytics.track(name, props)` enqueues a `WorkManager` one-off task handled by `AnalyticsWorker`.
+- Privacy: No PII; small key/value props only. In release (non-debug) builds, `AnalyticsWorker` no-ops.
+- Resilience: Using WorkManager ensures events persist across process death and run when the app resumes.
+
+Events
+- `app_open`
+- `today_open`
+- `session_start` / `session_complete` / `session_skip` (props: `id`)
+- `mock_start` / `mock_submit` (props: `correct`, `total`, `avg_sec_per_q`)
+- `reader_pref_change` (props: `font_sp`, `line_height`, `theme`)
+
+Key files
+- `app/src/main/java/com/mtlc/studyplan/metrics/Analytics.kt`
+- `app/src/main/java/com/mtlc/studyplan/metrics/AnalyticsWorker.kt`
+- Wiring examples in Today, Mock, and Reader screens.
+
+Debugging
+- In debug builds, events are logged with tag `Analytics`. Filter Logcat for `Analytics`.
+- In release builds, events are disabled by design.
+
+Testing
+- Instrumentation: `./gradlew :app:connectedDebugAndroidTest` (requires a device/emulator). A basic accessibility test exists and analytics logs appear in Logcat during interactions.
 

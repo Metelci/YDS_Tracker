@@ -22,6 +22,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -97,8 +98,9 @@ fun ReaderScreen(
                 .padding(padding)
         ) {
             // WPM bar
+            val s = LocalSpacing.current
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                Modifier.fillMaxWidth().padding(horizontal = s.md, vertical = s.xs),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -118,7 +120,7 @@ fun ReaderScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = s.md)
                     .verticalScroll(scroll)
                     .pointerInput(passage.id, prefs) {
                         detectTapGestures(
@@ -175,9 +177,11 @@ private fun ReaderControlsSheet(
     onDismiss: () -> Unit,
     onChange: (ReaderPrefs) -> Unit
 ) {
+    val context = LocalContext.current
     var localPrefs by remember { mutableStateOf(prefs) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        val s = LocalSpacing.current
+        Column(Modifier.fillMaxWidth().padding(s.md), verticalArrangement = Arrangement.spacedBy(s.md)) {
             Text("Reading Settings", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("Font size: ${"%.0f".format(localPrefs.fontScaleSp)}sp")
             Slider(
@@ -203,8 +207,20 @@ private fun ReaderControlsSheet(
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onDismiss) { Text("Cancel") }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = { onChange(localPrefs); onDismiss() }) { Text("Apply") }
+                Spacer(Modifier.width(s.xs))
+                Button(onClick = {
+                    onChange(localPrefs)
+                    com.mtlc.studyplan.metrics.Analytics.track(
+                        context,
+                        "reader_pref_change",
+                        mapOf(
+                            "font_sp" to "%.0f".format(localPrefs.fontScaleSp),
+                            "line_height" to "%.1f".format(localPrefs.lineHeightMult),
+                            "theme" to localPrefs.theme.name
+                        )
+                    )
+                    onDismiss()
+                }) { Text("Apply") }
             }
         }
     }

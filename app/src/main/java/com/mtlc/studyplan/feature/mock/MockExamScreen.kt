@@ -22,6 +22,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.theme.Elevations
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -41,7 +43,10 @@ fun MockExamRoute(
     })
 
     val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.dispatch(MockIntent.Load) }
+    LaunchedEffect(Unit) {
+        vm.dispatch(MockIntent.Load)
+        com.mtlc.studyplan.metrics.Analytics.track(context, "mock_start")
+    }
 
     var showExitConfirm by remember { mutableStateOf(false) }
 
@@ -99,6 +104,15 @@ fun MockExamRoute(
 
     if (state.isSubmitting) {
         val result = computeResult(state)
+        com.mtlc.studyplan.metrics.Analytics.track(
+            context,
+            "mock_submit",
+            mapOf(
+                "correct" to result.correct.toString(),
+                "total" to result.total.toString(),
+                "avg_sec_per_q" to result.avgSecPerQ.toString()
+            )
+        )
         onSubmit(result)
     }
 }
@@ -106,7 +120,8 @@ fun MockExamRoute(
 @Composable
 private fun SectionRail(state: MockExamState, onJump: (Int) -> Unit) {
     val sections = state.questions.groupBy { it.section }
-    Column(Modifier.width(92.dp).padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    val s = LocalSpacing.current
+    Column(Modifier.width(92.dp).padding(s.xs), verticalArrangement = Arrangement.spacedBy(s.xs)) {
         sections.entries.forEach { (section, items) ->
             Text(section, style = MaterialTheme.typography.labelLarge)
             FlowRowMain(items, state, onJump)
@@ -117,7 +132,8 @@ private fun SectionRail(state: MockExamState, onJump: (Int) -> Unit) {
 
 @Composable
 private fun FlowRowMain(items: List<MockQuestion>, state: MockExamState, onJump: (Int) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    val s = LocalSpacing.current
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(s.xs / 2), verticalArrangement = Arrangement.spacedBy(s.xs / 2)) {
         items.forEach { q ->
             val answered = state.selections.containsKey(q.id)
             val marked = q.id in state.markedForReview
@@ -144,8 +160,9 @@ private fun QuestionCard(
     onSelect: (Int) -> Unit,
     onToggleReview: () -> Unit
 ) {
-    Card(Modifier.fillMaxSize().padding(16.dp)) {
-        Column(Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    val s = LocalSpacing.current
+    Card(Modifier.fillMaxSize().padding(s.md), shape = MaterialTheme.shapes.large, elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = Elevations.level1)) {
+        Column(Modifier.fillMaxSize().padding(s.md).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(s.sm)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text("Q${question.id} - ${question.section}", fontWeight = FontWeight.SemiBold)
                 FilterChip(
@@ -162,9 +179,9 @@ private fun QuestionCard(
                     modifier = Modifier.fillMaxWidth().semantics { contentDescription = "Option ${'A' + idx}: $opt" }.focusable(),
                     enabled = true
                 ) {
-                    Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().padding(s.sm), verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = selectedIndex == idx, onClick = { onSelect(idx) })
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(s.xs))
                         Text(text = "${'A' + idx}. $opt")
                     }
                 }

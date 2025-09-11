@@ -19,6 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.R
 
 @Composable
@@ -32,20 +33,20 @@ fun EmptyState(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(LocalSpacing.current.lg)
             .semantics { contentDescription = "empty_state" },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(LocalSpacing.current.md))
         }
         Text(title, style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(LocalSpacing.current.xs))
         Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (action != null) {
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(LocalSpacing.current.lg))
             action()
         }
     }
@@ -62,7 +63,7 @@ fun ErrorState(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(LocalSpacing.current.lg)
             .semantics { contentDescription = "error_state" },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -71,14 +72,14 @@ fun ErrorState(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = null
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(LocalSpacing.current.md))
         Text(title, style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(LocalSpacing.current.xs))
         Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(LocalSpacing.current.lg))
         ElevatedButton(onClick = onRetry) { Text("Retry") }
         if (onDiagnostics != null) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(LocalSpacing.current.xs))
             OutlinedButton(onClick = onDiagnostics) { Text("Diagnostics") }
         }
     }

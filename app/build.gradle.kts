@@ -13,8 +13,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 36
-        versionCode = 27
-        versionName = "1.7.0"
+        versionCode = 28
+        versionName = "1.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,6 +61,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.ui)
+    implementation("androidx.compose.animation:animation-core")
     implementation("androidx.compose.foundation:foundation")
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -90,6 +91,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation("com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.2.2")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

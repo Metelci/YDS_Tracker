@@ -41,3 +41,17 @@
 ## v1.6.0 (Previous version)
 
 [Previous changelog content...]
+## v1.8.0
+
+Date: 2025-09-11
+
+Highlights
+- Accessibility: content descriptions, larger touch targets, reduced motion support (system setting aware). Added Accessibility Test Rule.
+- Metrics: lightweight in-app analytics wrapper (no PII, no network in release). Events: app_open, today_open, session_start/complete/skip, mock_start/submit, reader_pref_change.
+- UI Polish: Material 3 style pass with centralized spacing tokens and standardized card radius/elevations across Today, Reader, Mock, Review, Practice, Progress, and shared components.
+
+Details
+- a11y: Provided `LocalReducedMotion`, disabled nonessential animations, semantics improvements.
+- metrics: `Analytics.track()` via `WorkManager`; logs only in debug; resilient to process death.
+- theme: Added `Spacing` tokens and `Elevations`. Replaced ad-hoc paddings with 8-pt grid values.
+- dialogs: Tokenized paddings for EditTaskDialog and PlanSettingsDialog.

@@ -34,6 +34,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import androidx.compose.material3.CardDefaults
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.UserPlanOverrides
 import com.mtlc.studyplan.data.WeekPlan
@@ -54,6 +56,7 @@ fun CustomizePlanScreen(
     onRequestEdit: (taskId: String, currentDesc: String?, currentDetails: String?) -> Unit,
     onAddTask: (week: Int, dayIndex: Int) -> Unit,
 ) {
+    val s = LocalSpacing.current
     var showInfo by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -80,8 +83,8 @@ fun CustomizePlanScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(s.md),
+            verticalArrangement = Arrangement.spacedBy(s.md)
         ) {
             itemsIndexed(plan) { _, week ->
                 WeekCard(
@@ -119,8 +122,9 @@ private fun WeekCard(
     onRequestEdit: (taskId: String, currentDesc: String?, currentDetails: String?) -> Unit,
     onAddTask: (week: Int, dayIndex: Int) -> Unit,
 ) {
-    Card {
-        Column(Modifier.padding(12.dp)) {
+    val s = LocalSpacing.current
+    Card(shape = MaterialTheme.shapes.large, elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)) {
+        Column(Modifier.padding(s.sm)) {
             Text(week.title, style = MaterialTheme.typography.titleMedium)
             val weekStart = remember(startEpochDay, week.week) { LocalDate.ofEpochDay(startEpochDay).plusDays(((week.week - 1) * 7L)) }
             val weekEnd = remember(weekStart) { weekStart.plusDays(6) }
