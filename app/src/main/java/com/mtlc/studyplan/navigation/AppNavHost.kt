@@ -2,6 +2,12 @@
 package com.mtlc.studyplan.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,11 +31,37 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = TODAY_ROUTE
-    ) {
-        todayGraph(navController)  // pass the navController to todayGraph
+    val tabs = listOf(
+        Triple(TODAY_ROUTE, Icons.Filled.Today, "Today"),
+        Triple("practice", Icons.Filled.School, "Practice"),
+        Triple("progress", Icons.Filled.ShowChart, "Progress"),
+    )
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                val route = navController.currentBackStackEntry?.destination?.route ?: TODAY_ROUTE
+                tabs.forEach { (r, icon, label) ->
+                    NavigationBarItem(
+                        selected = route.startsWith(r),
+                        onClick = {
+                            navController.navigate(r) {
+                                popUpTo(TODAY_ROUTE) { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = { Icon(icon, contentDescription = label) },
+                        label = { Text(label) }
+                    )
+                }
+            }
+        }
+    ) { padding ->
+        NavHost(
+            navController = navController,
+            startDestination = TODAY_ROUTE,
+            modifier = androidx.compose.ui.Modifier.padding(padding)
+        ) {
+            todayGraph(navController)  // pass the navController to todayGraph
         
         // Add route for the regular study plan screen
         composable(PLAN_ROUTE) {
@@ -99,6 +131,7 @@ fun AppNavHost() {
             val json2 = java.net.URLDecoder.decode(enc, "UTF-8")
             val ui = kotlinx.serialization.json.Json.decodeFromString<MockResultUi>(json2)
             ReviewScreen(result = ui, onRetrySet = { ids -> navController.navigate("mock/start") }, onBack = { navController.popBackStack() })
+        }
         }
     }
 }

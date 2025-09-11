@@ -11,11 +11,18 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.ui.components.TwoPaneScaffold
+import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.data.ProgressRepository
+import com.mtlc.studyplan.data.UserProgress
 
 @Composable
 fun ProgressScreen() {
     var selected by remember { mutableStateOf(0) }
     val items = remember { listOf("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7") }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val ds = (context as android.content.Context).dataStore
+    val repo = remember { ProgressRepository(ds) }
+    val userProgress by repo.userProgressFlow.collectAsState(initial = UserProgress())
     TwoPaneScaffold(
         list = {
             Text("Progress", style = MaterialTheme.typography.titleLarge)
@@ -39,7 +46,9 @@ fun ProgressScreen() {
             Spacer(Modifier.height(8.dp))
             Text("Selected: ${items.getOrNull(selected) ?: "None"}", style = MaterialTheme.typography.bodyLarge)
             Spacer(Modifier.height(12.dp))
-            LinearProgressIndicator(progress = (selected + 1) / (items.size.toFloat()))
+            Text("Completed tasks: ${userProgress.completedTasks.size}")
+            Text("Streak: ${userProgress.streakCount}")
+            LinearProgressIndicator(progress = { (selected + 1) / (items.size.toFloat()) })
         }
     )
 }
