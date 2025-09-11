@@ -30,7 +30,15 @@ class MockExamViewModel(private val repo: MockExamRepository) : ViewModel() {
     private fun load() {
         viewModelScope.launch {
             val snapshot = repo.snapshotFlow.first()
-            val questions = MockSampleData.questions()
+            val ctx = com.mtlc.studyplan.AppContextHolder.app
+            val questions = run {
+                val packs = ExamPackLoader.listAssetPacks(ctx)
+                val defaultPack = packs.firstOrNull()
+                val pack = defaultPack?.let { ExamPackLoader.loadFromAssets(ctx, it) }
+                pack?.questions?.map { q ->
+                    MockQuestion(id = q.id, section = q.section, text = q.text, options = q.options, correctIndex = q.correctIndex)
+                } ?: MockSampleData.questions()
+            }
             _state.update {
                 it.copy(
                     questions = questions,
@@ -91,4 +99,3 @@ class MockExamViewModel(private val repo: MockExamRepository) : ViewModel() {
         }
     }
 }
-

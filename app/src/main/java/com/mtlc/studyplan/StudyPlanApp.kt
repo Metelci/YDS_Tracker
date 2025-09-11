@@ -7,6 +7,10 @@ class StudyPlanApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Analytics.track(this, "app_open")
+        AppContextHolder.app = this
     }
 }
 
+object AppContextHolder {
+    lateinit var app: Application
+}
