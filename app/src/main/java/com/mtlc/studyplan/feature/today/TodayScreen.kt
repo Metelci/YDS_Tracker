@@ -80,6 +80,7 @@ fun TodayScreen(
     onNavigateToMock: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onReschedule: (String, java.time.LocalDateTime) -> Unit = {_, _ -> },
+    showFloatingActionButton: Boolean = false,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -117,7 +118,7 @@ fun TodayScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (state.sessions.isNotEmpty()) {
+            if (showFloatingActionButton && state.sessions.isNotEmpty()) {
                 FloatingActionButton(
                     onClick = { onStart(state.sessions.first().id) },
                     modifier = Modifier.semantics { contentDescription = "Start next session" }

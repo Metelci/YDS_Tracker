@@ -12,4 +12,19 @@ data class UserProgress(
     val lastCompletionDate: Long = 0L,
     val unlockedAchievements: Set<String> = emptySet(),
 )
+
+data class TaskLog(
+    val taskId: String,
+    val timestampMillis: Long,
+    val minutesSpent: Int,
+    val correct: Boolean,
+    val category: String,
+)
+
+data class WeaknessSummary(
+    val category: String,
+    val total: Int,
+    val incorrect: Int,
+    val incorrectRate: Double,
+)
 //endregion

@@ -5,9 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Today
-import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.Settings
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -34,20 +35,21 @@ import androidx.compose.ui.unit.dp
 fun AppNavHost() {
     val navController = rememberNavController()
     val tabs = listOf(
-        Triple(TODAY_ROUTE, Icons.Filled.Today, "Today"),
-        Triple("practice", Icons.Filled.School, "Practice"),
+        Triple("home", Icons.Filled.Home, "Home"),
+        Triple("tasks", Icons.Filled.ListAlt, "Tasks"),
         Triple("progress", Icons.Filled.ShowChart, "Progress"),
+        Triple("settings", Icons.Filled.Settings, "Settings"),
     )
     Scaffold(
         bottomBar = {
             NavigationBar {
-                val route = navController.currentBackStackEntry?.destination?.route ?: TODAY_ROUTE
+                val route = navController.currentBackStackEntry?.destination?.route ?: "home"
                 tabs.forEach { (r, icon, label) ->
                     NavigationBarItem(
                         selected = route.startsWith(r),
                         onClick = {
                             navController.navigate(r) {
-                                popUpTo(TODAY_ROUTE) { inclusive = false }
+                                popUpTo("home") { inclusive = false }
                                 launchSingleTop = true
                             }
                         },
@@ -55,6 +57,32 @@ fun AppNavHost() {
                         label = { Text(label) }
                     )
                 }
+            }
+        },
+        floatingActionButton = {
+            var showActions by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+            if (showActions) {
+                androidx.compose.material3.ModalBottomSheet(onDismissRequest = { showActions = false }) {
+                    androidx.compose.material3.ListItem(
+                        headlineText = { androidx.compose.material3.Text("Start Session") },
+                        supportingText = { androidx.compose.material3.Text("Jump to Today and begin") },
+                        modifier = androidx.compose.ui.Modifier.clickable {
+                            showActions = false
+                            navController.navigate(TODAY_ROUTE)
+                        }
+                    )
+                    androidx.compose.material3.ListItem(
+                        headlineText = { androidx.compose.material3.Text("Add Quick Note") },
+                        supportingText = { androidx.compose.material3.Text("Save a flashcard idea") },
+                        modifier = androidx.compose.ui.Modifier.clickable {
+                            showActions = false
+                            navController.navigate("quickNote")
+                        }
+                    )
+                }
+            }
+            androidx.compose.material3.ExtendedFloatingActionButton(onClick = { showActions = true }) {
+                androidx.compose.material3.Text("Quick Actions")
             }
         }
     ) { padding ->
@@ -65,14 +93,20 @@ fun AppNavHost() {
         ) {
             composable(WELCOME_ROUTE) {
                 WelcomeRoute(onDone = {
-                    navController.navigate(TODAY_ROUTE) {
+                    navController.navigate("home") {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                         launchSingleTop = true
                     }
                 })
             }
-            todayGraph(navController)  // pass the navController to todayGraph
-        
+            todayGraph(navController)  // includes TODAY_ROUTE
+
+        // Home dashboard
+        composable("home") { com.mtlc.studyplan.feature.home.HomeScreen() }
+
+        // Tasks tab -> full plan
+        composable("tasks") { com.mtlc.studyplan.PlanScreen() }
+
         // Add route for the regular study plan screen
         composable(PLAN_ROUTE) {
             // Use the existing PlanScreen composable from MainActivity
@@ -94,8 +128,9 @@ fun AppNavHost() {
         }
 
         // Large-screen two-pane demos
-        composable("practice") { PracticeScreen() }
         composable("progress") { ProgressScreen() }
+        // Settings placeholder
+        composable("settings") { com.mtlc.studyplan.ui.SettingsScreen() }
         // Mock exam start route
         composable("mock/start") {
             MockExamRoute(onSubmit = { result ->
@@ -142,6 +177,8 @@ fun AppNavHost() {
             val ui = kotlinx.serialization.json.Json.decodeFromString<MockResultUi>(json2)
             ReviewScreen(result = ui, onRetrySet = { ids -> navController.navigate("mock/start") }, onBack = { navController.popBackStack() })
         }
+        // Quick note route (simple sheet)
+        composable("quickNote") { com.mtlc.studyplan.ui.QuickNoteRoute(onClose = { navController.popBackStack() }) }
         }
     }
 }

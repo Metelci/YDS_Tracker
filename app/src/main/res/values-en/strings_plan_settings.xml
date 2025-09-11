@@ -7,4 +7,16 @@
     <string name="plan_settings_total_months_optional">Total months (optional)</string>
     <string name="plan_settings_invalid_input">Please enter a valid date (YYYY-MM-DD) and week count.</string>
     <string name="save">Save</string>
+    <string name="plan_settings_availability_title">Study availability (minutes per day)</string>
+    <string name="plan_settings_mon_minutes">Monday minutes</string>
+    <string name="plan_settings_tue_minutes">Tuesday minutes</string>
+    <string name="plan_settings_wed_minutes">Wednesday minutes</string>
+    <string name="plan_settings_thu_minutes">Thursday minutes</string>
+    <string name="plan_settings_fri_minutes">Friday minutes</string>
+    <string name="plan_settings_sat_minutes">Saturday minutes</string>
+    <string name="plan_settings_sun_minutes">Sunday minutes</string>
+    <string name="plan_settings_use_next_exam_date">Use next exam date</string>
+    <string name="plan_settings_date_pattern_optional">Custom date pattern (optional)</string>
+    <string name="plan_settings_date_pattern_hint">e.g., yyyy-MM-dd or dd.MM.yyyy; leave empty for locale</string>
+    <string name="plan_settings_date_use_locale">Use locale</string>
 </resources>

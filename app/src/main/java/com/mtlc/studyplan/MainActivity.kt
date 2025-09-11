@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,6 +60,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -92,6 +97,7 @@ import com.mtlc.studyplan.data.PlanOverridesStore
 import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.UserPlanOverrides
 import com.mtlc.studyplan.data.UserProgress
+import com.mtlc.studyplan.data.TaskLog
 import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.ui.CustomizePlanScreen
 import com.mtlc.studyplan.ui.EditTaskDialog
@@ -450,6 +456,7 @@ fun PlanScreen() {
     val appContext = context.applicationContext as Context
     val repository = remember { ProgressRepository(appContext.dataStore) }
     val userProgress by repository.userProgressFlow.collectAsState(initial = null)
+    val taskLogs by repository.taskLogsFlow.collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
 
     // Overrides + merged plan
@@ -468,21 +475,26 @@ fun PlanScreen() {
     var editState by remember { mutableStateOf<Triple<String, String?, String?>?>(null) }
     var showAbout by remember { mutableStateOf(false) }
 
-    // Optimize: Pre-calculate all tasks
-    val allTasks = remember { PlanDataSource.planData.flatMap { it.days }.flatMap { it.tasks } }
-    val totalTasks = remember(allTasks) { allTasks.size }
+    // Use the effective (post-merge & post-compression) plan for progress
+    val effectiveTasks = remember(mergedPlanData) { mergedPlanData.flatMap { it.days }.flatMap { it.tasks } }
+    val effectiveTaskIds = remember(effectiveTasks) { effectiveTasks.map { it.id }.toSet() }
+    val totalTasks = remember(effectiveTasks) { effectiveTasks.size }
 
     // Optimize: Use derivedStateOf for progress calculation
-    val progress by remember {
-        derivedStateOf { // Removed <Float>
+    val progress by remember( userProgress, effectiveTaskIds, totalTasks ) {
+        derivedStateOf {
             if (totalTasks > 0 && userProgress != null) {
-                userProgress!!.completedTasks.size.toFloat() / totalTasks
+                val completedInPlan = userProgress!!.completedTasks.count { it in effectiveTaskIds }
+                completedInPlan.toFloat() / totalTasks
             } else 0f
         }
     }
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "Overall Progress Animation")
     val snackbarHostState = remember { SnackbarHostState() }
     var showAchievementsSheet by remember { mutableStateOf(false) }
+    var pendingLogTask by remember { mutableStateOf<Pair<String, String>?>(null) } // taskId to composed text
+    var pendingLogInitialMinutes by remember { mutableStateOf(0) }
+    var pendingLogWeekDay by remember { mutableStateOf<Pair<Int, Int>?>(null) }
 
     val currentProgress = userProgress ?: UserProgress()
 
@@ -492,6 +504,21 @@ fun PlanScreen() {
 
     if (showAbout) {
         AboutSheet(onDismiss = { showAbout = false })
+    }
+
+    pendingLogTask?.let { (taskId, text) ->
+        TaskLogDialog(
+            taskId = taskId,
+            taskText = text,
+            initialMinutes = pendingLogInitialMinutes,
+            onDismiss = { pendingLogTask = null },
+            onSave = { minutes, correct, category ->
+                coroutineScope.launch {
+                    repository.addTaskLog(TaskLog(taskId, System.currentTimeMillis(), minutes, correct, category))
+                }
+                pendingLogTask = null
+            }
+        )
     }
 
     Scaffold(
@@ -530,6 +557,17 @@ fun PlanScreen() {
                     CircularProgressIndicator()
                 }
             } else {
+                val weekStartOffsets = remember(mergedPlanUi) {
+                    var acc = 0
+                    mergedPlanUi.map { week ->
+                        val offset = acc
+                        acc += week.days.size
+                        offset
+                    }
+                }
+
+                val absoluteStartDate = remember(planSettings.startEpochDay) { LocalDate.ofEpochDay(planSettings.startEpochDay) }
+
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     stickyHeader {
                         Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
@@ -542,15 +580,25 @@ fun PlanScreen() {
                             OverallProgressCard(progress = animatedProgress)
                         }
                     }
-                    items(
+                    val dateFormatter = remember(planSettings.dateFormatPattern) {
+                        val p = planSettings.dateFormatPattern?.takeIf { it.isNotBlank() }
+                        if (p != null) runCatching { java.time.format.DateTimeFormatter.ofPattern(p) }.getOrElse { java.time.format.DateTimeFormatter.ISO_LOCAL_DATE }
+                        else java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
+                    }
+
+                    itemsIndexed(
                         items = mergedPlanUi,
-                        key = { it.week }
-                    ) { weekPlan ->
+                        key = { _, it -> it.week }
+                    ) { index, weekPlan ->
+                        val weekStartDate = remember(index, weekStartOffsets, absoluteStartDate) {
+                            absoluteStartDate.plusDays(weekStartOffsets.getOrElse(index) { index * 7 }.toLong())
+                        }
                         WeekCard(
                             weekPlan = weekPlan,
                             completedTasks = currentProgress.completedTasks,
-                            startEpochDay = planSettings.startEpochDay,
-                            onToggleTask = { taskId ->
+                            weekStartDate = weekStartDate,
+                            dateFormatter = dateFormatter,
+                            onToggleTask = { taskId, taskText ->
                                 coroutineScope.launch {
                                     val currentTasks = currentProgress.completedTasks.toMutableSet()
                                     if (currentTasks.contains(taskId)) {
@@ -598,8 +646,17 @@ fun PlanScreen() {
                                             unlockedAchievements = allUnlockedIds
                                         )
                                     )
+                                    // If just completed, prompt for log
+                                    if (currentTasks.contains(taskId)) {
+                                        pendingLogInitialMinutes = estimateDurationMinutes(taskText)
+                                        pendingLogTask = taskId to taskText
+                                    }
                                 }
-                            }
+                            },
+                            onAddBooster = { week, dayIndex, desc, details ->
+                                coroutineScope.launch { planRepo.addCustomTask(week, dayIndex, desc, details) }
+                            },
+                            weaknessSummaries = computeWeakness(taskLogs)
                         )
                     }
                 }
@@ -614,10 +671,33 @@ fun PlanScreen() {
             totalWeeks = cfg.totalWeeks,
             endEpochDay = cfg.endEpochDay,
             totalMonths = cfg.totalMonths,
+            monMinutes = cfg.monMinutes,
+            tueMinutes = cfg.tueMinutes,
+            wedMinutes = cfg.wedMinutes,
+            thuMinutes = cfg.thuMinutes,
+            friMinutes = cfg.friMinutes,
+            satMinutes = cfg.satMinutes,
+            sunMinutes = cfg.sunMinutes,
+            dateFormatPattern = cfg.dateFormatPattern,
             onDismiss = { showPlanSettings = false },
-            onSave = { startEpochDay, weeks, endEpochDay, totalMonths ->
+            onSave = { startEpochDay, weeks, endEpochDay, totalMonths, mon, tue, wed, thu, fri, sat, sun, pattern ->
                 coroutineScope.launch {
-                    settingsStore.update { it.copy(startEpochDay = startEpochDay, totalWeeks = weeks, endEpochDay = endEpochDay, totalMonths = totalMonths) }
+                    settingsStore.update {
+                        it.copy(
+                            startEpochDay = startEpochDay,
+                            totalWeeks = weeks,
+                            endEpochDay = endEpochDay,
+                            totalMonths = totalMonths,
+                            monMinutes = mon,
+                            tueMinutes = tue,
+                            wedMinutes = wed,
+                            thuMinutes = thu,
+                            friMinutes = fri,
+                            satMinutes = sat,
+                            sunMinutes = sun,
+                            dateFormatPattern = pattern,
+                        )
+                    }
                 }
                 showPlanSettings = false
             }
@@ -895,7 +975,15 @@ fun OverallProgressCard(progress: Float) {
 }
 
 @Composable
-fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Long, onToggleTask: (String) -> Unit) {
+fun WeekCard(
+    weekPlan: WeekPlan,
+    completedTasks: Set<String>,
+    weekStartDate: LocalDate,
+    dateFormatter: java.time.format.DateTimeFormatter,
+    onToggleTask: (String, String) -> Unit,
+    onAddBooster: (week: Int, dayIndex: Int, desc: String, details: String?) -> Unit,
+    weaknessSummaries: Map<String, com.mtlc.studyplan.data.WeaknessSummary>,
+) {
     val context = LocalContext.current
     var isExpanded by remember { mutableStateOf(weekPlan.week == 1) }
 
@@ -919,12 +1007,8 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
     }
     val titleColor = monthColors[(weekPlan.month - 1) % monthColors.size]
 
-    val weekStartDate = remember(startEpochDay, weekPlan.week) {
-        LocalDate.ofEpochDay(startEpochDay).plusDays(((weekPlan.week - 1) * 7L))
-    }
-    val weekEndDate = remember(weekStartDate) { weekStartDate.plusDays(6) }
-    val dateFormatterShort = remember { java.time.format.DateTimeFormatter.ofPattern("MMM d") }
-    val dateFormatterFull = remember { java.time.format.DateTimeFormatter.ofPattern("MMM d, yyyy") }
+    val weekEndDate = remember(weekStartDate, weekPlan) { weekStartDate.plusDays((weekPlan.days.size - 1).coerceAtLeast(0).toLong()) }
+    val df = remember(dateFormatter) { dateFormatter }
 
     Card(
         modifier = Modifier
@@ -939,12 +1023,7 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
                 Column(modifier = Modifier.weight(1f)) {
                     Text(weekPlan.title, style = MaterialTheme.typography.titleMedium, color = titleColor, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(4.dp))
-                    val weekRange = if (weekStartDate.year == weekEndDate.year) {
-                        if (weekStartDate.month == weekEndDate.month) "${weekStartDate.format(dateFormatterShort)} – ${weekEndDate.dayOfMonth}"
-                        else "${weekStartDate.format(dateFormatterShort)} – ${weekEndDate.format(dateFormatterShort)}"
-                    } else {
-                        "${weekStartDate.format(dateFormatterFull)} – ${weekEndDate.format(dateFormatterFull)}"
-                    }
+                    val weekRange = "${weekStartDate.format(df)} - ${weekEndDate.format(df)}"
                     Text(weekRange, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(tasksCompleted.format(completedInWeek, weekTasks.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -953,7 +1032,19 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
             AnimatedVisibility(visible = isExpanded) {
                 Column {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-                    weekPlan.days.forEachIndexed { idx, dayPlan -> DaySection(dayPlan = dayPlan, dayIndex = idx, weekStartDate = weekStartDate, completedTasks = completedTasks, onToggleTask = onToggleTask) }
+                    weekPlan.days.forEachIndexed { idx, dayPlan ->
+                        DaySection(
+                            weekNumber = weekPlan.week,
+                            dayPlan = dayPlan,
+                            dayIndex = idx,
+                            weekStartDate = weekStartDate,
+                            completedTasks = completedTasks,
+                            dateFormatter = dateFormatter,
+                            weaknessSummaries = weaknessSummaries,
+                            onToggleTask = onToggleTask,
+                            onAddBooster = onAddBooster,
+                        )
+                    }
                 }
             }
         }
@@ -961,10 +1052,20 @@ fun WeekCard(weekPlan: WeekPlan, completedTasks: Set<String>, startEpochDay: Lon
 }
 
 @Composable
-fun DaySection(dayPlan: DayPlan, dayIndex: Int, weekStartDate: LocalDate, completedTasks: Set<String>, onToggleTask: (String) -> Unit) {
+fun DaySection(
+    weekNumber: Int,
+    dayPlan: DayPlan,
+    dayIndex: Int,
+    weekStartDate: LocalDate,
+    completedTasks: Set<String>,
+    dateFormatter: java.time.format.DateTimeFormatter,
+    weaknessSummaries: Map<String, com.mtlc.studyplan.data.WeaknessSummary>,
+    onToggleTask: (String, String) -> Unit,
+    onAddBooster: (week: Int, dayIndex: Int, desc: String, details: String?) -> Unit,
+) {
     val context = LocalContext.current
     val dayDate = remember(weekStartDate, dayIndex) { weekStartDate.plusDays(dayIndex.toLong()) }
-    val dateFormatter = remember { java.time.format.DateTimeFormatter.ofPattern("MMM d") }
+    val df = remember(dateFormatter) { dateFormatter }
     Column(modifier = Modifier.padding(bottom = 12.dp)) {
         val dayResource = when (dayPlan.day) {
             PlanDataSource.getAppContext().getString(R.string.monday) -> R.string.monday
@@ -980,17 +1081,35 @@ fun DaySection(dayPlan: DayPlan, dayIndex: Int, weekStartDate: LocalDate, comple
             dayResource?.let { context.getString(it) } ?: dayPlan.day
         }
         Text(
-            text = "$dayText (${dayDate.format(dateFormatter)})",
+            text = "$dayText – ${dayDate.format(df)}",
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        dayPlan.tasks.forEach { task -> TaskItem(task = task, isCompleted = completedTasks.contains(task.id), onToggleTask = onToggleTask) }
+        dayPlan.tasks.forEach { task -> TaskItem(task = task, isCompleted = completedTasks.contains(task.id), onToggleTask = { onToggleTask(task.id, task.desc + " " + (task.details ?: "")) }) }
+
+        // Booster suggestion based on weaknesses
+        val topWeak = remember(weaknessSummaries) {
+            weaknessSummaries.values.sortedByDescending { it.incorrectRate }.take(1).firstOrNull { it.total >= 3 && it.incorrectRate >= 0.4 }
+        }
+        if (topWeak != null) {
+            Spacer(Modifier.height(6.dp))
+            val boosterTitle = PlanDataSource.getAppContext().getString(R.string.booster_suggestion)
+            val desc = remember(topWeak) { "Booster: ${topWeak.category.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }} – 15 dk" }
+            val details = PlanDataSource.getAppContext().getString(R.string.booster_details, topWeak.category)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "$boosterTitle: ${topWeak.category} (${(topWeak.incorrectRate * 100).toInt()}%)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
+                Spacer(Modifier.width(8.dp))
+                TextButton(onClick = { onAddBooster(weekNumber, dayIndex, desc, details) }) {
+                    Text(PlanDataSource.getAppContext().getString(R.string.add_booster))
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
+fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: () -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Column(
@@ -1008,7 +1127,7 @@ fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: (String) -> Unit) {
         ) {
             Checkbox(
                 checked = isCompleted,
-                onCheckedChange = { onToggleTask(task.id) }
+                onCheckedChange = { onToggleTask() }
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -1079,4 +1198,75 @@ private fun com.mtlc.studyplan.data.WeekPlan.toUiWeekPlan(): WeekPlan =
         title = this.title,
         days = this.days.map { d -> DayPlan(d.day, d.tasks.map { t -> Task(t.id, t.desc, t.details) }) }
     )
+
+private fun estimateDurationMinutes(text: String): Int {
+    val s = text.lowercase()
+    Regex("(\\d{2,3})\\s*(-\\s*(\\d{2,3}))?\\s*(dk|dakika|minute|min)").find(s)?.let { m ->
+        val a = m.groupValues[1].toIntOrNull() ?: return@let null
+        val b = m.groupValues.getOrNull(3)?.toIntOrNull()
+        return b?.let { (a + it) / 2 } ?: a
+    }
+    return when {
+        s.contains("tam deneme") || s.contains("full exam") -> 180
+        s.contains("mini deneme") || s.contains("mini exam") -> 70
+        s.contains("okuma") || s.contains("reading") -> 45
+        s.contains("kelime") || s.contains("vocab") -> 30
+        s.contains("analiz") || s.contains("analysis") -> 30
+        s.contains("dinleme") || s.contains("listening") -> 30
+        s.contains("hizli pratik") || s.contains("pratik") || s.contains("drill") -> 25
+        s.contains("gramer") || s.contains("grammar") -> 40
+        else -> 30
+    }
+}
+
+private fun categorizeTask(text: String): String {
+    val s = text.lowercase()
+    return when {
+        s.contains("kelime") || s.contains("vocab") -> "vocabulary"
+        s.contains("okuma") || s.contains("reading") -> "reading"
+        s.contains("dinleme") || s.contains("listening") -> "listening"
+        s.contains("deneme") || s.contains("exam") -> "exam"
+        s.contains("analiz") || s.contains("analysis") -> "analysis"
+        s.contains("gramer") || s.contains("grammar") -> "grammar"
+        else -> "general"
+    }
+}
+
+@Composable
+private fun computeWeakness(logs: List<com.mtlc.studyplan.data.TaskLog>): Map<String, com.mtlc.studyplan.data.WeaknessSummary> {
+    val grouped = logs.groupBy { it.category.ifBlank { "general" } }
+    return grouped.mapValues { (_, list) ->
+        val total = list.size
+        val incorrect = list.count { !it.correct }
+        val rate = if (total > 0) incorrect.toDouble() / total else 0.0
+        com.mtlc.studyplan.data.WeaknessSummary(category = list.first().category, total = total, incorrect = incorrect, incorrectRate = rate)
+    }
+}
+
+@Composable
+fun TaskLogDialog(taskId: String, taskText: String, initialMinutes: Int, onDismiss: () -> Unit, onSave: (minutes: Int, correct: Boolean, category: String) -> Unit) {
+    var minutesText by remember { mutableStateOf(initialMinutes.toString()) }
+    var correct by remember { mutableStateOf(true) }
+    val defaultCategory = remember(taskText) { categorizeTask(taskText) }
+    var categoryText by remember { mutableStateOf(defaultCategory) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = PlanDataSource.getAppContext().getString(R.string.log_task_result)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(text = taskText, style = MaterialTheme.typography.bodySmall)
+                OutlinedTextField(value = minutesText, onValueChange = { minutesText = it.filter { ch -> ch.isDigit() } }, label = { Text(PlanDataSource.getAppContext().getString(R.string.minutes_spent)) })
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = correct, onCheckedChange = { correct = it })
+                    Spacer(Modifier.width(8.dp))
+                    Text(text = PlanDataSource.getAppContext().getString(R.string.mark_correct))
+                }
+                OutlinedTextField(value = categoryText, onValueChange = { categoryText = it }, label = { Text(PlanDataSource.getAppContext().getString(R.string.category_label)) })
+            }
+        },
+        confirmButton = { TextButton(onClick = { onSave(minutesText.toIntOrNull() ?: 0, correct, categoryText.ifBlank { defaultCategory }) }) { Text(text = PlanDataSource.getAppContext().getString(R.string.save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(text = PlanDataSource.getAppContext().getString(R.string.cancel)) } }
+    )
+}
 //endregion

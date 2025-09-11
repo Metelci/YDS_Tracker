@@ -63,3 +63,25 @@ Highlights
 - New: First‑run Welcome screen with concise onboarding and a discreet Material icon.
 - Fix: Progress screen crash due to multiple DataStores for the same file (now uses application context).
 - Polish: Tokenized dialog paddings and refined welcome copy and visuals.
+## 1.9.0 — Time-aware scheduling, Home dashboard, boosters
+
+Highlights
+- Time-aware plan: align to start weekday and exact exam date; plan is trimmed to the precise number of days.
+- Flexible study slots: set minutes per day; scheduler distributes tasks into those budgets, prioritizing high‑yield items.
+- Home tab: unified dashboard with exam countdown, today’s tasks, streak, and overall progress.
+- Persistent Quick Actions: global FAB for “Start Session” and “Add Quick Note/Flashcard”.
+- Progress now uses the effective (post‑compression) plan for accurate percentages.
+- Auto-fill End Date from next exam; date format presets and locale support.
+- Log time + correctness after tasks; booster suggestions for weak categories with one‑tap add.
+
+Changes
+- Added PlanSettings fields for per‑day minutes and custom date format.
+- Plan pipeline: start weekday alignment → end date trimming → availability‑based weekly packing → overrides merge.
+- UI: dates shown beside day names; presets for date formats.
+- Navigation: bottom tabs (Home, Tasks, Progress, Settings).
+- New screens: Home dashboard, Quick Note, Settings (with Plan Settings launcher).
+- Today screen FAB is opt‑in to avoid overlapping with global FAB.
+
+Internal
+- DataStore: lightweight task logs (time, correctness, category) with simple encoding.
+- Weakness detection computes incorrect rates per category.

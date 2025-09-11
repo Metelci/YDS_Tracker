@@ -189,6 +189,13 @@
     <string name="final_review_exam_camp_short">Final Review and Exam Camp</string>
     <string name="prep_period_note">Preparation period is now the first 26 weeks</string>
     <string name="expand_collapse">Expand/Collapse</string>
+    <string name="log_task_result">Log Task Result</string>
+    <string name="minutes_spent">Minutes Spent</string>
+    <string name="mark_correct">Mark as Correct</string>
+    <string name="category_label">Category</string>
+    <string name="booster_suggestion">Booster suggestion</string>
+    <string name="add_booster">Add booster</string>
+    <string name="open_plan_settings">Open Plan Settings</string>
 
     <!-- Green book topics continuation -->
     <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>

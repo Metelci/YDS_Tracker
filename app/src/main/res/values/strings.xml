@@ -194,6 +194,13 @@
     <string name="final_review_exam_camp_short">Final Review and Exam Camp</string>
     <string name="prep_period_note">Preparation period is now the first 26 weeks</string>
     <string name="expand_collapse">Expand/Collapse</string>
+    <string name="log_task_result">Görev Sonucunu Kaydet</string>
+    <string name="minutes_spent">Harcanan Dakika</string>
+    <string name="mark_correct">Doğru olarak işaretle</string>
+    <string name="category_label">Kategori</string>
+    <string name="booster_suggestion">Takviye önerisi</string>
+    <string name="add_booster">Takviye ekle</string>
+    <string name="open_plan_settings">Plan Ayarlarını Aç</string>
 
     <!-- Green book topics continuation -->
     <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>
