@@ -21,6 +21,8 @@ import com.mtlc.studyplan.feature.review.MockResultUi
 import com.mtlc.studyplan.feature.review.ReviewScreen
 import com.mtlc.studyplan.feature.practice.PracticeScreen
 import com.mtlc.studyplan.feature.progress.ProgressScreen
+import com.mtlc.studyplan.feature.welcome.WELCOME_ROUTE
+import com.mtlc.studyplan.feature.welcome.WelcomeRoute
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,9 +60,17 @@ fun AppNavHost() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = TODAY_ROUTE,
+            startDestination = WELCOME_ROUTE,
             modifier = androidx.compose.ui.Modifier.padding(padding)
         ) {
+            composable(WELCOME_ROUTE) {
+                WelcomeRoute(onDone = {
+                    navController.navigate(TODAY_ROUTE) {
+                        popUpTo(WELCOME_ROUTE) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                })
+            }
             todayGraph(navController)  // pass the navController to todayGraph
         
         // Add route for the regular study plan screen

@@ -55,3 +55,11 @@ Details
 - metrics: `Analytics.track()` via `WorkManager`; logs only in debug; resilient to process death.
 - theme: Added `Spacing` tokens and `Elevations`. Replaced ad-hoc paddings with 8-pt grid values.
 - dialogs: Tokenized paddings for EditTaskDialog and PlanSettingsDialog.
+## v1.8.1
+
+Date: 2025-09-11
+
+Highlights
+- New: First‑run Welcome screen with concise onboarding and a discreet Material icon.
+- Fix: Progress screen crash due to multiple DataStores for the same file (now uses application context).
+- Polish: Tokenized dialog paddings and refined welcome copy and visuals.

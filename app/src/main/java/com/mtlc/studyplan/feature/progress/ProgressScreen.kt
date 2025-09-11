@@ -22,7 +22,7 @@ fun ProgressScreen() {
     var selected by remember { mutableStateOf(0) }
     val items = remember { listOf("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7") }
     val context = androidx.compose.ui.platform.LocalContext.current
-    val ds = (context as android.content.Context).dataStore
+    val ds = (context.applicationContext as android.content.Context).dataStore
     val repo = remember { ProgressRepository(ds) }
     val userProgress by repo.userProgressFlow.collectAsState(initial = UserProgress())
     TwoPaneScaffold(
