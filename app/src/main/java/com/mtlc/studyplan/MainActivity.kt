@@ -86,9 +86,12 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.mtlc.studyplan.data.ProgressRepository
+import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.data.PlanOverridesStore
 import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.UserPlanOverrides
+import com.mtlc.studyplan.data.UserProgress
 import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.ui.CustomizePlanScreen
 import com.mtlc.studyplan.ui.EditTaskDialog
@@ -105,12 +108,7 @@ data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
 data class Achievement(val id: String, val title: String, val description: String, val condition: (UserProgress) -> Boolean)
 data class ExamInfo(val name: String, val applicationStart: LocalDate, val applicationEnd: LocalDate, val examDate: LocalDate)
-data class UserProgress(
-    val completedTasks: Set<String> = emptySet(),
-    val streakCount: Int = 0,
-    val lastCompletionDate: Long = 0L,
-    val unlockedAchievements: Set<String> = emptySet(),
-)
+// Use UserProgress from data module
 //endregion
 
 //region VERİ KAYNAKLARI
@@ -350,34 +348,7 @@ object ExamCalendarDataSource {
 //endregion
 
 //region DATASTORE VE REPOSITORY
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.DATASTORE_NAME)
-
-class ProgressRepository(private val dataStore: DataStore<Preferences>) {
-    private object Keys {
-        val COMPLETED_TASKS = stringSetPreferencesKey("completed_tasks")
-        val STREAK_COUNT = intPreferencesKey("streak_count")
-        val LAST_COMPLETION_DATE = longPreferencesKey("last_completion_date")
-        val UNLOCKED_ACHIEVEMENTS = stringSetPreferencesKey("unlocked_achievements")
-    }
-
-    val userProgressFlow = dataStore.data.map { preferences ->
-        UserProgress(
-            completedTasks = preferences[Keys.COMPLETED_TASKS] ?: emptySet(),
-            streakCount = preferences[Keys.STREAK_COUNT] ?: 0,
-            lastCompletionDate = preferences[Keys.LAST_COMPLETION_DATE] ?: 0L,
-            unlockedAchievements = preferences[Keys.UNLOCKED_ACHIEVEMENTS] ?: emptySet()
-        )
-    }
-
-    suspend fun saveProgress(progress: UserProgress) {
-        dataStore.edit { preferences ->
-            preferences[Keys.COMPLETED_TASKS] = progress.completedTasks
-            preferences[Keys.STREAK_COUNT] = progress.streakCount
-            preferences[Keys.LAST_COMPLETION_DATE] = progress.lastCompletionDate
-            preferences[Keys.UNLOCKED_ACHIEVEMENTS] = progress.unlockedAchievements
-        }
-    }
-}
+// Centralized in data module: use applicationContext.dataStore via com.mtlc.studyplan.data.dataStore
 //endregion
 
 //region BİLDİRİM VE ARKA PLAN İŞLERİ
@@ -476,13 +447,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PlanScreen() {
     val context = LocalContext.current
-    val repository = remember { ProgressRepository(context.dataStore) }
+    val appContext = context.applicationContext as Context
+    val repository = remember { ProgressRepository(appContext.dataStore) }
     val userProgress by repository.userProgressFlow.collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
 
     // Overrides + merged plan
-    val overridesStore = remember { PlanOverridesStore(context.dataStore) }
-    val settingsStore = remember { com.mtlc.studyplan.data.PlanSettingsStore(context.dataStore) }
+    val overridesStore = remember { PlanOverridesStore(appContext.dataStore) }
+    val settingsStore = remember { com.mtlc.studyplan.data.PlanSettingsStore(appContext.dataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
     val mergedPlanData by planRepo.planFlow.collectAsState(initial = emptyList())
     val mergedPlanUi = remember(mergedPlanData) {
