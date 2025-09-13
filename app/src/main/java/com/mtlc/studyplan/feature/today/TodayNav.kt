@@ -22,6 +22,9 @@ fun NavGraphBuilder.todayGraph(navController: NavController) {
             },
             onNavigateToMock = {
                 navController.navigate("mock/start")
+            },
+            onNavigateToFocus = { id ->
+                navController.navigate(focusRoute(id))
             }
         )
     }
@@ -31,6 +34,10 @@ fun NavGraphBuilder.todayGraph(navController: NavController) {
     }
     composable(FOCUS_ROUTE) { backStackEntry ->
         val id = backStackEntry.arguments?.getString("id").orEmpty()
-        FocusModeScreen(sessionId = id, onExit = { navController.popBackStack() })
+        com.mtlc.studyplan.feature.focus.FocusModeScreen(
+            taskId = id,
+            taskTitle = "Study Session", // Could be enhanced to pass actual task title
+            onExit = { navController.popBackStack() }
+        )
     }
 }

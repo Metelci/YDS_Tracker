@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,6 +39,7 @@ fun AppNavHost() {
         Triple("home", Icons.Filled.Home, "Home"),
         Triple("tasks", Icons.Filled.ListAlt, "Tasks"),
         Triple("progress", Icons.Filled.ShowChart, "Progress"),
+        Triple("social", Icons.Filled.People, "Social"),
         Triple("settings", Icons.Filled.Settings, "Settings"),
     )
     Scaffold(
@@ -129,6 +131,8 @@ fun AppNavHost() {
 
         // Large-screen two-pane demos
         composable("progress") { ProgressScreen() }
+        // Social features
+        composable("social") { com.mtlc.studyplan.social.SocialScreen() }
         // Settings placeholder
         composable("settings") { com.mtlc.studyplan.ui.SettingsScreen() }
         // Mock exam start route

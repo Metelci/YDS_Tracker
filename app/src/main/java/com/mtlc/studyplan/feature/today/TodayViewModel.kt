@@ -28,7 +28,10 @@ val state: StateFlow<TodayUiState> = _state.asStateFlow()
 
 private fun load() {
 viewModelScope.launch {
-_state.update { it.copy(isLoading = false, sessions = FakeTodayData.sessions) }
+    // Bind pull-to-refresh to UI state by toggling isLoading around the load
+    _state.update { it.copy(isLoading = true) }
+    // In a real app, call repositories here. For now, load sample data.
+    _state.update { it.copy(isLoading = false, sessions = FakeTodayData.sessions) }
 }
 }
 

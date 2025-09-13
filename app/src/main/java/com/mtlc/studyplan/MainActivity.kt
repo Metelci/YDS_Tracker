@@ -101,6 +101,20 @@ import com.mtlc.studyplan.data.TaskLog
 import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.ui.CustomizePlanScreen
 import com.mtlc.studyplan.ui.EditTaskDialog
+import com.mtlc.studyplan.ui.components.TooltipManager
+import com.mtlc.studyplan.ui.components.TooltipTrigger
+import com.mtlc.studyplan.ui.components.UndoManager
+import com.mtlc.studyplan.ui.components.UndoAction
+import com.mtlc.studyplan.ui.components.UndoSnackbarEffect
+import com.mtlc.studyplan.ui.components.rememberUndoManager
+import com.mtlc.studyplan.ui.components.PriorityIndicator
+import com.mtlc.studyplan.ui.components.TaskPriority
+import com.mtlc.studyplan.ui.components.TaskCategoryChip
+import com.mtlc.studyplan.ui.components.EstimatedTimeChip
+import com.mtlc.studyplan.ui.components.SmartSuggestionsCard
+import com.mtlc.studyplan.ai.SmartScheduler
+import com.mtlc.studyplan.ai.SmartSuggestion
+import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.utils.Constants
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -459,6 +473,41 @@ fun PlanScreen() {
     val taskLogs by repository.taskLogsFlow.collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
 
+    // Tooltip/Onboarding state
+    val onboardingRepo = remember { OnboardingRepository(appContext.dataStore) }
+    val shownTooltips by onboardingRepo.shownTooltips.collectAsState(initial = emptySet())
+    val isOnboardingComplete by onboardingRepo.isOnboardingCompleted.collectAsState(initial = false)
+    var currentTooltipId by remember { mutableStateOf<String?>(null) }
+
+    // Undo system
+    val undoManager = rememberUndoManager()
+    var recentUndoAction by remember { mutableStateOf<UndoAction?>(null) }
+
+    // Current week view state
+    var showAllWeeks by remember { mutableStateOf(false) }
+
+    // Smart scheduling
+    val smartScheduler = remember { SmartScheduler() }
+    var smartSuggestions by remember { mutableStateOf<List<SmartSuggestion>>(emptyList()) }
+    var dismissedSuggestions by remember { mutableStateOf<Set<String>>(emptySet()) }
+
+    // Generate smart suggestions
+    LaunchedEffect(taskLogs, userProgress) {
+        if (taskLogs.isNotEmpty() && userProgress != null) {
+            val pattern = smartScheduler.analyzeUserPatterns(taskLogs, userProgress)
+            val suggestions = smartScheduler.generateSuggestions(pattern, taskLogs, userProgress)
+            smartSuggestions = suggestions.filterNot { it.id in dismissedSuggestions }
+        }
+    }
+
+    // Show next tooltip in sequence if onboarding not complete
+    LaunchedEffect(shownTooltips, isOnboardingComplete) {
+        if (!isOnboardingComplete) {
+            val nextTooltip = OnboardingRepository.onboardingFlow.firstOrNull { it !in shownTooltips }
+            currentTooltipId = nextTooltip
+        }
+    }
+
     // Overrides + merged plan
     val overridesStore = remember { PlanOverridesStore(appContext.dataStore) }
     val settingsStore = remember { com.mtlc.studyplan.data.PlanSettingsStore(appContext.dataStore) }
@@ -498,6 +547,14 @@ fun PlanScreen() {
 
     val currentProgress = userProgress ?: UserProgress()
 
+    // Handle undo snackbar
+    UndoSnackbarEffect(
+        undoManager = undoManager,
+        snackbarHostState = snackbarHostState,
+        recentAction = recentUndoAction,
+        onActionConsumed = { recentUndoAction = null }
+    )
+
     if (showAchievementsSheet) {
         AchievementsSheet(unlockedAchievementIds = currentProgress.unlockedAchievements, onDismiss = { showAchievementsSheet = false })
     }
@@ -521,10 +578,34 @@ fun PlanScreen() {
         )
     }
 
-    Scaffold(
-        topBar = { if (!showCustomize) MainHeader(onOpenCustomize = { showCustomize = true }, onOpenAbout = { showAbout = true }, onOpenPlanSettings = { showPlanSettings = true }) },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-    ) { paddingValues ->
+    TooltipManager(
+        tooltips = OnboardingRepository.availableTooltips,
+        currentTooltipId = currentTooltipId,
+        onDismiss = { tooltipId ->
+            coroutineScope.launch {
+                onboardingRepo.markTooltipShown(tooltipId)
+                // Mark onboarding complete if all main tooltips shown
+                if (OnboardingRepository.onboardingFlow.all { it in (shownTooltips + tooltipId) }) {
+                    onboardingRepo.markOnboardingCompleted()
+                }
+            }
+            currentTooltipId = null
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                if (!showCustomize)
+                    MainHeader(
+                        onOpenCustomize = { showCustomize = true },
+                        onOpenAbout = { showAbout = true },
+                        onOpenPlanSettings = { showPlanSettings = true },
+                        showTooltips = !isOnboardingComplete,
+                        shownTooltips = shownTooltips,
+                        onShowTooltip = { tooltipId -> currentTooltipId = tooltipId }
+                    )
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+        ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -568,16 +649,94 @@ fun PlanScreen() {
 
                 val absoluteStartDate = remember(planSettings.startEpochDay) { LocalDate.ofEpochDay(planSettings.startEpochDay) }
 
+                // Calculate current week based on start date
+                val currentWeek = remember(absoluteStartDate) {
+                    val today = LocalDate.now()
+                    val daysSinceStart = ChronoUnit.DAYS.between(absoluteStartDate, today)
+                    val weekNumber = (daysSinceStart / 7).toInt() + 1
+                    weekNumber.coerceAtLeast(1).coerceAtMost(mergedPlanUi.size)
+                }
+
+                // Filter weeks to show
+                val weeksToShow = remember(mergedPlanUi, showAllWeeks, currentWeek) {
+                    if (showAllWeeks) {
+                        mergedPlanUi
+                    } else {
+                        mergedPlanUi.filter { week ->
+                            // Show current week and 1 week before/after
+                            week.week in (currentWeek - 1)..(currentWeek + 1)
+                        }.ifEmpty { mergedPlanUi.take(3) } // Fallback to first 3 weeks
+                    }
+                }
+
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     stickyHeader {
                         Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                             GamificationHeader(
                                 streakCount = currentProgress.streakCount,
                                 achievementsCount = currentProgress.unlockedAchievements.size,
-                                onAchievementsClick = { showAchievementsSheet = true }
+                                onAchievementsClick = { showAchievementsSheet = true },
+                                showTooltips = !isOnboardingComplete,
+                                shownTooltips = shownTooltips,
+                                onShowTooltip = { tooltipId -> currentTooltipId = tooltipId }
                             )
                             ExamCountdownCard()
                             OverallProgressCard(progress = animatedProgress)
+
+                            // Smart suggestions
+                            if (smartSuggestions.isNotEmpty()) {
+                                SmartSuggestionsCard(
+                                    suggestions = smartSuggestions,
+                                    onSuggestionClick = { suggestion ->
+                                        // Handle suggestion click
+                                        when (suggestion.type) {
+                                            com.mtlc.studyplan.ai.SuggestionType.WEAK_AREA_FOCUS -> {
+                                                // Could navigate to specific category or add booster
+                                                suggestion.category?.let { category ->
+                                                    // Add a booster task for the weak category
+                                                    coroutineScope.launch {
+                                                        planRepo.addCustomTask(
+                                                            currentWeek,
+                                                            0, // Add to first day of current week
+                                                            "Focus: $category",
+                                                            "Targeted practice based on AI analysis of your weak areas"
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            else -> {
+                                                // For other suggestions, just dismiss
+                                                dismissedSuggestions = dismissedSuggestions + suggestion.id
+                                            }
+                                        }
+                                    },
+                                    onDismissSuggestion = { suggestion ->
+                                        dismissedSuggestions = dismissedSuggestions + suggestion.id
+                                        smartSuggestions = smartSuggestions.filterNot { it.id == suggestion.id }
+                                    }
+                                )
+                            }
+
+                            // View toggle button
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                OutlinedButton(
+                                    onClick = { showAllWeeks = !showAllWeeks },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = if (showAllWeeks)
+                                            context.getString(R.string.show_current_period)
+                                        else
+                                            context.getString(R.string.show_all_weeks),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
                         }
                     }
                     val dateFormatter = remember(planSettings.dateFormatPattern) {
@@ -587,11 +746,12 @@ fun PlanScreen() {
                     }
 
                     itemsIndexed(
-                        items = mergedPlanUi,
+                        items = weeksToShow,
                         key = { _, it -> it.week }
-                    ) { index, weekPlan ->
-                        val weekStartDate = remember(index, weekStartOffsets, absoluteStartDate) {
-                            absoluteStartDate.plusDays(weekStartOffsets.getOrElse(index) { index * 7 }.toLong())
+                    ) { displayIndex, weekPlan ->
+                        val originalIndex = mergedPlanUi.indexOfFirst { it.week == weekPlan.week }
+                        val weekStartDate = remember(originalIndex, weekStartOffsets, absoluteStartDate) {
+                            absoluteStartDate.plusDays(weekStartOffsets.getOrElse(originalIndex) { originalIndex * 7 }.toLong())
                         }
                         WeekCard(
                             weekPlan = weekPlan,
@@ -600,8 +760,11 @@ fun PlanScreen() {
                             dateFormatter = dateFormatter,
                             onToggleTask = { taskId, taskText ->
                                 coroutineScope.launch {
+                                    val wasCompleted = currentProgress.completedTasks.contains(taskId)
+                                    val previousProgress = currentProgress.copy()
                                     val currentTasks = currentProgress.completedTasks.toMutableSet()
-                                    if (currentTasks.contains(taskId)) {
+
+                                    if (wasCompleted) {
                                         currentTasks.remove(taskId)
                                     } else {
                                         currentTasks.add(taskId)
@@ -638,16 +801,29 @@ fun PlanScreen() {
                                     }
                                     val allUnlockedIds = currentProgress.unlockedAchievements + newUnlocked.map { it.id }
 
-                                    repository.saveProgress(
-                                        currentProgress.copy(
-                                            completedTasks = currentTasks,
-                                            streakCount = newStreak,
-                                            lastCompletionDate = if(currentTasks.size > currentProgress.completedTasks.size) today.timeInMillis else currentProgress.lastCompletionDate,
-                                            unlockedAchievements = allUnlockedIds
-                                        )
+                                    val newProgress = currentProgress.copy(
+                                        completedTasks = currentTasks,
+                                        streakCount = newStreak,
+                                        lastCompletionDate = if(currentTasks.size > currentProgress.completedTasks.size) today.timeInMillis else currentProgress.lastCompletionDate,
+                                        unlockedAchievements = allUnlockedIds
                                     )
-                                    // If just completed, prompt for log
-                                    if (currentTasks.contains(taskId)) {
+
+                                    repository.saveProgress(newProgress)
+
+                                    // Create undo action
+                                    if (!wasCompleted) {
+                                        // Task was just completed - create undo action
+                                        val undoAction = UndoAction(
+                                            id = "task_$taskId",
+                                            actionDescription = "Task completed",
+                                            undoAction = {
+                                                repository.saveProgress(previousProgress)
+                                            }
+                                        )
+                                        undoManager.addUndoAction(undoAction)
+                                        recentUndoAction = undoAction
+
+                                        // Prompt for log
                                         pendingLogInitialMinutes = estimateDurationMinutes(taskText)
                                         pendingLogTask = taskId to taskText
                                     }
@@ -703,12 +879,19 @@ fun PlanScreen() {
             }
         )
     }
-
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class) // Bu satırı ekleyin
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainHeader(onOpenCustomize: () -> Unit, onOpenAbout: () -> Unit, onOpenPlanSettings: () -> Unit) {
+fun MainHeader(
+    onOpenCustomize: () -> Unit,
+    onOpenAbout: () -> Unit,
+    onOpenPlanSettings: () -> Unit,
+    showTooltips: Boolean = false,
+    shownTooltips: Set<String> = emptySet(),
+    onShowTooltip: (String) -> Unit = {}
+) {
     val context = LocalContext.current
     val currentLanguage = remember { LanguageManager.getCurrentLanguage(context) }
 
@@ -733,39 +916,59 @@ fun MainHeader(onOpenCustomize: () -> Unit, onOpenAbout: () -> Unit, onOpenPlanS
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                IconButton(onClick = onOpenCustomize) {
-                    Icon(imageVector = Icons.Default.EditCalendar, contentDescription = PlanDataSource.getAppContext().getString(R.string.customize_cd))
+                TooltipTrigger(
+                    tooltipId = "customize_plan",
+                    isVisible = showTooltips && "customize_plan" !in shownTooltips,
+                    onShowTooltip = onShowTooltip
+                ) {
+                    IconButton(onClick = onOpenCustomize) {
+                        Icon(imageVector = Icons.Default.EditCalendar, contentDescription = PlanDataSource.getAppContext().getString(R.string.customize_cd))
+                    }
                 }
-                IconButton(onClick = onOpenPlanSettings) {
-                    Icon(imageVector = Icons.Default.EventAvailable, contentDescription = PlanDataSource.getAppContext().getString(R.string.plan_settings_title))
+                TooltipTrigger(
+                    tooltipId = "plan_settings",
+                    isVisible = showTooltips && "plan_settings" !in shownTooltips,
+                    onShowTooltip = onShowTooltip
+                ) {
+                    IconButton(onClick = onOpenPlanSettings) {
+                        Icon(imageVector = Icons.Default.EventAvailable, contentDescription = PlanDataSource.getAppContext().getString(R.string.plan_settings_title))
+                    }
                 }
                 IconButton(onClick = onOpenAbout) {
                     Icon(imageVector = Icons.Default.Info, contentDescription = PlanDataSource.getAppContext().getString(R.string.about_title))
                 }
-                Text(
-                    text = "TR",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = if (currentLanguage == "tr") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .clickable {
-                            LanguageManager.setLanguage(context, "tr")
-                            (context as? MainActivity)?.recreate()
-                        }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-                Text(
-                    text = "EN",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = if (currentLanguage == "en") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .clickable {
-                            LanguageManager.setLanguage(context, "en")
-                            (context as? MainActivity)?.recreate()
-                        }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
+                TooltipTrigger(
+                    tooltipId = "language_switch",
+                    isVisible = showTooltips && "language_switch" !in shownTooltips,
+                    onShowTooltip = onShowTooltip
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "TR",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (currentLanguage == "tr") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .clickable {
+                                    LanguageManager.setLanguage(context, "tr")
+                                    (context as? MainActivity)?.recreate()
+                                }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                        Text(
+                            text = "EN",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (currentLanguage == "en") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .clickable {
+                                    LanguageManager.setLanguage(context, "en")
+                                    (context as? MainActivity)?.recreate()
+                                }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
                 val emailSubject = remember { context.getString(R.string.email_subject) }
                 val emailChooserTitle = remember { context.getString(R.string.email_chooser_title) }
                 IconButton(onClick = {
@@ -910,7 +1113,14 @@ fun AchievementItem(achievement: Achievement, isUnlocked: Boolean) {
 }
 
 @Composable
-fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsClick: () -> Unit) {
+fun GamificationHeader(
+    streakCount: Int,
+    achievementsCount: Int,
+    onAchievementsClick: () -> Unit,
+    showTooltips: Boolean = false,
+    shownTooltips: Set<String> = emptySet(),
+    onShowTooltip: (String) -> Unit = {}
+) {
     val context = LocalContext.current
 
     // Cache frequently used strings
@@ -925,8 +1135,14 @@ fun GamificationHeader(streakCount: Int, achievementsCount: Int, onAchievementsC
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         InfoChip(icon = Icons.Default.LocalFireDepartment, label = streakLabel, value = daysUnit.format(streakCount), iconColor = MaterialTheme.colorScheme.error)
-        Box(modifier = Modifier.clickable { onAchievementsClick() }) {
-            InfoChip(icon = Icons.Default.WorkspacePremium, label = achievementsLabel, value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
+        TooltipTrigger(
+            tooltipId = "achievements",
+            isVisible = showTooltips && "achievements" !in shownTooltips,
+            onShowTooltip = onShowTooltip
+        ) {
+            Box(modifier = Modifier.clickable { onAchievementsClick() }) {
+                InfoChip(icon = Icons.Default.WorkspacePremium, label = achievementsLabel, value = "$achievementsCount", iconColor = MaterialTheme.colorScheme.tertiary)
+            }
         }
     }
 }
@@ -1112,39 +1328,102 @@ fun DaySection(
 fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: () -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Column(
+    val priority = remember(task.desc) { TaskPriority.fromTaskDescription(task.desc) }
+    val estimatedMinutes = remember(task.desc, task.details) {
+        estimateDurationMinutes("${task.desc} ${task.details ?: ""}")
+    }
+
+    val category = remember(task.desc) {
+        when {
+            task.desc.contains("exam", ignoreCase = true) -> "Exam"
+            task.desc.contains("practice", ignoreCase = true) -> "Practice"
+            task.desc.contains("reading", ignoreCase = true) -> "Reading"
+            task.desc.contains("vocabulary", ignoreCase = true) -> "Vocabulary"
+            task.desc.contains("grammar", ignoreCase = true) -> "Grammar"
+            task.desc.contains("listening", ignoreCase = true) -> "Listening"
+            else -> "Study"
+        }
+    }
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (isExpanded) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else Color.Transparent)
-            .clickable { isExpanded = !isExpanded }
+            .padding(vertical = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isExpanded)
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            else
+                MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (priority == TaskPriority.CRITICAL) 4.dp else 1.dp
+        ),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .clickable { isExpanded = !isExpanded }
+                .padding(12.dp)
         ) {
-            Checkbox(
-                checked = isCompleted,
-                onCheckedChange = { onToggleTask() }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = task.desc,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    textDecoration = if (isCompleted) TextDecoration.LineThrough else null,
-                    color = if (isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                Checkbox(
+                    checked = isCompleted,
+                    onCheckedChange = { onToggleTask() },
+                    modifier = Modifier.padding(end = 8.dp)
                 )
-            )
-        }
-        AnimatedVisibility(visible = isExpanded && task.details != null) {
-            Text(
-                text = task.details ?: "",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 12.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+
+                Column(modifier = Modifier.weight(1f)) {
+                    // Priority and category indicators
+                    Row(
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        PriorityIndicator(priority = priority)
+                        TaskCategoryChip(category = category)
+                        Spacer(modifier = Modifier.weight(1f))
+                        EstimatedTimeChip(minutes = estimatedMinutes)
+                    }
+
+                    // Task description
+                    Text(
+                        text = task.desc,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = when (priority) {
+                                TaskPriority.CRITICAL -> FontWeight.Bold
+                                TaskPriority.HIGH -> FontWeight.SemiBold
+                                else -> FontWeight.Normal
+                            },
+                            textDecoration = if (isCompleted) TextDecoration.LineThrough else null
+                        ),
+                        color = if (isCompleted)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        else
+                            MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Expandable details section
+            AnimatedVisibility(visible = isExpanded && task.details != null) {
+                Column {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                    )
+                    Text(
+                        text = task.details ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
         }
     }
 }

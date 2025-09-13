@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.CenterFocusWeak
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,16 +29,40 @@ import androidx.compose.material.icons.outlined.EventNote
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.ui.a11y.largeTouchTarget
 import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
+import androidx.compose.ui.platform.LocalContext
+import com.mtlc.studyplan.data.PlanDurationSettings
+import com.mtlc.studyplan.data.PlanSettingsStore
+import com.mtlc.studyplan.data.dataStore
+import java.time.DayOfWeek
+import java.time.LocalDate
 
 @Composable
 fun TodayRoute(
     vm: TodayViewModel = viewModel(),
     onNavigateToPlan: () -> Unit = {},
     onNavigateToLesson: (String) -> Unit = {},
-    onNavigateToMock: () -> Unit = {}
+    onNavigateToMock: () -> Unit = {},
+    onNavigateToFocus: (String) -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Read daily study budget from PlanSettings
+    val appContext = LocalContext.current.applicationContext as android.content.Context
+    val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
+    val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
+    val today = remember { LocalDate.now().dayOfWeek }
+    val dailyBudgetMinutes = remember(settings, today) {
+        when (today) {
+            DayOfWeek.MONDAY -> settings.monMinutes
+            DayOfWeek.TUESDAY -> settings.tueMinutes
+            DayOfWeek.WEDNESDAY -> settings.wedMinutes
+            DayOfWeek.THURSDAY -> settings.thuMinutes
+            DayOfWeek.FRIDAY -> settings.friMinutes
+            DayOfWeek.SATURDAY -> settings.satMinutes
+            DayOfWeek.SUNDAY -> settings.sunMinutes
+        }
+    }
 
     LaunchedEffect(Unit) {
         vm.dispatch(TodayIntent.Load)
@@ -46,6 +71,7 @@ fun TodayRoute(
 
     TodayScreen(
         state = state,
+        dailyBudgetMinutes = dailyBudgetMinutes,
         onStart = {
             com.mtlc.studyplan.metrics.Analytics.track(context, "session_start", mapOf("id" to it))
             vm.dispatch(TodayIntent.StartSession(it))
@@ -63,7 +89,8 @@ fun TodayRoute(
         onViewPlan = onNavigateToPlan,
         onNavigateToMock = onNavigateToMock,
         onRefresh = { vm.dispatch(TodayIntent.Load) },
-        onReschedule = { id, at -> vm.dispatch(TodayIntent.Reschedule(id, at)) }
+        onReschedule = { id, at -> vm.dispatch(TodayIntent.Reschedule(id, at)) },
+        onNavigateToFocus = onNavigateToFocus
     )
 }
 
@@ -72,6 +99,7 @@ fun TodayRoute(
 fun TodayScreen(
     state: TodayUiState,
     modifier: Modifier = Modifier,
+    dailyBudgetMinutes: Int? = null,
     onStart: (String) -> Unit,
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
@@ -80,19 +108,16 @@ fun TodayScreen(
     onNavigateToMock: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onReschedule: (String, java.time.LocalDateTime) -> Unit = {_, _ -> },
+    onNavigateToFocus: (String) -> Unit = {},
     showFloatingActionButton: Boolean = false,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    var refreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = {
-        refreshing = true
-        onRefresh()
-        scope.launch {
-            kotlinx.coroutines.delay(400)
-            refreshing = false
-        }
-    })
+    // Bind pull-to-refresh indicator to UI state
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = state.isLoading,
+        onRefresh = { onRefresh() }
+    )
 
     LaunchedEffect(state.snackbar) {
         state.snackbar?.let { msg ->
@@ -159,7 +184,9 @@ fun TodayScreen(
                     val total = state.sessions.size.coerceAtLeast(1)
                     val completed = state.sessions.count { it.isCompleted }
                     val adherence = (completed * 100 / total)
-                    val timeLeft = state.sessions.filter { !it.isCompleted }.sumOf { it.estMinutes }
+                    val timePlanned = state.sessions.filter { !it.isCompleted }.sumOf { it.estMinutes }
+                    val budget = dailyBudgetMinutes
+                    val delta = budget?.let { it - timePlanned }
 
                     Column(Modifier.fillMaxSize()) {
                         Row(
@@ -170,13 +197,29 @@ fun TodayScreen(
                             horizontalArrangement = Arrangement.spacedBy(sTokens.sm)
                         ) {
                             Text(
-                                "Time left today: ${timeLeft} min",
+                                if (budget != null) {
+                                    // Planned vs. budget summary
+                                    val deltaText = if (delta!! >= 0) "+${delta} min" else "${delta} min"
+                                    "Planned: ${timePlanned} min • Budget: ${budget} min • ${deltaText}"
+                                } else {
+                                    // Fallback
+                                    "Planned today: ${timePlanned} min"
+                                },
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             AssistChip(
                                 onClick = { /*no-op*/ },
                                 label = { Text("Adherence ${adherence}%") },
                                 modifier = Modifier.largeTouchTarget()
+                            )
+                        }
+                        if (budget != null && budget > 0) {
+                            val ratio = (timePlanned.toFloat() / budget).coerceIn(0f, 1f)
+                            LinearProgressIndicator(
+                                progress = { ratio },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = sTokens.md)
                             )
                         }
                         Box(
@@ -194,12 +237,13 @@ fun TodayScreen(
                                         session = item,
                                         onStart = onStart,
                                         onComplete = onComplete,
-                                        onReschedule = { at -> onReschedule(item.id, at) }
+                                        onReschedule = { at -> onReschedule(item.id, at) },
+                                        onNavigateToFocus = onNavigateToFocus
                                     )
                                 }
                             }
                             PullRefreshIndicator(
-                                refreshing = refreshing,
+                                refreshing = state.isLoading,
                                 state = pullRefreshState,
                                 modifier = Modifier.align(Alignment.TopCenter)
                             )
@@ -217,7 +261,8 @@ private fun SessionCard(
     onStart: (String) -> Unit,
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
-    onReschedule: (java.time.LocalDateTime) -> Unit = {}
+    onReschedule: (java.time.LocalDateTime) -> Unit = {},
+    onNavigateToFocus: (String) -> Unit = {}
 ) {
     Card(shape = MaterialTheme.shapes.large, elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = Elevations.level1)) {
         Column(Modifier.fillMaxWidth().padding(LocalSpacing.current.md)) {
@@ -236,6 +281,20 @@ private fun SessionCard(
             var menuExpanded by remember { mutableStateOf(false) }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { onStart(s.id) }) { Text("Start") }
+                OutlinedButton(
+                    onClick = {
+                        // Navigate to Focus Mode for this task
+                        onNavigateToFocus(s.id)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CenterFocusWeak,
+                        contentDescription = "Focus Mode",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Focus")
+                }
                 TextButton(onClick = { onSkip(s.id) }) { Text("Skip") }
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { menuExpanded = true }, modifier = Modifier.largeTouchTarget()) {
@@ -262,7 +321,8 @@ private fun SwipeableSession(
     session: SessionUi,
     onStart: (String) -> Unit,
     onComplete: (String) -> Unit,
-    onReschedule: (java.time.LocalDateTime) -> Unit
+    onReschedule: (java.time.LocalDateTime) -> Unit,
+    onNavigateToFocus: (String) -> Unit = {}
 ) {
     val reducedMotion = LocalReducedMotion.current
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -293,7 +353,8 @@ private fun SwipeableSession(
             onStart = onStart,
             onComplete = onComplete,
             onSkip = { /* handled */ },
-            onReschedule = onReschedule
+            onReschedule = onReschedule,
+            onNavigateToFocus = onNavigateToFocus
         )
     } else {
         androidx.compose.material.SwipeToDismiss(
@@ -305,7 +366,8 @@ private fun SwipeableSession(
                     onStart = onStart,
                     onComplete = onComplete,
                     onSkip = { /* handled */ },
-                    onReschedule = onReschedule
+                    onReschedule = onReschedule,
+                    onNavigateToFocus = onNavigateToFocus
                 )
             }
         )
@@ -325,6 +387,7 @@ private fun TodayScreenPreview() {
     val previewState = TodayUiState(isLoading = false, sessions = FakeTodayData.sessions)
     TodayScreen(
         state = previewState,
+        dailyBudgetMinutes = 60,
         onStart = {}, onComplete = {}, onSkip = {}, onSnackbarShown = {}
     )
 }

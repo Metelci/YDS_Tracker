@@ -216,4 +216,45 @@
     <string name="about_data_persistence">Changes are stored on device and apply across the app.</string>
     <string name="about_contact">Send email for feedback.</string>
     <string name="customize_cd">Customize plan</string>
+
+    <!-- Tooltip strings -->
+    <string name="tooltip_customize_plan_title">Customize Your Plan</string>
+    <string name="tooltip_customize_plan_message">Tap the calendar icon to hide, edit, or add your own tasks. All changes are saved on your device.</string>
+    <string name="tooltip_plan_settings_title">Plan Settings</string>
+    <string name="tooltip_plan_settings_message">Adjust your study schedule, start date, and daily time allocations to match your availability.</string>
+    <string name="tooltip_achievements_title">Track Your Progress</string>
+    <string name="tooltip_achievements_message">Tap the achievements badge to see your study milestones and maintain motivation.</string>
+    <string name="tooltip_language_switch_title">Language Support</string>
+    <string name="tooltip_language_switch_message">Switch between Turkish and English by tapping TR/EN in the header.</string>
+    <string name="tooltip_expand_week_title">Week Details</string>
+    <string name="tooltip_expand_week_message">Tap any week to expand and see daily tasks. Tap again to collapse.</string>
+    <string name="tooltip_task_details_title">Task Information</string>
+    <string name="tooltip_task_details_message">Tap any task to see detailed instructions and estimated time.</string>
+    <string name="tooltip_got_it">Got it</string>
+    <string name="tooltip_close">Close tooltip</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Undo system -->
+    <string name="task_completed_undo">Task completed</string>
+    <string name="undo">Undo</string>
+
+    <!-- View toggles -->
+    <string name="show_current_period">Show Current Period</string>
+    <string name="show_all_weeks">Show All Weeks</string>
+
+    <!-- Social Features -->
+    <string name="study_community">Study Community</string>
+    <string name="find_study_buddies">Find Study Buddies</string>
+    <string name="my_study_groups">My Study Groups</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="profile_settings">Profile Settings</string>
+    <string name="privacy_protected">Your privacy is protected. Only anonymized data is shared.</string>
+    <string name="no_buddies_found">No Study Buddies Found</string>
+    <string name="complete_profile_to_find_buddies">Complete your profile to find compatible study partners</string>
+    <string name="compatible_study_buddies">Compatible Study Buddies</string>
+    <string name="compatibility_score">%d%% Compatible</string>
+    <string name="online">Online</string>
+    <string name="create_profile_title">Create Your Study Profile</string>
+    <string name="privacy_first_notice">Privacy First: Your real identity is never shared. Only study preferences are used for matching.</string>
 </resources>

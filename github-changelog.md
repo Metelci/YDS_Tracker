@@ -1,5 +1,15 @@
 # StudyPlan Changelog
 
+## v1.9.1 (September 2025)
+
+### Improvements
+- Today: Pull-to-refresh now binds to the actual loading state for accurate feedback.
+- Today: Added a “Planned vs. Budget” header powered by Plan Settings, showing planned minutes, daily budget, delta, and a compact progress bar.
+
+### Developer Notes
+- Reads daily minutes from `PlanSettingsStore.settingsFlow` based on current weekday.
+- `TodayViewModel` toggles `isLoading` while loading to drive the refresh indicator.
+
 ## v1.7.0 (September 2025)
 
 ### Features
