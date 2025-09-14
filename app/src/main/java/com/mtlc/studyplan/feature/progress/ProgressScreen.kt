@@ -32,7 +32,7 @@ fun ProgressScreen() {
     val repo = remember { ProgressRepository(ds) }
     val userProgress by repo.userProgressFlow.collectAsState(initial = UserProgress())
     val logs by repo.taskLogsFlow.collectAsState(initial = emptyList())
-    val since = remember { LocalDate.now().minusDays(55) }
+    val since = remember { LocalDate.now().minusDays(83) }
     val entries = remember(logs) { progressByDay(logs, since) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -59,7 +59,7 @@ fun ProgressScreen() {
                 // Original progress overview
                 TwoPaneScaffold(
                     list = {
-                        // Heatmap for last 56 days
+                        // Heatmap for last 84 days
                         StudyHeatmap(entries = entries, onDayClick = { date ->
                             android.widget.Toast.makeText(context, "Open ${date}", android.widget.Toast.LENGTH_SHORT).show()
                         }, modifier = Modifier.fillMaxWidth())
@@ -70,7 +70,7 @@ fun ProgressScreen() {
                             Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(s.xs)
                         ) {
-                            val items = listOf("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7")
+                            val items = listOf("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12")
                             itemsIndexed(items) { idx, label ->
                                 ListItem(
                                     headlineContent = { Text(label) },

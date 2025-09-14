@@ -496,9 +496,9 @@ fun PlanScreen() {
         }
     }
 
-    // Show next tooltip in sequence if onboarding not complete
-    LaunchedEffect(shownTooltips, isOnboardingComplete) {
-        if (!isOnboardingComplete) {
+    // Show next tooltip in sequence if onboarding not complete, but only if no tooltip is currently shown
+    LaunchedEffect(shownTooltips, isOnboardingComplete, currentTooltipId) {
+        if (!isOnboardingComplete && currentTooltipId == null) {
             val nextTooltip = OnboardingRepository.onboardingFlow.firstOrNull { it !in shownTooltips }
             currentTooltipId = nextTooltip
         }

@@ -31,10 +31,10 @@ fun StudyHeatmap(
 ) {
     val today = LocalDate.now()
     val startOfThisWeek = today.minusDays(((today.dayOfWeek.value - DayOfWeek.MONDAY.value + 7) % 7).toLong())
-    val start = startOfThisWeek.minusWeeks(7) // 8 weeks total: weeks 0..7
+    val start = startOfThisWeek.minusWeeks(11) // 12 weeks total: weeks 0..11
 
-    // Prepare 8 columns × 7 rows (Mon..Sun)
-    val weeks = remember(start) { (0 until 8).map { w -> start.plusWeeks(w.toLong()) } }
+    // Prepare 12 columns × 7 rows (Mon..Sun)
+    val weeks = remember(start) { (0 until 12).map { w -> start.plusWeeks(w.toLong()) } }
     val dateFmt = remember { DateTimeFormatter.ofPattern("EEE, MMM d") }
     val maxCount = remember(entries) { entries.values.maxOrNull() ?: 0 }
 
