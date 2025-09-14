@@ -1,24 +1,24 @@
-# 🔐 StudyPlan Android Güvenlik Kullanım Kılavuzu
+# 🔐 StudyPlan Android Security Usage Guide
 
-Bu kılavuz, uygulanan güvenlik bileşenlerinin nasıl kullanılacağını detaylı örneklerle açıklamaktadır.
+This guide explains how to use the implemented security components with detailed examples.
 
-## **1. SecurityUtils - Temel Güvenlik İşlemleri**
+## **1. SecurityUtils - Basic Security Operations**
 
-### **1.1 Veri Şifreleme/Çözme**
+### **1.1 Data Encryption/Decryption**
 
 ```kotlin
 import com.mtlc.studyplan.utils.SecurityUtils
 
 class UserManager(private val context: Context) {
 
-    // Hassas kullanıcı verilerini şifrele
+    // Encrypt sensitive user data
     fun saveUserCredentials(username: String, password: String) {
         try {
-            // Kullanıcı adı ve şifreyi şifrele
+            // Encrypt username and password
             val encryptedUsername = SecurityUtils.encryptString(username)
             val encryptedPassword = SecurityUtils.encryptString(password)
 
-            // SharedPreferences'a kaydet
+            // Save to SharedPreferences
             val prefs = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
             prefs.edit()
                 .putString("username", encryptedUsername)
@@ -26,12 +26,12 @@ class UserManager(private val context: Context) {
                 .apply()
 
         } catch (e: SecurityException) {
-            // Şifreleme hatası - kullanıcıya göster
-            showError("Veri şifrelenirken hata oluştu")
+            // Encryption error - show to user
+            showError("Error occurred while encrypting data")
         }
     }
 
-    // Şifrelenmiş veriyi oku
+    // Read encrypted data
     fun getUserCredentials(): Pair<String, String>? {
         val prefs = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val encryptedUsername = prefs.getString("username", null)
@@ -43,7 +43,7 @@ class UserManager(private val context: Context) {
                 val password = SecurityUtils.decryptString(encryptedPassword)
                 Pair(username, password)
             } catch (e: SecurityException) {
-                // Çözme hatası
+                // Decryption error
                 null
             }
         } else null
@@ -63,18 +63,18 @@ class UserInputHandler {
 
         // Email validation
         if (!InputValidator.isValidEmail(email)) {
-            errors.add("Geçersiz email formatı")
+            errors.add("Invalid email format")
         }
 
         // Password validation
         if (!InputValidator.isStrongPassword(password)) {
-            errors.add("Şifre en az 8 karakter, büyük/küçük harf, rakam ve özel karakter içermeli")
+            errors.add("Password must contain at least 8 characters, uppercase/lowercase letters, numbers and special characters")
         }
 
-        // URL validation (eğer kullanıcı URL giriyorsa)
+        // URL validation (if user is entering URL)
         val website = "https://example.com"
         if (!InputValidator.isValidUrl(website)) {
-            errors.add("Geçersiz website URL'i")
+            errors.add("Invalid website URL")
         }
 
         return if (errors.isEmpty()) {
@@ -88,7 +88,7 @@ class UserInputHandler {
         // Input sanitization
         val sanitizedEmail = InputValidator.sanitizeHTMLInput(email)
 
-        // Şifreyi hash'le (asla plain text olarak saklama)
+        // Hash the password (never store as plain text)
         val passwordHash = SecurityUtils.hashString(password)
 
         return "Email: $sanitizedEmail, Hash: $passwordHash"
@@ -96,7 +96,7 @@ class UserInputHandler {
 }
 ```
 
-### **1.3 Güvenli Bellek Yönetimi**
+### **1.3 Secure Memory Management**
 
 ```kotlin
 class SecureMemoryHandler {
@@ -106,33 +106,33 @@ class SecureMemoryHandler {
         var apiKey: ByteArray? = null
 
         try {
-            // Hassas veriyi işle
+            // Process sensitive data
             sensitiveData = "very_secret_data".toCharArray()
             apiKey = SecurityUtils.generateSecureRandomBytes(32)
 
-            // Veriyi kullan
+            // Use the data
             useSensitiveData(sensitiveData, apiKey)
 
         } finally {
             // Belleği güvenli şekilde temizle
             SecurityUtils.secureWipe(sensitiveData, apiKey)
 
-            // Referansları null'a ayarla
+            // Set references to null
             sensitiveData = null
             apiKey = null
         }
     }
 
     private fun useSensitiveData(data: CharArray, key: ByteArray) {
-        // Hassas veriyi kullan (API çağrısı, şifreleme vb.)
+        // Use sensitive data (API call, encryption, etc.)
         println("Processing ${data.size} characters and ${key.size} bytes")
     }
 }
 ```
 
-## **2. AuthenticationManager - Kimlik Doğrulama**
+## **2. AuthenticationManager - Authentication**
 
-### **2.1 Biyometrik Kimlik Doğrulama**
+### **2.1 Biometric Authentication**
 
 ```kotlin
 import com.mtlc.studyplan.security.AuthenticationManager
@@ -146,7 +146,7 @@ class LoginActivity : ComponentActivity() {
 
         authManager = AuthenticationManager(this)
 
-        // Biyometrik destek kontrolü
+        // Check biometric support
         if (authManager.isBiometricAvailable()) {
             showBiometricPrompt()
         } else {
@@ -157,24 +157,24 @@ class LoginActivity : ComponentActivity() {
     private fun showBiometricPrompt() {
         authManager.authenticateWithBiometric(
             activity = this,
-            title = "StudyPlan'e Giriş",
-            subtitle = "Devam etmek için biyometrik verinizi kullanın",
+            title = "StudyPlan Login",
+            subtitle = "Use your biometric data to continue",
             onSuccess = {
-                // Başarılı giriş - ana ekrana yönlendir
+                // Successful login - redirect to main screen
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             },
             onError = { error ->
-                // Hata durumunda PIN girişine geç
+                // Switch to PIN login on error
                 showPinLogin()
-                Toast.makeText(this, "Biyometrik hata: $error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Biometric error: $error", Toast.LENGTH_SHORT).show()
             }
         )
     }
 }
 ```
 
-### **2.2 PIN ve Şifre Yönetimi**
+### **2.2 PIN and Password Management**
 
 ```kotlin
 class SecuritySettingsActivity : ComponentActivity() {
@@ -197,56 +197,56 @@ class SecuritySettingsActivity : ComponentActivity() {
 
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // PIN ayarlama
+            // PIN setup
             Button(onClick = {
                 coroutineScope.launch {
                     val success = authManager.setPin("123456")
                     if (success) {
-                        Toast.makeText(context, "PIN başarıyla ayarlandı", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "PIN successfully set", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "PIN ayarlanamadı", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "PIN could not be set", Toast.LENGTH_SHORT).show()
                     }
                 }
             }) {
-                Text("PIN Ayarla")
+                Text("Set PIN")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Biyometrik aktifleştirme
+            // Enable biometric
             Button(onClick = {
                 val success = authManager.enableBiometric()
                 if (success) {
-                    Toast.makeText(context, "Biyometrik aktifleştirildi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Biometric enabled", Toast.LENGTH_SHORT).show()
                 }
             }) {
-                Text("Biyometrik Aktifleştir")
+                Text("Enable Biometric")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Session durumu
+            // Session status
             val sessionValid by authManager.isSessionValid().collectAsState(initial = false)
-            Text("Session Durumu: ${if (sessionValid) "Aktif" else "Pasif"}")
+            Text("Session Status: ${if (sessionValid) "Active" else "Inactive"}")
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Güvenlik istatistikleri
+            // Security statistics
             Button(onClick = {
                 val stats = authManager.getSecurityStats()
-                // İstatistikleri göster
+                // Show statistics
                 showSecurityStats(stats)
             }) {
-                Text("Güvenlik İstatistikleri")
+                Text("Security Statistics")
             }
         }
     }
 }
 ```
 
-## **3. SecureStorageManager - Güvenli Veri Saklama**
+## **3. SecureStorageManager - Secure Data Storage**
 
-### **3.1 API Key ve Token Yönetimi**
+### **3.1 API Key and Token Management**
 
 ```kotlin
 import com.mtlc.studyplan.security.SecureStorageManager
@@ -257,10 +257,10 @@ class ApiManager(private val context: Context) {
 
     suspend fun saveApiCredentials(apiKey: String, refreshToken: String) {
         try {
-            // API anahtarını güvenli şekilde sakla
+            // Store API key securely
             secureStorage.storeApiKey(apiKey)
 
-            // Refresh token'ı da sakla
+            // Also store refresh token
             secureStorage.storeSecureData("refresh_token", refreshToken)
 
             SecurityUtils.SecurityLogger.logSecurityEvent("API credentials stored securely")
@@ -303,7 +303,7 @@ class ApiManager(private val context: Context) {
 }
 ```
 
-### **3.2 Kullanıcı Verisi Yönetimi**
+### **3.2 User Data Management**
 
 ```kotlin
 class UserProfileManager(private val context: Context) {
@@ -319,7 +319,7 @@ class UserProfileManager(private val context: Context) {
 
     suspend fun saveUserProfile(profile: UserProfile) {
         try {
-            // Kullanıcı profilini JSON'a çevir
+            // Convert user profile to JSON
             val profileJson = kotlinx.serialization.json.Json.encodeToString(
                 kotlinx.serialization.json.JsonObject.serializer(),
                 kotlinx.serialization.json.JsonObject(
@@ -332,7 +332,7 @@ class UserProfileManager(private val context: Context) {
                 )
             )
 
-            // Şifrelenmiş şekilde sakla
+            // Store encrypted
             secureStorage.storeUserData(profileJson)
 
         } catch (e: Exception) {
@@ -347,7 +347,7 @@ class UserProfileManager(private val context: Context) {
         return try {
             val profileJson = secureStorage.getUserData() ?: return null
 
-            // JSON'dan UserProfile'a çevir
+            // Convert from JSON to UserProfile
             val jsonObject = kotlinx.serialization.json.Json.decodeFromString<
                 Map<String, kotlinx.serialization.json.JsonElement>
             >(profileJson)
@@ -370,9 +370,9 @@ class UserProfileManager(private val context: Context) {
 }
 ```
 
-## **4. NetworkSecurityManager - Ağ Güvenliği**
+## **4. NetworkSecurityManager - Network Security**
 
-### **4.1 Güvenli HTTP İstemcisi**
+### **4.1 Secure HTTP Client**
 
 ```kotlin
 import com.mtlc.studyplan.security.NetworkSecurityManager
@@ -443,7 +443,7 @@ class NetworkManager(private val context: Context) {
 }
 ```
 
-### **4.2 Ağ Güvenliği Kontrolü**
+### **4.2 Network Security Check**
 
 ```kotlin
 class SecurityMonitor(private val context: Context) {
@@ -467,19 +467,19 @@ class SecurityMonitor(private val context: Context) {
         val recommendations = mutableListOf<String>()
 
         if (!status.isHttpsEnabled) {
-            recommendations.add("HTTPS zorunlu kılınmalı")
+            recommendations.add("HTTPS should be mandatory")
         }
 
         if (!status.isCertificatePinningEnabled) {
-            recommendations.add("Certificate pinning aktifleştirilmeli")
+            recommendations.add("Certificate pinning should be enabled")
         }
 
         if (!status.isRateLimitingEnabled) {
-            recommendations.add("Rate limiting uygulanmalı")
+            recommendations.add("Rate limiting should be implemented")
         }
 
         if (!status.isHttpsWorking) {
-            recommendations.add("HTTPS bağlantısı test edilmeli")
+            recommendations.add("HTTPS connection should be tested")
         }
 
         return recommendations
@@ -487,9 +487,9 @@ class SecurityMonitor(private val context: Context) {
 }
 ```
 
-## **5. SecurityTestSuite - Test Örnekleri**
+## **5. SecurityTestSuite - Test Examples**
 
-### **5.1 Unit Test Örneği**
+### **5.1 Unit Test Example**
 
 ```kotlin
 class SecurityManagerTest {
@@ -510,16 +510,16 @@ class SecurityManagerTest {
         val testKey = "test_key"
         val testData = "sensitive_test_data"
 
-        // Veriyi güvenli şekilde sakla
+        // Store data securely
         secureStorage.storeSecureData(testKey, testData)
 
-        // Veriyi geri al
+        // Retrieve data
         val retrieved = secureStorage.getSecureData(testKey)
 
-        // Kontrol et
-        assertEquals("Güvenli veri alma başarısız", testData, retrieved)
+        // Check
+        assertEquals("Secure data retrieval failed", testData, retrieved)
 
-        // Temizlik
+        // Cleanup
         secureStorage.removeSecureData(testKey)
     }
 
@@ -527,36 +527,36 @@ class SecurityManagerTest {
     fun testEncryption() {
         val originalText = "This is a secret message"
 
-        // Şifrele
+        // Encrypt
         val encrypted = SecurityUtils.encryptString(originalText)
 
-        // Çöz
+        // Decrypt
         val decrypted = SecurityUtils.decryptString(encrypted)
 
-        // Orijinal metin ile karşılaştır
-        assertEquals("Şifreleme/çözme testi başarısız", originalText, decrypted)
+        // Compare with original text
+        assertEquals("Encryption/decryption test failed", originalText, decrypted)
 
-        // Her şifrelemenin farklı olduğunu kontrol et
+        // Check that each encryption is different
         val encrypted2 = SecurityUtils.encryptString(originalText)
-        assertNotEquals("Şifreleme deterministik olmamalı", encrypted, encrypted2)
+        assertNotEquals("Encryption should not be deterministic", encrypted, encrypted2)
     }
 
     @Test
     fun testInputValidation() {
-        // Geçerli email'ler
+        // Valid emails
         assertTrue(SecurityUtils.InputValidator.isValidEmail("test@example.com"))
         assertTrue(SecurityUtils.InputValidator.isValidEmail("user.name@domain.co.uk"))
 
-        // Geçersiz email'ler
+        // Invalid emails
         assertFalse(SecurityUtils.InputValidator.isValidEmail("invalid-email"))
         assertFalse(SecurityUtils.InputValidator.isValidEmail("@domain.com"))
     }
 }
 ```
 
-## **6. Pratik Entegrasyon Örneği**
+## **6. Practical Integration Example**
 
-### **6.1 Güvenli Kullanıcı Oturumu**
+### **6.1 Secure User Session**
 
 ```kotlin
 class SecureSessionManager(private val context: Context) {
@@ -568,22 +568,22 @@ class SecureSessionManager(private val context: Context) {
         return try {
             // Input validation
             if (!SecurityUtils.InputValidator.isValidEmail(email)) {
-                return LoginResult.Failure("Geçersiz email")
+                return LoginResult.Failure("Invalid email")
             }
 
             if (!SecurityUtils.InputValidator.isStrongPassword(password)) {
-                return LoginResult.Failure("Zayıf şifre")
+                return LoginResult.Failure("Weak password")
             }
 
-            // API çağrısı (şifrelenmiş)
+            // API call (encrypted)
             val networkManager = NetworkManager(context)
             val result = networkManager.loginUser(email, password)
 
             if (result is LoginResult.Success) {
-                // Başarılı giriş - session başlat
+                // Successful login - start session
                 authManager.startSession()
 
-                // Token'ı güvenli şekilde sakla
+                // Store token securely
                 secureStorage.storeSecureData("auth_token", result.token)
 
                 SecurityUtils.SecurityLogger.logSecurityEvent("User login successful")
@@ -596,7 +596,7 @@ class SecureSessionManager(private val context: Context) {
                 "Login failed: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
             )
-            LoginResult.Failure("Giriş hatası: ${e.message}")
+            LoginResult.Failure("Login error: ${e.message}")
         }
     }
 
@@ -617,30 +617,30 @@ class SecureSessionManager(private val context: Context) {
 
 ---
 
-## **🚀 Hızlı Başlangıç**
+## **🚀 Quick Start**
 
-### **Adım 1: Temel Güvenlik Kurulumu**
+### **Step 1: Basic Security Setup**
 ```kotlin
-// Application sınıfında
+// In Application class
 class StudyPlanApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Güvenlik bileşenlerini başlat
-        SecurityUtils.hashString("init") // Keystore başlatma
+        // Initialize security components
+        SecurityUtils.hashString("init") // Keystore initialization
 
-        // Ağ güvenliği kontrolü
+        // Network security check
         val networkSecurity = NetworkSecurityManager(this)
         val status = networkSecurity.validateNetworkSecurity()
 
         if (!status.isHttpsWorking) {
-            Log.w("Security", "HTTPS bağlantı problemi!")
+            Log.w("Security", "HTTPS connection problem!")
         }
     }
 }
 ```
 
-### **Adım 2: Ana Activity'de Authentication**
+### **Step 2: Authentication in Main Activity**
 ```kotlin
 class MainActivity : ComponentActivity() {
     private lateinit var authManager: AuthenticationManager
@@ -650,13 +650,13 @@ class MainActivity : ComponentActivity() {
 
         authManager = AuthenticationManager(this)
 
-        // Kullanıcı giriş yapmış mı kontrol et
+        // Check if user is logged in
         if (!authManager.isSessionValid()) {
             showAuthenticationScreen()
             return
         }
 
-        // Ana uygulama içeriği
+        // Main application content
         setContent {
             StudyPlanApp()
         }
@@ -664,4 +664,4 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-Bu kullanım kılavuzu, güvenlik bileşenlerinin etkin ve güvenli şekilde kullanılmasını sağlar. Her bileşen detaylı örneklerle birlikte sunulmuştur.
+This usage guide ensures effective and secure use of security components. Each component is presented with detailed examples.

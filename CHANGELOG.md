@@ -1,0 +1,180 @@
+# StudyPlan Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.9.2] - 2024-09-14
+
+### Added
+- **Comprehensive troubleshooting guide** in README.md with solutions for common build issues
+- **Professional badges** in README.md showing build status, version, license, and platform support
+- **Play Store changelog** generation system for consistent release notes
+- **Enhanced Google Play Store description** with detailed feature comparisons and technical specifications
+
+### Improved
+- **Complete security documentation translation** from Turkish to English for better accessibility
+- **README.md structure** with dedicated "Getting Started" section before technical details
+- **Changelog organization** with clear separation of user-facing vs technical changes
+- **Version management consistency** across all project documentation
+- **Google Play Store presentation** with competitor comparisons and unique selling points
+
+### Fixed
+- **Inconsistent version numbering** in changelog entries
+- **Mixed date formats** across documentation files
+- **Developer notes mixed with release notes** - now properly separated
+- **Missing repository URLs** in quick start commands
+
+### Changed
+- **Security documentation language** from Turkish to English for international accessibility
+- **Changelog format** following Keep a Changelog standards
+- **Documentation structure** prioritizing user onboarding experience
+
+## [1.9.1] - 2024-09-14
+
+### Added
+- "Planned vs. Budget" header in Today screen showing planned minutes, daily budget, delta, and progress bar
+- Real-time loading state binding for pull-to-refresh functionality
+
+### Improved
+- Today screen pull-to-refresh now provides accurate feedback based on actual loading state
+- Better visual feedback for time budget vs actual progress
+
+## [1.9.0] - 2024-09-12
+
+### Added
+- **Time-aware scheduling**: Plan alignment to start weekday and exact exam date
+- **Home dashboard**: Unified view with exam countdown, today's tasks, streak, and overall progress
+- **Flexible study slots**: Set minutes per day with intelligent task distribution
+- **Persistent Quick Actions**: Global FAB for "Start Session" and "Add Quick Note/Flashcard"
+- **Booster suggestions**: Automatic recommendations for weak categories with one-tap add
+- **Auto-fill End Date**: Populate from next exam with date format presets and locale support
+- **Task logging**: Track time spent and correctness after completing tasks
+
+### Improved
+- Progress calculations now use effective (post-compression) plan for accurate percentages
+- Navigation redesigned with bottom tabs (Home, Tasks, Progress, Settings)
+- Date display beside day names for better context
+- Plan pipeline with start weekday alignment, end date trimming, and availability-based packing
+
+### Changed
+- Today screen FAB is now opt-in to avoid overlapping with global FAB
+- Plan is automatically trimmed to precise number of days until exam
+
+## [1.8.1] - 2024-09-11
+
+### Added
+- **First-run Welcome screen** with concise onboarding and Material Design icon
+- Tokenized dialog paddings for consistent UI spacing
+
+### Fixed
+- **Progress screen crash** caused by multiple DataStore instances for the same file
+- DataStore now uses application context for proper singleton behavior
+
+### Improved
+- Refined welcome screen copy and visuals
+- Better dialog padding consistency across the app
+
+## [1.8.0] - 2024-09-11
+
+### Added
+- **Accessibility improvements**: Content descriptions, larger touch targets, reduced motion support
+- **Lightweight analytics**: In-app metrics wrapper with no PII and no network in release builds
+- **Accessibility Test Rule** for automated accessibility testing
+- **Material 3 design system**: Centralized spacing tokens and standardized elevations
+
+### Improved
+- UI polish with Material 3 styling across Today, Reader, Mock, Review, Practice, and Progress screens
+- Reduced motion support based on system settings
+- Semantic improvements for screen readers
+- Card radius and elevation standardization
+
+### Analytics Events Added
+- `app_open`, `today_open`
+- `session_start`, `session_complete`, `session_skip`
+- `mock_start`, `mock_submit`
+- `reader_pref_change`
+
+## [1.7.0] - 2024-09-10
+
+### Added
+- **Flexible plan duration**: Choose start date and total weeks, or provide end date/months for auto-calculation
+- **Dedicated lesson screen**: Tapping "Start" in Today opens focused lesson view with navigation
+- **Calendar date display**: Week cards and day rows now show actual calendar dates
+- **Plan customization improvements**: Back/Cancel actions and Info dialog in Customize Plan editor
+
+### Improved
+- Navigation polish with snackbar feedback when starting lessons
+- About sheet accessibility - Info button works from main plan view
+- UI cleanup with `HorizontalDivider` replacing deprecated `Divider`
+- RTL support with `Icons.AutoMirrored.Filled.ArrowBack`
+
+### Fixed
+- Unresponsive Start buttons now properly trigger navigation
+- Info icon unresponsive on main screen
+- Missing Turkish localization strings and lint issues
+
+## [1.6.1] - 2024-09-05
+
+### Added
+- **Navigation Compose framework** for improved screen navigation
+- **Centralized AppNavHost** for navigation management
+
+### Improved
+- Enhanced app stability and performance
+- Better Activity configuration with proper themes
+
+### Fixed
+- Removed deprecated manifest package attribute in favor of Gradle namespace
+- MainActivity properly set as primary launcher activity
+
+### Changed
+- Navigation logic moved from activities into composable-based navigation
+
+## [1.6.0] - 2024-09-01
+
+### Added
+- **Customizable Plans**: Hide/edit tasks and add your own per day
+- Plan customization accessible from top bar "Customize" action
+- Changes persist on device and apply across the app
+
+### Improved
+- Enhanced plan flexibility and personalization options
+
+---
+
+## Developer Notes
+
+### Technical Implementation Details
+
+#### v1.9.1 Technical Changes
+- `TodayViewModel` toggles `isLoading` while loading to drive refresh indicator
+- Daily minutes read from `PlanSettingsStore.settingsFlow` based on current weekday
+
+#### v1.9.0 Technical Changes
+- Added `PlanSettingsStore` (DataStore) with per-day minutes and custom date format fields
+- Plan pipeline: start weekday alignment → end date trimming → availability-based weekly packing → overrides merge
+- DataStore: lightweight task logs (time, correctness, category) with simple encoding
+- Weakness detection computes incorrect rates per category
+- Task IDs remapped to new week numbers; week titles recomputed with localized phase labels
+
+#### v1.8.0 Technical Changes
+- `LocalReducedMotion` provider with disabled non-essential animations
+- `Analytics.track()` via `WorkManager`; logs only in debug builds; resilient to process death
+- Added `Spacing` tokens and `Elevations` for consistent Material 3 theming
+- Replaced ad-hoc paddings with 8-pt grid system
+
+#### v1.7.0 Technical Changes
+- `PlanSettingsStore` (DataStore) integrated with `PlanRepository`
+- Base plan proportionally remapped to target length while preserving pacing
+- Lesson screen implemented as placeholder scaffold for future interactive content
+
+#### Migration Considerations
+- **v1.7.0**: Changing total duration remaps week numbers/IDs. Existing per-task overrides remain, but dramatic duration changes may misalign overrides. Consider resetting overrides after large schedule changes.
+
+### Development Guidelines
+- All technical implementation details are documented here for developers
+- User-facing changes are documented in the main changelog above
+- Follow semantic versioning for all releases
+- Maintain consistent date format (YYYY-MM-DD) for all entries
