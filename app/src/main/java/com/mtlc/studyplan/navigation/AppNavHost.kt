@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.ShowChart
@@ -93,10 +94,18 @@ fun AppNavHost() {
                     )
                 }
             }
-            androidx.compose.material3.ExtendedFloatingActionButton(onClick = { showActions = true }) {
-                androidx.compose.material3.Text("Quick Actions")
+            // Compact FAB with small size to reduce overlap
+            androidx.compose.material3.SmallFloatingActionButton(
+                onClick = { showActions = true },
+                modifier = androidx.compose.ui.Modifier.padding(bottom = 12.dp) // Add padding to avoid overlap
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Quick Actions"
+                )
             }
-        }
+        },
+        floatingActionButtonPosition = androidx.compose.material3.FabPosition.End
     ) { padding ->
         NavHost(
             navController = navController,
