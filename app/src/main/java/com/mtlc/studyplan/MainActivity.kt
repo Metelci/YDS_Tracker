@@ -1,7 +1,7 @@
 package com.mtlc.studyplan
 
-import android.app.NotificationManager
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -39,7 +39,9 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,6 +54,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -60,11 +64,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -84,41 +85,33 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import com.mtlc.studyplan.data.ProgressRepository
-import com.mtlc.studyplan.data.dataStore
-import com.mtlc.studyplan.data.PlanOverridesStore
-import com.mtlc.studyplan.data.PlanRepository
-import com.mtlc.studyplan.data.UserPlanOverrides
-import com.mtlc.studyplan.data.UserProgress
-import com.mtlc.studyplan.data.TaskLog
-import com.mtlc.studyplan.navigation.AppNavHost
-import com.mtlc.studyplan.ui.CustomizePlanScreen
-import com.mtlc.studyplan.ui.EditTaskDialog
-import com.mtlc.studyplan.ui.components.TooltipManager
-import com.mtlc.studyplan.ui.components.TooltipTrigger
-import com.mtlc.studyplan.ui.components.UndoManager
-import com.mtlc.studyplan.ui.components.UndoAction
-import com.mtlc.studyplan.ui.components.UndoSnackbarEffect
-import com.mtlc.studyplan.ui.components.rememberUndoManager
-import com.mtlc.studyplan.ui.components.PriorityIndicator
-import com.mtlc.studyplan.ui.components.TaskPriority
-import com.mtlc.studyplan.ui.components.TaskCategoryChip
-import com.mtlc.studyplan.ui.components.EstimatedTimeChip
-import com.mtlc.studyplan.ui.components.SmartSuggestionsCard
 import com.mtlc.studyplan.ai.SmartScheduler
 import com.mtlc.studyplan.ai.SmartSuggestion
 import com.mtlc.studyplan.data.OnboardingRepository
+import com.mtlc.studyplan.data.PlanOverridesStore
+import com.mtlc.studyplan.data.PlanRepository
+import com.mtlc.studyplan.data.ProgressRepository
+import com.mtlc.studyplan.data.TaskLog
+import com.mtlc.studyplan.data.UserPlanOverrides
+import com.mtlc.studyplan.data.UserProgress
+import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.navigation.AppNavHost
+import com.mtlc.studyplan.ui.CustomizePlanScreen
+import com.mtlc.studyplan.ui.EditTaskDialog
+import com.mtlc.studyplan.ui.components.EstimatedTimeChip
+import com.mtlc.studyplan.ui.components.PriorityIndicator
+import com.mtlc.studyplan.ui.components.SmartSuggestionsCard
+import com.mtlc.studyplan.ui.components.TaskCategoryChip
+import com.mtlc.studyplan.ui.components.TaskPriority
+import com.mtlc.studyplan.ui.components.TooltipManager
+import com.mtlc.studyplan.ui.components.TooltipTrigger
+import com.mtlc.studyplan.ui.components.UndoAction
+import com.mtlc.studyplan.ui.components.UndoSnackbarEffect
+import com.mtlc.studyplan.ui.components.rememberUndoManager
 import com.mtlc.studyplan.utils.Constants
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
@@ -486,6 +479,7 @@ fun PlanScreen() {
     // Current week view state
     var showAllWeeks by remember { mutableStateOf(false) }
 
+
     // Smart scheduling
     val smartScheduler = remember { SmartScheduler() }
     var smartSuggestions by remember { mutableStateOf<List<SmartSuggestion>>(emptyList()) }
@@ -493,10 +487,12 @@ fun PlanScreen() {
 
     // Generate smart suggestions
     LaunchedEffect(taskLogs, userProgress) {
-        if (taskLogs.isNotEmpty() && userProgress != null) {
-            val pattern = smartScheduler.analyzeUserPatterns(taskLogs, userProgress)
-            val suggestions = smartScheduler.generateSuggestions(pattern, taskLogs, userProgress)
-            smartSuggestions = suggestions.filterNot { it.id in dismissedSuggestions }
+        if (taskLogs.isNotEmpty()) {
+            userProgress?.let { progress ->
+                val pattern = smartScheduler.analyzeUserPatterns(taskLogs, progress)
+                val suggestions = smartScheduler.generateSuggestions(pattern, taskLogs, progress)
+                smartSuggestions = suggestions.filterNot { it.id in dismissedSuggestions }
+            }
         }
     }
 
@@ -543,7 +539,6 @@ fun PlanScreen() {
     var showAchievementsSheet by remember { mutableStateOf(false) }
     var pendingLogTask by remember { mutableStateOf<Pair<String, String>?>(null) } // taskId to composed text
     var pendingLogInitialMinutes by remember { mutableStateOf(0) }
-    var pendingLogWeekDay by remember { mutableStateOf<Pair<Int, Int>?>(null) }
 
     val currentProgress = userProgress ?: UserProgress()
 
@@ -565,7 +560,6 @@ fun PlanScreen() {
 
     pendingLogTask?.let { (taskId, text) ->
         TaskLogDialog(
-            taskId = taskId,
             taskText = text,
             initialMinutes = pendingLogInitialMinutes,
             onDismiss = { pendingLogTask = null },
@@ -648,6 +642,7 @@ fun PlanScreen() {
                 }
 
                 val absoluteStartDate = remember(planSettings.startEpochDay) { LocalDate.ofEpochDay(planSettings.startEpochDay) }
+                val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM dd") }
 
                 // Calculate current week based on start date
                 val currentWeek = remember(absoluteStartDate) {
@@ -739,12 +734,6 @@ fun PlanScreen() {
                             }
                         }
                     }
-                    val dateFormatter = remember(planSettings.dateFormatPattern) {
-                        val p = planSettings.dateFormatPattern?.takeIf { it.isNotBlank() }
-                        if (p != null) runCatching { java.time.format.DateTimeFormatter.ofPattern(p) }.getOrElse { java.time.format.DateTimeFormatter.ISO_LOCAL_DATE }
-                        else java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
-                    }
-
                     itemsIndexed(
                         items = weeksToShow,
                         key = { _, it -> it.week }
@@ -1302,7 +1291,15 @@ fun DaySection(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        dayPlan.tasks.forEach { task -> TaskItem(task = task, isCompleted = completedTasks.contains(task.id), onToggleTask = { onToggleTask(task.id, task.desc + " " + (task.details ?: "")) }) }
+        dayPlan.tasks.forEach { task ->
+            val isDone = completedTasks.contains(task.id)
+            com.mtlc.studyplan.ui.components.TaskCard(
+                task = task,
+                checked = isDone,
+                onCheckedChange = { new -> if (new != isDone) onToggleTask(task.id, task.desc + " " + (task.details ?: "")) }
+            )
+            Spacer(Modifier.height(6.dp))
+        }
 
         // Booster suggestion based on weaknesses
         val topWeak = remember(weaknessSummaries) {
@@ -1512,7 +1509,7 @@ private fun categorizeTask(text: String): String {
 }
 
 @Composable
-private fun computeWeakness(logs: List<com.mtlc.studyplan.data.TaskLog>): Map<String, com.mtlc.studyplan.data.WeaknessSummary> {
+private fun computeWeakness(logs: List<TaskLog>): Map<String, com.mtlc.studyplan.data.WeaknessSummary> {
     val grouped = logs.groupBy { it.category.ifBlank { "general" } }
     return grouped.mapValues { (_, list) ->
         val total = list.size
@@ -1523,7 +1520,7 @@ private fun computeWeakness(logs: List<com.mtlc.studyplan.data.TaskLog>): Map<St
 }
 
 @Composable
-fun TaskLogDialog(taskId: String, taskText: String, initialMinutes: Int, onDismiss: () -> Unit, onSave: (minutes: Int, correct: Boolean, category: String) -> Unit) {
+fun TaskLogDialog(taskText: String, initialMinutes: Int, onDismiss: () -> Unit, onSave: (minutes: Int, correct: Boolean, category: String) -> Unit) {
     var minutesText by remember { mutableStateOf(initialMinutes.toString()) }
     var correct by remember { mutableStateOf(true) }
     val defaultCategory = remember(taskText) { categorizeTask(taskText) }

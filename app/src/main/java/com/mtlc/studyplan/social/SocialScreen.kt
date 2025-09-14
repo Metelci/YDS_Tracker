@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -509,7 +510,7 @@ private fun ActivityCard(
     val icon = when (share.shareType) {
         ShareType.STREAK_MILESTONE -> Icons.Default.LocalFireDepartment
         ShareType.GOAL_ACHIEVED -> Icons.Default.EmojiEvents
-        ShareType.WEAK_AREA_IMPROVED -> Icons.Default.TrendingUp
+        ShareType.WEAK_AREA_IMPROVED -> Icons.AutoMirrored.Filled.TrendingUp
         ShareType.STUDY_SESSION_COMPLETED -> Icons.Default.CheckCircle
         ShareType.MOTIVATION_BOOST -> Icons.Default.Psychology
     }

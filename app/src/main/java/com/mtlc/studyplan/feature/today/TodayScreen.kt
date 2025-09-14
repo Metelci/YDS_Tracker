@@ -25,7 +25,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.navigation.NavController
 import com.mtlc.studyplan.ui.components.EmptyState
 import com.mtlc.studyplan.ui.components.ErrorState
-import androidx.compose.material.icons.outlined.EventNote
+import androidx.compose.material.icons.automirrored.outlined.EventNote
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.ui.a11y.largeTouchTarget
 import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
@@ -172,7 +172,7 @@ fun TodayScreen(
                 state.sessions.isEmpty() -> {
                     EmptyState(
                         modifier = Modifier.fillMaxSize(),
-                        icon = Icons.Outlined.EventNote,
+                        icon = Icons.AutoMirrored.Outlined.EventNote,
                         title = "No sessions today",
                         message = "Create or customize your plan to start.",
                         action = {

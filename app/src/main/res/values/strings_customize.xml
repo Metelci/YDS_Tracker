@@ -2,7 +2,6 @@
 <resources>
     <!-- Customize Plan -->
     <string name="customize_title">Planı özelleştir</string>
-    <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
     <string name="info">Bilgi</string>
     <string name="back">Geri</string>

@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.feature.home
 
 import androidx.compose.foundation.layout.*
@@ -67,6 +68,28 @@ fun HomeScreen() {
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Progress ring for today's plan
+            item {
+                val tasks = todayTasks?.second.orEmpty()
+                val plannedMinutes = remember(tasks) {
+                    tasks.sumOf { com.mtlc.studyplan.ui.components.estimateTaskMinutes(it.desc, it.details) }
+                }
+                val completedMinutes = remember(tasks, progress.completedTasks) {
+                    tasks.filter { it.id in progress.completedTasks }
+                        .sumOf { com.mtlc.studyplan.ui.components.estimateTaskMinutes(it.desc, it.details) }
+                }
+                val ratio = remember(plannedMinutes, completedMinutes) {
+                    if (plannedMinutes > 0) (completedMinutes.toFloat() / plannedMinutes).coerceIn(0f, 1f) else 0f
+                }
+                Box(Modifier.fillMaxWidth()) {
+                    com.mtlc.studyplan.ui.components.ProgressRing(
+                        progress = ratio,
+                        label = "Today ${(ratio * 100).toInt()}%",
+                        onConfettiPlayed = { /* could show a toast/snackbar if desired */ },
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
             item {
                 // Exam countdown
                 val nextExam = ExamCalendarDataSource.getNextExam()
@@ -76,7 +99,7 @@ fun HomeScreen() {
                         Column(Modifier.padding(12.dp)) {
                             Text("Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
                             Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
-                            LinearProgressIndicator(progress = ((-daysToExam).coerceAtMost(0) / -1f).coerceIn(0f,1f), modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                            LinearProgressIndicator(progress = { ((-daysToExam).coerceAtMost(0) / -1f).coerceIn(0f,1f) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
                             Text("Days left: ${daysToExam}", style = MaterialTheme.typography.bodySmall)
                         }
                     }
@@ -87,7 +110,7 @@ fun HomeScreen() {
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Streak: ${progress.streakCount} days")
-                        LinearProgressIndicator(progress = progressRatio, modifier = Modifier.fillMaxWidth())
+                        LinearProgressIndicator(progress = { progressRatio }, modifier = Modifier.fillMaxWidth())
                         Text("Overall: ${completedInPlan} / ${totalTasks}")
                     }
                 }
@@ -100,8 +123,8 @@ fun HomeScreen() {
                 items(tasks, key = { it.id }) { t ->
                     val isDone = progress.completedTasks.contains(t.id)
                     ListItem(
-                        headlineText = { Text(t.desc) },
-                        supportingText = { if (t.details != null) Text(t.details!!) },
+                        headlineContent = { Text(t.desc) },
+                        supportingContent = { if (t.details != null) Text(t.details!!) },
                         leadingContent = {
                             Checkbox(checked = isDone, onCheckedChange = {
                                 coroutineScope.launch {
@@ -112,7 +135,7 @@ fun HomeScreen() {
                             })
                         }
                     )
-                    Divider()
+                    HorizontalDivider()
                 }
             } else {
                 item { Text("No tasks scheduled for today.") }
@@ -120,4 +143,3 @@ fun HomeScreen() {
         }
     }
 }
-

@@ -5,6 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import com.mtlc.studyplan.features.onboarding.SkillWeights
 import com.mtlc.studyplan.ui.components.TooltipData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -13,6 +16,11 @@ class OnboardingRepository(private val dataStore: DataStore<Preferences>) {
 
     private val shownTooltipsKey = stringSetPreferencesKey("shown_tooltips")
     private val onboardingCompletedKey = booleanPreferencesKey("onboarding_completed")
+    private val examEpochDayKey = longPreferencesKey("onboarding_exam_epoch_day")
+    private val weightGrammarKey = intPreferencesKey("onboarding_weight_grammar_i1000")
+    private val weightReadingKey = intPreferencesKey("onboarding_weight_reading_i1000")
+    private val weightListeningKey = intPreferencesKey("onboarding_weight_listening_i1000")
+    private val weightVocabKey = intPreferencesKey("onboarding_weight_vocab_i1000")
 
     val shownTooltips: Flow<Set<String>> = dataStore.data.map { preferences ->
         preferences[shownTooltipsKey] ?: emptySet()
@@ -39,6 +47,21 @@ class OnboardingRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             preferences.remove(shownTooltipsKey)
             preferences.remove(onboardingCompletedKey)
+            preferences.remove(examEpochDayKey)
+            preferences.remove(weightGrammarKey)
+            preferences.remove(weightReadingKey)
+            preferences.remove(weightListeningKey)
+            preferences.remove(weightVocabKey)
+        }
+    }
+
+    suspend fun saveProfile(examEpochDay: Long, weights: SkillWeights) {
+        dataStore.edit { prefs ->
+            prefs[examEpochDayKey] = examEpochDay
+            prefs[weightGrammarKey] = (weights.grammar * 1000).toInt()
+            prefs[weightReadingKey] = (weights.reading * 1000).toInt()
+            prefs[weightListeningKey] = (weights.listening * 1000).toInt()
+            prefs[weightVocabKey] = (weights.vocab * 1000).toInt()
         }
     }
 

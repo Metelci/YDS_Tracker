@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 package com.mtlc.studyplan.feature.mock
 
 import android.widget.Toast
@@ -6,6 +7,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
@@ -82,7 +84,7 @@ fun MockExamRoute(
             // Section map rail
             NavigationRail { SectionRail(state, onJump = { vm.dispatch(MockIntent.Jump(it)) }) }
 
-            Divider(Modifier.fillMaxHeight().width(1.dp))
+            HorizontalDivider(Modifier.fillMaxHeight().width(1.dp))
 
             // Pager
             val pager = rememberPagerState(initialPage = state.currentIndex, pageCount = { state.questions.size })
@@ -125,7 +127,7 @@ private fun SectionRail(state: MockExamState, onJump: (Int) -> Unit) {
         sections.entries.forEach { (section, items) ->
             Text(section, style = MaterialTheme.typography.labelLarge)
             FlowRowMain(items, state, onJump)
-            Divider()
+            HorizontalDivider()
         }
     }
 }

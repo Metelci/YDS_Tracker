@@ -164,6 +164,22 @@
     <string name="exam_last_day_applications">today is the last day for %s applications!</string>
     <string name="new_achievement_unlocked">New Achievement: %s</string>
     <string name="achievement_icon_description">Achievement Icon</string>
+    <string name="task_minutes">~%1$d min</string>
+    <!-- Onboarding -->
+    <string name="onboarding_title">Personalize Your Plan</string>
+    <string name="exam_date_title">Select Exam Date</string>
+    <string name="pick_min_date">Soonest</string>
+    <string name="pick_plus_month">+1 Month</string>
+    <string name="availability_title">Weekly Availability (min/day)</string>
+    <string name="skills_title">Skill Priorities</string>
+    <string name="skill_grammar">Grammar</string>
+    <string name="skill_reading">Reading</string>
+    <string name="skill_listening">Listening</string>
+    <string name="skill_vocab">Vocabulary</string>
+    <string name="weekly_plan_preview">Your weekly plan will have %1$d tasks/day (est.)</string>
+    <string name="generate_plan">Generate Plan</string>
+    <string name="next_onboarding">Next</string>
+    <string name="back_onboarding">Back</string>
 
     <!-- Book names -->
     <string name="blue_book_full">Blue Book - English Grammar in Use</string>
@@ -201,6 +217,7 @@
     <string name="booster_suggestion">Takviye önerisi</string>
     <string name="add_booster">Takviye ekle</string>
     <string name="open_plan_settings">Plan Ayarlarını Aç</string>
+    <string name="booster_details">Focus on %1$s practice to improve weak areas</string>
 
     <!-- Green book topics continuation -->
     <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>

@@ -6,7 +6,6 @@
     <string name="plan_settings_end_date_optional">Bitiş tarihi (isteğe bağlı)</string>
     <string name="plan_settings_total_months_optional">Toplam ay (isteğe bağlı)</string>
     <string name="plan_settings_invalid_input">Lütfen geçerli bir tarih (YYYY-AA-GG) ve hafta sayısı girin.</string>
-    <string name="save">Kaydet</string>
     <string name="plan_settings_availability_title">Calisma uygunlugu (gunluk dakika)</string>
     <string name="plan_settings_mon_minutes">Pazartesi dakikasi</string>
     <string name="plan_settings_tue_minutes">Sali dakikasi</string>

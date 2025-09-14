@@ -155,15 +155,28 @@ private fun alignToEndDateIfProvided(plan: List<WeekPlan>, cfg: PlanDurationSett
 }
 
 private fun applyAvailability(plan: List<WeekPlan>, cfg: PlanDurationSettings): List<WeekPlan> {
-    fun dayIndexByName(name: String): Int = when (name.lowercase()) {
-        "pazartesi" -> 0, "pzt" -> 0, "monday" -> 0,
-        "sali", "sal", "tuesday" -> 1,
+    /* fun dayIndexByName(name: String): Int = when (name.lowercase()) {
+        "pazartesi", "pzt", "monday" -> 0
+        "sali", "sal", "tuesday" -> 1
         "�arsamba", "carsamba", "�ar", "wednesday" -> 2,
-        "persembe", "per", "thursday" -> 3,
-        "cuma", "friday" -> 4,
-        "cumartesi", "cmt", "saturday" -> 5,
-        "pazar", "sunday" -> 6,
+        "persembe", "per", "thursday" -> 3
+        "cuma", "friday" -> 4
+        "cumartesi", "cmt", "saturday" -> 5
+        "pazar", "sunday" -> 6
         else -> 0
+    } */
+    fun dayIndexByName(name: String): Int {
+        val n = name.lowercase()
+        return when {
+            n in setOf("pazartesi", "pzt", "monday") -> 0
+            n in setOf("sali", "sal", "tuesday") -> 1
+            n in setOf("çarşamba", "carsamba", "çar", "wednesday") -> 2
+            n in setOf("perşembe", "per", "thursday") -> 3
+            n in setOf("cuma", "friday") -> 4
+            n in setOf("cumartesi", "cmt", "saturday") -> 5
+            n in setOf("pazar", "sunday") -> 6
+            else -> 0
+        }
     }
 
     fun budgetForDayIndex(i: Int): Int = when (i) {

@@ -4,32 +4,42 @@ package com.mtlc.studyplan.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.mtlc.studyplan.feature.today.PLAN_ROUTE
-import com.mtlc.studyplan.feature.today.TODAY_ROUTE
-import com.mtlc.studyplan.feature.today.todayGraph
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
+import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
+import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
+import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
+import com.mtlc.studyplan.feature.*
 import com.mtlc.studyplan.feature.reader.PassageUi
-import com.mtlc.studyplan.feature.reader.ReaderScreen
-import com.mtlc.studyplan.feature.mock.MockExamRoute
 import com.mtlc.studyplan.feature.review.MockResultUi
+import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.review.ReviewScreen
-import com.mtlc.studyplan.feature.practice.PracticeScreen
+import com.mtlc.studyplan.feature.mock.MockExamRoute
+import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.feature.progress.ProgressScreen
-import com.mtlc.studyplan.feature.welcome.WELCOME_ROUTE
-import com.mtlc.studyplan.feature.welcome.WelcomeRoute
+import com.mtlc.studyplan.features.onboarding.OnboardingRoute
+import com.mtlc.studyplan.data.OnboardingRepository
+import com.mtlc.studyplan.data.dataStore
+import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
+ 
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -37,8 +47,8 @@ fun AppNavHost() {
     val navController = rememberNavController()
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, "Home"),
-        Triple("tasks", Icons.Filled.ListAlt, "Tasks"),
-        Triple("progress", Icons.Filled.ShowChart, "Progress"),
+        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
+        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
         Triple("social", Icons.Filled.People, "Social"),
         Triple("settings", Icons.Filled.Settings, "Settings"),
     )
@@ -66,16 +76,16 @@ fun AppNavHost() {
             if (showActions) {
                 androidx.compose.material3.ModalBottomSheet(onDismissRequest = { showActions = false }) {
                     androidx.compose.material3.ListItem(
-                        headlineText = { androidx.compose.material3.Text("Start Session") },
-                        supportingText = { androidx.compose.material3.Text("Jump to Today and begin") },
+                        headlineContent = { androidx.compose.material3.Text("Start Session") },
+                        supportingContent = { androidx.compose.material3.Text("Jump to Today and begin") },
                         modifier = androidx.compose.ui.Modifier.clickable {
                             showActions = false
                             navController.navigate(TODAY_ROUTE)
                         }
                     )
                     androidx.compose.material3.ListItem(
-                        headlineText = { androidx.compose.material3.Text("Add Quick Note") },
-                        supportingText = { androidx.compose.material3.Text("Save a flashcard idea") },
+                        headlineContent = { androidx.compose.material3.Text("Add Quick Note") },
+                        supportingContent = { androidx.compose.material3.Text("Save a flashcard idea") },
                         modifier = androidx.compose.ui.Modifier.clickable {
                             showActions = false
                             navController.navigate("quickNote")
@@ -94,9 +104,25 @@ fun AppNavHost() {
             modifier = androidx.compose.ui.Modifier.padding(padding)
         ) {
             composable(WELCOME_ROUTE) {
-                WelcomeRoute(onDone = {
-                    navController.navigate("home") {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val repo = remember { OnboardingRepository(context.dataStore) }
+                val isComplete by repo.isOnboardingCompleted.collectAsState(initial = false)
+                LaunchedEffect(isComplete) {
+                    val target = if (isComplete) "home" else ONBOARDING_ROUTE
+                    navController.navigate(target) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+                // Simple placeholder while deciding
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                    androidx.compose.material3.CircularProgressIndicator()
+                }
+            }
+            composable(ONBOARDING_ROUTE) {
+                OnboardingRoute(onDone = {
+                    navController.navigate("home") {
+                        popUpTo(ONBOARDING_ROUTE) { inclusive = true }
                         launchSingleTop = true
                     }
                 })

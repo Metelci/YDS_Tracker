@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -249,8 +250,8 @@ private fun getSuggestionIcon(type: SuggestionType): ImageVector {
     return when (type) {
         SuggestionType.OPTIMAL_TIME -> Icons.Default.Schedule
         SuggestionType.BREAK_REMINDER -> Icons.Default.Coffee
-        SuggestionType.WEAK_AREA_FOCUS -> Icons.Default.Target
-        SuggestionType.CONSISTENCY_BOOST -> Icons.Default.TrendingUp
+        SuggestionType.WEAK_AREA_FOCUS -> Icons.Default.GpsFixed
+        SuggestionType.CONSISTENCY_BOOST -> Icons.AutoMirrored.Filled.TrendingUp
         SuggestionType.DIFFICULTY_ADJUSTMENT -> Icons.Default.Tune
         SuggestionType.REVIEW_SESSION -> Icons.Default.Replay
     }

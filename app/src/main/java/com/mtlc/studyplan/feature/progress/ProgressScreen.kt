@@ -18,6 +18,9 @@ import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.data.ProgressRepository
 import com.mtlc.studyplan.data.UserProgress
 import com.mtlc.studyplan.analytics.AnalyticsScreen
+import com.mtlc.studyplan.ui.components.StudyHeatmap
+import com.mtlc.studyplan.progress.progressByDay
+import java.time.LocalDate
 
 @Composable
 fun ProgressScreen() {
@@ -28,6 +31,9 @@ fun ProgressScreen() {
     val ds = (context.applicationContext as android.content.Context).dataStore
     val repo = remember { ProgressRepository(ds) }
     val userProgress by repo.userProgressFlow.collectAsState(initial = UserProgress())
+    val logs by repo.taskLogsFlow.collectAsState(initial = emptyList())
+    val since = remember { LocalDate.now().minusDays(55) }
+    val entries = remember(logs) { progressByDay(logs, since) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Tab selector
@@ -53,6 +59,11 @@ fun ProgressScreen() {
                 // Original progress overview
                 TwoPaneScaffold(
                     list = {
+                        // Heatmap for last 56 days
+                        StudyHeatmap(entries = entries, onDayClick = { date ->
+                            android.widget.Toast.makeText(context, "Open ${date}", android.widget.Toast.LENGTH_SHORT).show()
+                        }, modifier = Modifier.fillMaxWidth())
+                        Spacer(Modifier.height(s.sm))
                         Text("Progress Overview", style = MaterialTheme.typography.titleLarge)
                         Spacer(Modifier.height(s.xs))
                         LazyColumn(
@@ -79,7 +90,7 @@ fun ProgressScreen() {
                         Spacer(Modifier.height(s.xs))
                         Text("Completed tasks: ${userProgress.completedTasks.size}")
                         Text("Current streak: ${userProgress.streakCount} days")
-                        Text("Achievement level: ${userProgress.achievementIds.size} unlocked")
+                        Text("Achievement level: ${userProgress.unlockedAchievements.size} unlocked")
                         Spacer(Modifier.height(s.sm))
 
                         val progressPercent = userProgress.completedTasks.size / 100f

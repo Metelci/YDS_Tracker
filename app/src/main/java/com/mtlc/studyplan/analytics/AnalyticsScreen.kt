@@ -13,6 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,9 +45,7 @@ import kotlin.math.*
 fun AnalyticsScreen(
     modifier: Modifier = Modifier
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val dataStore = (context.applicationContext as android.content.Context).dataStore
-    val analyticsEngine = remember { AnalyticsEngine(dataStore) }
+    val analyticsEngine = remember { AnalyticsEngine() }
     val viewModel: AnalyticsViewModel = androidx.lifecycle.viewmodel.compose.viewModel {
         AnalyticsViewModel(analyticsEngine)
     }
@@ -75,7 +77,7 @@ fun AnalyticsScreen(
             modifier = Modifier.fillMaxWidth(),
             contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
+                TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab.ordinal]),
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -213,7 +215,7 @@ fun MetricsGrid(
                 title = "Study Streak",
                 value = "${data.studyStreak.currentStreak}",
                 subtitle = "days",
-                icon = Icons.Filled.LocalFire,
+                icon = Icons.Filled.LocalFireDepartment,
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -240,7 +242,7 @@ fun MetricsGrid(
                 title = "Avg Score",
                 value = "${(data.averagePerformance * 100).toInt()}%",
                 subtitle = "accuracy",
-                icon = Icons.Filled.TrendingUp,
+                icon = Icons.AutoMirrored.Filled.TrendingUp,
                 color = if (data.averagePerformance > 0.8)
                     MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.error
@@ -307,7 +309,7 @@ fun StudyProgressChart(
         EmptyStateCard(
             title = "No Data Yet",
             description = "Complete some study sessions to see your progress chart",
-            icon = Icons.Filled.ShowChart
+            icon = Icons.AutoMirrored.Filled.ShowChart
         )
         return
     }
@@ -558,7 +560,7 @@ fun WeakAreaItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Filled.TrendingDown,
+            imageVector = Icons.AutoMirrored.Filled.TrendingDown,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(16.dp)
@@ -694,20 +696,3 @@ fun getPerformanceColor(score: Float): Color {
 
 // Additional specialized cards would be implemented here...
 // TimeDistributionCard, ProductivityInsightsCard, RecommendationsCard, etc.
-
-enum class AnalyticsTab(
-    val displayName: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    OVERVIEW("Overview", Icons.Filled.Dashboard),
-    PERFORMANCE("Performance", Icons.Filled.TrendingUp),
-    PATTERNS("Patterns", Icons.Filled.Schedule),
-    INSIGHTS("Insights", Icons.Filled.Insights)
-}
-
-enum class AnalyticsTimeframe(val displayName: String, val days: Int) {
-    LAST_7_DAYS("7 Days", 7),
-    LAST_30_DAYS("30 Days", 30),
-    LAST_90_DAYS("3 Months", 90),
-    ALL_TIME("All Time", Int.MAX_VALUE)
-}

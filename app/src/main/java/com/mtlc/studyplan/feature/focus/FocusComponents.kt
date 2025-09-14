@@ -5,6 +5,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -131,7 +133,7 @@ fun FocusSettingsSheet(
                 subtitle = "Play focus sounds during study sessions",
                 checked = ambientSounds,
                 onCheckedChange = { ambientSounds = it },
-                icon = Icons.Default.VolumeUp
+                icon = Icons.AutoMirrored.Filled.VolumeUp
             )
 
             Spacer(modifier = Modifier.height(spacing.md))
@@ -311,7 +313,7 @@ fun FocusStatsSheet(
                     title = "Efficiency",
                     value = "${efficiency.toInt()}%",
                     subtitle = "focus ratio",
-                    icon = Icons.Default.TrendingUp,
+                    icon = Icons.AutoMirrored.Filled.TrendingUp,
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.weight(1f)
                 )

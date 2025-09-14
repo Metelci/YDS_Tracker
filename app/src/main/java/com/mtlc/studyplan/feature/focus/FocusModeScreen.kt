@@ -290,7 +290,7 @@ private fun TimerDisplay(
     val pulseScale by pulseAnimation.animateFloat(
         initialValue = 1f,
         targetValue = if (isRunning && !reducedMotion) 1.02f else 1f,
-        animationSpec = infiniteRepeating(
+        animationSpec = infiniteRepeatable(
             animation = tween(1000),
             repeatMode = RepeatMode.Reverse
         ),

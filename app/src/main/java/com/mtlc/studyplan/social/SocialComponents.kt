@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -495,7 +497,7 @@ fun BuddyDetailsSheet(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Message,
+                        imageVector = Icons.AutoMirrored.Filled.Message,
                         contentDescription = "Send Message",
                         modifier = Modifier.size(18.dp)
                     )
@@ -564,7 +566,7 @@ fun GroupDetailsSheet(
             InfoRow(
                 label = "Study Level",
                 value = group.studyLevel.displayName,
-                icon = Icons.Default.TrendingUp
+                icon = Icons.AutoMirrored.Filled.TrendingUp
             )
 
             InfoRow(

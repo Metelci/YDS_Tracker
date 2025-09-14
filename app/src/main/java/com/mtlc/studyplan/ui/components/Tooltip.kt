@@ -170,7 +170,7 @@ fun TooltipTrigger(
             val scale by infiniteTransition.animateFloat(
                 initialValue = 1f,
                 targetValue = 1.1f,
-                animationSpec = infiniteRepeating(
+                animationSpec = infiniteRepeatable(
                     animation = tween(1000),
                     repeatMode = RepeatMode.Reverse
                 ),

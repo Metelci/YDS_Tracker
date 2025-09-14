@@ -59,7 +59,7 @@ class SmartScheduler {
         }
 
         val recentLogs = taskLogs.filter {
-            System.currentTimeMillis() - it.timestamp < 30L * 24 * 60 * 60 * 1000 // Last 30 days
+            System.currentTimeMillis() - it.timestampMillis < 30L * 24 * 60 * 60 * 1000 // Last 30 days
         }
 
         StudyPattern(
@@ -104,7 +104,7 @@ class SmartScheduler {
 
     private fun analyzeTimePatterns(logs: List<TaskLog>): List<TimeSlot> {
         val timeGroups = logs.groupBy { log ->
-            val hour = java.time.Instant.ofEpochMilli(log.timestamp)
+            val hour = java.time.Instant.ofEpochMilli(log.timestampMillis)
                 .atZone(java.time.ZoneId.systemDefault())
                 .hour
             // Group into 2-hour slots
@@ -130,7 +130,7 @@ class SmartScheduler {
 
     private fun analyzeStrongDays(logs: List<TaskLog>): List<DayOfWeek> {
         val dayPerformance = logs.groupBy { log ->
-            java.time.Instant.ofEpochMilli(log.timestamp)
+            java.time.Instant.ofEpochMilli(log.timestampMillis)
                 .atZone(java.time.ZoneId.systemDefault())
                 .dayOfWeek
         }.mapValues { (_, dayLogs) ->
@@ -158,7 +158,7 @@ class SmartScheduler {
         if (logs.size < 7) return 0.5f
 
         val dailyLogs = logs.groupBy { log ->
-            java.time.Instant.ofEpochMilli(log.timestamp)
+            java.time.Instant.ofEpochMilli(log.timestampMillis)
                 .atZone(java.time.ZoneId.systemDefault())
                 .toLocalDate()
         }
@@ -232,7 +232,7 @@ class SmartScheduler {
         taskLogs: List<TaskLog>,
         currentTime: LocalDateTime
     ): List<SmartSuggestion> {
-        val lastStudyTime = taskLogs.maxByOrNull { it.timestamp }?.timestamp
+        val lastStudyTime = taskLogs.maxByOrNull { it.timestampMillis }?.timestampMillis
 
         if (lastStudyTime != null) {
             val timeSinceLastStudy = currentTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() - lastStudyTime
@@ -304,7 +304,7 @@ class SmartScheduler {
     ): List<SmartSuggestion> {
         val categoriesNeedingReview = taskLogs.groupBy { it.category }
             .filter { (_, logs) ->
-                val lastStudied = logs.maxByOrNull { it.timestamp }?.timestamp ?: 0
+                val lastStudied = logs.maxByOrNull { it.timestampMillis }?.timestampMillis ?: 0
                 val daysSinceStudied = (currentTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() - lastStudied) / (1000 * 60 * 60 * 24)
                 daysSinceStudied > 3 // Haven't studied this category for 3+ days
             }

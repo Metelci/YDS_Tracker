@@ -3,7 +3,16 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(find:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(gradlew.bat :app:mergeDebugResources:*)",
+      "Bash(.gradlew.bat :app:mergeDebugResources)",
+      "Bash(./gradlew:*)",
+      "Bash(.gradlew assembleDebug)",
+      "Bash(gradlew.bat assembleDebug:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

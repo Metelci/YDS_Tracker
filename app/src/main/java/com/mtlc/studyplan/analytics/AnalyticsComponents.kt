@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,9 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.*
 
+import com.mtlc.studyplan.analytics.StudyStreak
+
+// Data classes are now defined in AnalyticsEngine.kt
+
 @Composable
 fun TimeDistributionCard(
-    patterns: StudyPatterns,
+    patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
@@ -71,6 +76,7 @@ fun TimeDistributionChart(
         MaterialTheme.colorScheme.error,
         MaterialTheme.colorScheme.outline
     )
+    val surfaceColor = MaterialTheme.colorScheme.surface
 
     Canvas(modifier = modifier) {
         if (distribution.isEmpty()) return@Canvas
@@ -98,7 +104,7 @@ fun TimeDistributionChart(
 
         // Draw center circle for donut effect
         drawCircle(
-            color = MaterialTheme.colorScheme.surface,
+            color = surfaceColor,
             radius = radius * 0.5f,
             center = center
         )
@@ -260,7 +266,7 @@ fun ProductivityTrendChart(
 
 @Composable
 fun BestStudyTimesCard(
-    patterns: StudyPatterns,
+    patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
@@ -404,7 +410,7 @@ fun RecommendationItem(
                 Icon(
                     imageVector = when (recommendation.category) {
                         "schedule" -> Icons.Filled.Schedule
-                        "performance" -> Icons.Filled.TrendingUp
+                        "performance" -> Icons.AutoMirrored.Filled.TrendingUp
                         "focus" -> Icons.Filled.CenterFocusWeak
                         else -> Icons.Filled.Lightbulb
                     },
@@ -474,7 +480,7 @@ fun StudyHabitsCard(
             ) {
                 HabitMetric(
                     title = "Consistency",
-                    value = "${(data.studyPatterns.consistencyScore * 100).toInt()}%",
+                    value = "${(data.consistencyScore * 100).toInt()}%",
                     description = "Daily study habits"
                 )
                 HabitMetric(
@@ -595,7 +601,7 @@ fun GoalProgressItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         LinearProgressIndicator(
-            progress = progress.coerceIn(0f, 1f),
+            progress = { progress.coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth(),
             color = when {
                 progress >= 1f -> MaterialTheme.colorScheme.primary
@@ -615,7 +621,7 @@ fun PerformanceTrendsChart(
         EmptyStateCard(
             title = "No Performance Data",
             description = "Complete some tasks to see your performance trends",
-            icon = Icons.Filled.TrendingUp
+            icon = Icons.AutoMirrored.Filled.TrendingUp
         )
         return
     }

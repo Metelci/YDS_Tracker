@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +33,7 @@ fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: 
             Text("Correct: ${result.correct}/${result.total}")
             Text("Avg sec/Q: ${result.avgSecPerQ}")
 
-            Divider()
+            HorizontalDivider()
             Text("Per-section", style = MaterialTheme.typography.titleMedium)
             val maxPct = remember(result.perSection) { result.perSection.maxOfOrNull { if (it.total > 0) (it.correct * 100 / it.total) else 0 } ?: 100 }
             result.perSection.forEach { s ->
@@ -41,7 +41,7 @@ fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: 
                 AccuracyBar(section = s.section, percent = pct, avgSec = s.avgSecPerQ, max = maxPct)
             }
 
-            Divider()
+            HorizontalDivider()
             Text("Wrong Questions", style = MaterialTheme.typography.titleMedium)
             if (result.wrongIds.isEmpty()) {
                 Text("No wrong answers. Great job!")

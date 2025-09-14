@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.ui
 
 import androidx.compose.material3.*
@@ -28,7 +29,7 @@ fun QuickNoteRoute(onClose: () -> Unit) {
                         val key = stringSetPreferencesKey("quick_notes")
                         context.dataStore.edit { prefs ->
                             val cur = prefs[key] ?: emptySet()
-                            prefs[key] = (cur + text).takeLast(500).toSet()
+                            prefs[key] = (cur + text).toList().takeLast(500).toSet()
                         }
                         onClose()
                     }

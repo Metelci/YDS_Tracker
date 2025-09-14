@@ -9,7 +9,8 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
-import com.mtlc.studyplan.data.TaskLog
+//region DATA CLASSES
+//endregion
 
 //region DATASTORE VE REPOSITORY
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "yds_progress")
@@ -45,6 +46,13 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
             preferences[Keys.UNLOCKED_ACHIEVEMENTS] = progress.unlockedAchievements
         }
     }
+
+    suspend fun addTaskLog(log: TaskLog) {
+        dataStore.edit { preferences ->
+            val cur = preferences[Keys.TASK_LOGS] ?: emptySet()
+            preferences[Keys.TASK_LOGS] = (cur + encodeTaskLog(log)).toList().takeLast(1000).toSet()
+        }
+    }
 }
 
 // Simple pipe-delimited encode/decode for logs
@@ -67,10 +75,4 @@ private fun decodeTaskLog(s: String): TaskLog? = runCatching {
     )
 }.getOrNull()
 
-suspend fun ProgressRepository.addTaskLog(log: TaskLog) {
-    dataStore.edit { preferences ->
-        val cur = preferences[Keys.TASK_LOGS] ?: emptySet()
-        preferences[Keys.TASK_LOGS] = (cur + encodeTaskLog(log)).takeLast(1000).toSet()
-    }
-}
 //endregion
