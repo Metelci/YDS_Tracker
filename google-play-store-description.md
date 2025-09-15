@@ -1,5 +1,12 @@
 # Road to YDS - Smart 30-Week English Study Plan
 
+## What’s New in 2.1.0
+- New Onboarding Wizard: personalize Day‑1 with exam date, weekly availability, and skill priorities
+- Study Heatmap: GitHub‑style calendar (last 8 weeks) with per‑day task intensity
+- Progress Ring + Confetti: animated progress and a once‑per‑day celebration at 100%
+- Color‑coded Task Cards: skill strip (Grammar/Reading/Listening/Vocab), estimated minutes, checkbox
+- Accessibility & Visual polish: modernized icons, clearer labels, reduced‑motion support; minor fixes
+
 🏆 **The #1 comprehensive English proficiency exam prep app** with advanced AI-driven progress tracking and enterprise-grade security. Join thousands of successful students who've mastered English with our proven methodology.
 
 ## 🆕 What's New in 1.9.2
@@ -164,8 +171,8 @@ Download Road to YDS and join the thousands of students who've transformed their
 
 *💡 Pro Tip: Combine with regular reading, listening, and speaking practice for optimal results. Use our Quick Notes feature to capture vocabulary during real-world English exposure.*
 
-**Version:** 1.9.2
-**Updated:** September 2024
+**Version:** 2.1.0
+**Updated:** September 2025
 **Download Size:** 3MB
 **Requires:** Android 11.0+ (API 30)
 **Languages:** English, Turkish
