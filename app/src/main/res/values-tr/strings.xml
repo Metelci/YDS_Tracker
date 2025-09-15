@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Study Plan</string>
+    <!-- Onboarding (Turkish) -->
+    <string name="onboarding_title">Planınızı Kişiselleştirin</string>
+    <string name="exam_date_title">Sınav Tarihini Seçin</string>
+    <string name="pick_min_date">En Erken</string>
+    <string name="pick_plus_month">+1 Ay</string>
+    <string name="availability_title">Haftalık Uygunluk (dk/gün)</string>
+    <string name="skills_title">Beceri Öncelikleri</string>
+    <string name="skill_grammar">Gramer</string>
+    <string name="skill_reading">Okuma</string>
+    <string name="skill_listening">Dinleme</string>
+    <string name="skill_vocab">Kelime</string>
+    <string name="weekly_plan_preview">Haftalık planınız günde %1$d görev (tahmini)</string>
+    <string name="generate_plan">Plan Oluştur</string>
+    <string name="next_onboarding">İleri</string>
+    <string name="back_onboarding">Geri</string>
     <plurals name="tasks_completed">
         <item quantity="one">%1$d / %2$d gorev tamamlandi</item>
         <item quantity="other">%1$d / %2$d gorev tamamlandi</item>
