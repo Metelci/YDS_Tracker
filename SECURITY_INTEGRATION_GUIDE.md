@@ -1,13 +1,13 @@
 # 🔒 StudyPlan Security Integration Guide
 
-Bu kılavuz, mevcut kodunuza güvenlik bileşenlerini nasıl entegre edeceğinizi adım adım gösterir.
+This guide shows you step-by-step how to integrate security components into your existing code.
 
-## **1. MainActivity Güvenlik Entegrasyonu**
+## **1. MainActivity Security Integration**
 
-### **1.1 Imports Ekleme**
+### **1.1 Adding Imports**
 
 ```kotlin
-// Mevcut import'lara ekleyin
+// Add to your existing imports
 import com.mtlc.studyplan.security.AuthenticationManager
 import com.mtlc.studyplan.security.SecureStorageManager
 import com.mtlc.studyplan.security.NetworkSecurityManager
@@ -16,12 +16,12 @@ import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 ```
 
-### **1.2 MainActivity Sınıfına Güvenlik Özellikleri Ekleme**
+### **1.2 Adding Security Features to MainActivity Class**
 
 ```kotlin
 class MainActivity : ComponentActivity() {
 
-    // Güvenlik bileşenleri
+    // Security components
     private lateinit var authManager: AuthenticationManager
     private lateinit var secureStorage: SecureStorageManager
     private lateinit var networkSecurity: NetworkSecurityManager
@@ -38,16 +38,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Güvenlik bileşenlerini başlat
+        // Initialize security components
         initializeSecurity()
 
-        // PlanDataSource'u initialize et
+        // Initialize PlanDataSource
         PlanDataSource.initialize(this)
 
         enableEdgeToEdge()
         setContent {
             StudyPlanTheme {
-                // Güvenlik kontrolü ile uygulama içeriği
+                // Application content with security control
                 if (isAuthenticated) {
                     MainAppContent()
                 } else {
@@ -63,12 +63,12 @@ class MainActivity : ComponentActivity() {
             secureStorage = SecureStorageManager(this)
             networkSecurity = NetworkSecurityManager(this)
 
-            // Mevcut session kontrolü
+            // Check existing session
             if (authManager.isSessionValid()) {
                 isAuthenticated = true
                 SecurityUtils.SecurityLogger.logSecurityEvent("Existing session validated")
             } else {
-                // İlk kurulum kontrolü
+                // Check first-time setup
                 checkFirstTimeSetup()
             }
 
@@ -81,21 +81,21 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkFirstTimeSetup() {
-        // İlk kullanım kontrolü
+        // Check first-time usage
         val isFirstTime = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
             .getBoolean("first_time", true)
 
         if (isFirstTime) {
-            // İlk kurulum - PIN/Password ayarlama
+            // First-time setup - PIN/Password setup
             showFirstTimeSetup()
         } else {
-            // Mevcut kullanıcı - authentication gerekli
+            // Existing user - authentication required
             showAuthentication()
         }
     }
 
     private fun showFirstTimeSetup() {
-        // İlk kurulum ekranını göster
+        // Show first-time setup screen
         setContent {
             StudyPlanTheme {
                 FirstTimeSetupScreen(
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showAuthentication() {
-        // Authentication yöntemini belirle
+        // Determine authentication method
         val authMethod = authManager.getCurrentAuthMethod()
 
         when (authMethod) {
@@ -133,22 +133,22 @@ class MainActivity : ComponentActivity() {
     private fun showBiometricAuthentication() {
         authManager.authenticateWithBiometric(
             activity = this,
-            title = "StudyPlan'e Giriş",
-            subtitle = "Devam etmek için biyometrik verinizi kullanın",
+            title = "StudyPlan Login",
+            subtitle = "Use your biometric data to continue",
             onSuccess = {
                 isAuthenticated = true
                 authManager.startSession()
                 SecurityUtils.SecurityLogger.logSecurityEvent("Biometric authentication successful")
             },
             onError = { error ->
-                // Biyometrik başarısız - PIN'e geç
+                // Biometric failed - switch to PIN
                 showPinAuthentication()
             }
         )
     }
 
     private fun showPinAuthentication() {
-        // PIN giriş ekranını göster
+        // Show PIN entry screen
         setContent {
             StudyPlanTheme {
                 PinAuthenticationScreen(
@@ -158,7 +158,7 @@ class MainActivity : ComponentActivity() {
                             authManager.startSession()
                             SecurityUtils.SecurityLogger.logSecurityEvent("PIN authentication successful")
                         } else {
-                            // Başarısız giriş - hata göster
+                            // Failed login - show error
                             SecurityUtils.SecurityLogger.logSecurityEvent(
                                 "PIN authentication failed",
                                 SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
@@ -176,7 +176,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showPasswordAuthentication() {
-        // Şifre giriş ekranını göster
+        // Show password entry screen
         setContent {
             StudyPlanTheme {
                 PasswordAuthenticationScreen(
@@ -199,7 +199,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainAppContent() {
-        // Mevcut PlanScreen içeriğinizi buraya taşıyın
+        // Move your existing PlanScreen content here
         val permissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
             onResult = { isGranted ->
@@ -247,16 +247,16 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("StudyPlan Güvenlik Kurulumu", style = MaterialTheme.typography.headlineMedium)
+            Text("StudyPlan Security Setup", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(32.dp))
 
             when (currentStep) {
                 0 -> {
-                    Text("PIN kodunuzu belirleyin")
+                    Text("Set your PIN code")
                     OutlinedTextField(
                         value = pin,
                         onValueChange = { pin = it },
-                        label = { Text("PIN (4-6 hane)") },
+                        label = { Text("PIN (4-6 digits)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -264,21 +264,21 @@ class MainActivity : ComponentActivity() {
                         onClick = { currentStep = 1 },
                         enabled = pin.length in 4..6
                     ) {
-                        Text("Devam")
+                        Text("Continue")
                     }
                 }
                 1 -> {
-                    Text("PIN kodunuzu tekrar girin")
+                    Text("Re-enter your PIN code")
                     OutlinedTextField(
                         value = confirmPin,
                         onValueChange = { confirmPin = it },
-                        label = { Text("PIN Tekrar") },
+                        label = { Text("PIN Again") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Row {
                         Button(onClick = { currentStep = 0 }) {
-                            Text("Geri")
+                            Text("Back")
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Button(
@@ -289,7 +289,7 @@ class MainActivity : ComponentActivity() {
                             },
                             enabled = pin == confirmPin && pin.isNotEmpty()
                         ) {
-                            Text("Tamam")
+                            Text("OK")
                         }
                     }
                 }
@@ -308,7 +308,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("PIN Kodunu Girin", style = MaterialTheme.typography.headlineMedium)
+            Text("Enter PIN Code", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
@@ -371,7 +371,7 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-### **1.3 Güvenli Veri Saklama Entegrasyonu**
+### **1.3 Secure Data Storage Integration**
 
 ```kotlin
 // ProgressRepository'ı güvenlik ile entegre etme
@@ -422,7 +422,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
 }
 ```
 
-### **1.4 Ağ Güvenliği Entegrasyonu**
+### **1.4 Network Security Integration**
 
 ```kotlin
 // Network calls'ları güvenlik ile entegre etme
@@ -470,9 +470,9 @@ fun scheduleDailyReminder(context: Context) {
 }
 ```
 
-## **2. Input Validation Entegrasyonu**
+## **2. Input Validation Integration**
 
-### **2.1 Form Doğrulama**
+### **2.1 Form Validation**
 
 ```kotlin
 // Kullanıcı giriş formlarında validation ekleme
@@ -538,7 +538,7 @@ fun LoginForm(onLoginSuccess: (String, String) -> Unit) {
 }
 ```
 
-### **2.2 URL Güvenliği**
+### **2.2 URL Security**
 
 ```kotlin
 // URL açma işlemlerinde güvenlik kontrolü
@@ -577,9 +577,9 @@ fun openSecureUrl(context: Context, url: String) {
 }
 ```
 
-## **3. Notification Güvenliği**
+## **3. Notification Security**
 
-### **3.1 Güvenli Notification Gönderme**
+### **3.1 Secure Notification Sending**
 
 ```kotlin
 object NotificationHelper {
@@ -647,7 +647,7 @@ object NotificationHelper {
 }
 ```
 
-## **4. Uygulama Lifecycle Güvenliği**
+## **4. Application Lifecycle Security**
 
 ### **4.1 Background Security**
 
@@ -660,10 +660,10 @@ class StudyPlanApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Güvenlik bileşenlerini başlat
+        // Initialize security components
         initializeSecurity()
 
-        // Uygulama lifecycle dinleyicisi
+        // Application lifecycle listener
         registerActivityLifecycleCallbacks(SecurityLifecycleCallbacks())
     }
 
@@ -717,12 +717,12 @@ class StudyPlanApplication : Application() {
 }
 ```
 
-## **5. Hata Yönetimi Güvenliği**
+## **5. Error Management Security**
 
-### **5.1 Güvenli Exception Handling**
+### **5.1 Secure Exception Handling**
 
 ```kotlin
-// Tüm Activity'lerde ortak exception handling
+// Common exception handling in all Activities
 abstract class SecureActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -736,9 +736,9 @@ abstract class SecureActivity : ComponentActivity() {
 
     private fun handleSecureException(thread: Thread, throwable: Throwable) {
         try {
-            // Hassas bilgileri log'lamadan hata raporla
+            // Report error without logging sensitive information
             val safeMessage = throwable.message?.let { message ->
-                // Hassas bilgileri temizle
+                // Clean sensitive information
                 message.replace(Regex("password=[^&\\s]*"), "password=***")
                     .replace(Regex("token=[^&\\s]*"), "token=***")
                     .take(500)
@@ -753,10 +753,10 @@ abstract class SecureActivity : ComponentActivity() {
             // Firebase.crashlytics.recordException(throwable)
 
         } catch (e: Exception) {
-            // Exception handler'da exception - minimal logging
+            // Exception in exception handler - minimal logging
             android.util.Log.e("SecureActivity", "Exception in exception handler", e)
         } finally {
-            // Uygulamayı güvenli şekilde kapat
+            // Close application securely
             finishAffinity()
             System.exit(1)
         }
@@ -766,10 +766,10 @@ abstract class SecureActivity : ComponentActivity() {
 
 ## **6. Test Integration**
 
-### **6.1 Security Test Çalıştırma**
+### **6.1 Running Security Tests**
 
 ```kotlin
-// Android Test'te security test'leri
+// Security tests in Android Test
 @RunWith(AndroidJUnit4::class)
 class MainActivitySecurityTest {
 
@@ -778,19 +778,19 @@ class MainActivitySecurityTest {
 
     @Test
     fun testAuthenticationRequired() {
-        // Authentication olmadan main content'e erişilememeli
+        // Main content should not be accessible without authentication
         // Test implementation
     }
 
     @Test
     fun testSecureDataStorage() {
-        // Verilerin şifrelenmiş olarak saklandığını test et
+        // Test that data is stored encrypted
         // Test implementation
     }
 }
 ```
 
-## **7. ProGuard Güvenlik Kuralları**
+## **7. ProGuard Security Rules**
 
 ### **7.1 ProGuard Rules**
 
@@ -844,6 +844,6 @@ class MainActivitySecurityTest {
 
 **🎉 Integration Complete!**
 
-Artık uygulamanız **enterprise-grade güvenlik** özelliklerine sahip. Kullanıcılarınızın verileri korunuyor ve uygulamanız endüstri güvenlik standartlarına uyuyor.
+Your application now has **enterprise-grade security** features. Your users' data is protected and your application complies with industry security standards.
 
-**Güvenli kodlamaya devam edin!** 🔒✨
+**Continue secure coding!** 🔒✨

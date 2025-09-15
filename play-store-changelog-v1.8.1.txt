@@ -1,0 +1,12 @@
+Version 1.8.1 — Welcome & Stability
+
+New
+- First‑run Welcome screen with a concise introduction and a subtle Material icon.
+
+Fixes
+- Resolved a crash on the Progress screen caused by multiple DataStore instances.
+
+Polish
+- Consistent dialog spacing using the 8‑pt grid.
+- Improved welcome copy and readability.
+

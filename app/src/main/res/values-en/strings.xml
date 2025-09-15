@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Study Plan</string>
     <string name="app_title">Road to YDS</string>
     <string name="email_subject">Road to YDS App Feedback</string>
@@ -10,6 +10,22 @@
     <string name="time_until_exam">Time Until Exam</string>
     <string name="osym_button">Go to Official Exam Board Website</string>
     <string name="time_expired">Time Expired</string>
+    <string name="task_minutes">~%1$d min</string>
+    <!-- Onboarding -->
+    <string name="onboarding_title">Personalize Your Plan</string>
+    <string name="exam_date_title">Select Exam Date</string>
+    <string name="pick_min_date">Soonest</string>
+    <string name="pick_plus_month">+1 Month</string>
+    <string name="availability_title">Weekly Availability (min/day)</string>
+    <string name="skills_title">Skill Priorities</string>
+    <string name="skill_grammar">Grammar</string>
+    <string name="skill_reading">Reading</string>
+    <string name="skill_listening">Listening</string>
+    <string name="skill_vocab">Vocabulary</string>
+    <string name="weekly_plan_preview">Your weekly plan will have %1$d tasks/day (est.)</string>
+    <string name="generate_plan">Generate Plan</string>
+    <string name="next_onboarding">Next</string>
+    <string name="back_onboarding">Back</string>
 
     <string name="achievements_title">Achievements</string>
     <string name="first_task_title">First Step</string>
@@ -26,7 +42,10 @@
     <string name="streak_label">Study Streak</string>
     <string name="achievements_label">Achievements</string>
     <string name="overall_progress">Overall Progress</string>
-    <string name="tasks_completed">%1$d / %2$d tasks completed</string>
+    <plurals name="tasks_completed">
+        <item quantity="one">%1$d / %2$d task completed</item>
+        <item quantity="other">%1$d / %2$d tasks completed</item>
+    </plurals>
     <string name="new_achievement">New Achievement: %s</string>
 
     <string name="application_reminder_title">Exam Application Reminder</string>
@@ -64,7 +83,10 @@
     <string name="full_exam">Full Practice Exam</string>
     <string name="exam_analysis">Exam Analysis</string>
 
-    <string name="days_unit">%d days</string>
+    <plurals name="days_unit">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
     <string name="percent_format">%d%%</string>
 
     <string name="units">Units</string>
@@ -183,10 +205,26 @@
     <string name="final_review_exam_camp_short">Final Review and Exam Camp</string>
     <string name="prep_period_note">Preparation period is now the first 26 weeks</string>
     <string name="expand_collapse">Expand/Collapse</string>
+    <string name="log_task_result">Log Task Result</string>
+    <string name="minutes_spent">Minutes Spent</string>
+    <string name="mark_correct">Mark as Correct</string>
+    <string name="category_label">Category</string>
+    <string name="booster_suggestion">Booster suggestion</string>
+    <string name="add_booster">Add booster</string>
+    <string name="open_plan_settings">Open Plan Settings</string>
 
     <!-- Green book topics continuation -->
     <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>
     <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly...)</string>
     <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
     <string name="participle_clauses_topic">Participle Clauses (-ing and -ed clauses)</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_feature_customize_title">Configurable Study Plans</string>
+    <string name="about_feature_customize_desc">Hide/edit tasks and add your own per day.</string>
+    <string name="about_data_persistence">Changes are stored on device and apply across the app.</string>
+    <string name="about_contact">Send email for feedback.</string>
+    <string name="customize_cd">Customize plan</string>
 </resources>

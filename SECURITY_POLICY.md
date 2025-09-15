@@ -1,99 +1,99 @@
-# 🔒 StudyPlan Android Uygulama Güvenlik Politikası
+# 🔒 StudyPlan Android Application Security Policy
 
-## **1. Giriş**
+## **1. Introduction**
 
-Bu güvenlik politikası, StudyPlan Android uygulaması için kapsamlı güvenlik gereksinimlerini, standartlarını ve uygulama prosedürlerini tanımlar. Bu politika, uygulamada kullanılan tüm güvenlik mekanizmalarının temelini oluşturur.
+This security policy defines comprehensive security requirements, standards, and implementation procedures for the StudyPlan Android application. This policy forms the foundation for all security mechanisms used in the application.
 
-## **2. Güvenlik İlkeleri**
+## **2. Security Principles**
 
-### **2.1 Temel İlkeler**
-- **En Az Yetki (Least Privilege):** Kullanıcılara ve süreçlere sadece gerekli minimum yetkiler verilir
-- **Savunma Derinliği (Defense in Depth):** Birden fazla güvenlik katmanı uygulanır
-- **Güvenli Tasarım:** Güvenlik gereksinimleri tasarım aşamasından itibaren entegre edilir
-- **Güvenli Kodlama:** OWASP Mobile Top 10 güvenlik risklerine karşı koruma
+### **2.1 Core Principles**
+- **Least Privilege:** Users and processes are granted only the minimum necessary permissions
+- **Defense in Depth:** Multiple layers of security are implemented
+- **Secure Design:** Security requirements are integrated from the design phase
+- **Secure Coding:** Protection against OWASP Mobile Top 10 security risks
 
-### **2.2 Veri Koruma İlkeleri**
-- **Veri Şifreleme:** Hassas veriler her zaman şifrelenir
-- **Güvenli Depolama:** Veriler güvenli mekanizmalarla saklanır
-- **Erişim Kontrolü:** Verilere erişim sıkı kontrol altında tutulur
+### **2.2 Data Protection Principles**
+- **Data Encryption:** Sensitive data is always encrypted
+- **Secure Storage:** Data is stored using secure mechanisms
+- **Access Control:** Data access is kept under strict control
 
-## **3. Kimlik Doğrulama ve Yetkilendirme**
+## **3. Authentication and Authorization**
 
-### **3.1 Kullanıcı Kimlik Doğrulama**
-- **Biometric Authentication:** Parmak izi ve yüz tanıma desteği
-- **PIN/Password:** Geri dönüş kimlik doğrulama mekanizması
-- **Session Management:** Güvenli oturum yönetimi
+### **3.1 User Authentication**
+- **Biometric Authentication:** Fingerprint and face recognition support
+- **PIN/Password:** Fallback authentication mechanism
+- **Session Management:** Secure session management
 
-### **3.2 Yetkilendirme Mekanizmaları**
-- **Role-Based Access Control (RBAC):** Rol tabanlı erişim kontrolü
-- **Permission-Based Security:** İzin tabanlı güvenlik
-- **Context-Aware Security:** Bağlam farkında güvenlik
+### **3.2 Authorization Mechanisms**
+- **Role-Based Access Control (RBAC):** Role-based access control
+- **Permission-Based Security:** Permission-based security
+- **Context-Aware Security:** Context-aware security
 
-## **4. Veri Şifreleme Standartları**
+## **4. Data Encryption Standards**
 
-### **4.1 Şifreleme Algoritmaları**
-- **AES-256-GCM:** Simetrik şifreleme için
-- **RSA-2048:** Asimetrik şifreleme için
-- **SHA-256:** Hash fonksiyonu için
-- **PBKDF2:** Anahtar türetme için
+### **4.1 Encryption Algorithms**
+- **AES-256-GCM:** For symmetric encryption
+- **RSA-2048:** For asymmetric encryption
+- **SHA-256:** For hash functions
+- **PBKDF2:** For key derivation
 
-### **4.2 Şifreleme Kullanım Alanları**
-- **Uygulama Verileri:** DataStore'da saklanan kullanıcı verileri
-- **Ağ İletişimi:** HTTPS üzerinden veri iletimi
-- **Dahili Depolama:** SharedPreferences ve dosya sistemi
+### **4.2 Encryption Use Cases**
+- **Application Data:** User data stored in DataStore
+- **Network Communication:** Data transmission over HTTPS
+- **Internal Storage:** SharedPreferences and file system
 
-## **5. Güvenli Kodlama Standartları**
+## **5. Secure Coding Standards**
 
 ### **5.1 Input Validation**
 - **SQL Injection Prevention:** Parameterized queries
 - **XSS Prevention:** Input sanitization
 - **Buffer Overflow Prevention:** Bounds checking
 
-### **5.2 Hata Yönetimi**
-- **Sensitive Information Disclosure:** Hata mesajlarında hassas bilgi sızdırma
-- **Exception Handling:** Güvenli istisna yönetimi
-- **Logging Security:** Log'larda hassas veri bulunmaması
+### **5.2 Error Management**
+- **Sensitive Information Disclosure:** Preventing sensitive information leakage in error messages
+- **Exception Handling:** Secure exception management
+- **Logging Security:** No sensitive data in logs
 
 ### **5.3 Memory Management**
-- **Secure Memory Wipe:** Hassas verilerin bellekten güvenli silinmesi
-- **Buffer Security:** Buffer overflow koruması
-- **Memory Leaks:** Bellek sızıntısı önleme
+- **Secure Memory Wipe:** Secure deletion of sensitive data from memory
+- **Buffer Security:** Buffer overflow protection
+- **Memory Leaks:** Memory leak prevention
 
-## **6. Ağ Güvenliği**
+## **6. Network Security**
 
-### **6.1 HTTPS ve SSL/TLS**
-- **Certificate Pinning:** SSL sertifika sabitleme
-- **Certificate Validation:** Sertifika doğrulama
-- **Protocol Security:** TLS 1.3 kullanımı
+### **6.1 HTTPS and SSL/TLS**
+- **Certificate Pinning:** SSL certificate pinning
+- **Certificate Validation:** Certificate validation
+- **Protocol Security:** TLS 1.3 usage
 
-### **6.2 API Güvenliği**
-- **Authentication Headers:** Güvenli API kimlik doğrulama
-- **Rate Limiting:** İstek sınırlama
-- **Request Validation:** API istek doğrulama
+### **6.2 API Security**
+- **Authentication Headers:** Secure API authentication
+- **Rate Limiting:** Request rate limiting
+- **Request Validation:** API request validation
 
-## **7. Platform Güvenliği**
+## **7. Platform Security**
 
-### **7.1 Android Güvenlik Özellikleri**
-- **Android Keystore:** Kriptografik anahtarların güvenli saklanması
-- **BiometricPrompt:** Biyometrik kimlik doğrulama
-- **SafetyNet:** Uygulama bütünlüğü kontrolü
+### **7.1 Android Security Features**
+- **Android Keystore:** Secure storage of cryptographic keys
+- **BiometricPrompt:** Biometric authentication
+- **SafetyNet:** Application integrity verification
 
-### **7.2 İzin Yönetimi**
-- **Runtime Permissions:** Çalışma zamanı izinleri
-- **Permission Groups:** İzin grupları
-- **Permission Rationale:** İzin gerekçeleri
+### **7.2 Permission Management**
+- **Runtime Permissions:** Runtime permissions
+- **Permission Groups:** Permission groups
+- **Permission Rationale:** Permission justifications
 
-## **8. Veri Saklama ve Yedekleme**
+## **8. Data Storage and Backup**
 
-### **8.1 Güvenli Depolama**
-- **Encrypted SharedPreferences:** Şifrelenmiş paylaşılan tercihler
-- **Encrypted Room Database:** Şifrelenmiş yerel veritabanı
-- **Secure File Storage:** Güvenli dosya sistemi kullanımı
+### **8.1 Secure Storage**
+- **Encrypted SharedPreferences:** Encrypted shared preferences
+- **Encrypted Room Database:** Encrypted local database
+- **Secure File Storage:** Secure file system usage
 
-### **8.2 Yedekleme Güvenliği**
-- **Encrypted Backups:** Şifrelenmiş yedekler
-- **Backup Exclusion:** Hassas verilerin yedek dışı bırakılması
-- **Backup Validation:** Yedek doğrulama
+### **8.2 Backup Security**
+- **Encrypted Backups:** Encrypted backups
+- **Backup Exclusion:** Excluding sensitive data from backups
+- **Backup Validation:** Backup validation
 
 ## **9. Test ve Kalite Güvence**
 
@@ -120,56 +120,56 @@ Bu güvenlik politikası, StudyPlan Android uygulaması için kapsamlı güvenli
 - **Log Retention:** Log saklama politikası
 - **Log Security:** Log güvenliği
 
-## **11. İlgili Standartlar ve Mevzuat**
+## **11. Related Standards and Regulations**
 
-### **11.1 Endüstri Standartları**
+### **11.1 Industry Standards**
 - **OWASP Mobile Security Testing Guide**
 - **Android Security Guidelines**
 - **NIST Mobile Security Guidelines**
 
-### **11.2 Mevzuat Uyumluluğu**
-- **GDPR:** Genel Veri Koruma Yönetmeliği
-- **KVKK:** Kişisel Verilerin Korunması Kanunu
+### **11.2 Regulatory Compliance**
+- **GDPR:** General Data Protection Regulation
+- **KVKK:** Personal Data Protection Law (Turkey)
 - **Industry-Specific Regulations**
 
-## **12. Risk Yönetimi**
+## **12. Risk Management**
 
-### **12.1 Risk Değerlendirme**
-- **Risk Identification:** Risk tanımlama
-- **Risk Assessment:** Risk değerlendirme
-- **Risk Mitigation:** Risk azaltma
+### **12.1 Risk Assessment**
+- **Risk Identification:** Risk identification
+- **Risk Assessment:** Risk assessment
+- **Risk Mitigation:** Risk mitigation
 
-### **12.2 Güvenlik Açıkları Yönetimi**
-- **Vulnerability Assessment:** Güvenlik açığı değerlendirme
-- **Patch Management:** Yama yönetimi
-- **Security Updates:** Güvenlik güncellemeleri
+### **12.2 Vulnerability Management**
+- **Vulnerability Assessment:** Vulnerability assessment
+- **Patch Management:** Patch management
+- **Security Updates:** Security updates
 
-## **13. Eğitim ve Farkındalık**
+## **13. Training and Awareness**
 
-### **13.1 Geliştirici Eğitimi**
-- **Secure Coding Training:** Güvenli kodlama eğitimi
-- **Security Awareness:** Güvenlik farkındalığı
-- **Best Practices:** En iyi uygulamalar
+### **13.1 Developer Training**
+- **Secure Coding Training:** Secure coding training
+- **Security Awareness:** Security awareness
+- **Best Practices:** Best practices
 
-### **13.2 Sürekli Eğitim**
-- **Security Newsletters:** Güvenlik bültenleri
-- **Industry Updates:** Sektör güncellemeleri
-- **Technology Updates:** Teknoloji güncellemeleri
+### **13.2 Continuous Education**
+- **Security Newsletters:** Security newsletters
+- **Industry Updates:** Industry updates
+- **Technology Updates:** Technology updates
 
-## **14. Acil Durum ve Olay Yanıtı**
+## **14. Emergency and Incident Response**
 
-### **14.1 Olay Yanıt Planı**
-- **Incident Response Team:** Olay yanıt ekibi
-- **Communication Plan:** İletişim planı
-- **Recovery Procedures:** Kurtarma prosedürleri
+### **14.1 Incident Response Plan**
+- **Incident Response Team:** Incident response team
+- **Communication Plan:** Communication plan
+- **Recovery Procedures:** Recovery procedures
 
-### **14.2 Acil Durum Prosedürleri**
-- **Data Breach Response:** Veri ihlali yanıtı
-- **Security Incident Response:** Güvenlik olayı yanıtı
-- **Crisis Management:** Kriz yönetimi
+### **14.2 Emergency Procedures**
+- **Data Breach Response:** Data breach response
+- **Security Incident Response:** Security incident response
+- **Crisis Management:** Crisis management
 
 ---
 
-**Belge Sürümü:** 1.0
-**Son Güncelleme:** 2024
-**Gözden Geçirme Periyodu:** 6 ay
+**Document Version:** 1.0
+**Last Update:** 2024
+**Review Period:** 6 months

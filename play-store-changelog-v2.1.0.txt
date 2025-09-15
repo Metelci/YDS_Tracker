@@ -1,0 +1,17 @@
+What's New (2.1.0)
+Release date: 2025-09-15
+
+- Onboarding Wizard: personalize Day‑1 with exam date, weekly availability (Mon–Sun minutes), and skill priorities
+- Study Heatmap: GitHub‑style calendar (last 8 weeks) with task intensity per day and tap‑to‑detail
+- Progress Ring + Confetti: animated sweep and a once‑per‑day celebration at 100%
+- Color-coded Task Cards: skill strip (Grammar/Reading/Listening/Vocab), estimated minutes, and checkbox
+- Accessibility & Visual polish: modernized icons, improved labels, reduced‑motion support
+- Stability: minor fixes across progress calculations and UI
+
+Technical & Migration Notes
+- VersionCode: 37  •  VersionName: 2.1.0
+- Data: New onboarding profile keys stored in DataStore (examEpochDay, skill weight integers). No manual migration needed; defaults applied if absent.
+- Plan: Uses existing PlanSettingsStore (mon–sun minutes, start/end dates). Generating a new personalized plan does not invalidate existing user overrides.
+- UI: Material 3 DatePicker with selectable dates (min = today + 1 week). Modernized icons, HorizontalDivider, lambda progress indicators.
+- Tests: Added unit tests for progress mapping and per‑day bucketing; UI test for onboarding flow.
+

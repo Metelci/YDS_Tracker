@@ -1,0 +1,3 @@
+• Improved architecture with Navigation Compose
+• Removed deprecated manifest package attribute
+• Enhanced app stability and performance

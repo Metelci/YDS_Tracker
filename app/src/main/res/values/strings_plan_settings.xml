@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plan_settings_title">Plan Ayarları</string>
+    <string name="plan_settings_start_date">Başlangıç tarihi</string>
+    <string name="plan_settings_total_weeks">Toplam hafta</string>
+    <string name="plan_settings_end_date_optional">Bitiş tarihi (isteğe bağlı)</string>
+    <string name="plan_settings_total_months_optional">Toplam ay (isteğe bağlı)</string>
+    <string name="plan_settings_invalid_input">Lütfen geçerli bir tarih (YYYY-AA-GG) ve hafta sayısı girin.</string>
+    <string name="plan_settings_availability_title">Calisma uygunlugu (gunluk dakika)</string>
+    <string name="plan_settings_mon_minutes">Pazartesi dakikasi</string>
+    <string name="plan_settings_tue_minutes">Sali dakikasi</string>
+    <string name="plan_settings_wed_minutes">Carsamba dakikasi</string>
+    <string name="plan_settings_thu_minutes">Persembe dakikasi</string>
+    <string name="plan_settings_fri_minutes">Cuma dakikasi</string>
+    <string name="plan_settings_sat_minutes">Cumartesi dakikasi</string>
+    <string name="plan_settings_sun_minutes">Pazar dakikasi</string>
+    <string name="plan_settings_use_next_exam_date">Sonraki sinav tarihini kullan</string>
+    <string name="plan_settings_date_pattern_optional">Ozel tarih formati (istege bagli)</string>
+    <string name="plan_settings_date_pattern_hint">ornegin, yyyy-MM-dd veya dd.MM.yyyy; bos birakilirsa yerel bicim</string>
+    <string name="plan_settings_date_use_locale">Yerel bicimi kullan</string>
+</resources>

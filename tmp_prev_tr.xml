@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hakk─▒nda / About -->
+    <string name="about_title">Hakk─▒nda</string>
+    <string name="about_version">S├╝r├╝m: %s</string>
+    <string name="about_feature_customize_title">├ûzelle┼ƒtirilebilir ├çal─▒┼ƒma Planlar─▒</string>
+    <string name="about_feature_customize_desc">G├╢revleri gizle/d├╝zenle ve g├╝ne g├╢re kendi g├╢revlerini ekle.</string>
+    <string name="about_data_persistence">De─ƒi┼ƒiklikler cihazda saklan─▒r ve uygulama genelinde ge├ºerlidir.</string>
+    <string name="about_contact">Geri bildirim i├ºin eΓÇæposta g├╢nderin.</string>
+    <string name="customize_cd">Plan─▒ ├╢zelle┼ƒtir</string>
+</resources>

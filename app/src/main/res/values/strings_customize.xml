@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Customize Plan -->
+    <string name="customize_title">Planı özelleştir</string>
+    <string name="ok">Tamam</string>
+    <string name="info">Bilgi</string>
+    <string name="back">Geri</string>
+    <string name="customize_info_title">Özelleştirme Hakkında</string>
+    <string name="customize_info_message">Görevleri göz simgesiyle gizleyip gösterebilirsin; kalem simgesiyle düzenleyebilirsin. Her gün için "Görev Ekle" ile yeni görev ekleyebilirsin. Değişiklikler anında kaydedilir ve uygulama genelinde geçerlidir.</string>
+</resources>

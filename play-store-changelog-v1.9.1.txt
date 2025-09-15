@@ -1,0 +1,4 @@
+1. Today refresh ties to real loading state for clearer feedback.
+2. New header shows Planned vs. Budget minutes with a small progress bar.
+3. Minor polish and stability improvements.
+

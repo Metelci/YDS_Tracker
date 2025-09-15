@@ -13,10 +13,12 @@
         <domain includeSubdomains="true">fonts.googleapis.com</domain>
         <domain includeSubdomains="true">fonts.gstatic.com</domain>
 
-        <!-- Pin sertifika hash'leri (gerçek ortamda güncellenmeli) -->
-        <pin-set expiration="2025-01-01">
+        <!-- Pin sertifika hash'leri (güncellenmiş tarih ve backup pin ile) -->
+        <pin-set expiration="2026-12-31">
             <!-- OSYM sertifika pin'i - gerçek hash ile değiştirilmeli -->
             <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <!-- Backup pin - sertifika rotasyonu için kritik -->
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
         </pin-set>
     </domain-config>
 
@@ -30,13 +32,12 @@
         </trust-anchors>
     </debug-overrides>
 
-    <!-- Base configuration - tüm bağlantılar için -->
+    <!-- Base configuration - tüm bağlantılar için (production güvenliği) -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
-            <!-- Sistem güvenilen sertifika yetkilileri -->
+            <!-- Sadece sistem güvenilen sertifika yetkilileri -->
             <certificates src="system" />
-            <!-- User-installed sertifikalar (development için) -->
-            <certificates src="user" overridingPins="true" />
+            <!-- User certificates production'da güvenlik riski oluşturur - kaldırıldı -->
         </trust-anchors>
     </base-config>
 

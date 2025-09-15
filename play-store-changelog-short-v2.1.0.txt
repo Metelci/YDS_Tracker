@@ -1,0 +1,7 @@
+What's New (2.1.0)
+- New onboarding wizard (exam date, weekly minutes, priorities)
+- Study Heatmap (last 8 weeks)
+- Progress Ring + daily 100% confetti
+- Color‑coded Task Cards with estimated minutes
+- Accessibility & visual polish; minor fixes
+

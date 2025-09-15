@@ -10,7 +10,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
+import com.mtlc.studyplan.ui.a11y.prefersReducedMotion
 
 
 private val LightColorScheme = lightColorScheme(
@@ -95,10 +98,18 @@ fun StudyPlanTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography, // Type.kt'den gelecek
-        shapes = Shapes,       // Shape.kt'den gelecek
-        content = content
-    )
+    val context = LocalContext.current
+    val reducedMotion = prefersReducedMotion(context)
+
+    CompositionLocalProvider(
+        LocalReducedMotion provides reducedMotion,
+        LocalSpacing provides Spacing()
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography, // Type.kt'den gelecek
+            shapes = Shapes,       // Shape.kt'den gelecek
+            content = content
+        )
+    }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Study Plan</string>
+    <plurals name="tasks_completed">
+        <item quantity="one">%1$d / %2$d gorev tamamlandi</item>
+        <item quantity="other">%1$d / %2$d gorev tamamlandi</item>
+    </plurals>
+    <plurals name="days_unit">
+        <item quantity="one">%d gun</item>
+        <item quantity="other">%d gun</item>
+    </plurals>
+</resources>
+
