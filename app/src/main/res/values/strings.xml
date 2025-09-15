@@ -116,7 +116,7 @@
     <string name="weekly_analysis_planning_description">Make a general assessment of the week. Identify your strengths and weaknesses.</string>
 
     <!-- Exam week descriptions -->
-    <string name="full_exam_description">Source: A recent YDS/Y�KDIL exam from past years. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="full_exam_description">Source: A recent YDS/YÖKDİL exam from past years. Solve all 80 questions in exactly 180 minutes.</string>
     <string name="exam_analysis_description">Take at least 1 hour break after the exam. Then thoroughly analyze your wrong answers, blanks, and correct answers you weren\'t confident about. List unknown words.</string>
     <string name="full_exam_description_2">Source: A practice exam from a reliable publisher. Solve all 80 questions in exactly 180 minutes.</string>
     <string name="exam_analysis_description_2">Perform detailed analysis like yesterday. Focus especially on recurring error types.</string>
@@ -151,9 +151,9 @@
     <string name="ten_exams_achievement_desc">You solved a total of 10 full practice exams!</string>
 
     <!-- Exam names -->
-    <string name="yokdil_spring">Y�KDIL/1 (Spring)</string>
+    <string name="yokdil_spring">YÖKDİL/1 (Spring)</string>
     <string name="yds_spring">YDS/1 (Spring)</string>
-    <string name="yokdil_fall">Y�KDIL/2 (Fall)</string>
+    <string name="yokdil_fall">YÖKDİL/2 (Fall)</string>
     <string name="yds_fall">YDS/2 (Fall)</string>
 
     <!-- Notification texts -->
