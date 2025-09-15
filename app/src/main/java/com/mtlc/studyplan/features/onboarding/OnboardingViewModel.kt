@@ -38,6 +38,9 @@ class OnboardingViewModel(
     private val _skillWeights = MutableStateFlow(SkillWeights())
     val skillWeights: StateFlow<SkillWeights> = _skillWeights
 
+    private val _isGeneratingPlan = MutableStateFlow(false)
+    val isGeneratingPlan: StateFlow<Boolean> = _isGeneratingPlan
+
     fun setExamDate(date: LocalDate) { _examDate.value = date }
     fun setAvailability(day: DayOfWeek, minutes: Int) {
         _availability.value = _availability.value.toMutableMap().apply { this[day] = minutes.coerceIn(0, 180) }
@@ -46,29 +49,38 @@ class OnboardingViewModel(
 
     fun finish(onDone: () -> Unit) {
         viewModelScope.launch {
-            // Persist plan settings
-            val avail = _availability.value
-            planSettings.update { cur ->
-                cur.copy(
-                    startEpochDay = LocalDate.now().toEpochDay(),
-                    endEpochDay = _examDate.value.toEpochDay(),
-                    totalWeeks = 30,
-                    monMinutes = avail[DayOfWeek.MONDAY] ?: 60,
-                    tueMinutes = avail[DayOfWeek.TUESDAY] ?: 60,
-                    wedMinutes = avail[DayOfWeek.WEDNESDAY] ?: 60,
-                    thuMinutes = avail[DayOfWeek.THURSDAY] ?: 60,
-                    friMinutes = avail[DayOfWeek.FRIDAY] ?: 60,
-                    satMinutes = avail[DayOfWeek.SATURDAY] ?: 120,
-                    sunMinutes = avail[DayOfWeek.SUNDAY] ?: 120,
+            _isGeneratingPlan.value = true
+
+            try {
+                // Simulate plan generation delay
+                kotlinx.coroutines.delay(2000)
+
+                // Persist plan settings
+                val avail = _availability.value
+                planSettings.update { cur ->
+                    cur.copy(
+                        startEpochDay = LocalDate.now().toEpochDay(),
+                        endEpochDay = _examDate.value.toEpochDay(),
+                        totalWeeks = 30,
+                        monMinutes = avail[DayOfWeek.MONDAY] ?: 60,
+                        tueMinutes = avail[DayOfWeek.TUESDAY] ?: 60,
+                        wedMinutes = avail[DayOfWeek.WEDNESDAY] ?: 60,
+                        thuMinutes = avail[DayOfWeek.THURSDAY] ?: 60,
+                        friMinutes = avail[DayOfWeek.FRIDAY] ?: 60,
+                        satMinutes = avail[DayOfWeek.SATURDAY] ?: 120,
+                        sunMinutes = avail[DayOfWeek.SUNDAY] ?: 120,
+                    )
+                }
+                // Persist profile bits to onboarding repo
+                onboardingRepo.saveProfile(
+                    examEpochDay = _examDate.value.toEpochDay(),
+                    weights = _skillWeights.value
                 )
+                onboardingRepo.markOnboardingCompleted()
+                onDone()
+            } finally {
+                _isGeneratingPlan.value = false
             }
-            // Persist profile bits to onboarding repo
-            onboardingRepo.saveProfile(
-                examEpochDay = _examDate.value.toEpochDay(),
-                weights = _skillWeights.value
-            )
-            onboardingRepo.markOnboardingCompleted()
-            onDone()
         }
     }
 }

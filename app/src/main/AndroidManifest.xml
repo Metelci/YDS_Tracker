@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Re-schedule work after reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Calendar permissions for study session sync -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="false"
@@ -51,6 +54,20 @@
                 <action android:name="com.mtlc.studyplan.action.MUTE_TODAY" />
             </intent-filter>
         </receiver>
+
+        <!-- FileProvider for sharing PDF reports -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Calendar sync worker runs automatically via WorkManager (no explicit registration needed) -->
+        <!-- CalendarWorker handles daily synchronization of study sessions to device calendar -->
 
         <!-- Today screens are hosted within MainActivity via Compose navigation. -->
     </application>

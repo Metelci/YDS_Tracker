@@ -6,7 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -33,7 +38,7 @@ fun SmartSuggestionsCard(
     onSuggestionClick: (SmartSuggestion) -> Unit,
     onDismissSuggestion: (SmartSuggestion) -> Unit,
     modifier: Modifier = Modifier,
-    maxSuggestions: Int = 3
+    maxSuggestions: Int = 6  // Increased to show more suggestions
 ) {
     val spacing = LocalSpacing.current
     val displaySuggestions = suggestions.take(maxSuggestions)
@@ -49,10 +54,13 @@ fun SmartSuggestionsCard(
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
-                modifier = Modifier.padding(spacing.md)
+                modifier = Modifier.padding(vertical = spacing.md)
             ) {
+                // Header with padding
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -68,17 +76,37 @@ fun SmartSuggestionsCard(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (suggestions.size > maxSuggestions) {
+                        AssistChip(
+                            onClick = { /* Show all suggestions */ },
+                            label = {
+                                Text(
+                                    text = "+${suggestions.size - maxSuggestions}",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            },
+                            modifier = Modifier.height(24.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(spacing.sm))
 
-                displaySuggestions.forEach { suggestion ->
-                    SuggestionItem(
-                        suggestion = suggestion,
-                        onClick = { onSuggestionClick(suggestion) },
-                        onDismiss = { onDismissSuggestion(suggestion) },
-                        modifier = Modifier.padding(bottom = spacing.xs)
-                    )
+                // Horizontally scrollable suggestions
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+                    contentPadding = PaddingValues(horizontal = spacing.md)
+                ) {
+                    items(displaySuggestions, key = { it.id }) { suggestion ->
+                        SuggestionCard(
+                            suggestion = suggestion,
+                            onClick = { onSuggestionClick(suggestion) },
+                            onDismiss = { onDismissSuggestion(suggestion) },
+                            modifier = Modifier.width(280.dp) // Fixed width for consistent scrolling
+                        )
+                    }
                 }
             }
         }
@@ -86,7 +114,7 @@ fun SmartSuggestionsCard(
 }
 
 @Composable
-private fun SuggestionItem(
+private fun SuggestionCard(
     suggestion: SmartSuggestion,
     onClick: () -> Unit,
     onDismiss: () -> Unit,
@@ -95,105 +123,129 @@ private fun SuggestionItem(
     val spacing = LocalSpacing.current
     val icon = getSuggestionIcon(suggestion.type)
     val color = getSuggestionColor(suggestion.type)
+    var offsetX by remember { mutableStateOf(0f) }
+    val scope = rememberCoroutineScope()
 
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragEnd = {
+                        scope.launch {
+                            if (offsetX > 100) {
+                                onDismiss()
+                            }
+                            offsetX = 0f
+                        }
+                    }
+                ) { _, dragAmount ->
+                    offsetX = (offsetX + dragAmount).coerceAtLeast(0f)
+                }
+            },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacing.sm),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(spacing.md)
         ) {
-            // Priority indicator
-            Box(
-                modifier = Modifier
-                    .size(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(
-                        when (suggestion.priority) {
-                            1 -> MaterialTheme.colorScheme.error
-                            2 -> MaterialTheme.colorScheme.primary
-                            else -> MaterialTheme.colorScheme.outline
-                        }
-                    )
-            )
-
-            Spacer(modifier = Modifier.width(spacing.sm))
-
-            // Icon
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(16.dp)
-            )
-
-            Spacer(modifier = Modifier.width(spacing.sm))
-
-            // Content
-            Column(
-                modifier = Modifier.weight(1f)
+            // Header with icon and priority
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = suggestion.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                // Priority indicator
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(
+                            when (suggestion.priority) {
+                                1 -> MaterialTheme.colorScheme.error
+                                2 -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.outline
+                            }
+                        )
                 )
 
-                Text(
-                    text = suggestion.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                Spacer(modifier = Modifier.width(spacing.sm))
+
+                // Icon
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(20.dp)
                 )
 
-                // Additional info
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Dismiss button
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(24.dp)
                 ) {
-                    suggestion.estimatedDuration?.let { duration ->
-                        Chip(
-                            text = "${duration}min",
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-
-                    suggestion.scheduledTime?.let { time ->
-                        Chip(
-                            text = time.format(DateTimeFormatter.ofPattern("HH:mm")),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-
-                    // Confidence indicator
-                    ConfidenceIndicator(
-                        confidence = suggestion.confidence,
-                        modifier = Modifier.size(12.dp)
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Dismiss suggestion",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            // Dismiss button
-            IconButton(
-                onClick = onDismiss,
-                modifier = Modifier.size(24.dp)
+            Spacer(modifier = Modifier.height(spacing.sm))
+
+            // Content
+            Text(
+                text = suggestion.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(spacing.xs))
+
+            Text(
+                text = suggestion.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(spacing.sm))
+
+            // Additional info
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss suggestion",
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                suggestion.estimatedDuration?.let { duration ->
+                    Chip(
+                        text = "${duration}min",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+
+                suggestion.scheduledTime?.let { time ->
+                    Chip(
+                        text = time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Confidence indicator
+                ConfidenceIndicator(
+                    confidence = suggestion.confidence,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
@@ -296,10 +348,11 @@ fun SmartSuggestionsSheet(
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 items(suggestions, key = { it.id }) { suggestion ->
-                    SuggestionItem(
+                    SuggestionCard(
                         suggestion = suggestion,
                         onClick = { onSuggestionClick(suggestion) },
-                        onDismiss = { onDismissSuggestion(suggestion) }
+                        onDismiss = { onDismissSuggestion(suggestion) },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

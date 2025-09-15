@@ -21,6 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import java.time.format.DateTimeFormatter
 
@@ -507,12 +509,30 @@ private fun ActivityCard(
     share: ProgressShare
 ) {
     val spacing = LocalSpacing.current
+    val haptics = LocalHapticFeedback.current
     val icon = when (share.shareType) {
         ShareType.STREAK_MILESTONE -> Icons.Default.LocalFireDepartment
         ShareType.GOAL_ACHIEVED -> Icons.Default.EmojiEvents
         ShareType.WEAK_AREA_IMPROVED -> Icons.AutoMirrored.Filled.TrendingUp
         ShareType.STUDY_SESSION_COMPLETED -> Icons.Default.CheckCircle
         ShareType.MOTIVATION_BOOST -> Icons.Default.Psychology
+    }
+
+    // Trigger haptic feedback for special achievements
+    LaunchedEffect(share.id) {
+        when (share.shareType) {
+            ShareType.STREAK_MILESTONE -> {
+                // Special feedback pattern for streak milestones
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            ShareType.GOAL_ACHIEVED -> {
+                // Achievement unlock feedback
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            else -> {
+                // No feedback for regular activities
+            }
+        }
     }
 
     Card(

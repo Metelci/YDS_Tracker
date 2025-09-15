@@ -4,7 +4,9 @@ package com.mtlc.studyplan.feature.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +101,14 @@ fun HomeScreen() {
                         Column(Modifier.padding(12.dp)) {
                             Text("Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
                             Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
-                            LinearProgressIndicator(progress = { ((-daysToExam).coerceAtMost(0) / -1f).coerceIn(0f,1f) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                            LinearProgressIndicator(
+                            progress = { ((-daysToExam).coerceAtMost(0) / -1f).coerceIn(0f,1f) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .padding(top = 8.dp),
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
                             Text("Days left: ${daysToExam}", style = MaterialTheme.typography.bodySmall)
                         }
                     }
@@ -110,7 +119,14 @@ fun HomeScreen() {
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Streak: ${progress.streakCount} days")
-                        LinearProgressIndicator(progress = { progressRatio }, modifier = Modifier.fillMaxWidth())
+                        LinearProgressIndicator(
+                            progress = { progressRatio },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
                         Text("Overall: ${completedInPlan} / ${totalTasks}")
                     }
                 }

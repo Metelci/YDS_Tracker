@@ -13,8 +13,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 37
-        versionName = "2.1.0"
+        versionCode = 38
+        versionName = "2.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.compose.animation:animation:1.7.5")
+    implementation("androidx.compose.animation:animation-core:1.7.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     // Security dependencies
     implementation(libs.security.crypto)
@@ -91,7 +93,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation("com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.2.2")
+    androidTestImplementation(libs.accessibilityTestFramework)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -9,8 +9,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -1234,8 +1234,39 @@ fun WeekCard(
                 }
                 Icon(imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = PlanDataSource.getAppContext().getString(R.string.expand_collapse), modifier = Modifier.rotate(rotationAngle))
             }
-            AnimatedVisibility(visible = isExpanded) {
-                Column {
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = shrinkVertically(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 200,
+                        easing = FastOutLinearInEasing
+                    )
+                )
+            ) {
+                Column(
+                    modifier = Modifier.animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )
+                    )
+                ) {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                     weekPlan.days.forEachIndexed { idx, dayPlan ->
                         DaySection(
@@ -1406,8 +1437,39 @@ fun TaskItem(task: Task, isCompleted: Boolean, onToggleTask: () -> Unit) {
             }
 
             // Expandable details section
-            AnimatedVisibility(visible = isExpanded && task.details != null) {
-                Column {
+            AnimatedVisibility(
+                visible = isExpanded && task.details != null,
+                enter = expandVertically(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 250,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = shrinkVertically(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessHigh
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 150,
+                        easing = FastOutLinearInEasing
+                    )
+                )
+            ) {
+                Column(
+                    modifier = Modifier.animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    )
+                ) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
                         thickness = 0.5.dp,

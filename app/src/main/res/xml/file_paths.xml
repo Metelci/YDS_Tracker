@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
+        Cache directory for temporary report files
+        Maps to Context.getCacheDir()
+    -->
+    <cache-path name="reports" path="reports/" />
+    
+    <!-- 
+        Alternative cache path for root cache directory if needed
+        Maps to Context.getCacheDir()
+    -->
+    <cache-path name="cache" path="." />
+    
+    <!-- 
+        External cache directory if needed for larger files
+        Maps to Context.getExternalCacheDir()
+    -->
+    <external-cache-path name="external_reports" path="reports/" />
+</paths>

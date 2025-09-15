@@ -274,4 +274,42 @@
     <string name="online">Online</string>
     <string name="create_profile_title">Create Your Study Profile</string>
     <string name="privacy_first_notice">Privacy First: Your real identity is never shared. Only study preferences are used for matching.</string>
+
+    <!-- PDF Report Strings -->
+    <string name="report_title">Study Progress Report</string>
+    <string name="generate_report">Generate Report</string>
+    <string name="share_report">Share Report</string>
+    <string name="report_generating">Generating Report...</string>
+    <string name="report_success">Report Generated Successfully</string>
+    <string name="report_error">Error Generating Report</string>
+    <string name="report_share_error">Error Sharing Report</string>
+    <string name="report_no_data">No Study Data Available</string>
+    <string name="report_insufficient_data">Insufficient data for report period</string>
+    
+    <!-- Report Labels -->
+    <string name="minutes">Minutes</string>
+    <string name="tasks">Tasks</string>
+    <string name="streak">Streak</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="total_study_time">Total Study Time</string>
+    <string name="current_streak">Current Streak</string>
+    <string name="average_accuracy">Average Accuracy</string>
+    <string name="study_analytics">Study Analytics</string>
+    <string name="time_by_skill">Time by Skill</string>
+    <string name="weekly_study_minutes">Weekly Study Minutes</string>
+    <string name="performance_insights">Performance Insights</string>
+    <string name="ai_recommendations">AI Recommendations</string>
+    <string name="strengths">Strengths</string>
+    <string name="areas_for_improvement">Areas for Improvement</string>
+    <string name="performance_trends">Performance Trends</string>
+    
+    <!-- Report Time Periods -->
+    <string name="last_week">Last Week</string>
+    <string name="last_month">Last Month</string>
+    <string name="last_4_weeks">Last 4 Weeks</string>
+    <string name="custom_period">Custom Period</string>
+    
+    <!-- Privacy Options -->
+    <string name="include_name">Include student name</string>
+    <string name="privacy_protected_report">Name will not be included for privacy</string>
 </resources>

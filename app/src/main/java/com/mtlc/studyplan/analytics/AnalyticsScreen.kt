@@ -18,6 +18,10 @@ import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.ui.components.*
 import kotlinx.coroutines.launch
 import kotlin.math.*
 
@@ -149,18 +154,44 @@ fun TimeframeSelector(
     onTimeframeChanged: (AnalyticsTimeframe) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(AnalyticsTimeframe.values()) { timeframe ->
-            FilterChip(
-                onClick = { onTimeframeChanged(timeframe) },
-                label = { Text(timeframe.displayName) },
-                selected = selectedTimeframe == timeframe,
-                leadingIcon = if (selectedTimeframe == timeframe) {
-                    { Icon(Icons.Filled.Check, contentDescription = null, Modifier.size(18.dp)) }
-                } else null
+    var isFiltering by remember { mutableStateOf(false) }
+
+    // Handle filtering delay
+    LaunchedEffect(selectedTimeframe) {
+        if (isFiltering) {
+            kotlinx.coroutines.delay(800)
+            isFiltering = false
+        }
+    }
+
+    Column(modifier = modifier) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(AnalyticsTimeframe.values()) { timeframe ->
+                FilterChip(
+                    onClick = {
+                        isFiltering = true
+                        onTimeframeChanged(timeframe)
+                    },
+                    label = { Text(timeframe.displayName) },
+                    selected = selectedTimeframe == timeframe,
+                    leadingIcon = if (selectedTimeframe == timeframe) {
+                        { Icon(Icons.Filled.Check, contentDescription = null, Modifier.size(18.dp)) }
+                    } else null
+                )
+            }
+        }
+
+        // Show filtering loading state
+        AnimatedVisibility(
+            visible = isFiltering,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            SearchLoadingState(
+                modifier = Modifier.padding(top = 12.dp),
+                query = selectedTimeframe.displayName
             )
         }
     }
@@ -173,7 +204,28 @@ fun OverviewSection(
     modifier: Modifier = Modifier
 ) {
     if (data == null) {
-        LoadingCard()
+        // Enhanced loading skeleton
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Metrics grid skeleton
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items(4) {
+                    MetricCardSkeleton()
+                }
+            }
+
+            // Chart skeleton
+            ChartSkeleton(modifier = Modifier.height(200.dp))
+
+            // Additional skeleton cards
+            ShimmerCard(modifier = Modifier.height(120.dp))
+            ShimmerCard(modifier = Modifier.height(80.dp))
+        }
         return
     }
 
@@ -338,10 +390,32 @@ fun StudyProgressChart(
 fun LineChart(
     data: List<Float>,
     labels: List<String>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    animateEntry: Boolean = true
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+
+    // Animation for staggered data entry
+    var animationProgress by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(data) {
+        if (animateEntry) {
+            animationProgress = 0f
+            animate(
+                initialValue = 0f,
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 1500,
+                    easing = FastOutSlowInEasing
+                )
+            ) { value, _ ->
+                animationProgress = value
+            }
+        } else {
+            animationProgress = 1f
+        }
+    }
 
     Canvas(modifier = modifier) {
         if (data.isEmpty()) return@Canvas
@@ -365,10 +439,16 @@ fun LineChart(
             )
         }
 
-        // Draw data line
+        // Draw data line with staggered animation
         if (data.size > 1) {
             val path = Path()
-            val points = data.mapIndexed { index, value ->
+            val animatedData = data.mapIndexed { index, value ->
+                val delay = index * 0.1f // Stagger each point by 0.1 seconds
+                val pointProgress = ((animationProgress - delay) / (1f - delay)).coerceIn(0f, 1f)
+                value * pointProgress
+            }
+
+            val points = animatedData.mapIndexed { index, value ->
                 val x = padding + stepX * index
                 val y = size.height - padding - ((value - minValue) / range.coerceAtLeast(1f)) * (size.height - 2 * padding)
                 Offset(x, y)
@@ -442,7 +522,37 @@ fun PerformanceSection(
     modifier: Modifier = Modifier
 ) {
     if (data == null) {
-        LoadingCard()
+        // Performance section skeleton
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Performance metrics skeleton
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    ShimmerText(width = 0.5f, height = 18f)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        repeat(3) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                ShimmerText(width = 0.8f, height = 24f)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                ShimmerText(width = 0.6f, height = 12f)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Weak areas skeleton
+            ShimmerCard(modifier = Modifier.height(150.dp))
+
+            // Performance trends skeleton
+            ChartSkeleton(modifier = Modifier.height(200.dp))
+        }
         return
     }
 

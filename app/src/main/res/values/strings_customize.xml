@@ -2,7 +2,6 @@
 <resources>
     <!-- Customize Plan (Base: English) -->
     <string name="customize_title">Customize plan</string>
-    <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="info">Info</string>
     <string name="back">Back</string>
