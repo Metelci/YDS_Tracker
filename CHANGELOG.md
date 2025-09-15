@@ -21,18 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2025-09-15
 
 ### Added
-- Onboarding Wizard: personalize Day‑1 by setting exam date, weekly availability (Mon–Sun minutes), and skill priorities
-- Study Heatmap: GitHub‑style calendar (last 8 weeks) with per‑day task intensity and tap for detail
-- Progress Ring + Confetti: animated ring and a once‑per‑day confetti burst when hitting 100%
+- Onboarding Wizard: personalize Day‑1 with exam date, weekly availability (Mon–Sun minutes), and skill priorities
+- Study Heatmap: GitHub‑style calendar (last 8 weeks) with task intensity per day and tap‑to‑detail
+- Progress Ring + Confetti: animated sweep; confetti plays once per calendar day when reaching 100%
 - Color‑coded Task Cards: skill strip (Grammar/Reading/Listening/Vocab), estimated minutes, and checkbox
 
 ### Improved
-- Time‑aware plan: better alignment with start weekday and end date trimming
-- Accessibility polish: clearer labels, bigger touch targets, and reduced‑motion support
-- Visual updates: modernized icons and smoother indicators across screens
+- Accessibility & visual polish: modernized icons, improved labels, reduced‑motion support
 
 ### Fixed
-- Minor UI stability issues and edge cases in progress calculations
+- Stability: minor fixes across progress calculations and UI
 
 ## [2.0.0] - 2024-12-15
 
