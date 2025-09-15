@@ -1,0 +1,9 @@
+What’s New (2.1.0)
+
+- Onboarding Wizard: personalize Day‑1 with exam date, weekly availability (Mon–Sun minutes), and skill priorities
+- Study Heatmap: GitHub‑style calendar (last 8 weeks) with task intensity per day and tap‑to‑detail
+- Progress Ring + Confetti: animated sweep and a once‑per‑day celebration at 100%
+- Color‑coded Task Cards: skill strip (Grammar/Reading/Listening/Vocab), estimated minutes, and checkbox
+- Accessibility & Visual polish: modernized icons, improved labels, reduced‑motion support
+- Stability: minor fixes across progress calculations and UI
+
