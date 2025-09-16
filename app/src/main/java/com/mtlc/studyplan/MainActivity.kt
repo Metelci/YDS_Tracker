@@ -496,11 +496,15 @@ fun PlanScreen() {
         }
     }
 
-    // Show next tooltip in sequence if onboarding not complete, but only if no tooltip is currently shown
-    LaunchedEffect(shownTooltips, isOnboardingComplete, currentTooltipId) {
-        if (!isOnboardingComplete && currentTooltipId == null) {
+    // Show next tooltip in sequence if onboarding not complete, but only on first visit
+    var hasTriggeredInitialTooltip by remember { mutableStateOf(false) }
+    LaunchedEffect(shownTooltips, isOnboardingComplete) {
+        if (!isOnboardingComplete && !hasTriggeredInitialTooltip && currentTooltipId == null) {
             val nextTooltip = OnboardingRepository.onboardingFlow.firstOrNull { it !in shownTooltips }
-            currentTooltipId = nextTooltip
+            if (nextTooltip != null) {
+                currentTooltipId = nextTooltip
+                hasTriggeredInitialTooltip = true
+            }
         }
     }
 
@@ -581,6 +585,7 @@ fun PlanScreen() {
                 // Mark onboarding complete if all main tooltips shown
                 if (OnboardingRepository.onboardingFlow.all { it in (shownTooltips + tooltipId) }) {
                     onboardingRepo.markOnboardingCompleted()
+                    hasTriggeredInitialTooltip = false // Reset for next session
                 }
             }
             currentTooltipId = null

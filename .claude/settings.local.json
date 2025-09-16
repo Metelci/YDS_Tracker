@@ -15,7 +15,10 @@
       "mcp__ide__getDiagnostics",
       "Bash(.gradlew.bat assembleDebug)",
       "Bash(kotlinc:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(.\\gradlew.bat:*)",
+      "Bash(gradlew.bat:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

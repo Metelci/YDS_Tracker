@@ -1,69 +1,78 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.navigation
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.runtime.Composable
-import androidx.compose.material3.*
-import androidx.compose.foundation.layout.padding
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.NavHostController
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import com.mtlc.studyplan.data.OnboardingRepository
+import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
-import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
-import com.mtlc.studyplan.feature.*
-import com.mtlc.studyplan.feature.reader.PassageUi
-import com.mtlc.studyplan.feature.review.MockResultUi
-import com.mtlc.studyplan.feature.reader.ReaderScreen
-import com.mtlc.studyplan.feature.review.ReviewScreen
 import com.mtlc.studyplan.feature.mock.MockExamRoute
-import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.feature.progress.ProgressScreen
+import com.mtlc.studyplan.feature.reader.PassageUi
+import com.mtlc.studyplan.feature.reader.ReaderScreen
+import com.mtlc.studyplan.feature.review.MockResultUi
+import com.mtlc.studyplan.feature.review.ReviewScreen
+import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.features.onboarding.OnboardingRoute
-import com.mtlc.studyplan.data.OnboardingRepository
-import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
-import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
- 
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.scale
-import androidx.compose.animation.core.*
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.graphicsLayer
-import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions.pressAnimation
 import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 
+@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
@@ -74,12 +83,12 @@ fun AppNavHost() {
         try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
     }
     val tabs = listOf(
-        Triple("home", Icons.Filled.Home, "Home"),
-        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
-        Triple("reading", Icons.AutoMirrored.Filled.MenuBook, "Reading"),
-        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
-        Triple("social", Icons.Filled.People, "Social"),
-        Triple("settings", Icons.Filled.Settings, "Settings"),
+        Triple("home", Icons.Filled.Home, "Ana Sayfa"),
+        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Görevler"),
+        Triple("reading", Icons.AutoMirrored.Filled.MenuBook, "Okuma"),
+        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "İlerleme"),
+        Triple("social", Icons.Filled.People, "Sosyal"),
+        Triple("settings", Icons.Filled.Settings, "Ayarlar"),
     )
     Scaffold(
         bottomBar = {
@@ -100,9 +109,9 @@ fun AppNavHost() {
             if (showActions) {
                 androidx.compose.material3.ModalBottomSheet(onDismissRequest = { showActions = false }) {
                     androidx.compose.material3.ListItem(
-                        headlineContent = { androidx.compose.material3.Text("Start Session") },
-                        supportingContent = { androidx.compose.material3.Text("Jump to Today and begin") },
-                        modifier = androidx.compose.ui.Modifier
+                        headlineContent = { Text("Start Session") },
+                        supportingContent = { Text("Jump to Today and begin") },
+                        modifier = Modifier
                             .clickable {
                                 showActions = false
                                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -110,9 +119,9 @@ fun AppNavHost() {
                             }
                     )
                     androidx.compose.material3.ListItem(
-                        headlineContent = { androidx.compose.material3.Text("Add Quick Note") },
-                        supportingContent = { androidx.compose.material3.Text("Save a flashcard idea") },
-                        modifier = androidx.compose.ui.Modifier
+                        headlineContent = { Text("Add Quick Note") },
+                        supportingContent = { Text("Save a flashcard idea") },
+                        modifier = Modifier
                             .clickable {
                                 showActions = false
                                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -120,9 +129,9 @@ fun AppNavHost() {
                             }
                     )
                     androidx.compose.material3.ListItem(
-                        headlineContent = { androidx.compose.material3.Text("Practice Questions") },
-                        supportingContent = { androidx.compose.material3.Text("AI-generated personalized set") },
-                        modifier = androidx.compose.ui.Modifier
+                        headlineContent = { Text("Practice Questions") },
+                        supportingContent = { Text("AI-generated personalized set") },
+                        modifier = Modifier
                             .clickable {
                                 showActions = false
                                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -130,9 +139,9 @@ fun AppNavHost() {
                             }
                     )
                     androidx.compose.material3.ListItem(
-                        headlineContent = { androidx.compose.material3.Text("Reading Practice") },
-                        supportingContent = { androidx.compose.material3.Text("Personalized reading materials") },
-                        modifier = androidx.compose.ui.Modifier
+                        headlineContent = { Text("Reading Practice") },
+                        supportingContent = { Text("Personalized reading materials") },
+                        modifier = Modifier
                             .clickable {
                                 showActions = false
                                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -151,7 +160,7 @@ fun AppNavHost() {
                     .padding(bottom = 12.dp)
                     .pressAnimation(HapticFeedbackType.TextHandleMove)
             ) {
-                androidx.compose.material3.Icon(
+                Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Quick Actions",
                     modifier = Modifier.animateContentSize(
@@ -165,12 +174,12 @@ fun AppNavHost() {
         },
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End
     ) { padding ->
-        val currentRoute = navController.currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
+        navController.currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
 
         NavHost(
             navController = navController,
             startDestination = WELCOME_ROUTE,
-            modifier = androidx.compose.ui.Modifier.padding(padding)
+            modifier = Modifier.padding(padding)
         ) {
             composable(WELCOME_ROUTE) {
                 val context = androidx.compose.ui.platform.LocalContext.current
@@ -184,7 +193,7 @@ fun AppNavHost() {
                     }
                 }
                 // Simple placeholder while deciding
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     androidx.compose.material3.CircularProgressIndicator()
                 }
             }
@@ -218,8 +227,8 @@ fun AppNavHost() {
                 targetState = "home",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "home_animation"
-            ) {
-                com.mtlc.studyplan.feature.home.HomeScreen()
+            ) { _ ->
+                com.mtlc.studyplan.feature.home.NewHomeScreen()
             }
         }
 
@@ -243,7 +252,7 @@ fun AppNavHost() {
                 targetState = "tasks",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "tasks_animation"
-            ) {
+            ) { _ ->
                 com.mtlc.studyplan.PlanScreen()
             }
         }
@@ -268,7 +277,7 @@ fun AppNavHost() {
                 targetState = "questions",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "questions_animation"
-            ) {
+            ) { _ ->
                 com.mtlc.studyplan.feature.questions.QuestionsScreen()
             }
         }
@@ -293,7 +302,7 @@ fun AppNavHost() {
                 targetState = "reading",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "reading_animation"
-            ) {
+            ) { _ ->
                 com.mtlc.studyplan.reading.ReadingScreen(
                     onNavigateToSession = { contentId ->
                         navController.navigate("reading/session/$contentId")
@@ -310,13 +319,13 @@ fun AppNavHost() {
         composable("reading/session/{contentId}") { backStackEntry ->
             val contentId = backStackEntry.arguments?.getString("contentId") ?: ""
             // Placeholder for reading session screen
-            androidx.compose.material3.Scaffold(
+            Scaffold(
                 topBar = {
                     androidx.compose.material3.TopAppBar(
-                        title = { androidx.compose.material3.Text("Reading Session") },
+                        title = { Text("Reading Session") },
                         navigationIcon = {
                             androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                             }
                         }
                     )
@@ -326,22 +335,22 @@ fun AppNavHost() {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                    contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.material3.Text("Reading Session for Content: $contentId")
+                    Text("Reading Session for Content: $contentId")
                 }
             }
         }
 
         // Reading progress route
         composable("reading/progress") {
-            androidx.compose.material3.Scaffold(
+            Scaffold(
                 topBar = {
                     androidx.compose.material3.TopAppBar(
-                        title = { androidx.compose.material3.Text("Reading Progress") },
+                        title = { Text("Reading Progress") },
                         navigationIcon = {
                             androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                             }
                         }
                     )
@@ -351,9 +360,9 @@ fun AppNavHost() {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                    contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.material3.Text("Reading Progress Analytics")
+                    Text("Reading Progress Analytics")
                 }
             }
         }
@@ -398,7 +407,7 @@ fun AppNavHost() {
                 targetState = "progress",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "progress_animation"
-            ) {
+            ) { _ ->
                 ProgressScreen()
             }
         }
@@ -423,7 +432,7 @@ fun AppNavHost() {
                 targetState = "social",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "social_animation"
-            ) {
+            ) { _ ->
                 com.mtlc.studyplan.social.SocialScreen()
             }
         }
@@ -448,14 +457,13 @@ fun AppNavHost() {
                 targetState = "settings",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "settings_animation"
-            ) {
+            ) { _ ->
                 com.mtlc.studyplan.ui.SettingsScreen()
             }
         }
         // Mock exam start route
         composable("mock/start") {
             MockExamRoute(onSubmit = { result ->
-                val json = java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(com.mtlc.studyplan.feature.mock.MockResult.serializer(), result), "UTF-8")
                 navController.navigate("mock/result/${'$'}json")
             })
         }
@@ -470,8 +478,8 @@ fun AppNavHost() {
                 perSection = mock.perSection.map { (sec, pair) -> com.mtlc.studyplan.feature.review.SectionStatUi(sec, pair.first, pair.second, if (mock.total>0) mock.avgSecPerQ else 0) },
                 wrongIds = mock.wrongIds
             )
-            androidx.compose.material3.Scaffold(topBar = {
-                androidx.compose.material3.TopAppBar(title = { androidx.compose.material3.Text("Exam Result") })
+            Scaffold(topBar = {
+                androidx.compose.material3.TopAppBar(title = { Text("Exam Result") })
             }) { padding ->
                 Column(
                     modifier = Modifier
@@ -480,11 +488,11 @@ fun AppNavHost() {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    androidx.compose.material3.Text("Correct: ${'$'}{review.correct} / ${'$'}{review.total}")
-                    androidx.compose.material3.Text("Avg sec per Q: ${'$'}{review.avgSecPerQ}")
+                    Text("Correct: ${'$'}{review.correct} / ${'$'}{review.total}")
+                    Text("Avg sec per Q: ${'$'}{review.avgSecPerQ}")
                     androidx.compose.material3.Button(
                         onClick = {
-                            val data = java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(MockResultUi.serializer(), review), "UTF-8")
+                            java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(MockResultUi.serializer(), review), "UTF-8")
                             EnhancedNavigation.navigateWithFeedback(
                                 navController = navController,
                                 route = "mock/review/${'$'}data",
@@ -492,7 +500,7 @@ fun AppNavHost() {
                             )
                         },
                         modifier = Modifier.pressAnimation(HapticFeedbackType.TextHandleMove)
-                    ) { androidx.compose.material3.Text("Open Insights") }
+                    ) { Text("Open Insights") }
                     androidx.compose.material3.Button(
                         onClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -500,7 +508,7 @@ fun AppNavHost() {
                         },
                         modifier = Modifier.pressAnimation(HapticFeedbackType.TextHandleMove)
                     ) {
-                        androidx.compose.material3.Text("Back to Today")
+                        Text("Back to Today")
                     }
                 }
             }

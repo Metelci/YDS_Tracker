@@ -100,8 +100,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
+                .padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()), // Apply specific top and bottom padding
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Show loading state when generating plan
@@ -258,16 +257,19 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
         yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 2),
         selectableDates = selectable
     )
-    DatePicker(state = state, title = null, showModeToggle = false)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) { // Wrap in Column
+        DatePicker(state = state, title = null, showModeToggle = false)
+        Spacer(modifier = Modifier.height(16.dp)) // Add spacer
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssistChip(onClick = { vm.setExamDate(min) }, label = { Text(stringResource(R.string.pick_min_date)) })
+            AssistChip(onClick = { vm.setExamDate(min.plusWeeks(4)) }, label = { Text(stringResource(R.string.pick_plus_month)) })
+        }
+    }
     LaunchedEffect(state.selectedDateMillis) {
         state.selectedDateMillis?.let { millis ->
             val d = java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
             if (!d.isBefore(min)) vm.setExamDate(d)
         }
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        AssistChip(onClick = { vm.setExamDate(min) }, label = { Text(stringResource(R.string.pick_min_date)) })
-        AssistChip(onClick = { vm.setExamDate(min.plusWeeks(4)) }, label = { Text(stringResource(R.string.pick_plus_month)) })
     }
 }
 

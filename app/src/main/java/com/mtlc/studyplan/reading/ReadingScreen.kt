@@ -93,10 +93,47 @@ fun ReadingScreen(
             }
             
             item {
+                val uiState by viewModel.uiState.collectAsState()
+
+                // Show error if any
+                uiState.error?.let { error ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+
                 QuickActionButtons(
-                    onStartQuickRead = { viewModel.startQuickReading() },
-                    onStartVocabFocus = { viewModel.startVocabularyFocusedReading() },
-                    onStartComprehension = { viewModel.startComprehensionReading() }
+                    onStartQuickRead = {
+                        viewModel.startQuickReading()
+                        // Navigate to session if successful
+                        uiState.activeSession?.let { session ->
+                            onNavigateToSession(session.content.id)
+                        }
+                    },
+                    onStartVocabFocus = {
+                        viewModel.startVocabularyFocusedReading()
+                        // Navigate to session if successful
+                        uiState.activeSession?.let { session ->
+                            onNavigateToSession(session.content.id)
+                        }
+                    },
+                    onStartComprehension = {
+                        viewModel.startComprehensionReading()
+                        // Navigate to session if successful
+                        uiState.activeSession?.let { session ->
+                            onNavigateToSession(session.content.id)
+                        }
+                    },
+                    isLoading = uiState.isLoading
                 )
             }
             
@@ -230,7 +267,8 @@ fun StatItem(
 fun QuickActionButtons(
     onStartQuickRead: () -> Unit,
     onStartVocabFocus: () -> Unit,
-    onStartComprehension: () -> Unit
+    onStartComprehension: () -> Unit,
+    isLoading: Boolean = false
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -240,19 +278,22 @@ fun QuickActionButtons(
             text = "Quick Read",
             icon = Icons.Default.FastForward,
             onClick = onStartQuickRead,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading
         )
         ActionButton(
             text = "Vocabulary",
             icon = Icons.AutoMirrored.Filled.MenuBook,
             onClick = onStartVocabFocus,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading
         )
         ActionButton(
             text = "Comprehension",
             icon = Icons.Default.Quiz,
             onClick = onStartComprehension,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading
         )
     }
 }
@@ -262,10 +303,12 @@ fun ActionButton(
     text: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     ElevatedButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.height(56.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
@@ -449,15 +492,84 @@ class ReadingScreenViewModel(
     }
     
     fun startQuickReading() {
-        // Implementation for quick reading session
+        viewModelScope.launch {
+            try {
+                readingIntegration?.let { integration ->
+                    // Get quick reading content (5-10 minute sessions)
+                    val quickContent = integration.getQuickReadingContent()
+                    quickContent?.let { content ->
+                        // Navigate to reading session with quick reading mode
+                        _uiState.update {
+                            it.copy(
+                                activeSession = ReadingSessionState(
+                                    content = content,
+                                    mode = ReadingMode.QUICK_READ,
+                                    startTime = System.currentTimeMillis()
+                                )
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(error = "Failed to start quick reading: ${e.message}")
+                }
+            }
+        }
     }
-    
+
     fun startVocabularyFocusedReading() {
-        // Implementation for vocabulary-focused reading
+        viewModelScope.launch {
+            try {
+                readingIntegration?.let { integration ->
+                    // Get vocabulary-focused content
+                    val vocabContent = integration.getVocabularyFocusedContent()
+                    vocabContent?.let { content ->
+                        // Navigate to reading session with vocabulary focus mode
+                        _uiState.update {
+                            it.copy(
+                                activeSession = ReadingSessionState(
+                                    content = content,
+                                    mode = ReadingMode.VOCABULARY_FOCUS,
+                                    startTime = System.currentTimeMillis()
+                                )
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(error = "Failed to start vocabulary reading: ${e.message}")
+                }
+            }
+        }
     }
-    
+
     fun startComprehensionReading() {
-        // Implementation for comprehension-focused reading
+        viewModelScope.launch {
+            try {
+                readingIntegration?.let { integration ->
+                    // Get comprehension-focused content with questions
+                    val comprehensionContent = integration.getComprehensionContent()
+                    comprehensionContent?.let { content ->
+                        // Navigate to reading session with comprehension mode
+                        _uiState.update {
+                            it.copy(
+                                activeSession = ReadingSessionState(
+                                    content = content,
+                                    mode = ReadingMode.COMPREHENSION,
+                                    startTime = System.currentTimeMillis()
+                                )
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(error = "Failed to start comprehension reading: ${e.message}")
+                }
+            }
+        }
     }
     
     private fun calculateCurrentWeek(completedTasks: Int): Int {
@@ -526,8 +638,23 @@ data class ReadingScreenUiState(
     val overview: ReadingOverview = ReadingOverview(),
     val recommendations: List<ReadingRecommendation> = emptyList(),
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val activeSession: ReadingSessionState? = null
 )
+
+data class ReadingSessionState(
+    val content: ReadingContent,
+    val mode: ReadingMode,
+    val startTime: Long,
+    val currentPosition: Int = 0,
+    val timeSpent: Long = 0
+)
+
+enum class ReadingMode {
+    QUICK_READ,
+    VOCABULARY_FOCUS,
+    COMPREHENSION
+}
 
 data class ReadingOverview(
     val currentWeek: Int = 1,

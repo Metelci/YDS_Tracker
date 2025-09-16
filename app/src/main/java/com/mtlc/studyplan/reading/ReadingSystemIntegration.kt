@@ -450,6 +450,69 @@ class ReadingSystemIntegration(
     private fun encodeComprehensionAnswers(answers: Map<Int, String>): String {
         return Json.encodeToString(answers)
     }
+
+    /**
+     * Get quick reading content (5-10 minute sessions focused on speed)
+     */
+    suspend fun getQuickReadingContent(): ReadingContent? {
+        val curator = ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+        return curator.recommendReading(7) // 7-minute target for quick reading
+    }
+
+    /**
+     * Get vocabulary-focused reading content with word learning emphasis
+     */
+    suspend fun getVocabularyFocusedContent(): ReadingContent? {
+        val curator = ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+        val taskLogs = progressRepository.taskLogsFlow.first()
+        val weakAreas = identifyWeakAreas(taskLogs)
+
+        // Look for content that emphasizes vocabulary building
+        return if (weakAreas.contains(SkillCategory.VOCAB)) {
+            curator.getReadingByWeakArea(SkillCategory.VOCAB).firstOrNull()
+        } else {
+            curator.recommendReading(12) // 12-minute session with vocabulary focus
+        }
+    }
+
+    /**
+     * Get comprehension-focused content with built-in questions
+     */
+    suspend fun getComprehensionContent(): ReadingContent? {
+        val curator = ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+        val content = curator.recommendReading(15) // 15-minute session for comprehension work
+
+        // Ensure content has comprehension questions, add them if missing
+        return content?.let { baseContent ->
+            if (baseContent.comprehensionQuestions.isNullOrEmpty()) {
+                baseContent.copy(
+                    comprehensionQuestions = generateBasicComprehensionQuestions(baseContent)
+                )
+            } else {
+                baseContent
+            }
+        }
+    }
+
+    /**
+     * Generate basic comprehension questions for content that doesn't have them
+     */
+    private fun generateBasicComprehensionQuestions(content: ReadingContent): List<String> {
+        val questions = mutableListOf<String>()
+
+        // Add topic-based questions
+        if (content.topics.isNotEmpty()) {
+            questions.add("What is the main topic discussed in this passage?")
+            questions.add("According to the passage, what are the key points about ${content.topics.first()}?")
+        }
+
+        // Add general comprehension questions
+        questions.add("What is the author's main argument or point of view?")
+        questions.add("What evidence or examples does the author provide?")
+        questions.add("What conclusion can you draw from this passage?")
+
+        return questions.take(5) // Limit to 5 questions
+    }
 }
 
 // Data classes for integration

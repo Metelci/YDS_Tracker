@@ -1,8 +1,13 @@
 plugins {
+    // Android application plugins
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    
+    // Compose and Kotlin plugins
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    
+    // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
 
@@ -33,7 +38,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            // Fix: Use proper signing config reference instead of debug config
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
     kotlin {
@@ -49,6 +55,13 @@ android {
     
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
+    }
+    
+    // Enable R8 for release builds to reduce APK size
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 

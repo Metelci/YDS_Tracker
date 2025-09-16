@@ -241,6 +241,10 @@ fun TodayScreen(
                                         onNavigateToFocus = onNavigateToFocus
                                     )
                                 }
+                                // Add a spacer at the end to account for the FAB
+                                item {
+                                    Spacer(modifier = Modifier.height(80.dp))
+                                }
                             }
                             PullRefreshIndicator(
                                 refreshing = state.isLoading,
