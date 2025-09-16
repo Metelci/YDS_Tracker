@@ -59,10 +59,15 @@ object DesignTokens {
     val DestructiveForeground = hsl(0, 0, 100)
 
     // Gamification Colors (matching screenshot elements)
-    val StreakFire = hsl(14, 100, 57)  // Orange-red for streak
-    val PointsGreen = hsl(122, 40, 65)  // Green for points
-    val TasksDone = hsl(14, 85, 75)  // Coral for tasks done
-    val ExamBlue = hsl(199, 70, 80)  // Light blue for exam card
+    val StreakFire = hsl(14, 70, 85)  // Softer coral for streak card
+    val PointsGreen = hsl(122, 50, 85)  // Softer green for points
+    val TasksDone = hsl(14, 70, 85)  // Softer coral for tasks done
+    val ExamBlue = hsl(199, 60, 88)  // Much lighter blue for exam card
+
+    // Task category colors (softer versions)
+    val TaskGrammar = hsl(199, 60, 88)  // Light blue for grammar
+    val TaskReading = hsl(122, 50, 85)  // Light green for reading
+    val TaskVocabulary = hsl(122, 40, 90)  // Very light green for vocabulary
 
     // Achievement Colors
     val AchievementBronze = hsl(30, 67, 47)

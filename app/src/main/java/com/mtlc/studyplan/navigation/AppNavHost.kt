@@ -83,12 +83,11 @@ fun AppNavHost() {
         try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
     }
     val tabs = listOf(
-        Triple("home", Icons.Filled.Home, "Ana Sayfa"),
-        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Görevler"),
-        Triple("reading", Icons.AutoMirrored.Filled.MenuBook, "Okuma"),
-        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "İlerleme"),
-        Triple("social", Icons.Filled.People, "Sosyal"),
-        Triple("settings", Icons.Filled.Settings, "Ayarlar"),
+        Triple("home", Icons.Filled.Home, "Home"),
+        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
+        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
+        Triple("social", Icons.Filled.People, "Social"),
+        Triple("settings", Icons.Filled.Settings, "Settings"),
     )
     Scaffold(
         bottomBar = {

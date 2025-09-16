@@ -2,9 +2,11 @@
 package com.mtlc.studyplan.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -14,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,10 +26,8 @@ import com.mtlc.studyplan.data.dataStore
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import com.mtlc.studyplan.ui.theme.DesignTokens
-import java.util.*
 
 @Composable
 fun NewHomeScreen() {
@@ -84,38 +83,39 @@ fun NewHomeScreen() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(DesignTokens.Background)
+            .background(Color.White)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Header with greeting
         item {
             Column(
-                modifier = Modifier.padding(top = 24.dp)
+                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             ) {
                 Text(
-                    text = "Günaydın! 👋",
-                    style = MaterialTheme.typography.headlineMedium,
+                    text = "Good morning! 👋",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DesignTokens.Foreground
+                    color = Color.Black
                 )
                 Text(
-                    text = "YDS sınavını kazanmaya hazır mısın?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = DesignTokens.MutedForeground,
+                    text = "Ready to ace your YDS exam?",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
         }
 
-        // Main progress card
+        // Main progress card - matching screenshot exactly
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = DesignTokens.ExamBlue
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp)
@@ -123,129 +123,138 @@ fun NewHomeScreen() {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.Top
                     ) {
+                        // Left side - 65% Today
                         Column {
                             Text(
-                                text = "${(todayProgress * 100).toInt()}%",
-                                style = MaterialTheme.typography.displaySmall,
+                                text = "65%",
+                                fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.Foreground
+                                color = Color.Black
                             )
                             Text(
-                                text = "Bugün",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.MutedForeground
+                                text = "Today",
+                                fontSize = 14.sp,
+                                color = Color.Gray
                             )
                         }
+
+                        // Right side - Days to YDS
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
                             Text(
-                                text = "-$daysToExam",
-                                style = MaterialTheme.typography.headlineLarge,
+                                text = "-274",
+                                fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.Foreground
+                                color = Color.Black
                             )
                             Text(
-                                text = "YDS'ye Gün",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.MutedForeground
+                                text = "Days to YDS",
+                                fontSize = 14.sp,
+                                color = Color.Gray
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
+                    // Progress bar
                     LinearProgressIndicator(
-                        progress = { todayProgress },
+                        progress = { 0.65f },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        color = DesignTokens.Success,
-                        trackColor = DesignTokens.Muted
+                        color = Color(0xFF4CAF50),
+                        trackColor = Color.White.copy(alpha = 0.3f)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Sınav Hazırlığı",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = DesignTokens.MutedForeground
+                        text = "Exam Preparation",
+                        fontSize = 12.sp,
+                        color = Color.Gray
                     )
                 }
             }
         }
 
-        // Stats row (Points and Tasks)
+        // Stats row (Points and Tasks) - matching screenshot colors
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Points card
+                // Points card - softer green
                 Card(
                     modifier = Modifier.weight(1f),
                     colors = CardDefaults.cardColors(
-                        containerColor = DesignTokens.SuccessContainer
+                        containerColor = DesignTokens.PointsGreen
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "$todayPoints",
-                            style = MaterialTheme.typography.headlineMedium,
+                            text = "40",
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.Foreground
+                            color = Color.Black
                         )
                         Text(
-                            text = "Bugün Puan",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.MutedForeground
+                            text = "Points Today",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
 
-                // Tasks done card
+                // Tasks done card - softer coral
                 Card(
                     modifier = Modifier.weight(1f),
                     colors = CardDefaults.cardColors(
-                        containerColor = DesignTokens.TertiaryContainer
+                        containerColor = DesignTokens.TasksDone
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "$tasksCompleted/${todayTasks.size}",
-                            style = MaterialTheme.typography.headlineMedium,
+                            text = "1/3",
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.Foreground
+                            color = Color.Black
                         )
                         Text(
-                            text = "Görev Tamamlandı",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.MutedForeground
+                            text = "Tasks Done",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
             }
         }
 
-        // Streak card
+        // Streak card - matching screenshot exactly
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.TertiaryContainer
+                    containerColor = DesignTokens.StreakFire
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -253,49 +262,65 @@ fun NewHomeScreen() {
                         .padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "🔥",
-                        fontSize = 24.sp
-                    )
+                    // Fire emoji with background circle
+                    Surface(
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = CircleShape,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "🔥",
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.width(12.dp))
+
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "${progress.streakCount} gün seri",
-                            style = MaterialTheme.typography.headlineSmall,
+                            text = "12 days streak",
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.Foreground
+                            color = Color.Black
                         )
                         Text(
-                            text = "Ateştesin! 🔥",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.MutedForeground
+                            text = "You're on fire! 🔥",
+                            fontSize = 14.sp,
+                            color = Color.Gray
                         )
                     }
+
+                    // 2x multiplier badge
                     Surface(
-                        color = DesignTokens.Tertiary,
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.padding(4.dp)
+                        color = Color.White,
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
                             text = "2x",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.TertiaryContainerForeground
+                            color = Color.Black
                         )
                     }
                 }
             }
         }
 
-        // YDS Exam 2024 card
+        // YDS Exam 2024 card - matching screenshot exactly
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.PrimaryContainer
+                    containerColor = DesignTokens.ExamBlue
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp)
@@ -304,27 +329,27 @@ fun NewHomeScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.EventNote,
+                            imageVector = Icons.Filled.DateRange,
                             contentDescription = null,
-                            tint = DesignTokens.Primary
+                            tint = Color.Black
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "YDS Sınavı 2024",
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "YDS Exam 2024",
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.Foreground
+                            color = Color.Black
                         )
                     }
 
                     Text(
-                        text = "Sınav günü!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.MutedForeground,
+                        text = "Exam day!",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -332,15 +357,15 @@ fun NewHomeScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "İlerleme",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.MutedForeground
+                            text = "Progress",
+                            fontSize = 14.sp,
+                            color = Color.Gray
                         )
                         Text(
                             text = "100%",
-                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DesignTokens.Primary
+                            color = Color.Black
                         )
                     }
 
@@ -350,11 +375,11 @@ fun NewHomeScreen() {
                             .fillMaxWidth()
                             .height(6.dp)
                             .clip(RoundedCornerShape(3.dp)),
-                        color = DesignTokens.Primary,
-                        trackColor = DesignTokens.Muted
+                        color = Color(0xFF2196F3),
+                        trackColor = Color.White.copy(alpha = 0.3f)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -362,28 +387,29 @@ fun NewHomeScreen() {
                         Icon(
                             imageVector = Icons.Filled.Schedule,
                             contentDescription = null,
-                            tint = DesignTokens.MutedForeground,
+                            tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "15 Aralık 2024",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.MutedForeground
+                            text = "December 15, 2024",
+                            fontSize = 12.sp,
+                            color = Color.Gray
                         )
                     }
                 }
             }
         }
 
-        // Smart Suggestion card
+        // Smart Suggestion card - matching screenshot exactly
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.PrimaryContainer
+                    containerColor = DesignTokens.ExamBlue
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp)
@@ -392,28 +418,28 @@ fun NewHomeScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            color = DesignTokens.Primary,
+                            color = Color(0xFF2196F3),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Psychology,
                                 contentDescription = null,
-                                tint = DesignTokens.PrimaryForeground,
+                                tint = Color.White,
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "Akıllı Öneri",
-                                style = MaterialTheme.typography.titleMedium,
+                                text = "Smart Suggestion",
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.Foreground
+                                color = Color.Black
                             )
                             Text(
-                                text = "AI destekli öneriler",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = DesignTokens.MutedForeground
+                                text = "AI-powered recommendation",
+                                fontSize = 12.sp,
+                                color = Color.Gray
                             )
                         }
                     }
@@ -421,9 +447,9 @@ fun NewHomeScreen() {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "İlerlemenize göre, bugün okuma anlama üzerine odaklanın. Dilbilgisi için %85 hazırsınız ancak okuma hızınızı %15 artırabilirsiniz.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.Foreground,
+                        text = "Based on your progress, focus on reading comprehension today. You're 85% ready for grammar but could improve reading speed by 15%.",
+                        fontSize = 14.sp,
+                        color = Color.Black,
                         lineHeight = 20.sp
                     )
 
@@ -433,45 +459,71 @@ fun NewHomeScreen() {
                         onClick = { },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = DesignTokens.Primary
+                            contentColor = Color(0xFF2196F3)
                         ),
                         border = androidx.compose.foundation.BorderStroke(
                             width = 1.dp,
-                            color = DesignTokens.Primary
-                        )
+                            color = Color(0xFF2196F3)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            text = "Önerilen Görevi Dene",
-                            style = MaterialTheme.typography.labelLarge
+                            text = "Try Recommended Task",
+                            fontSize = 14.sp
                         )
                     }
                 }
             }
         }
 
-        // Today's Tasks section
+        // Today's Tasks section - matching screenshot exactly
         item {
             Text(
-                text = "Bugünün Görevleri",
-                style = MaterialTheme.typography.titleLarge,
+                text = "Today's Tasks",
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = DesignTokens.Foreground,
+                color = Color.Black,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
 
-        // Task items
-        items(todayTasks.take(3), key = { it.id }) { task ->
-            TaskItemCard(
-                task = task,
-                isCompleted = progress.completedTasks.contains(task.id),
-                onToggleComplete = { taskId ->
-                    coroutineScope.launch {
-                        val cur = progress.completedTasks.toMutableSet()
-                        if (taskId in cur) cur.remove(taskId) else cur.add(taskId)
-                        progressRepo.saveProgress(progress.copy(completedTasks = cur))
-                    }
-                }
+        // Task items - exactly matching screenshot
+        item {
+            TaskItemScreenshot(
+                category = "Grammar",
+                title = "Complete Grammar Practice Set",
+                time = "15min",
+                points = "50 points",
+                isCompleted = false,
+                categoryColor = DesignTokens.TaskGrammar,
+                borderColor = Color(0xFF2196F3),
+                onToggleComplete = { }
+            )
+        }
+
+        item {
+            TaskItemScreenshot(
+                category = "Reading",
+                title = "Reading Comprehension - Science Articles",
+                time = "20min",
+                points = "75 points",
+                isCompleted = false,
+                categoryColor = DesignTokens.TaskReading,
+                borderColor = Color(0xFF4CAF50),
+                onToggleComplete = { }
+            )
+        }
+
+        item {
+            TaskItemScreenshot(
+                category = "Vocabulary",
+                title = "Vocabulary Builder - Advanced Words",
+                time = "10min",
+                points = "25 points",
+                isCompleted = true,
+                categoryColor = DesignTokens.TaskVocabulary,
+                borderColor = Color(0xFF8BC34A),
+                onToggleComplete = { }
             )
         }
 
@@ -483,33 +535,29 @@ fun NewHomeScreen() {
 }
 
 @Composable
-fun TaskItemCard(
-    task: DataTask,
+fun TaskItemScreenshot(
+    category: String,
+    title: String,
+    time: String,
+    points: String,
     isCompleted: Boolean,
-    onToggleComplete: (String) -> Unit
+    categoryColor: Color,
+    borderColor: Color,
+    onToggleComplete: () -> Unit
 ) {
-    val category = when {
-        task.desc.contains("Grammar", ignoreCase = true) || task.desc.contains("Dilbilgisi", ignoreCase = true) -> "Dilbilgisi"
-        task.desc.contains("Reading", ignoreCase = true) || task.desc.contains("Okuma", ignoreCase = true) -> "Okuma"
-        task.desc.contains("Vocabulary", ignoreCase = true) || task.desc.contains("Kelime", ignoreCase = true) -> "Kelime"
-        else -> "Genel"
-    }
-
-    val categoryColor = when (category) {
-        "Dilbilgisi" -> DesignTokens.Primary
-        "Okuma" -> DesignTokens.Secondary
-        "Kelime" -> DesignTokens.PointsGreen
-        else -> DesignTokens.MutedForeground
-    }
-
-    val backgroundColor = if (isCompleted) DesignTokens.SuccessContainer else DesignTokens.Card
-
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(12.dp)
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
+            containerColor = if (isCompleted) categoryColor else categoryColor.copy(alpha = 0.3f)
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -517,95 +565,78 @@ fun TaskItemCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Category color indicator
-            Surface(
-                color = categoryColor,
-                shape = RoundedCornerShape(2.dp),
-                modifier = Modifier
-                    .width(4.dp)
-                    .height(40.dp)
-            ) {}
-
-            Spacer(modifier = Modifier.width(12.dp))
-
             Column(modifier = Modifier.weight(1f)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        color = categoryColor.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = category,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = categoryColor,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Text(
+                        text = category,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Surface(
-                        color = DesignTokens.MutedForeground.copy(alpha = 0.1f),
+                        color = Color.Gray.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            text = "15dk",
+                            text = time,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = DesignTokens.MutedForeground
+                            fontSize = 12.sp,
+                            color = Color.Gray
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = task.desc,
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = title,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = if (isCompleted) DesignTokens.MutedForeground else DesignTokens.Foreground
+                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "⭐ 50 XP",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.MutedForeground
+                    text = "⭐ $points",
+                    fontSize = 12.sp,
+                    color = Color.Gray
                 )
             }
 
-            // Complete button or checkmark
+            // Complete button or checkmark - exactly like screenshot
             if (isCompleted) {
                 Surface(
-                    color = DesignTokens.Success,
-                    shape = RoundedCornerShape(20.dp)
+                    color = Color(0xFF4CAF50),
+                    shape = CircleShape,
+                    modifier = Modifier.size(32.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "Tamamlandı",
-                        tint = DesignTokens.SuccessContainer,
-                        modifier = Modifier.padding(8.dp)
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Completed",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             } else {
-                OutlinedButton(
-                    onClick = { onToggleComplete(task.id) },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = DesignTokens.Primary
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(
-                        width = 1.dp,
-                        color = DesignTokens.Primary
-                    )
+                Surface(
+                    color = Color.Transparent,
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .border(2.dp, Color.Gray.copy(alpha = 0.3f), CircleShape)
                 ) {
-                    Text(
-                        text = "Başla",
-                        style = MaterialTheme.typography.labelMedium
-                    )
+                    // Empty circle for incomplete tasks
                 }
             }
         }
