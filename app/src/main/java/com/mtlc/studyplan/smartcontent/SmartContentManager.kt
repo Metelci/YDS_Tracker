@@ -1,0 +1,628 @@
+package com.mtlc.studyplan.smartcontent
+
+import android.content.Context
+import com.mtlc.studyplan.ai.SmartScheduler
+import com.mtlc.studyplan.data.ProgressRepository
+import com.mtlc.studyplan.data.TaskLog
+import com.mtlc.studyplan.data.UserProgress
+import com.mtlc.studyplan.data.VocabularyItem
+import com.mtlc.studyplan.questions.GeneratedQuestion
+import com.mtlc.studyplan.questions.QuestionGenerator
+import com.mtlc.studyplan.questions.SkillCategory
+import com.mtlc.studyplan.reading.ContentCurator
+import com.mtlc.studyplan.reading.ContentCuratorFactory
+import com.mtlc.studyplan.reading.ReadingContent
+import com.mtlc.studyplan.reading.ReadingSystemIntegration
+import com.mtlc.studyplan.questions.VocabularyManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlin.math.min
+import kotlin.math.max
+import kotlin.random.Random
+
+/**
+ * Central Content Coordinator for Unified Smart Content System
+ * Integrates vocabulary, questions, and reading into cohesive learning experience
+ */
+class SmartContentManager(
+    private val context: Context,
+    private val questionGenerator: QuestionGenerator,
+    private val vocabularyManager: VocabularyManager,
+    private val progressRepository: ProgressRepository,
+    private val smartScheduler: SmartScheduler
+) {
+    private val contentCurator: ContentCurator by lazy {
+        ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+    }
+
+    private val readingIntegration: ReadingSystemIntegration by lazy {
+        ReadingSystemIntegration(context, progressRepository, vocabularyManager, questionGenerator)
+    }
+
+    private val intelligenceEngine: ContentIntelligenceEngine by lazy {
+        ContentIntelligenceEngine(progressRepository)
+    }
+
+    /**
+     * Generate personalized daily content pack based on available time and user profile
+     */
+    suspend fun generateDailyContentPack(availableTime: Int): DailyContentPack {
+        val userProgress = progressRepository.userProgressFlow.first()
+        val taskLogs = progressRepository.taskLogsFlow.first()
+        val currentWeek = calculateCurrentWeek(userProgress)
+        val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
+
+        // Get optimal content mix from intelligence engine
+        val optimalMix = intelligenceEngine.optimizeContentMix(availableTime, getLearningGoals(userProfile))
+
+        // Generate content components
+        val vocabulary = selectDailyVocabulary(currentWeek, optimalMix.vocabularyRatio * availableTime, userProfile)
+        val questions = generateDailyQuestions(currentWeek, optimalMix.questionsRatio * availableTime, userProfile)
+        val reading = selectDailyReading(availableTime, optimalMix.readingRatio * availableTime, userProfile)
+
+        // Determine optimal sequence
+        val sequence = determineContentSequence(vocabulary, questions, reading, userProfile)
+
+        return DailyContentPack(
+            id = "daily_${System.currentTimeMillis()}",
+            date = System.currentTimeMillis(),
+            vocabulary = vocabulary,
+            questions = questions,
+            reading = reading,
+            recommendedSequence = sequence,
+            estimatedTotalTime = availableTime,
+            focusAreas = identifyFocusAreas(userProfile, taskLogs),
+            difficultyLevel = calculatePackDifficulty(vocabulary, questions, reading),
+            confidenceScore = calculateConfidenceScore(userProfile, optimalMix)
+        )
+    }
+
+    /**
+     * Create personalized study session with structured learning flow
+     */
+    suspend fun createPersonalizedStudySession(sessionType: SessionType): StudySession {
+        val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
+        val availableTime = userProfile.optimalSessionLength
+
+        val sessionId = "session_${System.currentTimeMillis()}_${sessionType.name}"
+
+        // Generate session components based on type
+        val components = when (sessionType) {
+            SessionType.WARMUP -> createWarmupSession(userProfile, availableTime)
+            SessionType.FOCUSED_PRACTICE -> createFocusedPracticeSession(userProfile, availableTime)
+            SessionType.COMPREHENSIVE_REVIEW -> createComprehensiveReviewSession(userProfile, availableTime)
+            SessionType.EXAM_PREPARATION -> createExamPreparationSession(userProfile, availableTime)
+            SessionType.SKILL_BUILDING -> createSkillBuildingSession(userProfile, availableTime)
+        }
+
+        return StudySession(
+            id = sessionId,
+            sessionType = sessionType,
+            warmupVocabulary = components.warmupVocabulary,
+            mainContent = components.mainContent,
+            reinforcementQuestions = components.reinforcementQuestions,
+            cooldownVocabulary = components.cooldownVocabulary,
+            sessionGoals = components.sessionGoals,
+            estimatedDuration = availableTime,
+            optimalStartTime = findOptimalStartTime(userProfile),
+            difficultyCurve = userProfile.preferredDifficultyCurve
+        )
+    }
+
+    /**
+     * Update content performance and refine future recommendations
+     */
+    suspend fun updateContentPerformance(contentId: String, performance: ContentPerformance) {
+        // Store performance data for learning algorithm improvement
+        intelligenceEngine.updatePerformanceData(performance)
+
+        // Update content effectiveness scores
+        intelligenceEngine.updateContentEffectiveness(contentId, performance)
+
+        // Trigger system learning and adaptation
+        intelligenceEngine.adaptSystemParameters(performance)
+    }
+
+    /**
+     * Get personalized content recommendations across all content types
+     */
+    suspend fun getContentRecommendations(): List<ContentRecommendation> {
+        val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
+        val recommendations = mutableListOf<ContentRecommendation>()
+
+        // Vocabulary recommendations
+        val vocabRecommendations = generateVocabularyRecommendations(userProfile)
+        recommendations.addAll(vocabRecommendations)
+
+        // Question recommendations
+        val questionRecommendations = generateQuestionRecommendations(userProfile)
+        recommendations.addAll(questionRecommendations)
+
+        // Reading recommendations
+        val readingRecommendations = generateReadingRecommendations(userProfile)
+        recommendations.addAll(readingRecommendations)
+
+        // Sort by relevance and return top recommendations
+        return recommendations.sortedByDescending { it.relevanceScore }.take(10)
+    }
+
+    /**
+     * Cross-system learning algorithm implementation
+     */
+    suspend fun applyCrossSystemLearning() {
+        val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
+        val recentPerformance = getRecentPerformanceData()
+
+        // Vocabulary mastery influences reading difficulty
+        adjustReadingDifficultyBasedOnVocabulary(userProfile)
+
+        // Reading performance affects question generation
+        adjustQuestionDifficultyBasedOnReading(userProfile, recentPerformance)
+
+        // Question performance refines vocabulary selection
+        adjustVocabularySelectionBasedOnQuestions(userProfile, recentPerformance)
+
+        // Comprehensive learning pattern analysis
+        analyzeLearningPatterns(userProfile, recentPerformance)
+    }
+
+    // Private helper methods
+
+    private suspend fun selectDailyVocabulary(
+        currentWeek: Int,
+        allocatedTime: Float,
+        userProfile: UserLearningProfile
+    ): List<VocabularyItem> {
+        val targetCount = min((allocatedTime / 2).toInt(), 15) // ~2 minutes per word
+        val vocabulary = vocabularyManager.getPersonalizedVocabulary(targetCount)
+
+        // Filter based on user profile and learning goals
+        return vocabulary.filter { vocab ->
+            shouldIncludeVocabulary(vocab, userProfile)
+        }.take(targetCount)
+    }
+
+    private suspend fun generateDailyQuestions(
+        currentWeek: Int,
+        allocatedTime: Float,
+        userProfile: UserLearningProfile
+    ): List<GeneratedQuestion> {
+        val targetCount = min((allocatedTime / 1.5).toInt(), 20) // ~1.5 minutes per question
+        val questions = mutableListOf<GeneratedQuestion>()
+
+        // Generate questions based on weak areas and learning goals
+        val weakAreas = userProfile.weaknessPatterns.map { it.skillCategory }.distinct()
+
+        for (skill in weakAreas) {
+            val skillQuestions = questionGenerator.generateQuestions(
+                category = skill,
+                count = targetCount / weakAreas.size,
+                difficulty = calculateOptimalDifficulty(skill, userProfile),
+                currentWeek = currentWeek
+            )
+            questions.addAll(skillQuestions)
+        }
+
+        return questions.take(targetCount)
+    }
+
+    private suspend fun selectDailyReading(
+        totalTime: Int,
+        allocatedTime: Float,
+        userProfile: UserLearningProfile
+    ): ReadingContent? {
+        if (allocatedTime < 5) return null // Not enough time for meaningful reading
+
+        val availableTime = allocatedTime.toInt()
+        return contentCurator.recommendReading(availableTime)
+    }
+
+    private fun determineContentSequence(
+        vocabulary: List<VocabularyItem>,
+        questions: List<GeneratedQuestion>,
+        reading: ReadingContent?,
+        userProfile: UserLearningProfile
+    ): List<ContentType> {
+        val sequence = mutableListOf<ContentType>()
+
+        // Start with vocabulary warmup if user prefers gradual difficulty
+        if (userProfile.preferredDifficultyCurve == CurveType.GRADUAL && vocabulary.isNotEmpty()) {
+            sequence.add(ContentType.VOCABULARY)
+        }
+
+        // Add main content based on availability and user preferences
+        if (reading != null) {
+            sequence.add(ContentType.READING)
+        }
+
+        if (questions.isNotEmpty()) {
+            sequence.add(ContentType.QUESTIONS)
+        }
+
+        // Add vocabulary reinforcement at the end
+        if (vocabulary.isNotEmpty() && !sequence.contains(ContentType.VOCABULARY)) {
+            sequence.add(ContentType.VOCABULARY)
+        }
+
+        return sequence
+    }
+
+    private fun identifyFocusAreas(
+        userProfile: UserLearningProfile,
+        taskLogs: List<TaskLog>
+    ): List<SkillCategory> {
+        val weakAreas = userProfile.weaknessPatterns.map { it.skillCategory }
+
+        // Also consider recent performance
+        val recentPerformance = taskLogs
+            .filter { System.currentTimeMillis() - it.timestampMillis < 7 * 24 * 60 * 60 * 1000 }
+            .groupBy { it.category }
+            .mapValues { (_, logs) ->
+                logs.count { it.correct }.toFloat() / logs.size
+            }
+
+        val lowPerformingAreas = recentPerformance
+            .filter { it.value < 0.7f }
+            .keys.mapNotNull { category ->
+                SkillCategory.values().find { it.name.contains(category, ignoreCase = true) }
+            }
+
+        return (weakAreas + lowPerformingAreas).distinct()
+    }
+
+    private fun calculatePackDifficulty(
+        vocabulary: List<VocabularyItem>,
+        questions: List<GeneratedQuestion>,
+        reading: ReadingContent?
+    ): Float {
+        var totalDifficulty = 0f
+        var totalItems = 0
+
+        // Vocabulary difficulty
+        if (vocabulary.isNotEmpty()) {
+            val vocabDifficulty = vocabulary.map { it.difficulty.toFloat() }.average()
+            totalDifficulty += vocabDifficulty
+            totalItems++
+        }
+
+        // Questions difficulty
+        if (questions.isNotEmpty()) {
+            val questionDifficulty = questions.map { it.difficulty.toFloat() }.average()
+            totalDifficulty += questionDifficulty
+            totalItems++
+        }
+
+        // Reading difficulty
+        reading?.let {
+            totalDifficulty += it.difficulty.numericLevel.toFloat()
+            totalItems++
+        }
+
+        return if (totalItems > 0) totalDifficulty / totalItems else 2.5f
+    }
+
+    private fun calculateConfidenceScore(
+        userProfile: UserLearningProfile,
+        optimalMix: OptimalContentMix
+    ): Float {
+        // Calculate confidence based on how well the mix matches user preferences
+        val profileMatch = userProfile.learningSpeed.values.average()
+        val mixBalance = optimalMix.skillBalance.values.average()
+
+        return min(profileMatch * mixBalance * 100, 100f) / 100f
+    }
+
+    private suspend fun createWarmupSession(
+        userProfile: UserLearningProfile,
+        availableTime: Int
+    ): SessionComponents {
+        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(5)
+        val mainContent = MainContent.QuestionSet(
+            questionGenerator.generateQuestions(
+                category = SkillCategory.GRAMMAR,
+                count = 8,
+                difficulty = 2,
+                currentWeek = calculateCurrentWeek(progressRepository.userProgressFlow.first())
+            )
+        )
+        val reinforcementQuestions = questionGenerator.generateQuestions(
+            category = SkillCategory.VOCAB,
+            count = 5,
+            difficulty = 1
+        )
+        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(3)
+
+        return SessionComponents(
+            warmupVocabulary = warmupVocab,
+            mainContent = mainContent,
+            reinforcementQuestions = reinforcementQuestions,
+            cooldownVocabulary = cooldownVocab,
+            sessionGoals = listOf(
+                "Build confidence with familiar content",
+                "Practice basic skills",
+                "Establish positive learning momentum"
+            )
+        )
+    }
+
+    private suspend fun createFocusedPracticeSession(
+        userProfile: UserLearningProfile,
+        availableTime: Int
+    ): SessionComponents {
+        val weakArea = userProfile.weaknessPatterns.firstOrNull()?.skillCategory ?: SkillCategory.READING
+
+        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(3)
+        val mainContent = when (weakArea) {
+            SkillCategory.READING -> {
+                val reading = contentCurator.recommendReading(availableTime - 10)
+                reading?.let { MainContent.ReadingSession(it) } ?: MainContent.QuestionSet(emptyList())
+            }
+            else -> MainContent.QuestionSet(
+                questionGenerator.generateQuestions(
+                    category = weakArea,
+                    count = 12,
+                    difficulty = calculateOptimalDifficulty(weakArea, userProfile)
+                )
+            )
+        }
+        val reinforcementQuestions = questionGenerator.generateQuestions(
+            category = weakArea,
+            count = 6,
+            difficulty = calculateOptimalDifficulty(weakArea, userProfile) - 1
+        )
+        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(4)
+
+        return SessionComponents(
+            warmupVocabulary = warmupVocab,
+            mainContent = mainContent,
+            reinforcementQuestions = reinforcementQuestions,
+            cooldownVocabulary = cooldownVocab,
+            sessionGoals = listOf(
+                "Target specific weakness: ${weakArea.name}",
+                "Build mastery in challenging area",
+                "Reinforce learning with practice"
+            )
+        )
+    }
+
+    private suspend fun createComprehensiveReviewSession(
+        userProfile: UserLearningProfile,
+        availableTime: Int
+    ): SessionComponents {
+        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(5)
+        val reading = contentCurator.recommendReading(15)
+        val questions = questionGenerator.generateQuestions(
+            category = SkillCategory.GRAMMAR,
+            count = 10
+        )
+        val mainContent = MainContent.MixedContent(reading, questions)
+        val reinforcementQuestions = questionGenerator.generateQuestions(
+            category = SkillCategory.READING,
+            count = 5
+        )
+        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(5)
+
+        return SessionComponents(
+            warmupVocabulary = warmupVocab,
+            mainContent = mainContent,
+            reinforcementQuestions = reinforcementQuestions,
+            cooldownVocabulary = cooldownVocab,
+            sessionGoals = listOf(
+                "Review all skill areas comprehensively",
+                "Connect different types of learning",
+                "Assess overall progress"
+            )
+        )
+    }
+
+    private suspend fun createExamPreparationSession(
+        userProfile: UserLearningProfile,
+        availableTime: Int
+    ): SessionComponents {
+        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(3)
+        val mainContent = MainContent.QuestionSet(
+            questionGenerator.generateQuestions(
+                category = SkillCategory.GRAMMAR,
+                count = 15,
+                difficulty = 4 // Higher difficulty for exam prep
+            )
+        )
+        val reinforcementQuestions = questionGenerator.generateQuestions(
+            category = SkillCategory.READING,
+            count = 8,
+            difficulty = 4
+        )
+        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(2)
+
+        return SessionComponents(
+            warmupVocabulary = warmupVocab,
+            mainContent = mainContent,
+            reinforcementQuestions = reinforcementQuestions,
+            cooldownVocabulary = cooldownVocab,
+            sessionGoals = listOf(
+                "Simulate exam conditions",
+                "Practice time management",
+                "Build exam confidence"
+            )
+        )
+    }
+
+    private suspend fun createSkillBuildingSession(
+        userProfile: UserLearningProfile,
+        availableTime: Int
+    ): SessionComponents {
+        val targetSkill = userProfile.learningSpeed.minByOrNull { it.value }?.key ?: SkillCategory.GRAMMAR
+
+        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(4)
+        val mainContent = MainContent.QuestionSet(
+            questionGenerator.generateQuestions(
+                category = targetSkill,
+                count = 12,
+                difficulty = calculateOptimalDifficulty(targetSkill, userProfile)
+            )
+        )
+        val reinforcementQuestions = questionGenerator.generateQuestions(
+            category = targetSkill,
+            count = 6,
+            difficulty = calculateOptimalDifficulty(targetSkill, userProfile) + 1
+        )
+        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(4)
+
+        return SessionComponents(
+            warmupVocabulary = warmupVocab,
+            mainContent = mainContent,
+            reinforcementQuestions = reinforcementQuestions,
+            cooldownVocabulary = cooldownVocab,
+            sessionGoals = listOf(
+                "Build foundational skills in ${targetSkill.name}",
+                "Progressive difficulty increase",
+                "Master core concepts"
+            )
+        )
+    }
+
+    private data class SessionComponents(
+        val warmupVocabulary: List<VocabularyItem>,
+        val mainContent: MainContent,
+        val reinforcementQuestions: List<GeneratedQuestion>,
+        val cooldownVocabulary: List<VocabularyItem>,
+        val sessionGoals: List<String>
+    )
+
+    private fun calculateCurrentWeek(userProgress: UserProgress): Int {
+        return min(max(userProgress.completedTasks.size / 10, 1), 30)
+    }
+
+    private fun getLearningGoals(userProfile: UserLearningProfile): List<LearningGoal> {
+        return userProfile.weaknessPatterns.map { pattern ->
+            LearningGoal(
+                skillCategory = pattern.skillCategory,
+                targetLevel = 0.8f, // Target 80% accuracy
+                timeframe = 30 * 24 * 60 * 60 * 1000L, // 30 days
+                priority = if (pattern.severity > 0.7f) 3 else 2,
+                currentProgress = 1.0f - pattern.severity
+            )
+        }
+    }
+
+    private fun findOptimalStartTime(userProfile: UserLearningProfile): TimeSlot? {
+        return userProfile.peakPerformanceTimes.firstOrNull()
+    }
+
+    private suspend fun generateVocabularyRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
+        val vocabulary = vocabularyManager.getPersonalizedVocabulary(5)
+        return vocabulary.map { vocab ->
+            ContentRecommendation(
+                contentId = vocab.word,
+                contentType = ContentType.VOCABULARY,
+                title = vocab.word,
+                description = vocab.definition,
+                estimatedTime = 2,
+                difficulty = vocab.difficulty.toFloat(),
+                relevanceScore = calculateVocabularyRelevance(vocab, userProfile),
+                reason = "Build vocabulary foundation",
+                skillFocus = listOf(SkillCategory.VOCAB)
+            )
+        }
+    }
+
+    private suspend fun generateQuestionRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
+        val questions = questionGenerator.generateQuestions(
+            category = userProfile.weaknessPatterns.firstOrNull()?.skillCategory ?: SkillCategory.GRAMMAR,
+            count = 3,
+            difficulty = 3
+        )
+
+        return questions.map { question ->
+            ContentRecommendation(
+                contentId = question.id,
+                contentType = ContentType.QUESTIONS,
+                title = question.prompt.take(50) + "...",
+                description = "Practice ${question.category.name}",
+                estimatedTime = 2,
+                difficulty = question.difficulty.toFloat(),
+                relevanceScore = calculateQuestionRelevance(question, userProfile),
+                reason = "Target weak area: ${question.category.name}",
+                skillFocus = listOf(question.category)
+            )
+        }
+    }
+
+    private suspend fun generateReadingRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
+        val reading = contentCurator.recommendReading(10)
+
+        return reading?.let { content ->
+            listOf(ContentRecommendation(
+                contentId = content.id,
+                contentType = ContentType.READING,
+                title = content.title,
+                description = content.content.take(100) + "...",
+                estimatedTime = content.estimatedTime,
+                difficulty = content.difficulty.numericLevel.toFloat(),
+                relevanceScore = calculateReadingRelevance(content, userProfile),
+                reason = "Improve reading comprehension",
+                skillFocus = listOf(SkillCategory.READING)
+            ))
+        } ?: emptyList()
+    }
+
+    private fun calculateVocabularyRelevance(vocab: VocabularyItem, userProfile: UserLearningProfile): Float {
+        val interestMatch = userProfile.interestAreas.any { vocab.definition.contains(it, ignoreCase = true) }
+        val difficultyMatch = 1.0f - kotlin.math.abs(vocab.difficulty - userProfile.learningSpeed[SkillCategory.VOCAB]!! * 5)
+        return (if (interestMatch) 0.8f else 0.6f) * difficultyMatch
+    }
+
+    private fun calculateQuestionRelevance(question: GeneratedQuestion, userProfile: UserLearningProfile): Float {
+        val weakAreaMatch = userProfile.weaknessPatterns.any { it.skillCategory == question.category }
+        val difficultyMatch = 1.0f - kotlin.math.abs(question.difficulty - userProfile.learningSpeed[question.category]!! * 5)
+        return (if (weakAreaMatch) 0.9f else 0.7f) * difficultyMatch
+    }
+
+    private fun calculateReadingRelevance(content: ReadingContent, userProfile: UserLearningProfile): Float {
+        val weakAreaMatch = userProfile.weaknessPatterns.any { it.skillCategory == SkillCategory.READING }
+        val difficultyMatch = 1.0f - kotlin.math.abs(content.difficulty.numericLevel - userProfile.learningSpeed[SkillCategory.READING]!! * 6)
+        return (if (weakAreaMatch) 0.85f else 0.65f) * difficultyMatch
+    }
+
+    private fun shouldIncludeVocabulary(vocab: VocabularyItem, userProfile: UserLearningProfile): Boolean {
+        // Include vocabulary that matches learning goals and difficulty level
+        val targetDifficulty = userProfile.learningSpeed[SkillCategory.VOCAB]!! * 5
+        return kotlin.math.abs(vocab.difficulty - targetDifficulty) <= 1.5
+    }
+
+    private fun calculateOptimalDifficulty(skill: SkillCategory, userProfile: UserLearningProfile): Int {
+        val skillLevel = userProfile.learningSpeed[skill] ?: 0.5f
+        return max(1, min(5, (skillLevel * 5).toInt() + 1))
+    }
+
+    private suspend fun getRecentPerformanceData(): List<ContentPerformance> {
+        // This would integrate with the performance tracking system
+        return emptyList() // Placeholder
+    }
+
+    private suspend fun adjustReadingDifficultyBasedOnVocabulary(userProfile: UserLearningProfile) {
+        // Implementation would adjust reading recommendations based on vocabulary mastery
+    }
+
+    private suspend fun adjustQuestionDifficultyBasedOnReading(
+        userProfile: UserLearningProfile,
+        recentPerformance: List<ContentPerformance>
+    ) {
+        // Implementation would adjust question difficulty based on reading performance
+    }
+
+    private suspend fun adjustVocabularySelectionBasedOnQuestions(
+        userProfile: UserLearningProfile,
+        recentPerformance: List<ContentPerformance>
+    ) {
+        // Implementation would adjust vocabulary selection based on question performance
+    }
+
+    private suspend fun analyzeLearningPatterns(
+        userProfile: UserLearningProfile,
+        recentPerformance: List<ContentPerformance>
+    ) {
+        // Implementation would analyze patterns across all content types
+    }
+}
