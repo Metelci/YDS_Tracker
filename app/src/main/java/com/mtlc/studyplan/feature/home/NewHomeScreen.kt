@@ -83,7 +83,7 @@ fun NewHomeScreen() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(DesignTokens.Background)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -96,12 +96,12 @@ fun NewHomeScreen() {
                     text = "Good morning! 👋",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = DesignTokens.Foreground
                 )
                 Text(
                     text = "Ready to ace your YDS exam?",
                     fontSize = 16.sp,
-                    color = Color.Gray,
+                    color = DesignTokens.MutedForeground,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -131,12 +131,12 @@ fun NewHomeScreen() {
                                 text = "65%",
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = DesignTokens.Foreground
                             )
                             Text(
                                 text = "Today",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = DesignTokens.MutedForeground
                             )
                         }
 
@@ -148,12 +148,12 @@ fun NewHomeScreen() {
                                 text = "-274",
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = DesignTokens.Foreground
                             )
                             Text(
                                 text = "Days to YDS",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = DesignTokens.MutedForeground
                             )
                         }
                     }
@@ -167,8 +167,8 @@ fun NewHomeScreen() {
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        color = Color(0xFF4CAF50),
-                        trackColor = Color.White.copy(alpha = 0.3f)
+                        color = DesignTokens.Success,
+                        trackColor = DesignTokens.Surface.copy(alpha = 0.3f)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -176,7 +176,7 @@ fun NewHomeScreen() {
                     Text(
                         text = "Exam Preparation",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = DesignTokens.MutedForeground
                     )
                 }
             }
@@ -205,12 +205,12 @@ fun NewHomeScreen() {
                             text = "40",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = DesignTokens.Foreground
                         )
                         Text(
                             text = "Points Today",
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = DesignTokens.MutedForeground,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -233,12 +233,12 @@ fun NewHomeScreen() {
                             text = "1/3",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = DesignTokens.Foreground
                         )
                         Text(
                             text = "Tasks Done",
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = DesignTokens.MutedForeground,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -264,7 +264,7 @@ fun NewHomeScreen() {
                 ) {
                     // Fire emoji with background circle
                     Surface(
-                        color = Color.White.copy(alpha = 0.3f),
+                        color = DesignTokens.Surface.copy(alpha = 0.3f),
                         shape = CircleShape,
                         modifier = Modifier.size(40.dp)
                     ) {

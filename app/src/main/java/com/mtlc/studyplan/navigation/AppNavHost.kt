@@ -83,15 +83,15 @@ fun AppNavHost() {
         try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
     }
     val tabs = listOf(
-        Triple("home", Icons.Filled.Home, "Home"),
-        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
-        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
-        Triple("social", Icons.Filled.People, "Social"),
-        Triple("settings", Icons.Filled.Settings, "Settings"),
+        Triple("home", Icons.Filled.Home, "Ana Sayfa"),
+        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Görevler"),
+        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "İlerleme"),
+        Triple("social", Icons.Filled.People, "Sosyal"),
+        Triple("settings", Icons.Filled.Settings, "Ayarlar"),
     )
     Scaffold(
         bottomBar = {
-            EnhancedNavigationBar(
+            com.mtlc.studyplan.ui.components.StudyBottomNav(
                 currentRoute = navController.currentBackStackEntry?.destination?.route ?: "home",
                 tabs = tabs,
                 onTabSelected = { route ->

@@ -2,6 +2,68 @@ package com.mtlc.studyplan.reading
 
 import com.mtlc.studyplan.questions.SkillCategory
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.descriptors.buildSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.int
+
+
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+object IntRangeSerializer : KSerializer<IntRange> {
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("IntRange", StructureKind.LIST)
+
+    override fun serialize(encoder: Encoder, value: IntRange) {
+        val jsonEncoder = encoder as? JsonEncoder
+            ?: throw SerializationException("IntRangeSerializer supports JSON only")
+        val element = buildJsonArray {
+            add(JsonPrimitive(value.first))
+            add(JsonPrimitive(value.last))
+        }
+        jsonEncoder.encodeJsonElement(element)
+    }
+
+    override fun deserialize(decoder: Decoder): IntRange {
+        val jsonDecoder = decoder as? JsonDecoder
+            ?: throw SerializationException("IntRangeSerializer supports JSON only")
+        val element = jsonDecoder.decodeJsonElement()
+        return when (element) {
+            is JsonArray -> {
+                if (element.isEmpty()) {
+                    throw SerializationException("IntRange array missing start value")
+                }
+                val start = element[0].jsonPrimitive.int
+                val end = if (element.size > 1) element[1].jsonPrimitive.int else start
+                start..end
+            }
+            is JsonObject -> {
+                val startPrimitive = element["start"] ?: element["from"] ?: element["begin"] ?: element["min"]
+                val endPrimitive = element["end"] ?: element["to"] ?: element["finish"] ?: element["max"]
+                val singlePrimitive = element["value"]
+                val startValue = (startPrimitive ?: singlePrimitive)
+                    ?.jsonPrimitive?.int
+                    ?: throw SerializationException("IntRange object missing start value: $element")
+                val endValue = endPrimitive?.jsonPrimitive?.int ?: startValue
+                startValue..endValue
+            }
+            is JsonPrimitive -> {
+                val value = element.int
+                value..value
+            }
+            else -> throw SerializationException("Unsupported JSON for IntRange: $element")
+        }
+    }
+}
 
 /**
  * Reading Content Curation System Models
@@ -42,7 +104,7 @@ data class ReadingContent(
     val wordCount: Int,
     val averageSentenceLength: Float,
     val complexityScore: Float, // Calculated complexity metric (0.0 - 1.0)
-    @kotlinx.serialization.Contextual val weekAppropriate: IntRange, // Suitable for which weeks
+    @Serializable(with = IntRangeSerializer::class) val weekAppropriate: IntRange, // Suitable for which weeks
     val comprehensionQuestions: List<String>? = null, // Optional follow-up questions
     val culturalContext: String? = null, // Cultural appropriateness note
     val sourceType: ContentSourceType = ContentSourceType.CURATED
@@ -181,7 +243,7 @@ data class ContentSequence(
     val title: String,
     val description: String,
     val contentIds: List<String>,
-    @kotlinx.serialization.Contextual val targetWeeks: IntRange,
+    @Serializable(with = IntRangeSerializer::class) val targetWeeks: IntRange,
     val skillFocus: List<SkillCategory>,
     val difficultyProgression: List<ReadingLevel>,
     val estimatedCompletionTime: Int // total minutes for sequence
@@ -247,3 +309,5 @@ data class TopicRotationState(
         }
     }
 }
+
+

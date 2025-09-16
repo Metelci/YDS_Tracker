@@ -13,61 +13,63 @@ fun hsl(h: Int, s: Int, l: Int): Color =
 
 object DesignTokens {
 
-    // Primary System Colors (Light Blue theme from screenshot)
-    val Primary = hsl(199, 92, 73)  // Light blue for main CTA
-    val PrimaryContainer = hsl(199, 70, 85)  // Lighter blue background
+    // EXACT Primary Colors from CODE_SPECIFICATIONS.MD
+    val Primary = hsl(199, 92, 73)  // #81D4FA - Light Blue (Main Brand)
+    val PrimaryContainer = hsl(199, 70, 85)  // #B3E5FC - Light Blue Container
     val PrimaryContainerForeground = hsl(199, 100, 20)
     val PrimaryForeground = hsl(0, 0, 100)  // White text on primary
 
-    // Secondary Colors
-    val Secondary = hsl(122, 39, 69)  // Light green
-    val SecondaryContainer = hsl(122, 39, 82)  // Light green container
+    // EXACT Secondary Colors from specifications
+    val Secondary = hsl(122, 39, 69)  // #A5D6A7 - Light Green
+    val SecondaryContainer = hsl(122, 39, 82)  // #C8E6C9 - Light Green Container
     val SecondaryContainerForeground = hsl(122, 100, 15)
     val SecondaryForeground = hsl(0, 0, 100)
 
-    // Tertiary Colors (Coral/Orange for accent)
-    val Tertiary = hsl(14, 100, 78)  // Soft coral
+    // EXACT Tertiary Colors from specifications
+    val Tertiary = hsl(14, 100, 78)  // #FFAB91 - Soft Coral
     val TertiaryContainer = hsl(14, 100, 88)
     val TertiaryContainerForeground = hsl(14, 100, 25)
 
-    // Surface System
-    val Background = hsl(0, 0, 98)  // Very light gray
-    val Foreground = hsl(0, 0, 13)  // Very dark gray for text
-    val Card = hsl(0, 0, 100)  // Pure white for cards
+    // EXACT Surface System from specifications
+    val Background = hsl(0, 0, 98)  // #FAFAFA
+    val Foreground = hsl(0, 0, 13)  // #212121
+    val Card = hsl(0, 0, 100)
     val CardForeground = hsl(0, 0, 13)
+    val Popover = hsl(0, 0, 100)
+    val PopoverForeground = hsl(0, 0, 13)
     val Surface = hsl(0, 0, 100)
     val SurfaceVariant = hsl(0, 0, 96)
     val SurfaceContainer = hsl(0, 0, 94)
     val SurfaceContainerHigh = hsl(0, 0, 92)
 
-    // Border & Input
+    // EXACT Borders & Outlines from specifications
     val Border = hsl(0, 0, 89)
     val Input = hsl(0, 0, 89)
-    val Ring = hsl(199, 92, 73)  // Same as primary
+    val Ring = hsl(199, 92, 73)
 
-    // Text Colors
+    // EXACT Text Colors from specifications
     val Muted = hsl(0, 0, 96)
     val MutedForeground = hsl(0, 0, 46)
     val Accent = hsl(0, 0, 96)
     val AccentForeground = hsl(0, 0, 13)
 
-    // Semantic Colors
-    val Success = hsl(122, 39, 49)  // Green for success states
-    val SuccessContainer = hsl(122, 39, 82)
-    val Warning = hsl(45, 100, 51)  // Orange for warnings
-    val Destructive = hsl(0, 65, 51)  // Red for destructive actions
+    // EXACT Semantic Colors from specifications
+    val Destructive = hsl(0, 65, 51)  // Error Red
     val DestructiveForeground = hsl(0, 0, 100)
+    val Success = hsl(122, 39, 49)  // Success Green
+    val SuccessContainer = hsl(122, 39, 82)
+    val Warning = hsl(45, 100, 51)  // Warning Orange
 
-    // Gamification Colors (matching screenshot elements)
-    val StreakFire = hsl(14, 70, 85)  // Softer coral for streak card
-    val PointsGreen = hsl(122, 50, 85)  // Softer green for points
-    val TasksDone = hsl(14, 70, 85)  // Softer coral for tasks done
-    val ExamBlue = hsl(199, 60, 88)  // Much lighter blue for exam card
+    // Gamification Colors (using design tokens)
+    val StreakFire = TertiaryContainer  // Use tertiary container for streak
+    val PointsGreen = SecondaryContainer  // Use secondary container for points
+    val TasksDone = TertiaryContainer  // Use tertiary container for tasks done
+    val ExamBlue = PrimaryContainer  // Use primary container for exam card
 
-    // Task category colors (softer versions)
-    val TaskGrammar = hsl(199, 60, 88)  // Light blue for grammar
-    val TaskReading = hsl(122, 50, 85)  // Light green for reading
-    val TaskVocabulary = hsl(122, 40, 90)  // Very light green for vocabulary
+    // Task category colors (using design tokens)
+    val TaskGrammar = PrimaryContainer  // Light blue for grammar
+    val TaskReading = SecondaryContainer  // Light green for reading
+    val TaskVocabulary = SecondaryContainer  // Light green for vocabulary
 
     // Achievement Colors
     val AchievementBronze = hsl(30, 67, 47)
