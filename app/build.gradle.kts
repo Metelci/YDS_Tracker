@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
 
 android {
@@ -85,7 +85,7 @@ dependencies {
     // Room (local database for scalable histories)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
     // Testing dependencies
     testImplementation(libs.junit)
@@ -104,10 +104,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 
-kapt {
-    javacOptions {
-        val tmp = project.layout.buildDirectory.dir("kapt-tmp").get().asFile.absolutePath
-        option("-J-Djava.io.tmpdir=$tmp")
-        option("-J-Dorg.sqlite.tmpdir=$tmp")
-    }
+ksp {
+    arg("room.incremental", "true")
 }
