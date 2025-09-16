@@ -1,5 +1,29 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.4.0 (Build 40) - September 16, 2025
+
+### Unified Smart Content Intelligence
+- AI orchestrates vocabulary, questions, and reading to deliver the right mix every session
+- Predictive insights surface plateaus early and recommend breakthrough activities
+- Personalized study sessions adapt difficulty and focus areas on the fly
+
+### Performance & Fixes
+- Faster module switching with optimized content loading
+- Sharper recommendations and smoother difficulty progression
+- More complete analytics so you can see cross-mode progress at a glance
+
+## Version 2.3.0 (Build 39) - September 16, 2025
+
+### Reading Practice Arrives
+- New Reading hub with 200+ curated passages tailored to your goals
+- Quick Read, Vocabulary Focus, and Comprehension Practice modes to match your time
+- Post-reading reviews connect vocabulary, grammar, and discussion prompts
+
+### Smarter Experience
+- Bottom navigation updated for easier access to reading sessions
+- Database upgrades keep progress synced across every learning mode
+- Faster recommendations with on-device processing improvements
+
 ## Version 2.2.0 (Build 38) - January 15, 2025
 
 ### 🎮 **NEW: Complete Gamification System!**
@@ -113,3 +137,7 @@ Revolutionary AI analytics engine that transforms the StudyPlan experience with 
 - 🎨 Focus Score Calculation: Session continuity and accuracy correlation analysis
 - 💡 Weak Area Intelligence: Error pattern analysis with automated improvement suggestions
 - 📅 SmartScheduler Integration: Unified AI system combining analytics with intelligent scheduling
+
+
+
+

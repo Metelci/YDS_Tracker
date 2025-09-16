@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-09-16
+
+### Added
+- Unified Smart Content System orchestrating vocabulary, question, and reading experiences
+- Predictive learning intelligence that schedules content and detects performance plateaus
+- Cross-system performance analytics connecting progress across every study mode
+- Personalized study session presets spanning Warmup, Focused Practice, Comprehensive Review, Exam Prep, and Skill Building
+
+### Improved
+- Adaptive difficulty tuning with smarter content mixes and motivational timing cues
+- Database and architecture layers to support unified tracking across learning modalities
+- Intelligence engine accuracy for understanding preferences and recommending next steps
+
+### Fixed
+- Content recommendation edge cases that produced mismatched difficulty or stale suggestions
+- Loading performance when switching between learning modules
+- Data synchronization between vocabulary, question, and reading histories
+
+## [2.3.0] - 2025-09-16
+
+### Added
+- Complete reading experience with personalized recommendations and 200+ curated passages
+- Multiple reading modes including Quick Read, Vocabulary Focus, and Comprehension Practice
+- Post-reading reinforcement linking vocabulary review, grammar practice, and discussion prompts
+- Real-time analytics that track WPM, comprehension accuracy, weekly goals, and improvement trends
+
+### Improved
+- Bottom navigation and Material 3 layouts to host the new Reading hub
+- Room database schema with additional entities dedicated to reading sessions and progress
+- Integration between reading, vocabulary, and question systems for a seamless study flow
+
+### Fixed
+- Database migrations covering new reading data structures
+- Navigation inconsistencies between the new Reading screens and existing routes
+- Recommendation performance for loading passages and calculating difficulty on-device
 ## [2.2.1] - 2024-09-16
 
 ### 🚀 **MAJOR: Build System Overhaul & Code Modernization**
@@ -373,3 +408,5 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
+
