@@ -9,8 +9,18 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onStart
+import com.mtlc.studyplan.storage.room.StudyPlanDatabase
+import com.mtlc.studyplan.storage.room.TaskLogEntity
+import com.mtlc.studyplan.PlanDataSource.getAppContext
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
@@ -27,8 +37,12 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         val LAST_COMPLETION_DATE = longPreferencesKey("last_completion_date")
         val UNLOCKED_ACHIEVEMENTS = stringSetPreferencesKey("unlocked_achievements")
         val TASK_LOGS = stringSetPreferencesKey("task_logs")
+        val TASK_LOGS_MIGRATED = booleanPreferencesKey("task_logs_migrated")
         val TOTAL_POINTS = intPreferencesKey("total_points")
         val CURRENT_STREAK_MULTIPLIER = floatPreferencesKey("current_streak_multiplier")
+        val VOCABULARY_PROGRESS = stringSetPreferencesKey("vocabulary_progress")
+        val VOCABULARY_SESSIONS = stringSetPreferencesKey("vocabulary_sessions")
+        val PRACTICE_SESSIONS = stringSetPreferencesKey("practice_sessions")
     }
 
     val userProgressFlow = dataStore.data.map { preferences ->
@@ -43,9 +57,32 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         )
     }
 
-    val taskLogsFlow = dataStore.data.map { preferences ->
-        val raw = preferences[Keys.TASK_LOGS] ?: emptySet()
-        raw.mapNotNull { decodeTaskLog(it) }
+    private val db by lazy { StudyPlanDatabase.get(getAppContext()) }
+    private val taskLogDao by lazy { db.taskLogDao() }
+
+    val taskLogsFlow: Flow<List<TaskLog>> = taskLogDao
+        .observeAll()
+        .onStart { migrateTaskLogsIfNeeded() }
+        .map { list -> list.map { it.toTaskLog() } }
+        .distinctUntilChanged()
+
+    private val vocabularyDao by lazy { db.vocabularyDao() }
+
+    val vocabularyProgressFlow: Flow<List<VocabularyProgress>> = vocabularyDao
+        .observeAllProgress()
+        .onStart { migrateVocabularyIfNeeded() }
+        .map { list -> list.map { it.toModel() } }
+        .distinctUntilChanged()
+
+    val vocabularySessionsFlow: Flow<List<VocabularySession>> = vocabularyDao
+        .observeSessions()
+        .onStart { migrateVocabularyIfNeeded() }
+        .map { list -> list.map { it.toModel() } }
+        .distinctUntilChanged()
+
+    val practiceSessionsFlow = dataStore.data.map { preferences ->
+        val raw = preferences[Keys.PRACTICE_SESSIONS] ?: emptySet()
+        raw.mapNotNull { decodePracticeSession(it) }
     }
 
     suspend fun saveProgress(progress: UserProgress) {
@@ -60,10 +97,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun addTaskLog(log: TaskLog) {
-        dataStore.edit { preferences ->
-            val cur = preferences[Keys.TASK_LOGS] ?: emptySet()
-            preferences[Keys.TASK_LOGS] = (cur + encodeTaskLog(log)).toList().takeLast(1000).toSet()
-        }
+        taskLogDao.insert(log.toEntity())
     }
 
     /**
@@ -219,6 +253,98 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         )
         addTaskLog(taskLog)
     }
+
+    /**
+     * Vocabulary System Integration
+     */
+    suspend fun saveVocabularyProgress(progress: VocabularyProgress) {
+        vocabularyDao.upsertProgress(progress.toEntity())
+    }
+
+    suspend fun saveVocabularySession(session: VocabularySession) {
+        vocabularyDao.insertSession(session.toEntity())
+    }
+
+    suspend fun getVocabularyProgress(wordId: String): VocabularyProgress? =
+        vocabularyDao.getProgress(wordId)?.toModel()
+
+    suspend fun updateVocabularyMastery(
+        wordId: String,
+        wasCorrect: Boolean,
+        reviewTime: Long,
+        difficulty: ReviewDifficulty
+    ) {
+        val existing = getVocabularyProgress(wordId)
+        val now = System.currentTimeMillis()
+
+        val updated = if (existing != null) {
+            val newSuccessCount = if (wasCorrect) existing.successCount + 1 else existing.successCount
+            val newErrorCount = if (!wasCorrect) existing.errorCount + 1 else existing.errorCount
+            val newReviewCount = existing.reviewCount + 1
+            val newMasteryLevel = calculateMasteryLevel(existing.masteryLevel, wasCorrect, difficulty)
+            val newInterval = calculateNextInterval(existing.currentInterval, wasCorrect, newMasteryLevel)
+
+            existing.copy(
+                masteryLevel = newMasteryLevel,
+                lastReviewDate = now,
+                nextReviewDate = now + java.util.concurrent.TimeUnit.DAYS.toMillis(newInterval.toLong()),
+                reviewCount = newReviewCount,
+                successCount = newSuccessCount,
+                errorCount = newErrorCount,
+                currentInterval = newInterval
+            )
+        } else {
+            val initialMasteryLevel = if (wasCorrect) 0.2f else 0.1f
+            val initialInterval = if (wasCorrect) 3 else 1
+
+            VocabularyProgress(
+                wordId = wordId,
+                masteryLevel = initialMasteryLevel,
+                lastReviewDate = now,
+                nextReviewDate = now + java.util.concurrent.TimeUnit.DAYS.toMillis(initialInterval.toLong()),
+                reviewCount = 1,
+                successCount = if (wasCorrect) 1 else 0,
+                errorCount = if (!wasCorrect) 1 else 0,
+                currentInterval = initialInterval
+            )
+        }
+
+        saveVocabularyProgress(updated)
+    }
+
+    private fun calculateMasteryLevel(currentLevel: Float, wasCorrect: Boolean, difficulty: ReviewDifficulty): Float {
+        val baseChange = when (difficulty) {
+            ReviewDifficulty.EASY -> if (wasCorrect) 0.15f else -0.05f
+            ReviewDifficulty.MEDIUM -> if (wasCorrect) 0.10f else -0.10f
+            ReviewDifficulty.HARD -> if (wasCorrect) 0.05f else -0.15f
+        }
+
+        val adjustedChange = if (wasCorrect && currentLevel > 0.7f) {
+            baseChange * (1.0f - currentLevel)
+        } else {
+            baseChange
+        }
+
+        return (currentLevel + adjustedChange).coerceIn(0.0f, 1.0f)
+    }
+
+    private fun calculateNextInterval(currentInterval: Int, wasCorrect: Boolean, masteryLevel: Float): Int {
+        val baseIntervals = listOf(1, 3, 7, 14, 30, 60, 120)
+        val currentIndex = baseIntervals.indexOfFirst { it >= currentInterval }.takeIf { it >= 0 } ?: 0
+
+        val newIndex = when {
+            wasCorrect -> {
+                val masteryBonus = if (masteryLevel > 0.8f) 1 else 0
+                kotlin.math.min(currentIndex + 1 + masteryBonus, baseIntervals.size - 1)
+            }
+            else -> {
+                val penalty = if (masteryLevel < 0.3f) 2 else 1
+                kotlin.math.max(currentIndex - penalty, 0)
+            }
+        }
+
+        return baseIntervals[newIndex]
+    }
 }
 
 // Simple pipe-delimited encode/decode for logs
@@ -243,4 +369,186 @@ private fun decodeTaskLog(s: String): TaskLog? = runCatching {
     )
 }.getOrNull()
 
+// Vocabulary Progress encode/decode
+private fun encodeVocabularyProgress(progress: VocabularyProgress): String {
+    val json = Json { ignoreUnknownKeys = true }
+    return json.encodeToString(progress)
+}
+
+private fun decodeVocabularyProgress(s: String): VocabularyProgress? = runCatching {
+    val json = Json { ignoreUnknownKeys = true }
+    json.decodeFromString<VocabularyProgress>(s)
+}.getOrNull()
+
+// Vocabulary Session encode/decode
+private fun encodeVocabularySession(session: VocabularySession): String {
+    val json = Json { ignoreUnknownKeys = true }
+    return json.encodeToString(session)
+}
+
+private fun decodeVocabularySession(s: String): VocabularySession? = runCatching {
+    val json = Json { ignoreUnknownKeys = true }
+    json.decodeFromString<VocabularySession>(s)
+}.getOrNull()
+
+// Room mapping helpers
+private fun TaskLogEntity.toTaskLog(): TaskLog = TaskLog(
+    taskId = taskId,
+    timestampMillis = timestampMillis,
+    minutesSpent = minutesSpent,
+    correct = correct,
+    category = category,
+    pointsEarned = pointsEarned
+)
+
+private fun TaskLog.toEntity(): TaskLogEntity = TaskLogEntity(
+    taskId = taskId,
+    timestampMillis = timestampMillis,
+    minutesSpent = minutesSpent,
+    correct = correct,
+    category = category,
+    pointsEarned = pointsEarned
+)
+
+private suspend fun ProgressRepository.migrateTaskLogsIfNeeded() {
+    val prefs = dataStore.data.first()
+    val migrated = prefs[Keys.TASK_LOGS_MIGRATED] ?: false
+    if (migrated) return
+    val raw = prefs[Keys.TASK_LOGS] ?: emptySet()
+    if (raw.isNotEmpty()) {
+        raw.mapNotNull { decodeTaskLog(it) }
+            .forEach { t -> taskLogDao.insert(t.toEntity()) }
+    }
+    dataStore.edit { it[Keys.TASK_LOGS_MIGRATED] = true }
+}
+
+// Practice session summary encode/decode
+@kotlinx.serialization.Serializable
+data class PracticeCategoryStat(
+    val category: String,
+    val total: Int,
+    val answered: Int,
+    val correct: Int,
+    val accuracy: Float
+)
+
+@kotlinx.serialization.Serializable
+data class PracticeSessionSummary(
+    val sessionId: String,
+    val timestamp: Long,
+    val minutes: Int,
+    val total: Int,
+    val answered: Int,
+    val correct: Int,
+    val accuracy: Float,
+    val perCategory: List<PracticeCategoryStat>
+)
+
+private fun encodePracticeSession(session: PracticeSessionSummary): String {
+    val json = Json { ignoreUnknownKeys = true }
+    return json.encodeToString(session)
+}
+
+private fun decodePracticeSession(s: String): PracticeSessionSummary? = runCatching {
+    val json = Json { ignoreUnknownKeys = true }
+    json.decodeFromString<PracticeSessionSummary>(s)
+}.getOrNull()
+
+// Save a practice session summary
+suspend fun ProgressRepository.savePracticeSession(session: PracticeSessionSummary) {
+    dataStore.edit { preferences ->
+        val cur = preferences[Keys.PRACTICE_SESSIONS] ?: emptySet()
+        preferences[Keys.PRACTICE_SESSIONS] = (cur + encodePracticeSession(session)).toList().takeLast(200).toSet()
+    }
+}
+
 //endregion
+
+// Mapping helpers and migration
+private fun TaskLogEntity.toTaskLog(): TaskLog = TaskLog(
+    taskId = taskId,
+    timestampMillis = timestampMillis,
+    minutesSpent = minutesSpent,
+    correct = correct,
+    category = category,
+    pointsEarned = pointsEarned
+)
+
+private fun TaskLog.toEntity(): TaskLogEntity = TaskLogEntity(
+    taskId = taskId,
+    timestampMillis = timestampMillis,
+    minutesSpent = minutesSpent,
+    correct = correct,
+    category = category,
+    pointsEarned = pointsEarned
+)
+
+private fun VocabProgressEntity.toModel() = VocabularyProgress(
+    wordId = wordId,
+    masteryLevel = masteryLevel,
+    lastReviewDate = lastReviewDate,
+    nextReviewDate = nextReviewDate,
+    reviewCount = reviewCount,
+    successCount = successCount,
+    errorCount = errorCount,
+    currentInterval = currentInterval
+)
+
+private fun VocabularyProgress.toEntity() = VocabProgressEntity(
+    wordId = wordId,
+    masteryLevel = masteryLevel,
+    lastReviewDate = lastReviewDate,
+    nextReviewDate = nextReviewDate,
+    reviewCount = reviewCount,
+    successCount = successCount,
+    errorCount = errorCount,
+    currentInterval = currentInterval
+)
+
+private fun VocabSessionEntity.toModel() = VocabularySession(
+    sessionId = sessionId,
+    vocabularyItems = if (vocabularyItemsCsv.isBlank()) emptyList() else vocabularyItemsCsv.split('|'),
+    startTime = startTime,
+    endTime = endTime,
+    correctAnswers = correctAnswers,
+    totalQuestions = totalQuestions,
+    sessionType = sessionType
+)
+
+private fun VocabularySession.toEntity() = VocabSessionEntity(
+    sessionId = sessionId,
+    vocabularyItemsCsv = vocabularyItems.joinToString("|"),
+    startTime = startTime,
+    endTime = endTime,
+    correctAnswers = correctAnswers,
+    totalQuestions = totalQuestions,
+    sessionType = sessionType
+)
+
+private suspend fun ProgressRepository.migrateTaskLogsIfNeeded() {
+    val prefs = dataStore.data.first()
+    val migrated = prefs[Keys.TASK_LOGS_MIGRATED] ?: false
+    if (migrated) return
+    val raw = prefs[Keys.TASK_LOGS] ?: emptySet()
+    if (raw.isNotEmpty()) {
+        raw.mapNotNull { decodeTaskLog(it) }.forEach { t -> taskLogDao.insert(t.toEntity()) }
+    }
+    dataStore.edit { it[Keys.TASK_LOGS_MIGRATED] = true }
+}
+
+private suspend fun ProgressRepository.migrateVocabularyIfNeeded() {
+    val prefs = dataStore.data.first()
+    val migrated = prefs[booleanPreferencesKey("vocab_migrated")] ?: false
+    if (migrated) return
+    val pRaw = prefs[Keys.VOCABULARY_PROGRESS] ?: emptySet()
+    if (pRaw.isNotEmpty()) {
+        pRaw.mapNotNull { decodeVocabularyProgress(it) }
+            .forEach { vp -> vocabularyDao.upsertProgress(vp.toEntity()) }
+    }
+    val sRaw = prefs[Keys.VOCABULARY_SESSIONS] ?: emptySet()
+    if (sRaw.isNotEmpty()) {
+        sRaw.mapNotNull { decodeVocabularySession(it) }
+            .forEach { vs -> vocabularyDao.insertSession(vs.toEntity()) }
+    }
+    dataStore.edit { it[booleanPreferencesKey("vocab_migrated")] = true }
+}

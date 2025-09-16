@@ -139,28 +139,26 @@ object StreakIntegration {
     /**
      * Enhanced task completion handler
      */
-    @Composable
-    fun EnhancedTaskCompletionHandler(
+    suspend fun enhancedTaskCompletionHandler(
         streakManager: StreakManager,
+        taskId: String,
+        taskDescription: String,
+        taskDetails: String? = null,
         onPointsEarned: (PointsTransaction) -> Unit = {},
         onStreakMilestone: (StreakMultiplier) -> Unit = {}
-    ): (String, String, String?) -> Unit {
-        return { taskId, taskDesc, taskDetails ->
-            LaunchedEffect(taskId) {
-                val transaction = streakManager.completeTask(
-                    taskId = taskId,
-                    taskDescription = taskDesc,
-                    taskDetails = taskDetails
-                )
-                onPointsEarned(transaction)
+    ) {
+        val transaction = streakManager.completeTask(
+            taskId = taskId,
+            taskDescription = taskDescription,
+            taskDetails = taskDetails
+        )
+        onPointsEarned(transaction)
 
-                // Check for milestone achievements
-                val currentState = streakManager.getCurrentStreakState()
-                if (currentState.multiplier.isFireStreak ||
-                    currentState.currentStreak in listOf(7, 14, 30, 50)) {
-                    onStreakMilestone(currentState.multiplier)
-                }
-            }
+        // Check for milestone achievements
+        val currentState = streakManager.streakStateFlow.first()
+        if (currentState.multiplier.isFireStreak ||
+            currentState.currentStreak in listOf(7, 14, 30, 50)) {
+            onStreakMilestone(currentState.multiplier)
         }
     }
 

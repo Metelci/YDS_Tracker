@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import android.media.AudioAttributes
 import android.media.AudioManager
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel

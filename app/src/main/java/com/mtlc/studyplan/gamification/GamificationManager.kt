@@ -417,10 +417,10 @@ class GamificationManager(
                 type = MilestoneType.WEEK_COMPLETION,
                 title = achievement.title,
                 progress = achievement.progressPercentage,
-                estimatedDays = when (achievement.estimatedTimeToUnlock) {
-                    is EstimatedTime.DAYS -> achievement.estimatedTimeToUnlock.days
-                    is EstimatedTime.WEEKS -> achievement.estimatedTimeToUnlock.weeks * 7
-                    is EstimatedTime.MONTHS -> achievement.estimatedTimeToUnlock.months * 30
+                estimatedDays = when (val est = achievement.estimatedTimeToUnlock) {
+                    is EstimatedTime.DAYS -> est.days
+                    is EstimatedTime.WEEKS -> est.weeks * 7
+                    is EstimatedTime.MONTHS -> est.months * 30
                     EstimatedTime.READY_TO_UNLOCK -> 0
                     null -> -1
                 }

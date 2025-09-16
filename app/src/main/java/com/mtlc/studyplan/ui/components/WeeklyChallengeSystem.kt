@@ -2,9 +2,10 @@ package com.mtlc.studyplan.ui.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import com.mtlc.studyplan.data.TaskCategory
 import com.mtlc.studyplan.data.UserProgress
 import com.mtlc.studyplan.gamification.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Contextual
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -46,8 +48,8 @@ import kotlin.random.Random
 @Serializable
 data class WeeklyChallenge(
     val id: String,
-    val weekStart: LocalDate,
-    val weekEnd: LocalDate,
+    val weekStart: @Contextual LocalDate,
+    val weekEnd: @Contextual LocalDate,
     val type: WeeklyChallengeType,
     val title: String,
     val description: String,

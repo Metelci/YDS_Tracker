@@ -165,7 +165,7 @@ fun ProgressRing(
     }
 }
 
-private data class Particle(
+private data class RingParticle(
     var x: Float,
     var y: Float,
     var vx: Float,
@@ -221,7 +221,7 @@ private fun spawnParticles(n: Int = 120): List<EnhancedParticle> {
     }
 }
 
-private fun stepParticles(particles: List<Particle>, dt: Float): List<Particle> {
+private fun stepRingParticles(particles: List<RingParticle>, dt: Float): List<RingParticle> {
     val gravity = 0.9f
     val drag = 0.98f
     return particles.map { p ->

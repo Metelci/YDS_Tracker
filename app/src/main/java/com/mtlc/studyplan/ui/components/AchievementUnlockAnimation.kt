@@ -3,10 +3,13 @@ package com.mtlc.studyplan.ui.components
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -152,12 +155,11 @@ private fun AchievementUnlockContent(
                 modifier = Modifier
                     .size(140.dp)
                     .background(
-                        brush = RadialGradient(
-                            colors = listOf(
-                                achievement.tier.color.copy(alpha = 0.6f),
+                        brush = Brush.radialGradient(
+                            colors = listOf<Color>(
+                                Color(achievement.tier.color).copy(alpha = 0.6f),
                                 Color.Transparent
-                            ),
-                            radius = 120f
+                            )
                         ),
                         shape = CircleShape
                     )
@@ -167,7 +169,7 @@ private fun AchievementUnlockContent(
             Surface(
                 modifier = Modifier.size(100.dp),
                 shape = CircleShape,
-                color = achievement.tier.color,
+                color = Color(achievement.tier.color),
                 shadowElevation = 8.dp
             ) {
                 Box(
@@ -197,7 +199,7 @@ private fun AchievementUnlockContent(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = achievement.tier.color
+                    color = Color(achievement.tier.color)
                 )
             }
         }
@@ -236,7 +238,7 @@ private fun AchievementUnlockContent(
                             text = achievement.fullTitle,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = achievement.tier.color,
+                            color = Color(achievement.tier.color),
                             textAlign = TextAlign.Center
                         )
 
@@ -307,7 +309,7 @@ private fun AchievementUnlockContent(
                     Button(
                         onClick = { /* Handle close */ },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = achievement.tier.color
+                            containerColor = Color(achievement.tier.color)
                         )
                     ) {
                         Text(
@@ -328,12 +330,9 @@ private fun NewTierIndicator(
     newTier: AchievementTier
 ) {
     Card(
+        modifier = Modifier.border(1.dp, Color(newTier.color), RoundedCornerShape(12.dp)),
         colors = CardDefaults.cardColors(
-            containerColor = newTier.color.copy(alpha = 0.1f)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = newTier.color
+            containerColor = Color(newTier.color).copy(alpha = 0.1f)
         )
     ) {
         Row(
@@ -350,7 +349,7 @@ private fun NewTierIndicator(
                     text = "New Tier Unlocked!",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = newTier.color
+                    color = Color(newTier.color)
                 )
                 Text(
                     text = "${newTier.title} ${category.title}",
@@ -365,12 +364,9 @@ private fun NewTierIndicator(
 @Composable
 private fun NewCategoryIndicator(category: AchievementCategory) {
     Card(
+        modifier = Modifier.border(1.dp, Color(category.color), RoundedCornerShape(12.dp)),
         colors = CardDefaults.cardColors(
-            containerColor = category.color.copy(alpha = 0.1f)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = Color(category.color)
+            containerColor = Color(category.color).copy(alpha = 0.1f)
         )
     ) {
         Row(
@@ -436,7 +432,7 @@ fun AchievementUnlockNotification(
                 .fillMaxWidth()
                 .padding(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = achievement.tier.color.copy(alpha = 0.9f)
+                containerColor = Color(achievement.tier.color).copy(alpha = 0.9f)
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -453,7 +449,7 @@ fun AchievementUnlockNotification(
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
                         contentDescription = null,
-                        tint = achievement.tier.color,
+                        tint = Color(achievement.tier.color),
                         modifier = Modifier.padding(8.dp)
                     )
                 }

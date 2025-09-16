@@ -595,7 +595,8 @@ fun PlanScreen() {
                         onOpenPlanSettings = { showPlanSettings = true },
                         showTooltips = !isOnboardingComplete,
                         shownTooltips = shownTooltips,
-                        onShowTooltip = { tooltipId -> currentTooltipId = tooltipId }
+                        onShowTooltip = { tooltipId -> currentTooltipId = tooltipId },
+                        isOnboardingComplete = isOnboardingComplete
                     )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -678,40 +679,6 @@ fun PlanScreen() {
                             ExamCountdownCard()
                             OverallProgressCard(progress = animatedProgress)
 
-                            // Smart suggestions
-                            if (smartSuggestions.isNotEmpty()) {
-                                SmartSuggestionsCard(
-                                    suggestions = smartSuggestions,
-                                    onSuggestionClick = { suggestion ->
-                                        // Handle suggestion click
-                                        when (suggestion.type) {
-                                            com.mtlc.studyplan.ai.SuggestionType.WEAK_AREA_FOCUS -> {
-                                                // Could navigate to specific category or add booster
-                                                suggestion.category?.let { category ->
-                                                    // Add a booster task for the weak category
-                                                    coroutineScope.launch {
-                                                        planRepo.addCustomTask(
-                                                            currentWeek,
-                                                            0, // Add to first day of current week
-                                                            "Focus: $category",
-                                                            "Targeted practice based on AI analysis of your weak areas"
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                            else -> {
-                                                // For other suggestions, just dismiss
-                                                dismissedSuggestions = dismissedSuggestions + suggestion.id
-                                            }
-                                        }
-                                    },
-                                    onDismissSuggestion = { suggestion ->
-                                        dismissedSuggestions = dismissedSuggestions + suggestion.id
-                                        smartSuggestions = smartSuggestions.filterNot { it.id == suggestion.id }
-                                    }
-                                )
-                            }
-
                             // View toggle button
                             Row(
                                 modifier = Modifier
@@ -732,6 +699,37 @@ fun PlanScreen() {
                                     )
                                 }
                             }
+                        }
+                    }
+                    // Smart suggestions below header so it scrolls
+                    if (smartSuggestions.isNotEmpty()) {
+                        item {
+                            SmartSuggestionsCard(
+                                suggestions = smartSuggestions,
+                                onSuggestionClick = { suggestion ->
+                                    when (suggestion.type) {
+                                        com.mtlc.studyplan.ai.SuggestionType.WEAK_AREA_FOCUS -> {
+                                            suggestion.category?.let { category ->
+                                                coroutineScope.launch {
+                                                    planRepo.addCustomTask(
+                                                        currentWeek,
+                                                        0,
+                                                        "Focus: $category",
+                                                        "Targeted practice based on AI analysis of your weak areas"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        else -> {
+                                            dismissedSuggestions = dismissedSuggestions + suggestion.id
+                                        }
+                                    }
+                                },
+                                onDismissSuggestion = { suggestion ->
+                                    dismissedSuggestions = dismissedSuggestions + suggestion.id
+                                    smartSuggestions = smartSuggestions.filterNot { it.id == suggestion.id }
+                                }
+                            )
                         }
                     }
                     itemsIndexed(
@@ -879,7 +877,8 @@ fun MainHeader(
     onOpenPlanSettings: () -> Unit,
     showTooltips: Boolean = false,
     shownTooltips: Set<String> = emptySet(),
-    onShowTooltip: (String) -> Unit = {}
+    onShowTooltip: (String) -> Unit = {},
+    isOnboardingComplete: Boolean = false
 ) {
     val context = LocalContext.current
     val currentLanguage = remember { LanguageManager.getCurrentLanguage(context) }
@@ -907,7 +906,7 @@ fun MainHeader(
             ) {
                 TooltipTrigger(
                     tooltipId = "customize_plan",
-                    isVisible = showTooltips && "customize_plan" !in shownTooltips,
+                    isVisible = showTooltips && !isOnboardingComplete && "customize_plan" !in shownTooltips,
                     onShowTooltip = onShowTooltip
                 ) {
                     IconButton(onClick = onOpenCustomize) {
@@ -916,7 +915,7 @@ fun MainHeader(
                 }
                 TooltipTrigger(
                     tooltipId = "plan_settings",
-                    isVisible = showTooltips && "plan_settings" !in shownTooltips,
+                    isVisible = showTooltips && !isOnboardingComplete && "plan_settings" !in shownTooltips,
                     onShowTooltip = onShowTooltip
                 ) {
                     IconButton(onClick = onOpenPlanSettings) {
@@ -928,7 +927,7 @@ fun MainHeader(
                 }
                 TooltipTrigger(
                     tooltipId = "language_switch",
-                    isVisible = showTooltips && "language_switch" !in shownTooltips,
+                    isVisible = showTooltips && !isOnboardingComplete && "language_switch" !in shownTooltips,
                     onShowTooltip = onShowTooltip
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -3,6 +3,7 @@ package com.mtlc.studyplan.gamification
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.mtlc.studyplan.data.*
+import com.mtlc.studyplan.ui.celebrations.CelebrationIntensity
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlin.math.*

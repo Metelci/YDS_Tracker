@@ -17,6 +17,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.graphicsLayer
 import com.mtlc.studyplan.data.StreakState
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions
 import com.mtlc.studyplan.ui.animations.StudyPlanMotion
@@ -38,20 +39,11 @@ fun StreakDangerWarning(
         visible = streakState.isInDanger,
         enter = slideInVertically(
             initialOffsetY = { -it },
-            animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                normalSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
+            animationSpec = spring()
         ) + fadeIn(),
         exit = slideOutVertically(
             targetOffsetY = { -it },
-            animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                normalSpec = tween(
-                    durationMillis = StudyPlanMotion.MEDIUM_2.inWholeMilliseconds.toInt()
-                )
-            )
+            animationSpec = tween(StudyPlanMotion.MEDIUM_2.inWholeMilliseconds.toInt())
         ) + fadeOut(),
         modifier = modifier
     ) {

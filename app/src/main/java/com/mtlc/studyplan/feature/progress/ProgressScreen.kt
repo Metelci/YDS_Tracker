@@ -22,9 +22,9 @@ import com.mtlc.studyplan.data.StreakManager
 import com.mtlc.studyplan.data.rememberStreakManager
 import com.mtlc.studyplan.data.rememberStreakState
 import com.mtlc.studyplan.analytics.AnalyticsScreen
-import com.mtlc.studyplan.ui.components.StudyHeatmap
 import com.mtlc.studyplan.progress.progressByDay
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProgressScreen() {
@@ -40,6 +40,7 @@ fun ProgressScreen() {
     val streakState by rememberStreakState(streakManager)
     val since = remember { LocalDate.now().minusDays(83) }
     val entries = remember(logs) { logs?.let { progressByDay(it, since) } }
+    val coroutineScope = rememberCoroutineScope()
 
     // Loading states
     val isLoadingProgress = userProgress == null
@@ -70,8 +71,7 @@ fun ProgressScreen() {
                     // Show skeleton screens while loading
                     TwoPaneScaffold(
                         list = {
-                            // Heatmap skeleton
-                            HeatmapSkeleton(modifier = Modifier.fillMaxWidth())
+                            // Heatmap removed per request
                             Spacer(Modifier.height(s.sm))
                             ShimmerText(width = 0.4f, height = 24f) // Progress Overview title
                             Spacer(Modifier.height(s.xs))
@@ -110,12 +110,7 @@ fun ProgressScreen() {
                     // Original progress overview with data
                     TwoPaneScaffold(
                         list = {
-                            // Heatmap for last 84 days
-                            entries?.let { entryData ->
-                                StudyHeatmap(entries = entryData, onDayClick = { date ->
-                                    android.widget.Toast.makeText(context, "Open ${date}", android.widget.Toast.LENGTH_SHORT).show()
-                                }, modifier = Modifier.fillMaxWidth())
-                            }
+                            // Heatmap removed per request
                             Spacer(Modifier.height(s.sm))
                             Text("Progress Overview", style = MaterialTheme.typography.titleLarge)
                             Spacer(Modifier.height(s.xs))
@@ -130,8 +125,19 @@ fun ProgressScreen() {
                                         supportingContent = { Text("Summary metrics…") },
                                         trailingContent = {
                                             userProgress?.let { progress ->
-                                                if (idx < progress.completedTasks.size) {
-                                                    AssistChip(onClick = {}, label = { Text("Complete") })
+                                                val weekId = "progress_overview_week_${idx + 1}"
+                                                val isCompleted = progress.completedTasks.contains(weekId)
+                                                if (!isCompleted) {
+                                                    AssistChip(
+                                                        onClick = {
+                                                            coroutineScope.launch {
+                                                                repo.completeTask(weekId, label, null, 0)
+                                                            }
+                                                        },
+                                                        label = { Text("Complete") }
+                                                    )
+                                                } else {
+                                                    AssistChip(onClick = {}, label = { Text("Done") })
                                                 }
                                             }
                                         }

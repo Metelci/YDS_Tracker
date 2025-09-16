@@ -509,7 +509,7 @@ private fun getLevelColor(level: Int): Color {
 private fun getLevelIcon(level: Int): androidx.compose.ui.graphics.vector.ImageVector {
     return when {
         level >= 100 -> Icons.Default.EmojiEvents // Trophy
-        level >= 50 -> Icons.Default.Military_Tech // Medal
+        level >= 50 -> Icons.Default.MilitaryTech // Medal
         level >= 25 -> Icons.Default.Stars // Stars
         level >= 10 -> Icons.Default.Verified // Verified
         level >= 5 -> Icons.Default.TrendingUp // Trending up

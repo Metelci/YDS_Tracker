@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -387,8 +388,9 @@ object StudyPlanMicroInteractions {
 
         val scale by animateFloatAsState(
             targetValue = if (isPressed) 0.95f else 1f,
-            animationSpec = adaptiveAnimationSpec(
-                normalSpec = StudyPlanMotion.SPRING_RESPONSIVE
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
             ),
             label = "press_scale"
         )
@@ -426,8 +428,9 @@ object StudyPlanMicroInteractions {
 
         val animatedOffset by animateFloatAsState(
             targetValue = swipeOffset,
-            animationSpec = adaptiveAnimationSpec(
-                normalSpec = StudyPlanMotion.SPRING_SMOOTH
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMedium
             ),
             label = "swipe_offset"
         )
@@ -509,11 +512,11 @@ object GestureEnhancements {
         onClick: () -> Unit,
         modifier: Modifier = Modifier,
         hapticType: HapticFeedbackType = HapticFeedbackType.TextHandleMove,
-        content: @Composable () -> Unit
+        content: @Composable RowScope.() -> Unit
     ) {
         Button(
             onClick = onClick,
-            modifier = modifier.pressAnimation(hapticType),
+            modifier = with(StudyPlanMicroInteractions) { modifier.pressAnimation(hapticType) },
             content = content
         )
     }
@@ -532,7 +535,7 @@ object GestureEnhancements {
         val haptics = LocalHapticFeedback.current
 
         Card(
-            modifier = modifier.swipeToAction(
+            modifier = with(StudyPlanMicroInteractions) { modifier.swipeToAction(
                 threshold = threshold,
                 onSwipeComplete = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -541,7 +544,7 @@ object GestureEnhancements {
                 onSwipeProgress = { progress ->
                     swipeProgress = progress
                 }
-            )
+            ) }
         ) {
             content(swipeProgress)
         }

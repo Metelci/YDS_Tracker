@@ -2,6 +2,7 @@ package com.mtlc.studyplan.gamification
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import com.mtlc.studyplan.ui.celebrations.*
 import kotlinx.coroutines.delay
 import kotlin.math.*
 import kotlin.random.Random
+import kotlinx.serialization.Serializable
 
 /**
  * Enhanced Progress Celebrations - Contextual animations based on achievement tier and type

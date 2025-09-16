@@ -2,9 +2,17 @@ package com.mtlc.studyplan.gamification
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.mtlc.studyplan.data.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.*
@@ -318,12 +326,12 @@ class PointEconomyManager(
                 lastUpdated = System.currentTimeMillis()
             )
 
-            preferences[Keys.POINT_WALLET] = json.encodeToString(updatedWallet)
+            preferences[Keys.POINT_WALLET] = json.encodeToString(PointWallet.serializer(), updatedWallet)
 
             // Add transaction
             val currentTransactions = preferences[Keys.POINT_TRANSACTIONS] ?: emptySet()
-            val updatedTransactions = currentTransactions + json.encodeToString(transaction)
-            preferences[Keys.POINT_TRANSACTIONS] = updatedTransactions.takeLast(1000).toSet()
+            val updatedTransactions = currentTransactions + json.encodeToString(PointTransaction.serializer(), transaction)
+            preferences[Keys.POINT_TRANSACTIONS] = updatedTransactions.toList().takeLast(1000).toSet()
         }
 
         updateLeaderboards(amount)
@@ -366,11 +374,11 @@ class PointEconomyManager(
                 pointsSpentTotal = currentWallet.pointsSpentTotal + cosmetic.cost,
                 lastUpdated = System.currentTimeMillis()
             )
-            preferences[Keys.POINT_WALLET] = json.encodeToString(updatedWallet)
+            preferences[Keys.POINT_WALLET] = json.encodeToString(PointWallet.serializer(), updatedWallet)
 
             // Add transaction
             val currentTransactions = preferences[Keys.POINT_TRANSACTIONS] ?: emptySet()
-            preferences[Keys.POINT_TRANSACTIONS] = currentTransactions + json.encodeToString(purchaseTransaction)
+            preferences[Keys.POINT_TRANSACTIONS] = currentTransactions + json.encodeToString(PointTransaction.serializer(), purchaseTransaction)
 
             // Add owned cosmetic
             val currentCosmetics = preferences[Keys.OWNED_COSMETICS] ?: emptySet()
@@ -378,7 +386,7 @@ class PointEconomyManager(
                 isOwned = true,
                 unlockDate = System.currentTimeMillis()
             )
-            preferences[Keys.OWNED_COSMETICS] = currentCosmetics + json.encodeToString(ownedCosmetic)
+            preferences[Keys.OWNED_COSMETICS] = currentCosmetics + json.encodeToString(CosmeticReward.serializer(), ownedCosmetic)
         }
 
         return PurchaseResult.Success(cosmetic)
@@ -409,7 +417,7 @@ class PointEconomyManager(
                 )
             }
 
-            preferences[Keys.LEADERBOARD_DATA] = json.encodeToString(updatedData)
+            preferences[Keys.LEADERBOARD_DATA] = json.encodeToString(MapSerializer(String.serializer(), LeaderboardEntry.serializer()), updatedData)
         }
     }
 

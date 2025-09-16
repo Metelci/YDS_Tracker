@@ -1,6 +1,8 @@
 //region VERİ MODELLERİ
 package com.mtlc.studyplan.data
 
+import kotlinx.serialization.Serializable
+
 data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
@@ -257,4 +259,65 @@ data class AchievementUnlock(
     val totalCategoryPoints: Int,
     val timestampMillis: Long = System.currentTimeMillis()
 )
+/**
+ * Vocabulary Learning System Data Models
+ */
+enum class VocabCategory(val displayName: String) {
+    ACADEMIC("Academic"),
+    EVERYDAY("Everyday"),
+    BUSINESS("Business"),
+    EXAM_SPECIFIC("Exam Specific"),
+    GRAMMAR_FOCUSED("Grammar Focused")
+}
+
+@Serializable
+data class VocabularyItem(
+    val word: String,
+    val definition: String,
+    val difficulty: Int, // 1-5 scale
+    val category: VocabCategory,
+    val contexts: List<String>,
+    val relatedWords: List<String>, // synonyms, antonyms, word family
+    val grammarPattern: String?, // "used_with_gerunds", "followed_by_infinitive"
+    val masteryLevel: Float = 0.0f, // 0.0 - 1.0
+    val lastEncountered: Long = 0L,
+    val errorCount: Int = 0,
+    val successRate: Float = 0.0f,
+    val weekIntroduced: Int // Which week in 30-week plan
+)
+
+enum class ReviewDifficulty {
+    EASY,
+    MEDIUM,
+    HARD
+}
+
+@Serializable
+data class VocabularyProgress(
+    val wordId: String,
+    val masteryLevel: Float,
+    val lastReviewDate: Long,
+    val nextReviewDate: Long,
+    val reviewCount: Int,
+    val successCount: Int,
+    val errorCount: Int,
+    val currentInterval: Int // days until next review
+) {
+    val successRate: Float = if (reviewCount > 0) successCount.toFloat() / reviewCount.toFloat() else 0.0f
+}
+
+@Serializable
+data class VocabularySession(
+    val sessionId: String,
+    val vocabularyItems: List<String>, // word IDs
+    val startTime: Long,
+    val endTime: Long? = null,
+    val correctAnswers: Int = 0,
+    val totalQuestions: Int = 0,
+    val sessionType: String // "review", "new_words", "weak_areas"
+) {
+    val accuracy: Float = if (totalQuestions > 0) correctAnswers.toFloat() / totalQuestions.toFloat() else 0.0f
+    val isCompleted: Boolean = endTime != null
+}
+
 //endregion

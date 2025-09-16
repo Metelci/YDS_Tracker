@@ -12,7 +12,10 @@
       "Bash(./gradlew:*)",
       "Bash(.gradlew assembleDebug)",
       "Bash(gradlew.bat assembleDebug:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(.gradlew.bat assembleDebug)",
+      "Bash(kotlinc:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

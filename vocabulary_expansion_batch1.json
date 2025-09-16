@@ -1,0 +1,1022 @@
+[
+  {
+    "word": "empirical",
+    "definition": "based on observation or experience",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "empirical evidence",
+      "empirical research"
+    ],
+    "relatedWords": [
+      "observational",
+      "experimental",
+      "factual"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "hypothesis",
+    "definition": "proposed explanation for a phenomenon",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "test the hypothesis",
+      "null hypothesis"
+    ],
+    "relatedWords": [
+      "theory",
+      "proposition",
+      "assumption"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "methodology",
+    "definition": "system of methods used in research",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "research methodology",
+      "teaching methodology"
+    ],
+    "relatedWords": [
+      "approach",
+      "system",
+      "procedure"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "synthesis",
+    "definition": "combination of ideas to form a theory",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "synthesis of research",
+      "chemical synthesis"
+    ],
+    "relatedWords": [
+      "combination",
+      "integration",
+      "fusion"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "paradigm",
+    "definition": "typical example or pattern",
+    "difficulty": 2,
+    "category": "ACADEMIC",
+    "contexts": [
+      "paradigm shift",
+      "research paradigm"
+    ],
+    "relatedWords": [
+      "model",
+      "framework",
+      "pattern"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "correlation",
+    "definition": "mutual relationship between variables",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "positive correlation",
+      "statistical correlation"
+    ],
+    "relatedWords": [
+      "relationship",
+      "connection",
+      "association"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 10
+  },
+  {
+    "word": "validation",
+    "definition": "confirmation of accuracy or truth",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "data validation",
+      "validation process"
+    ],
+    "relatedWords": [
+      "confirmation",
+      "verification",
+      "authentication"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 10
+  },
+  {
+    "word": "criterion",
+    "definition": "standard for judging",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "selection criterion",
+      "evaluation criterion"
+    ],
+    "relatedWords": [
+      "standard",
+      "benchmark",
+      "measure"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "variable",
+    "definition": "element that can change",
+    "difficulty": 2,
+    "category": "ACADEMIC",
+    "contexts": [
+      "independent variable",
+      "control variable"
+    ],
+    "relatedWords": [
+      "factor",
+      "element",
+      "component"
+    ],
+    "grammarPattern": "adjective_suffix",
+    "weekIntroduced": 10
+  },
+  {
+    "word": "inference",
+    "definition": "conclusion reached on evidence",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "statistical inference",
+      "logical inference"
+    ],
+    "relatedWords": [
+      "deduction",
+      "conclusion",
+      "interpretation"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 10
+  },
+  {
+    "word": "cognitive",
+    "definition": "relating to mental processes",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "cognitive ability",
+      "cognitive psychology"
+    ],
+    "relatedWords": [
+      "mental",
+      "intellectual",
+      "reasoning"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "behavioral",
+    "definition": "relating to behavior",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "behavioral science",
+      "behavioral patterns"
+    ],
+    "relatedWords": [
+      "conduct-related",
+      "action-based",
+      "response"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "perception",
+    "definition": "way of understanding something",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "visual perception",
+      "public perception"
+    ],
+    "relatedWords": [
+      "awareness",
+      "understanding",
+      "viewpoint"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 11
+  },
+  {
+    "word": "stereotype",
+    "definition": "oversimplified idea about a group",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "gender stereotype",
+      "cultural stereotype"
+    ],
+    "relatedWords": [
+      "prejudice",
+      "bias",
+      "generalization"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "motivation",
+    "definition": "reason for acting",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "intrinsic motivation",
+      "student motivation"
+    ],
+    "relatedWords": [
+      "incentive",
+      "drive",
+      "inspiration"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 11
+  },
+  {
+    "word": "socialization",
+    "definition": "process of learning social norms",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "childhood socialization",
+      "cultural socialization"
+    ],
+    "relatedWords": [
+      "social learning",
+      "acculturation",
+      "adaptation"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 11
+  },
+  {
+    "word": "demographic",
+    "definition": "relating to population characteristics",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "demographic data",
+      "demographic changes"
+    ],
+    "relatedWords": [
+      "population-based",
+      "statistical",
+      "census-related"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "ethnographic",
+    "definition": "relating to cultural studies",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "ethnographic research",
+      "ethnographic method"
+    ],
+    "relatedWords": [
+      "anthropological",
+      "cultural",
+      "observational"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "phenomenon",
+    "definition": "observable fact or event",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "social phenomenon",
+      "natural phenomenon"
+    ],
+    "relatedWords": [
+      "occurrence",
+      "event",
+      "manifestation"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "intervention",
+    "definition": "action taken to improve situation",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "medical intervention",
+      "policy intervention"
+    ],
+    "relatedWords": [
+      "involvement",
+      "treatment",
+      "action"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 11
+  },
+  {
+    "word": "entrepreneurship",
+    "definition": "activity of starting businesses",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "social entrepreneurship",
+      "entrepreneurship education"
+    ],
+    "relatedWords": [
+      "business creation",
+      "innovation",
+      "enterprise"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 12
+  },
+  {
+    "word": "sustainability",
+    "definition": "ability to maintain over time",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "environmental sustainability",
+      "economic sustainability"
+    ],
+    "relatedWords": [
+      "viability",
+      "continuity",
+      "permanence"
+    ],
+    "grammarPattern": "noun_quality",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "diversification",
+    "definition": "process of varying products",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "portfolio diversification",
+      "economic diversification"
+    ],
+    "relatedWords": [
+      "variation",
+      "expansion",
+      "broadening"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "inflation",
+    "definition": "general increase in prices",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "inflation rate",
+      "control inflation"
+    ],
+    "relatedWords": [
+      "price rise",
+      "currency devaluation",
+      "economic pressure"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "recession",
+    "definition": "economic decline period",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "economic recession",
+      "global recession"
+    ],
+    "relatedWords": [
+      "downturn",
+      "depression",
+      "slump"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "commodity",
+    "definition": "basic good in commerce",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "commodity prices",
+      "agricultural commodity"
+    ],
+    "relatedWords": [
+      "product",
+      "resource",
+      "material"
+    ],
+    "grammarPattern": "noun_quality",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "subsidiary",
+    "definition": "company controlled by another",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "foreign subsidiary",
+      "subsidiary company"
+    ],
+    "relatedWords": [
+      "branch",
+      "division",
+      "affiliate"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 12
+  },
+  {
+    "word": "merger",
+    "definition": "combination of companies",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "corporate merger",
+      "merger agreement"
+    ],
+    "relatedWords": [
+      "consolidation",
+      "amalgamation",
+      "union"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 12
+  },
+  {
+    "word": "dividend",
+    "definition": "payment to shareholders",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "dividend payment",
+      "quarterly dividend"
+    ],
+    "relatedWords": [
+      "profit share",
+      "return",
+      "distribution"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 12
+  },
+  {
+    "word": "deficit",
+    "definition": "amount by which expenses exceed income",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "budget deficit",
+      "trade deficit"
+    ],
+    "relatedWords": [
+      "shortfall",
+      "loss",
+      "negative balance"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 12
+  },
+  {
+    "word": "biotechnology",
+    "definition": "use of living systems for technology",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "medical biotechnology",
+      "agricultural biotechnology"
+    ],
+    "relatedWords": [
+      "bioengineering",
+      "genetic engineering",
+      "life sciences"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "nanotechnology",
+    "definition": "technology on molecular scale",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "nanotechnology applications",
+      "nanotechnology research"
+    ],
+    "relatedWords": [
+      "molecular engineering",
+      "micro-technology",
+      "atomic manipulation"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "renewable",
+    "definition": "able to be renewed naturally",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "renewable energy",
+      "renewable resources"
+    ],
+    "relatedWords": [
+      "sustainable",
+      "replenishable",
+      "inexhaustible"
+    ],
+    "grammarPattern": "adjective_suffix",
+    "weekIntroduced": 13
+  },
+  {
+    "word": "biodiversity",
+    "definition": "variety of life in ecosystems",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "biodiversity conservation",
+      "loss of biodiversity"
+    ],
+    "relatedWords": [
+      "biological diversity",
+      "species variety",
+      "ecosystem richness"
+    ],
+    "grammarPattern": "noun_quality",
+    "weekIntroduced": 13
+  },
+  {
+    "word": "ecosystem",
+    "definition": "biological community and environment",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "marine ecosystem",
+      "forest ecosystem"
+    ],
+    "relatedWords": [
+      "habitat",
+      "environment",
+      "biome"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "genome",
+    "definition": "complete set of DNA",
+    "difficulty": 2,
+    "category": "ACADEMIC",
+    "contexts": [
+      "human genome",
+      "genome sequencing"
+    ],
+    "relatedWords": [
+      "genetic code",
+      "chromosomes",
+      "hereditary material"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "pharmaceutical",
+    "definition": "relating to medical drugs",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "pharmaceutical industry",
+      "pharmaceutical research"
+    ],
+    "relatedWords": [
+      "medicinal",
+      "drug-related",
+      "therapeutic"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "vaccination",
+    "definition": "treatment with vaccine",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "childhood vaccination",
+      "vaccination program"
+    ],
+    "relatedWords": [
+      "immunization",
+      "inoculation",
+      "preventive treatment"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 13
+  },
+  {
+    "word": "antibiotics",
+    "definition": "medicines that fight bacteria",
+    "difficulty": 3,
+    "category": "ACADEMIC",
+    "contexts": [
+      "antibiotic resistance",
+      "broad-spectrum antibiotics"
+    ],
+    "relatedWords": [
+      "antimicrobials",
+      "bactericides",
+      "medical drugs"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "climate",
+    "definition": "long-term weather patterns",
+    "difficulty": 2,
+    "category": "ACADEMIC",
+    "contexts": [
+      "climate change",
+      "tropical climate"
+    ],
+    "relatedWords": [
+      "weather patterns",
+      "atmospheric conditions",
+      "environmental conditions"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "acquisition",
+    "definition": "act of acquiring something",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "company acquisition",
+      "acquisition cost"
+    ],
+    "relatedWords": [
+      "purchase",
+      "takeover",
+      "procurement"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "stakeholder",
+    "definition": "person with interest in enterprise",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "key stakeholder",
+      "stakeholder meeting"
+    ],
+    "relatedWords": [
+      "shareholder",
+      "investor",
+      "participant"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 11
+  },
+  {
+    "word": "infrastructure",
+    "definition": "basic physical systems",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "IT infrastructure",
+      "transport infrastructure"
+    ],
+    "relatedWords": [
+      "foundation",
+      "framework",
+      "structure"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 13
+  },
+  {
+    "word": "productivity",
+    "definition": "efficiency in production",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "increase productivity",
+      "worker productivity"
+    ],
+    "relatedWords": [
+      "efficiency",
+      "output",
+      "performance"
+    ],
+    "grammarPattern": "noun_quality",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "optimization",
+    "definition": "process of making best use",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "cost optimization",
+      "process optimization"
+    ],
+    "relatedWords": [
+      "improvement",
+      "enhancement",
+      "maximization"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 14
+  },
+  {
+    "word": "regulation",
+    "definition": "rule or directive",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "government regulation",
+      "financial regulation"
+    ],
+    "relatedWords": [
+      "rule",
+      "law",
+      "guideline"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 11
+  },
+  {
+    "word": "compliance",
+    "definition": "conformity with rules",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "regulatory compliance",
+      "compliance officer"
+    ],
+    "relatedWords": [
+      "adherence",
+      "conformity",
+      "obedience"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 15
+  },
+  {
+    "word": "transparency",
+    "definition": "openness and honesty",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "financial transparency",
+      "government transparency"
+    ],
+    "relatedWords": [
+      "openness",
+      "clarity",
+      "accountability"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 14
+  },
+  {
+    "word": "accountability",
+    "definition": "responsibility for actions",
+    "difficulty": 3,
+    "category": "BUSINESS",
+    "contexts": [
+      "corporate accountability",
+      "public accountability"
+    ],
+    "relatedWords": [
+      "responsibility",
+      "liability",
+      "answerability"
+    ],
+    "grammarPattern": "noun_quality",
+    "weekIntroduced": 15
+  },
+  {
+    "word": "innovation",
+    "definition": "introduction of new ideas",
+    "difficulty": 2,
+    "category": "BUSINESS",
+    "contexts": [
+      "technological innovation",
+      "product innovation"
+    ],
+    "relatedWords": [
+      "creativity",
+      "invention",
+      "novelty"
+    ],
+    "grammarPattern": "noun_from_verb",
+    "weekIntroduced": 12
+  },
+  {
+    "word": "evaluate",
+    "definition": "assess the value or quality",
+    "difficulty": 2,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "evaluate the evidence",
+      "evaluate student performance"
+    ],
+    "relatedWords": [
+      "assess",
+      "judge",
+      "appraise"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 8
+  },
+  {
+    "word": "analyze",
+    "definition": "examine in detail",
+    "difficulty": 2,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "analyze the data",
+      "analyze the situation"
+    ],
+    "relatedWords": [
+      "examine",
+      "study",
+      "investigate"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 7
+  },
+  {
+    "word": "synthesize",
+    "definition": "combine elements into whole",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "synthesize information",
+      "synthesize research findings"
+    ],
+    "relatedWords": [
+      "combine",
+      "integrate",
+      "merge"
+    ],
+    "grammarPattern": "verb_suffix",
+    "weekIntroduced": 16
+  },
+  {
+    "word": "critique",
+    "definition": "detailed analysis and assessment",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "critique the argument",
+      "literary critique"
+    ],
+    "relatedWords": [
+      "review",
+      "evaluate",
+      "assess"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 17
+  },
+  {
+    "word": "substantiate",
+    "definition": "provide evidence to support",
+    "difficulty": 4,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "substantiate the claim",
+      "substantiate with data"
+    ],
+    "relatedWords": [
+      "support",
+      "validate",
+      "verify"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 20
+  },
+  {
+    "word": "exemplify",
+    "definition": "illustrate with examples",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "exemplify the concept",
+      "exemplify good practice"
+    ],
+    "relatedWords": [
+      "illustrate",
+      "demonstrate",
+      "show"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 15
+  },
+  {
+    "word": "contradict",
+    "definition": "assert the opposite",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "contradict the theory",
+      "contradict previous findings"
+    ],
+    "relatedWords": [
+      "oppose",
+      "dispute",
+      "challenge"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 16
+  },
+  {
+    "word": "corroborate",
+    "definition": "confirm with evidence",
+    "difficulty": 4,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "corroborate the testimony",
+      "corroborate findings"
+    ],
+    "relatedWords": [
+      "confirm",
+      "support",
+      "validate"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 22
+  },
+  {
+    "word": "refute",
+    "definition": "prove statement wrong",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "refute the argument",
+      "refute the hypothesis"
+    ],
+    "relatedWords": [
+      "disprove",
+      "rebut",
+      "counter"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 18
+  },
+  {
+    "word": "deduce",
+    "definition": "arrive at conclusion by reasoning",
+    "difficulty": 3,
+    "category": "EXAM_SPECIFIC",
+    "contexts": [
+      "deduce from evidence",
+      "deduce the answer"
+    ],
+    "relatedWords": [
+      "infer",
+      "conclude",
+      "derive"
+    ],
+    "grammarPattern": null,
+    "weekIntroduced": 17
+  }
+]

@@ -92,14 +92,7 @@ fun EnhancedStreakCounter(
     Card(
         modifier = modifier
             .scale(achievementScale)
-            .animateContentSize(
-                animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                    normalSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                )
-            ),
+            .animateContentSize(animationSpec = spring()),
         colors = CardDefaults.cardColors(
             containerColor = if (streakState.isFireStreak) {
                 MaterialTheme.colorScheme.tertiaryContainer

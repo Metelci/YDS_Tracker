@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -262,20 +263,16 @@ object EnhancedLoadingComponents {
                         )
                         LoadingPattern.SLIDE_IN -> slideInVertically(
                             initialOffsetY = { it / 4 },
-                            animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                                spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessMedium
-                                )
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
                             )
                         ) + fadeIn()
                         LoadingPattern.BOUNCE_IN -> scaleIn(
                             initialScale = 0.8f,
-                            animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                                spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessHigh
-                                )
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessHigh
                             )
                         ) + fadeIn()
                         else -> fadeIn()
@@ -437,20 +434,23 @@ sealed class LoadingState<out T> {
  * Skeleton building DSL
  */
 interface SkeletonScope {
+    @Composable
     fun textPlaceholder(
-        width: Float = 0.7f,
-        height: Dp = 16.dp,
-        modifier: Modifier = Modifier
+        width: Float,
+        height: Dp,
+        modifier: Modifier
     )
 
+    @Composable
     fun imagePlaceholder(
-        size: Dp = 48.dp,
-        modifier: Modifier = Modifier
+        size: Dp,
+        modifier: Modifier
     )
 
+    @Composable
     fun cardPlaceholder(
-        height: Dp = 80.dp,
-        modifier: Modifier = Modifier
+        height: Dp,
+        modifier: Modifier
     )
 }
 

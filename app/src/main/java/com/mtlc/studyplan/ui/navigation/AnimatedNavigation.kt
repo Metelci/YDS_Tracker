@@ -75,7 +75,6 @@ object EnhancedNavigation {
     /**
      * Enhanced navigation with haptic feedback
      */
-    @Composable
     fun navigateWithFeedback(
         navController: NavHostController,
         route: String,
@@ -84,12 +83,6 @@ object EnhancedNavigation {
         inclusive: Boolean = false,
         launchSingleTop: Boolean = true
     ) {
-        val haptics = LocalHapticFeedback.current
-
-        LaunchedEffect(Unit) {
-            haptics.performHapticFeedback(hapticType)
-        }
-
         navController.navigate(route) {
             popUpTo?.let { target ->
                 popUpTo(target) {
@@ -270,7 +263,7 @@ object EnhancedNavigation {
                 currentRoute = currentRoute,
                 previousRoute = previous,
                 isInitialNavigation = previous == null,
-                navigationDepth = navController.backQueue.size
+                navigationDepth = navController.currentBackStackEntry?.destination?.route?.let { 1 } ?: 0
             )
         }
     }

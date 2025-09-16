@@ -93,14 +93,7 @@ private fun AchievementUnlockDialog(
         ) {
             AnimatedVisibility(
                 visible = dialogVisible,
-                enter = scaleIn(
-                    animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                        normalSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        )
-                    )
-                ) + fadeIn(),
+                enter = scaleIn(animationSpec = spring()) + fadeIn(),
                 exit = scaleOut() + fadeOut()
             ) {
                 AchievementCelebrationCard(
@@ -295,8 +288,7 @@ private fun CategoryBadge(
     Surface(
         color = Color(category.color).copy(alpha = 0.2f),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color(category.color)),
-        modifier = modifier
+        modifier = modifier.border(1.dp, Color(category.color), RoundedCornerShape(8.dp))
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -351,8 +343,8 @@ private fun CelebrationConfetti(
                 modifier = Modifier
                     .size(4.dp)
                     .offset(
-                        x = (index % 5 - 2) * 15.dp,
-                        y = (index / 5 - 2) * 15.dp
+                        x = (((index % 5) - 2) * 15).dp,
+                        y = (((index / 5) - 2) * 15).dp
                     )
                     .background(
                         color = if (index % 2 == 0) tierColor else tierColor.copy(alpha = 0.7f),
@@ -387,11 +379,11 @@ fun AchievementToast(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .border(1.dp, Color(unlock.achievement.tier.color), RoundedCornerShape(12.dp)),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(unlock.achievement.tier.color).copy(alpha = 0.1f)
                 ),
-                border = BorderStroke(1.dp, Color(unlock.achievement.tier.color)),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(

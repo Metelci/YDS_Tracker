@@ -67,15 +67,15 @@ private fun AnimatedPointsDisplay(
     pointsTransaction: PointsTransaction,
     modifier: Modifier = Modifier
 ) {
-    var animationPhase by remember { mutableStateOf(PointsAnimationPhase.APPEARING) }
+    var animationPhase by remember { mutableStateOf(PointsDisplayPhase.APPEARING) }
 
     // Scale animation for appearance
     val scale by animateFloatAsState(
         targetValue = when (animationPhase) {
-            PointsAnimationPhase.APPEARING -> 1f
-            PointsAnimationPhase.CELEBRATING -> 1.2f
-            PointsAnimationPhase.SETTLING -> 1f
-            PointsAnimationPhase.DISAPPEARING -> 0.8f
+            PointsDisplayPhase.APPEARING -> 1f
+            PointsDisplayPhase.CELEBRATING -> 1.2f
+            PointsDisplayPhase.SETTLING -> 1f
+            PointsDisplayPhase.DISAPPEARING -> 0.8f
         },
         animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
             normalSpec = spring(
@@ -89,10 +89,10 @@ private fun AnimatedPointsDisplay(
     // Alpha animation for fade in/out
     val alpha by animateFloatAsState(
         targetValue = when (animationPhase) {
-            PointsAnimationPhase.APPEARING,
-            PointsAnimationPhase.CELEBRATING,
-            PointsAnimationPhase.SETTLING -> 1f
-            PointsAnimationPhase.DISAPPEARING -> 0f
+            PointsDisplayPhase.APPEARING,
+            PointsDisplayPhase.CELEBRATING,
+            PointsDisplayPhase.SETTLING -> 1f
+            PointsDisplayPhase.DISAPPEARING -> 0f
         },
         animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
             normalSpec = tween(
@@ -105,10 +105,10 @@ private fun AnimatedPointsDisplay(
     // Y offset for floating animation
     val offsetY by animateFloatAsState(
         targetValue = when (animationPhase) {
-            PointsAnimationPhase.APPEARING -> 0f
-            PointsAnimationPhase.CELEBRATING -> -20f
-            PointsAnimationPhase.SETTLING -> -10f
-            PointsAnimationPhase.DISAPPEARING -> -30f
+            PointsDisplayPhase.APPEARING -> 0f
+            PointsDisplayPhase.CELEBRATING -> -20f
+            PointsDisplayPhase.SETTLING -> -10f
+            PointsDisplayPhase.DISAPPEARING -> -30f
         },
         animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
             normalSpec = spring(
@@ -121,13 +121,13 @@ private fun AnimatedPointsDisplay(
 
     // Animation sequence control
     LaunchedEffect(Unit) {
-        animationPhase = PointsAnimationPhase.APPEARING
+        animationPhase = PointsDisplayPhase.APPEARING
         delay(300)
-        animationPhase = PointsAnimationPhase.CELEBRATING
+        animationPhase = PointsDisplayPhase.CELEBRATING
         delay(800)
-        animationPhase = PointsAnimationPhase.SETTLING
+        animationPhase = PointsDisplayPhase.SETTLING
         delay(1000)
-        animationPhase = PointsAnimationPhase.DISAPPEARING
+        animationPhase = PointsDisplayPhase.DISAPPEARING
     }
 
     Surface(
@@ -386,7 +386,7 @@ fun FloatingPointsAnimation(
     }
 }
 
-private enum class PointsAnimationPhase {
+private enum class PointsDisplayPhase {
     APPEARING,
     CELEBRATING,
     SETTLING,

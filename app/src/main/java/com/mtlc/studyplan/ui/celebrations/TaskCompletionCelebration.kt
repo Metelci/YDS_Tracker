@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -295,7 +297,7 @@ fun CelebrationAwareTaskCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.CheckCircle,
+                        imageVector = Icons.Filled.CheckCircle,
                         contentDescription = "Completed",
                         tint = getCategoryColor(TaskCategory.fromString(taskDescription)),
                         modifier = Modifier.size(20.dp)

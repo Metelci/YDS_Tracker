@@ -5,9 +5,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.ui.celebrations.rememberCelebrationState
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  * Integration layer between celebrations and existing progress/achievement systems
@@ -25,25 +27,31 @@ class CelebrationIntegrationViewModel(
      */
     fun observeProgressForCelebrations() {
         // Monitor task completions
-        progressRepository.userProgressFlow
-            .distinctUntilChanged { old, new -> old.completedTasks.size == new.completedTasks.size }
-            .collect { userProgress ->
-                handleTaskProgressUpdate(userProgress)
-            }
+        viewModelScope.launch {
+            progressRepository.userProgressFlow
+                .distinctUntilChanged { old, new -> old.completedTasks.size == new.completedTasks.size }
+                .collect { userProgress ->
+                    handleTaskProgressUpdate(userProgress)
+                }
+        }
 
         // Monitor achievement unlocks
-        achievementTracker.achievementStateFlow
-            .distinctUntilChanged { old, new -> old.unlockedAchievements.size == new.unlockedAchievements.size }
-            .collect { achievementState ->
-                handleAchievementUpdate(achievementState)
-            }
+        viewModelScope.launch {
+            achievementTracker.achievementStateFlow
+                .distinctUntilChanged { old, new -> old.unlockedAchievements.size == new.unlockedAchievements.size }
+                .collect { achievementState ->
+                    handleAchievementUpdate(achievementState)
+                }
+        }
 
         // Monitor streak changes
-        progressRepository.userProgressFlow
-            .distinctUntilChanged { old, new -> old.streakCount == new.streakCount }
-            .collect { userProgress ->
-                handleStreakUpdate(userProgress)
-            }
+        viewModelScope.launch {
+            progressRepository.userProgressFlow
+                .distinctUntilChanged { old, new -> old.streakCount == new.streakCount }
+                .collect { userProgress ->
+                    handleStreakUpdate(userProgress)
+                }
+        }
     }
 
     /**

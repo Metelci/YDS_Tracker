@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,34 +44,28 @@ fun StreakCounterUI(
     val density = LocalDensity.current
 
     // Animation states
-    var fireParticles by remember { mutableStateOf(emptyList<FireParticle>()) }
-    var pulseAnimation by remember { mutableStateOf(1f) }
+    var fireParticles by remember { mutableStateOf(emptyList<StreakFireParticle>()) }
+    val pulseAnimation by rememberInfiniteTransition(label = "warning_pulse").animateFloat(
+        initialValue = 1f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse_scale"
+    )
 
     // Fire streak detection
     val isFireStreak = streakState.isFireStreak
     val isDanger = streakState.isInDanger
 
-    // Pulse animation for warnings
-    LaunchedEffect(isDanger) {
-        if (isDanger) {
-            while (isDanger) {
-                animate(1f, 1.2f, tween(800)) { value, _ ->
-                    pulseAnimation = value
-                }
-                animate(1.2f, 1f, tween(800)) { value, _ ->
-                    pulseAnimation = value
-                }
-            }
-        } else {
-            pulseAnimation = 1f
-        }
-    }
+    // Pulse animation runs continuously; apply only when in danger
 
     // Fire particle generation
     LaunchedEffect(isFireStreak) {
         if (isFireStreak && showFireEffects) {
             while (isFireStreak) {
-                fireParticles = generateFireParticles()
+                fireParticles = generateStreakFireParticles()
                 delay(100)
             }
         } else {
@@ -266,7 +261,7 @@ private fun StreakBackground(
         }
 
         drawCircle(
-            brush = RadialGradient(
+            brush = Brush.radialGradient(
                 colors = glowColors,
                 center = center,
                 radius = radius * 1.2f
@@ -294,7 +289,7 @@ private fun StreakBackground(
 
 @Composable
 private fun FireParticleOverlay(
-    particles: List<FireParticle>,
+    particles: List<StreakFireParticle>,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
@@ -305,7 +300,7 @@ private fun FireParticleOverlay(
                     x = size.width * particle.x,
                     y = size.height * particle.y
                 ),
-                radius = particle.size * density.density
+                radius = particle.size
             )
         }
     }
@@ -336,7 +331,7 @@ private fun AnimatedLinearProgressIndicator(
 }
 
 // Helper functions and data classes
-private data class FireParticle(
+private data class StreakFireParticle(
     val x: Float,
     val y: Float,
     val size: Float,
@@ -344,11 +339,11 @@ private data class FireParticle(
     val life: Float
 )
 
-private fun generateFireParticles(): List<FireParticle> {
+private fun generateStreakFireParticles(): List<StreakFireParticle> {
     return buildList {
         repeat(6) {
             add(
-                FireParticle(
+                StreakFireParticle(
                     x = 0.3f + Random.nextFloat() * 0.4f, // Center area
                     y = 0.6f + Random.nextFloat() * 0.3f, // Bottom half
                     size = 1f + Random.nextFloat() * 2f,

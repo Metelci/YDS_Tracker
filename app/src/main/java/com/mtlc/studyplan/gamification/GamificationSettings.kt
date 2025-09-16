@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.gamification
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,9 +31,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.mtlc.studyplan.ui.celebrations.CelebrationIntensity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 /**
@@ -694,7 +699,7 @@ private fun IntensityOption(
             },
         color = backgroundColor,
         shape = RoundedCornerShape(8.dp),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
             color = if (isSelected) {
                 MaterialTheme.colorScheme.primary
