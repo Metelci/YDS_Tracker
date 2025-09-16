@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 38
-        versionName = "2.2.0"
+        versionCode = 39
+        versionName = "2.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -81,6 +82,11 @@ dependencies {
     implementation(libs.biometric)
     implementation(libs.kotlinx.serialization)
 
+    // Room (local database for scalable histories)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
@@ -96,4 +102,12 @@ dependencies {
     androidTestImplementation(libs.accessibilityTestFramework)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+kapt {
+    javacOptions {
+        val tmp = project.layout.buildDirectory.dir("kapt-tmp").get().asFile.absolutePath
+        option("-J-Djava.io.tmpdir=$tmp")
+        option("-J-Dorg.sqlite.tmpdir=$tmp")
+    }
 }

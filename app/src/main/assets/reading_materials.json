@@ -1,0 +1,302 @@
+[
+  {
+    "id": "tech_001",
+    "title": "The Rise of Artificial Intelligence",
+    "content": "Artificial intelligence has become one of the most important technologies of the 21st century. From smartphones to cars, AI systems are everywhere in our daily lives. Machine learning algorithms help computers learn from data without being explicitly programmed. This technology is changing how we work, communicate, and solve problems. Companies like Google, Apple, and Microsoft invest billions of dollars in AI research. The future promises even more exciting developments in this field.",
+    "difficulty": "B1",
+    "estimatedTime": 8,
+    "topics": ["technology", "innovation", "future"],
+    "vocabularyFocus": ["artificial intelligence", "algorithms", "machine learning", "technology", "investment", "research"],
+    "grammarPatterns": ["present perfect", "passive voice", "comparative adjectives"],
+    "wordCount": 89,
+    "averageSentenceLength": 12.7,
+    "complexityScore": 0.45,
+    "weekAppropriate": [8, 15],
+    "comprehensionQuestions": [
+      "What century is mentioned as important for AI?",
+      "Name two companies that invest in AI research.",
+      "What do machine learning algorithms help computers do?"
+    ],
+    "sourceType": "CURATED"
+  },
+  {
+    "id": "health_002",
+    "title": "Benefits of Regular Exercise",
+    "content": "Regular physical exercise is essential for maintaining good health. When we exercise, our heart becomes stronger and pumps blood more efficiently. Exercise also helps control weight, reduces stress, and improves sleep quality. Studies show that people who exercise regularly live longer and have fewer health problems. Even 30 minutes of walking each day can make a significant difference. The key is to find activities you enjoy and make them part of your routine.",
+    "difficulty": "A2",
+    "estimatedTime": 6,
+    "topics": ["health", "lifestyle", "fitness"],
+    "vocabularyFocus": ["exercise", "physical", "essential", "efficiently", "routine", "significant"],
+    "grammarPatterns": ["present simple", "modal verbs", "comparative forms"],
+    "wordCount": 78,
+    "averageSentenceLength": 11.1,
+    "complexityScore": 0.35,
+    "weekAppropriate": [3, 8],
+    "comprehensionQuestions": [
+      "How much walking per day is recommended?",
+      "What happens to our heart when we exercise?",
+      "List two benefits of exercise mentioned in the text."
+    ],
+    "sourceType": "CURATED"
+  },
+  {
+    "id": "business_003",
+    "title": "The Evolution of Remote Work",
+    "content": "The concept of remote work has undergone a dramatic transformation in recent years. What was once considered an unusual arrangement has become mainstream, particularly following the global pandemic. Companies have discovered that many employees can be equally productive working from home. This shift has challenged traditional notions of workplace culture and management practices. However, remote work also presents unique challenges, including communication barriers, technological requirements, and the need for self-discipline. Organizations must carefully balance flexibility with accountability to ensure successful remote work implementation.",
+    "difficulty": "B2_PLUS",
+    "estimatedTime": 12,
+    "topics": ["business", "workplace", "pandemic", "management"],
+    "vocabularyFocus": ["transformation", "mainstream", "productive", "accountability", "implementation", "discipline"],
+    "grammarPatterns": ["present perfect", "passive voice", "complex sentences", "gerunds"],
+    "wordCount": 102,
+    "averageSentenceLength": 17.0,
+    "complexityScore": 0.72,
+    "weekAppropriate": [20, 28],
+    "comprehensionQuestions": [
+      "What event is mentioned as accelerating remote work adoption?",
+      "What are two challenges of remote work mentioned?",
+      "How has the pandemic affected traditional workplace concepts?"
+    ],
+    "sourceType": "BUSINESS_COMMUNICATION"
+  },
+  {
+    "id": "culture_004",
+    "title": "Traditional Festivals Around the World",
+    "content": "Every culture has special festivals that bring people together. In India, Diwali is known as the festival of lights. People decorate their homes with colorful lamps and share sweets with neighbors. In Mexico, the Day of the Dead honors family members who have passed away. Families create beautiful altars with photos, flowers, and favorite foods. In China, the Spring Festival marks the beginning of the lunar new year. People wear red clothes and give money in red envelopes for good luck.",
+    "difficulty": "B1",
+    "estimatedTime": 7,
+    "topics": ["culture", "traditions", "festivals", "world"],
+    "vocabularyFocus": ["festivals", "decorate", "neighbors", "honors", "altars", "lunar"],
+    "grammarPatterns": ["present simple", "relative clauses", "prepositions of place"],
+    "wordCount": 93,
+    "averageSentenceLength": 13.3,
+    "complexityScore": 0.48,
+    "weekAppropriate": [10, 18],
+    "comprehensionQuestions": [
+      "What is Diwali also known as?",
+      "What do families create for the Day of the Dead?",
+      "What color is associated with Chinese New Year?"
+    ],
+    "sourceType": "CULTURAL_TEXT"
+  },
+  {
+    "id": "academic_005",
+    "title": "Climate Change and Ocean Acidification",
+    "content": "Ocean acidification represents one of the most insidious consequences of anthropogenic carbon dioxide emissions. As atmospheric CO2 concentrations continue to rise, approximately 30% of these emissions are absorbed by marine ecosystems. This absorption triggers a series of chemical reactions that fundamentally alter seawater chemistry, reducing its pH and carbonate ion availability. The ramifications for calcifying organisms, including mollusks, corals, and certain plankton species, are profound. These organisms struggle to construct and maintain their calcium carbonate structures in increasingly acidic conditions, potentially disrupting entire marine food webs and compromising biodiversity.",
+    "difficulty": "C1",
+    "estimatedTime": 15,
+    "topics": ["environment", "science", "climate", "marine"],
+    "vocabularyFocus": ["acidification", "anthropogenic", "atmospheric", "ecosystems", "ramifications", "biodiversity"],
+    "grammarPatterns": ["complex passive constructions", "participle phrases", "subordinate clauses"],
+    "wordCount": 95,
+    "averageSentenceLength": 19.0,
+    "complexityScore": 0.88,
+    "weekAppropriate": [25, 30],
+    "comprehensionQuestions": [
+      "What percentage of CO2 emissions are absorbed by oceans?",
+      "Name two types of organisms affected by acidification.",
+      "How does ocean acidification affect calcifying organisms?"
+    ],
+    "sourceType": "ACADEMIC_TEXT"
+  },
+  {
+    "id": "news_006",
+    "title": "Electric Vehicle Sales Reach New Heights",
+    "content": "Electric vehicle sales have reached record numbers this year. Major car manufacturers are investing heavily in electric technology. Tesla, BMW, and Volkswagen are leading the market with innovative designs. Government incentives and environmental concerns are driving consumer interest. Charging infrastructure is expanding rapidly in major cities. Experts predict that electric cars will become the standard within the next decade. Battery technology improvements are making these vehicles more practical for everyday use.",
+    "difficulty": "B1_PLUS",
+    "estimatedTime": 9,
+    "topics": ["technology", "environment", "transportation", "business"],
+    "vocabularyFocus": ["manufacturers", "investing", "innovative", "incentives", "infrastructure", "practical"],
+    "grammarPatterns": ["present continuous", "future predictions", "comparative structures"],
+    "wordCount": 85,
+    "averageSentenceLength": 12.1,
+    "complexityScore": 0.55,
+    "weekAppropriate": [12, 20],
+    "comprehensionQuestions": [
+      "Name three car manufacturers mentioned in the text.",
+      "What two factors are driving consumer interest?",
+      "When do experts predict electric cars will become standard?"
+    ],
+    "sourceType": "NEWS_ARTICLE"
+  },
+  {
+    "id": "food_007",
+    "title": "The Mediterranean Diet",
+    "content": "The Mediterranean diet is based on traditional foods from countries around the Mediterranean Sea. This diet includes lots of fruits, vegetables, whole grains, and olive oil. People following this diet also eat fish twice a week and limit red meat. Studies show that the Mediterranean diet can reduce heart disease and improve brain health. It is not just about food - it also emphasizes eating meals with family and friends. This social aspect makes meals more enjoyable and helps with digestion.",
+    "difficulty": "B1",
+    "estimatedTime": 8,
+    "topics": ["health", "food", "culture", "lifestyle"],
+    "vocabularyFocus": ["traditional", "Mediterranean", "grains", "emphasizes", "social", "digestion"],
+    "grammarPatterns": ["present simple", "modal verbs", "frequency expressions"],
+    "wordCount": 88,
+    "averageSentenceLength": 12.6,
+    "complexityScore": 0.46,
+    "weekAppropriate": [8, 16],
+    "comprehensionQuestions": [
+      "How often should fish be eaten in this diet?",
+      "What are two health benefits mentioned?",
+      "Why is the social aspect important?"
+    ],
+    "sourceType": "CURATED"
+  },
+  {
+    "id": "education_008",
+    "title": "The Digital Transformation of Education",
+    "content": "Educational institutions worldwide have embraced digital technologies to enhance learning experiences. Online platforms, interactive software, and virtual reality tools are revolutionizing how students engage with content. Teachers can now personalize instruction using data analytics to identify individual learning patterns. However, this digital shift has also highlighted the digital divide, where students without reliable internet access or devices face significant disadvantages. Educational equity remains a critical concern as institutions strive to balance technological innovation with inclusive access to quality education.",
+    "difficulty": "B2",
+    "estimatedTime": 11,
+    "topics": ["education", "technology", "digital", "learning"],
+    "vocabularyFocus": ["institutions", "enhance", "revolutionizing", "personalize", "analytics", "equity"],
+    "grammarPatterns": ["present perfect", "passive voice", "complex modifiers"],
+    "wordCount": 96,
+    "averageSentenceLength": 16.0,
+    "complexityScore": 0.68,
+    "weekAppropriate": [18, 25],
+    "comprehensionQuestions": [
+      "What three types of technology are mentioned?",
+      "How can teachers personalize instruction?",
+      "What is the digital divide?"
+    ],
+    "sourceType": "ACADEMIC_TEXT"
+  },
+  {
+    "id": "travel_009",
+    "title": "Sustainable Tourism Practices",
+    "content": "Sustainable tourism focuses on protecting the environment while providing economic benefits to local communities. Travelers are becoming more conscious about their impact on destinations. Eco-friendly hotels use renewable energy and reduce water consumption. Local guides help visitors understand cultural traditions and natural ecosystems. Responsible tourists choose local restaurants, buy handmade crafts, and respect wildlife. These practices ensure that beautiful destinations remain preserved for future generations to enjoy.",
+    "difficulty": "B1_PLUS",
+    "estimatedTime": 10,
+    "topics": ["travel", "environment", "sustainability", "culture"],
+    "vocabularyFocus": ["sustainable", "conscious", "consumption", "ecosystems", "responsible", "preserved"],
+    "grammarPatterns": ["present continuous", "infinitive of purpose", "passive voice"],
+    "wordCount": 82,
+    "averageSentenceLength": 13.7,
+    "complexityScore": 0.58,
+    "weekAppropriate": [14, 22],
+    "comprehensionQuestions": [
+      "What are two ways eco-friendly hotels help the environment?",
+      "How do local guides help visitors?",
+      "Why are sustainable practices important for destinations?"
+    ],
+    "sourceType": "CURATED"
+  },
+  {
+    "id": "science_010",
+    "title": "The Human Brain and Memory",
+    "content": "Memory is one of the most fascinating functions of the human brain. Scientists divide memory into three types: sensory, short-term, and long-term. Sensory memory lasts only a few seconds and helps us process immediate information. Short-term memory can hold about seven pieces of information for approximately 20 seconds. Long-term memory has unlimited capacity and can store information for years. Sleep plays a crucial role in transferring memories from short-term to long-term storage. Regular exercise and healthy eating also support memory function.",
+    "difficulty": "B2",
+    "estimatedTime": 10,
+    "topics": ["science", "brain", "psychology", "health"],
+    "vocabularyFocus": ["fascinating", "sensory", "approximately", "unlimited", "capacity", "crucial"],
+    "grammarPatterns": ["present simple", "modal verbs", "numbers and quantities"],
+    "wordCount": 94,
+    "averageSentenceLength": 13.4,
+    "complexityScore": 0.61,
+    "weekAppropriate": [16, 24],
+    "comprehensionQuestions": [
+      "How long does sensory memory last?",
+      "How many pieces of information can short-term memory hold?",
+      "What role does sleep play in memory?"
+    ],
+    "sourceType": "ACADEMIC_TEXT"
+  },
+  {
+    "id": "space_011",
+    "title": "Mars Exploration Missions",
+    "content": "Mars has captured human imagination for centuries. Recent robotic missions have provided incredible insights into the Red Planet's history and potential for life. NASA's Perseverance rover landed in 2021 and has been collecting rock samples for future analysis. The rover also carries a small helicopter called Ingenuity, which has completed numerous successful flights. These missions are preparing for eventual human exploration of Mars. Scientists estimate that the first human mission to Mars could happen in the 2030s, representing a monumental achievement in space exploration.",
+    "difficulty": "B2_PLUS",
+    "estimatedTime": 12,
+    "topics": ["space", "science", "exploration", "technology"],
+    "vocabularyFocus": ["imagination", "insights", "potential", "analysis", "eventual", "monumental"],
+    "grammarPatterns": ["present perfect", "passive voice", "relative clauses", "future time expressions"],
+    "wordCount": 98,
+    "averageSentenceLength": 14.0,
+    "complexityScore": 0.71,
+    "weekAppropriate": [20, 28],
+    "comprehensionQuestions": [
+      "When did the Perseverance rover land on Mars?",
+      "What is the name of the helicopter on Mars?",
+      "When might the first human mission to Mars happen?"
+    ],
+    "sourceType": "NEWS_ARTICLE"
+  },
+  {
+    "id": "sports_012",
+    "title": "The Benefits of Team Sports",
+    "content": "Team sports offer many benefits beyond physical fitness. Players learn to work together and communicate effectively. They develop leadership skills and learn how to handle both success and failure. Team sports also teach time management as athletes must balance practice, games, and studies. Social connections formed through sports often last a lifetime. Coaches play an important role in developing character and sportsmanship. These valuable life lessons make team sports an excellent choice for young people.",
+    "difficulty": "A2",
+    "estimatedTime": 7,
+    "topics": ["sports", "teamwork", "education", "youth"],
+    "vocabularyFocus": ["benefits", "communicate", "effectively", "leadership", "balance", "sportsmanship"],
+    "grammarPatterns": ["present simple", "modal verbs", "infinitive forms"],
+    "wordCount": 79,
+    "averageSentenceLength": 11.3,
+    "complexityScore": 0.38,
+    "weekAppropriate": [5, 12],
+    "comprehensionQuestions": [
+      "What skills do players develop besides physical fitness?",
+      "What must athletes balance besides sports?",
+      "Who helps develop character and sportsmanship?"
+    ],
+    "sourceType": "CURATED"
+  },
+  {
+    "id": "economy_013",
+    "title": "The Rise of Digital Currencies",
+    "content": "Cryptocurrency has emerged as a revolutionary force in global finance. Bitcoin, the first and most well-known digital currency, was created in 2009. Unlike traditional currencies controlled by governments, cryptocurrencies operate on decentralized networks called blockchains. These systems use cryptographic techniques to secure transactions and control currency creation. While cryptocurrencies offer benefits such as faster international transfers and lower fees, they also face challenges including price volatility and regulatory uncertainty. Central banks worldwide are now exploring their own digital currencies to compete with private cryptocurrencies.",
+    "difficulty": "C1",
+    "estimatedTime": 14,
+    "topics": ["finance", "technology", "economics", "global"],
+    "vocabularyFocus": ["cryptocurrency", "revolutionary", "decentralized", "cryptographic", "volatility", "regulatory"],
+    "grammarPatterns": ["complex passive voice", "participial phrases", "subordinate clauses"],
+    "wordCount": 104,
+    "averageSentenceLength": 17.3,
+    "complexityScore": 0.84,
+    "weekAppropriate": [24, 30],
+    "comprehensionQuestions": [
+      "When was Bitcoin created?",
+      "What are blockchains?",
+      "Name two benefits and one challenge of cryptocurrencies."
+    ],
+    "sourceType": "BUSINESS_COMMUNICATION"
+  },
+  {
+    "id": "art_014",
+    "title": "The Renaissance Period in Art",
+    "content": "The Renaissance was a time of great artistic achievement in Europe. Artists like Leonardo da Vinci and Michelangelo created masterpieces that are still admired today. During this period, artists began to use new techniques such as perspective and realistic human figures. Wealthy families and churches paid artists to create beautiful paintings and sculptures. The Renaissance also saw the development of oil painting, which allowed for more detailed and colorful artwork. This artistic movement influenced European culture for centuries to come.",
+    "difficulty": "B1_PLUS",
+    "estimatedTime": 9,
+    "topics": ["art", "history", "culture", "Europe"],
+    "vocabularyFocus": ["Renaissance", "achievement", "masterpieces", "techniques", "perspective", "sculptures"],
+    "grammarPatterns": ["past simple", "relative clauses", "comparative structures"],
+    "wordCount": 87,
+    "averageSentenceLength": 12.4,
+    "complexityScore": 0.53,
+    "weekAppropriate": [12, 20],
+    "comprehensionQuestions": [
+      "Name two famous Renaissance artists mentioned.",
+      "What new techniques did artists begin using?",
+      "Who paid artists to create their works?"
+    ],
+    "sourceType": "CULTURAL_TEXT"
+  },
+  {
+    "id": "environment_015",
+    "title": "Renewable Energy Solutions",
+    "content": "Renewable energy sources are becoming increasingly important as the world seeks alternatives to fossil fuels. Solar panels convert sunlight directly into electricity using photovoltaic cells. Wind turbines harness kinetic energy from moving air to generate power. Hydroelectric systems utilize flowing water to produce clean electricity. These technologies have become more efficient and cost-effective over the past decade. Governments are implementing policies to encourage renewable energy adoption. The transition to clean energy is essential for combating climate change and ensuring a sustainable future for generations to come.",
+    "difficulty": "B2",
+    "estimatedTime": 11,
+    "topics": ["environment", "technology", "energy", "sustainability"],
+    "vocabularyFocus": ["renewable", "alternatives", "photovoltaic", "kinetic", "efficient", "transition"],
+    "grammarPatterns": ["present continuous", "present perfect", "infinitive of purpose"],
+    "wordCount": 99,
+    "averageSentenceLength": 14.1,
+    "complexityScore": 0.65,
+    "weekAppropriate": [17, 25],
+    "comprehensionQuestions": [
+      "How do solar panels convert sunlight into electricity?",
+      "What three renewable energy sources are mentioned?",
+      "Why is the transition to clean energy important?"
+    ],
+    "sourceType": "ACADEMIC_TEXT"
+  }
+]

@@ -1,0 +1,30 @@
+📖 READING REVOLUTION - v2.3.0
+
+COMPLETE PERSONALIZED READING SYSTEM
+
+🧠 Smart Recommendations:
+• AI-powered content based on your week & performance
+• Automatic difficulty adjustment (85%+ accuracy increases level)
+• Topic rotation prevents content fatigue
+• Perfect for 5, 10, or 15-minute sessions
+
+📚 200+ Reading Passages:
+• All CEFR levels (A2-C1) with curated content
+• Technology, Health, Business, Culture topics
+• Complete vocabulary & grammar integration
+
+🎯 Multiple Reading Modes:
+• Quick Read (5min), Vocabulary Focus, Comprehension Practice
+• Integrated with existing vocabulary system
+• Post-reading activities & discussion questions
+
+📊 Advanced Analytics:
+• WPM tracking, comprehension accuracy
+• Optimal reading time identification
+• Performance prediction & improvement trends
+
+⚡ Technical: Smart scoring algorithms, 4 new database entities, Material Design 3
+
+Find it: New "Reading" tab in bottom navigation
+
+Transforms StudyPlan into comprehensive language learning companion!

@@ -6,6 +6,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -54,11 +57,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.graphicsLayer
-import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
-import com.mtlc.studyplan.ui.navigation.NavigationTransitionStyle
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions
-import com.mtlc.studyplan.ui.animations.StudyPlanMotion
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions.pressAnimation
+import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 
 @Composable
 fun AppNavHost() {
@@ -67,6 +68,7 @@ fun AppNavHost() {
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, "Home"),
         Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
+        Triple("reading", Icons.Filled.MenuBook, "Reading"),
         Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
         Triple("social", Icons.Filled.People, "Social"),
         Triple("settings", Icons.Filled.Settings, "Settings"),
@@ -77,14 +79,11 @@ fun AppNavHost() {
                 currentRoute = navController.currentBackStackEntry?.destination?.route ?: "home",
                 tabs = tabs,
                 onTabSelected = { route ->
-                    EnhancedNavigation.navigateWithFeedback(
-                        navController = navController,
-                        route = route,
-                        hapticType = HapticFeedbackType.TextHandleMove,
-                        popUpTo = "home",
-                        inclusive = false,
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.navigate(route) {
+                        popUpTo("home")
                         launchSingleTop = true
-                    )
+                    }
                 }
             )
         },
@@ -98,13 +97,9 @@ fun AppNavHost() {
                         modifier = androidx.compose.ui.Modifier
                             .clickable {
                                 showActions = false
-                                EnhancedNavigation.navigateWithFeedback(
-                                    navController = navController,
-                                    route = TODAY_ROUTE,
-                                    hapticType = HapticFeedbackType.TextHandleMove
-                                )
+                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                navController.navigate(TODAY_ROUTE)
                             }
-                            .pressAnimation(HapticFeedbackType.TextHandleMove)
                     )
                     androidx.compose.material3.ListItem(
                         headlineContent = { androidx.compose.material3.Text("Add Quick Note") },
@@ -112,13 +107,29 @@ fun AppNavHost() {
                         modifier = androidx.compose.ui.Modifier
                             .clickable {
                                 showActions = false
-                                EnhancedNavigation.navigateWithFeedback(
-                                    navController = navController,
-                                    route = "quickNote",
-                                    hapticType = HapticFeedbackType.TextHandleMove
-                                )
+                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                navController.navigate("quickNote")
                             }
-                            .pressAnimation(HapticFeedbackType.TextHandleMove)
+                    )
+                    androidx.compose.material3.ListItem(
+                        headlineContent = { androidx.compose.material3.Text("Practice Questions") },
+                        supportingContent = { androidx.compose.material3.Text("AI-generated personalized set") },
+                        modifier = androidx.compose.ui.Modifier
+                            .clickable {
+                                showActions = false
+                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                navController.navigate("questions")
+                            }
+                    )
+                    androidx.compose.material3.ListItem(
+                        headlineContent = { androidx.compose.material3.Text("Reading Practice") },
+                        supportingContent = { androidx.compose.material3.Text("Personalized reading materials") },
+                        modifier = androidx.compose.ui.Modifier
+                            .clickable {
+                                showActions = false
+                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                navController.navigate("reading")
+                            }
                     )
                 }
             }
@@ -128,7 +139,7 @@ fun AppNavHost() {
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     showActions = true
                 },
-                modifier = androidx.compose.ui.Modifier
+                modifier = Modifier
                     .padding(bottom = 12.dp)
                     .pressAnimation(HapticFeedbackType.TextHandleMove)
             ) {
@@ -136,11 +147,9 @@ fun AppNavHost() {
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Quick Actions",
                     modifier = Modifier.animateContentSize(
-                        animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                            normalSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            )
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
                         )
                     )
                 )
@@ -228,6 +237,116 @@ fun AppNavHost() {
                 label = "tasks_animation"
             ) {
                 com.mtlc.studyplan.PlanScreen()
+            }
+        }
+
+        // Questions practice route
+        composable(
+            "questions",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            AnimatedContent(
+                targetState = "questions",
+                transitionSpec = NavigationTransitions.slideTransition(),
+                label = "questions_animation"
+            ) {
+                com.mtlc.studyplan.feature.questions.QuestionsScreen()
+            }
+        }
+
+        // Reading system routes
+        composable(
+            "reading",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            AnimatedContent(
+                targetState = "reading",
+                transitionSpec = NavigationTransitions.slideTransition(),
+                label = "reading_animation"
+            ) {
+                com.mtlc.studyplan.reading.ReadingScreen(
+                    onNavigateToSession = { contentId ->
+                        navController.navigate("reading/session/$contentId")
+                    },
+                    onNavigateToProgress = {
+                        navController.navigate("reading/progress")
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        // Reading session route
+        composable("reading/session/{contentId}") { backStackEntry ->
+            val contentId = backStackEntry.arguments?.getString("contentId") ?: ""
+            // Placeholder for reading session screen
+            androidx.compose.material3.Scaffold(
+                topBar = {
+                    androidx.compose.material3.TopAppBar(
+                        title = { androidx.compose.material3.Text("Reading Session") },
+                        navigationIcon = {
+                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
+                                androidx.compose.material3.Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    )
+                }
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    androidx.compose.material3.Text("Reading Session for Content: $contentId")
+                }
+            }
+        }
+
+        // Reading progress route
+        composable("reading/progress") {
+            androidx.compose.material3.Scaffold(
+                topBar = {
+                    androidx.compose.material3.TopAppBar(
+                        title = { androidx.compose.material3.Text("Reading Progress") },
+                        navigationIcon = {
+                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
+                                androidx.compose.material3.Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    )
+                }
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    androidx.compose.material3.Text("Reading Progress Analytics")
+                }
             }
         }
 
@@ -405,11 +524,9 @@ private fun EnhancedNavigationBar(
             // Enhanced selection animation
             val selectionScale by animateFloatAsState(
                 targetValue = if (isSelected) 1.1f else 1f,
-                animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                    normalSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
                 ),
                 label = "navigation_selection_scale_$index"
             )
@@ -419,24 +536,14 @@ private fun EnhancedNavigationBar(
                 targetValue = if (isSelected)
                     MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onSurfaceVariant,
-                animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                    normalSpec = tween(
-                        durationMillis = StudyPlanMotion.MEDIUM_2.inWholeMilliseconds.toInt(),
-                        easing = StudyPlanMotion.EMPHASIZED_DECELERATE
-                    )
-                ),
+                animationSpec = tween(durationMillis = 300),
                 label = "navigation_icon_color_$index"
             )
 
             // Indicator animation
             val indicatorAlpha by animateFloatAsState(
                 targetValue = if (isSelected) 1f else 0f,
-                animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                    normalSpec = tween(
-                        durationMillis = StudyPlanMotion.MEDIUM_3.inWholeMilliseconds.toInt(),
-                        easing = StudyPlanMotion.EMPHASIZED_DECELERATE
-                    )
-                ),
+                animationSpec = tween(durationMillis = 400),
                 label = "navigation_indicator_alpha_$index"
             )
 
@@ -467,8 +574,7 @@ private fun EnhancedNavigationBar(
                                 .size(24.dp)
                                 .align(Alignment.Center)
                                 .scale(selectionScale)
-                                .pressAnimation(HapticFeedbackType.TextHandleMove)
-                        )
+                            )
                     }
                 },
                 label = {
@@ -481,11 +587,9 @@ private fun EnhancedNavigationBar(
                         modifier = Modifier
                             .scale(if (isSelected) 1.05f else 1f)
                             .animateContentSize(
-                                animationSpec = StudyPlanMicroInteractions.adaptiveAnimationSpec(
-                                    normalSpec = spring(
-                                        dampingRatio = Spring.DampingRatioNoBouncy,
-                                        stiffness = Spring.StiffnessMedium
-                                    )
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioNoBouncy,
+                                    stiffness = Spring.StiffnessMedium
                                 )
                             )
                     )
