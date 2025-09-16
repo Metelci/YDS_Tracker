@@ -28,6 +28,7 @@ data class QuestionTemplate(
     val startWeek: Int = 1,
     val endWeek: Int = 30
 ) {
+    @kotlinx.serialization.Transient
     val weekAppropriate: IntRange = startWeek..endWeek
 }
 

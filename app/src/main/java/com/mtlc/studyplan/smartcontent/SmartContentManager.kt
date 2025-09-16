@@ -13,6 +13,7 @@ import com.mtlc.studyplan.reading.ContentCurator
 import com.mtlc.studyplan.reading.ContentCuratorFactory
 import com.mtlc.studyplan.reading.ReadingContent
 import com.mtlc.studyplan.reading.ReadingSystemIntegration
+import com.mtlc.studyplan.reading.TimeSlot
 import com.mtlc.studyplan.questions.VocabularyManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
@@ -32,8 +33,13 @@ class SmartContentManager(
     private val progressRepository: ProgressRepository,
     private val smartScheduler: SmartScheduler
 ) {
-    private val contentCurator: ContentCurator by lazy {
-        ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+    private var contentCurator: ContentCurator? = null
+
+    private suspend fun getContentCurator(): ContentCurator {
+        if (contentCurator == null) {
+            contentCurator = ContentCuratorFactory.create(context, progressRepository, vocabularyManager)
+        }
+        return contentCurator!!
     }
 
     private val readingIntegration: ReadingSystemIntegration by lazy {
@@ -53,6 +59,10 @@ class SmartContentManager(
         val currentWeek = calculateCurrentWeek(userProgress)
         val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
 
+        // Cache key per day + available time bucket
+        val dayKey = "${java.time.LocalDate.now()}-$availableTime"
+        SmartContentCache.getDailyPack(dayKey)?.let { return it }
+
         // Get optimal content mix from intelligence engine
         val optimalMix = intelligenceEngine.optimizeContentMix(availableTime, getLearningGoals(userProfile))
 
@@ -64,7 +74,7 @@ class SmartContentManager(
         // Determine optimal sequence
         val sequence = determineContentSequence(vocabulary, questions, reading, userProfile)
 
-        return DailyContentPack(
+        val pack = DailyContentPack(
             id = "daily_${System.currentTimeMillis()}",
             date = System.currentTimeMillis(),
             vocabulary = vocabulary,
@@ -76,6 +86,8 @@ class SmartContentManager(
             difficultyLevel = calculatePackDifficulty(vocabulary, questions, reading),
             confidenceScore = calculateConfidenceScore(userProfile, optimalMix)
         )
+        SmartContentCache.putDailyPack(dayKey, pack)
+        return pack
     }
 
     /**
@@ -129,6 +141,7 @@ class SmartContentManager(
      */
     suspend fun getContentRecommendations(): List<ContentRecommendation> {
         val userProfile = intelligenceEngine.buildUserLearningProfile("current_user")
+        SmartContentCache.getRecommendations("current_user")?.let { return it }
         val recommendations = mutableListOf<ContentRecommendation>()
 
         // Vocabulary recommendations
@@ -144,7 +157,9 @@ class SmartContentManager(
         recommendations.addAll(readingRecommendations)
 
         // Sort by relevance and return top recommendations
-        return recommendations.sortedByDescending { it.relevanceScore }.take(10)
+        val top = recommendations.sortedByDescending { it.relevanceScore }.take(10)
+        SmartContentCache.putRecommendations("current_user", top)
+        return top
     }
 
     /**
@@ -175,7 +190,10 @@ class SmartContentManager(
         userProfile: UserLearningProfile
     ): List<VocabularyItem> {
         val targetCount = min((allocatedTime / 2).toInt(), 15) // ~2 minutes per word
-        val vocabulary = vocabularyManager.getPersonalizedVocabulary(targetCount)
+        val candidates = vocabularyManager.getAll()
+            .filter { it.weekIntroduced <= currentWeek + 2 }
+            .sortedBy { it.masteryLevel }
+        val vocabulary = candidates.take(targetCount)
 
         // Filter based on user profile and learning goals
         return vocabulary.filter { vocab ->
@@ -195,10 +213,10 @@ class SmartContentManager(
         val weakAreas = userProfile.weaknessPatterns.map { it.skillCategory }.distinct()
 
         for (skill in weakAreas) {
-            val skillQuestions = questionGenerator.generateQuestions(
+            val perCat = (targetCount / weakAreas.size).coerceAtLeast(1)
+            val skillQuestions = questionGenerator.generateForCategory(
                 category = skill,
-                count = targetCount / weakAreas.size,
-                difficulty = calculateOptimalDifficulty(skill, userProfile),
+                count = perCat,
                 currentWeek = currentWeek
             )
             questions.addAll(skillQuestions)
@@ -215,7 +233,7 @@ class SmartContentManager(
         if (allocatedTime < 5) return null // Not enough time for meaningful reading
 
         val availableTime = allocatedTime.toInt()
-        return contentCurator.recommendReading(availableTime)
+        return getContentCurator().recommendReading(availableTime)
     }
 
     private fun determineContentSequence(
@@ -281,14 +299,14 @@ class SmartContentManager(
 
         // Vocabulary difficulty
         if (vocabulary.isNotEmpty()) {
-            val vocabDifficulty = vocabulary.map { it.difficulty.toFloat() }.average()
+            val vocabDifficulty = vocabulary.map { it.difficulty.toFloat() }.average().toFloat()
             totalDifficulty += vocabDifficulty
             totalItems++
         }
 
         // Questions difficulty
         if (questions.isNotEmpty()) {
-            val questionDifficulty = questions.map { it.difficulty.toFloat() }.average()
+            val questionDifficulty = questions.map { it.difficulty.toFloat() }.average().toFloat()
             totalDifficulty += questionDifficulty
             totalItems++
         }
@@ -307,31 +325,30 @@ class SmartContentManager(
         optimalMix: OptimalContentMix
     ): Float {
         // Calculate confidence based on how well the mix matches user preferences
-        val profileMatch = userProfile.learningSpeed.values.average()
-        val mixBalance = optimalMix.skillBalance.values.average()
+        val profileMatch = userProfile.learningSpeed.values.average().toFloat()
+        val mixBalance = optimalMix.skillBalance.values.average().toFloat()
 
-        return min(profileMatch * mixBalance * 100, 100f) / 100f
+        return kotlin.math.min(profileMatch * mixBalance * 100, 100f) / 100f
     }
 
     private suspend fun createWarmupSession(
         userProfile: UserLearningProfile,
         availableTime: Int
     ): SessionComponents {
-        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(5)
+        val warmupVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(5)
         val mainContent = MainContent.QuestionSet(
-            questionGenerator.generateQuestions(
+            questionGenerator.generateForCategory(
                 category = SkillCategory.GRAMMAR,
                 count = 8,
-                difficulty = 2,
                 currentWeek = calculateCurrentWeek(progressRepository.userProgressFlow.first())
             )
         )
-        val reinforcementQuestions = questionGenerator.generateQuestions(
+        val reinforcementQuestions = questionGenerator.generateForCategory(
             category = SkillCategory.VOCAB,
             count = 5,
-            difficulty = 1
+            currentWeek = null
         )
-        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(3)
+        val cooldownVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(3)
 
         return SessionComponents(
             warmupVocabulary = warmupVocab,
@@ -352,26 +369,26 @@ class SmartContentManager(
     ): SessionComponents {
         val weakArea = userProfile.weaknessPatterns.firstOrNull()?.skillCategory ?: SkillCategory.READING
 
-        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(3)
+        val warmupVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(3)
         val mainContent = when (weakArea) {
             SkillCategory.READING -> {
-                val reading = contentCurator.recommendReading(availableTime - 10)
+                val reading = getContentCurator().recommendReading(availableTime - 10)
                 reading?.let { MainContent.ReadingSession(it) } ?: MainContent.QuestionSet(emptyList())
             }
             else -> MainContent.QuestionSet(
-                questionGenerator.generateQuestions(
+                questionGenerator.generateForCategory(
                     category = weakArea,
                     count = 12,
-                    difficulty = calculateOptimalDifficulty(weakArea, userProfile)
+                    currentWeek = null
                 )
             )
         }
-        val reinforcementQuestions = questionGenerator.generateQuestions(
+        val reinforcementQuestions = questionGenerator.generateForCategory(
             category = weakArea,
             count = 6,
-            difficulty = calculateOptimalDifficulty(weakArea, userProfile) - 1
+            currentWeek = null
         )
-        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(4)
+        val cooldownVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(4)
 
         return SessionComponents(
             warmupVocabulary = warmupVocab,
@@ -390,18 +407,20 @@ class SmartContentManager(
         userProfile: UserLearningProfile,
         availableTime: Int
     ): SessionComponents {
-        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(5)
-        val reading = contentCurator.recommendReading(15)
-        val questions = questionGenerator.generateQuestions(
+        val warmupVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(5)
+        val reading = getContentCurator().recommendReading(15)
+        val questions = questionGenerator.generateForCategory(
             category = SkillCategory.GRAMMAR,
-            count = 10
+            count = 10,
+            currentWeek = null
         )
         val mainContent = MainContent.MixedContent(reading, questions)
-        val reinforcementQuestions = questionGenerator.generateQuestions(
+        val reinforcementQuestions = questionGenerator.generateForCategory(
             category = SkillCategory.READING,
-            count = 5
+            count = 5,
+            currentWeek = null
         )
-        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(5)
+        val cooldownVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(5)
 
         return SessionComponents(
             warmupVocabulary = warmupVocab,
@@ -420,20 +439,20 @@ class SmartContentManager(
         userProfile: UserLearningProfile,
         availableTime: Int
     ): SessionComponents {
-        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(3)
+        val warmupVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(3)
         val mainContent = MainContent.QuestionSet(
-            questionGenerator.generateQuestions(
+            questionGenerator.generateForCategory(
                 category = SkillCategory.GRAMMAR,
                 count = 15,
-                difficulty = 4 // Higher difficulty for exam prep
+                currentWeek = null
             )
         )
-        val reinforcementQuestions = questionGenerator.generateQuestions(
+        val reinforcementQuestions = questionGenerator.generateForCategory(
             category = SkillCategory.READING,
             count = 8,
-            difficulty = 4
+            currentWeek = null
         )
-        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(2)
+        val cooldownVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(2)
 
         return SessionComponents(
             warmupVocabulary = warmupVocab,
@@ -454,20 +473,20 @@ class SmartContentManager(
     ): SessionComponents {
         val targetSkill = userProfile.learningSpeed.minByOrNull { it.value }?.key ?: SkillCategory.GRAMMAR
 
-        val warmupVocab = vocabularyManager.getPersonalizedVocabulary(4)
+        val warmupVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(4)
         val mainContent = MainContent.QuestionSet(
-            questionGenerator.generateQuestions(
+            questionGenerator.generateForCategory(
                 category = targetSkill,
                 count = 12,
-                difficulty = calculateOptimalDifficulty(targetSkill, userProfile)
+                currentWeek = null
             )
         )
-        val reinforcementQuestions = questionGenerator.generateQuestions(
+        val reinforcementQuestions = questionGenerator.generateForCategory(
             category = targetSkill,
             count = 6,
-            difficulty = calculateOptimalDifficulty(targetSkill, userProfile) + 1
+            currentWeek = null
         )
-        val cooldownVocab = vocabularyManager.getPersonalizedVocabulary(4)
+        val cooldownVocab = vocabularyManager.getAll().sortedBy { it.masteryLevel }.take(4)
 
         return SessionComponents(
             warmupVocabulary = warmupVocab,
@@ -511,7 +530,9 @@ class SmartContentManager(
     }
 
     private suspend fun generateVocabularyRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
-        val vocabulary = vocabularyManager.getPersonalizedVocabulary(5)
+        val vocabulary = vocabularyManager.getAll()
+            .sortedBy { it.masteryLevel }
+            .take(5)
         return vocabulary.map { vocab ->
             ContentRecommendation(
                 contentId = vocab.word,
@@ -528,10 +549,11 @@ class SmartContentManager(
     }
 
     private suspend fun generateQuestionRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
-        val questions = questionGenerator.generateQuestions(
-            category = userProfile.weaknessPatterns.firstOrNull()?.skillCategory ?: SkillCategory.GRAMMAR,
+        val weak = userProfile.weaknessPatterns.firstOrNull()?.skillCategory ?: SkillCategory.GRAMMAR
+        val questions = questionGenerator.generateForCategory(
+            category = weak,
             count = 3,
-            difficulty = 3
+            currentWeek = null
         )
 
         return questions.map { question ->
@@ -550,7 +572,7 @@ class SmartContentManager(
     }
 
     private suspend fun generateReadingRecommendations(userProfile: UserLearningProfile): List<ContentRecommendation> {
-        val reading = contentCurator.recommendReading(10)
+        val reading = getContentCurator().recommendReading(10)
 
         return reading?.let { content ->
             listOf(ContentRecommendation(

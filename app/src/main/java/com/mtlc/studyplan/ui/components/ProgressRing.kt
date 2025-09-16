@@ -54,6 +54,14 @@ fun ProgressRing(
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
 
+    // Get colors for confetti
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val secondaryContainer = MaterialTheme.colorScheme.secondaryContainer
+    val tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer
+
     // Enhanced confetti state
     var confetti by remember { mutableStateOf<List<EnhancedParticle>>(emptyList()) }
     var playing by remember { mutableStateOf(false) }
@@ -76,7 +84,13 @@ fun ProgressRing(
                 delay(150)
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
 
-                confetti = spawnParticles(150)  // More particles for enhanced effect
+                confetti = spawnParticles(150,
+                    primaryColor,
+                    secondaryColor,
+                    tertiaryColor,
+                    primaryContainer,
+                    secondaryContainer,
+                    tertiaryContainer)  // More particles for enhanced effect
                 val start = System.nanoTime()
                 var last = start
                 val durationNanos = (2.5e9).toLong()  // Longer duration for enhanced effect
@@ -187,18 +201,17 @@ private data class EnhancedParticle(
     val decay: Float
 )
 
-@Composable
-private fun spawnParticles(n: Int = 120): List<EnhancedParticle> {
+private fun spawnParticles(n: Int = 120, primaryColor: Color, secondaryColor: Color, tertiaryColor: Color, primaryContainer: Color, secondaryContainer: Color, tertiaryContainer: Color): List<EnhancedParticle> {
     val rnd = Random(System.currentTimeMillis())
 
     // Material 3 color palette for confetti
     val materialColors = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.secondary,
-        MaterialTheme.colorScheme.tertiary,
-        MaterialTheme.colorScheme.primaryContainer,
-        MaterialTheme.colorScheme.secondaryContainer,
-        MaterialTheme.colorScheme.tertiaryContainer
+        primaryColor,
+        secondaryColor,
+        tertiaryColor,
+        primaryContainer,
+        secondaryContainer,
+        tertiaryContainer
     )
 
     return List(n) {

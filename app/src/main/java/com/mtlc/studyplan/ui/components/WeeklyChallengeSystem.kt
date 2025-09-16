@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -72,7 +74,7 @@ enum class WeeklyChallengeType(
 ) {
     TASK_VOLUME(
         displayName = "Volume Master",
-        icon = Icons.Default.Assignment,
+        icon = Icons.AutoMirrored.Filled.Assignment,
         color = Color(0xFF2196F3),
         description = "Complete a target number of tasks"
     ),
@@ -481,7 +483,7 @@ private fun ChallengesSummaryCard(challenges: List<WeeklyChallenge>) {
             SummaryStatItem(
                 label = "Week Progress",
                 value = "${(completedCount.toFloat() / challenges.size * 100).toInt()}%",
-                icon = Icons.Default.TrendingUp
+                icon = Icons.AutoMirrored.Filled.TrendingUp
             )
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -236,7 +237,7 @@ private fun NextLevelPreview(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.TrendingUp,
+                    imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -512,7 +513,7 @@ private fun getLevelIcon(level: Int): androidx.compose.ui.graphics.vector.ImageV
         level >= 50 -> Icons.Default.MilitaryTech // Medal
         level >= 25 -> Icons.Default.Stars // Stars
         level >= 10 -> Icons.Default.Verified // Verified
-        level >= 5 -> Icons.Default.TrendingUp // Trending up
+        level >= 5 -> Icons.AutoMirrored.Filled.TrendingUp // Trending up
         else -> Icons.Default.Circle // Circle
     }
 }

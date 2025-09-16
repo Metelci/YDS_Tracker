@@ -13,6 +13,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.People
@@ -65,10 +68,15 @@ import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 fun AppNavHost() {
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
+    // Schedule background prefetch once per app start
+    val appCtx = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(Unit) {
+        try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
+    }
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, "Home"),
         Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Tasks"),
-        Triple("reading", Icons.Filled.MenuBook, "Reading"),
+        Triple("reading", Icons.AutoMirrored.Filled.MenuBook, "Reading"),
         Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "Progress"),
         Triple("social", Icons.Filled.People, "Social"),
         Triple("settings", Icons.Filled.Settings, "Settings"),
@@ -308,7 +316,7 @@ fun AppNavHost() {
                         title = { androidx.compose.material3.Text("Reading Session") },
                         navigationIcon = {
                             androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                androidx.compose.material3.Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                             }
                         }
                     )
@@ -333,7 +341,7 @@ fun AppNavHost() {
                         title = { androidx.compose.material3.Text("Reading Progress") },
                         navigationIcon = {
                             androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                androidx.compose.material3.Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                             }
                         }
                     )

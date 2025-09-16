@@ -71,7 +71,7 @@ class QuestionGenerator(
         return diffs.mapNotNull { d -> pickTemplateAndGenerate(category, d, currentWeek, vocabCache, templateStats) }
     }
 
-    fun createVocabularyQuestions(targetWords: List<VocabularyItem>): List<GeneratedQuestion> {
+    suspend fun createVocabularyQuestions(targetWords: List<VocabularyItem>): List<GeneratedQuestion> {
         return targetWords.mapNotNull { makeVocabQuestion(it) }
     }
 
@@ -209,7 +209,7 @@ class QuestionGenerator(
         return (related + sameDiff).distinctBy { it.word }.map { it.word }.take(max)
     }
 
-    private fun makeVocabQuestion(item: VocabularyItem): GeneratedQuestion? {
+    private suspend fun makeVocabQuestion(item: VocabularyItem): GeneratedQuestion? {
         val correct = item.definition
         val distractorWords = vocabularyManager.suggestDistractors(item, max = 6)
         val distractorDefs = vocabularyManager.findByWords(distractorWords).map { it.definition }

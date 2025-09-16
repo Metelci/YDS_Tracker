@@ -161,7 +161,7 @@ private fun StreakWarningCard(
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = warningLevel.contentColor
                     ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                    border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
                         brush = androidx.compose.foundation.BorderStroke(
                             1.dp,
                             warningLevel.contentColor

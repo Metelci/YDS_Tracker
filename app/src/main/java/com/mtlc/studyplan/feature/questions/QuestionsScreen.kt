@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,7 @@ fun QuestionsScreen(vm: QuestionsViewModel = viewModel()) {
                 title = { Text("Practice Questions") },
                 navigationIcon = {
                     IconButton(onClick = { backDispatcher?.onBackPressed() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -61,7 +62,7 @@ fun QuestionsScreen(vm: QuestionsViewModel = viewModel()) {
                         onValueChange = {},
                         label = { Text("Mode") },
                         readOnly = true,
-                        modifier = Modifier.menuAnchor().width(180.dp)
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).width(180.dp)
                     )
                     ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DropdownMenuItem(text = { Text("Personalized") }, onClick = { vm.setCategory(null); expanded = false })
@@ -152,7 +153,7 @@ fun QuestionsScreen(vm: QuestionsViewModel = viewModel()) {
                             Text("Accuracy: ${(s.accuracy * 100).toInt()}%")
                             Text("Minutes: ${s.minutes}")
                             if (perCat.isNotEmpty()) {
-                                Divider()
+                                HorizontalDivider()
                                 Text("By Category", style = MaterialTheme.typography.labelLarge)
                                 perCat.forEach { (cat, triple) ->
                                     val (t, a, acc) = triple
@@ -203,7 +204,7 @@ private fun QuestionCard(
             }
 
             if (question.checked && question.data.explanation.isNotBlank()) {
-                Divider(Modifier.padding(vertical = 8.dp))
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 Text("Explanation", style = MaterialTheme.typography.labelLarge)
                 Text(question.data.explanation, style = MaterialTheme.typography.bodyMedium)
             }

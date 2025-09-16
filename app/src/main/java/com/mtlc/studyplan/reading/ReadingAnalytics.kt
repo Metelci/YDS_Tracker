@@ -267,7 +267,9 @@ class ReadingAnalytics(
             TimeUnit.MILLISECONDS.toDays(log.timestampMillis)
         }
         
-        return sessionGroups.mapValues { (_, logs) ->
+        return sessionGroups.mapKeys { (key, _) ->
+            key.toInt()
+        }.mapValues { (_, logs) ->
             logs.count { it.correct }.toFloat() / logs.size
         }
     }

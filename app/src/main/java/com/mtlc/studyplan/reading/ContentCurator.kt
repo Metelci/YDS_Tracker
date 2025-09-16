@@ -21,10 +21,16 @@ class ContentCurator(
     private val context: Context,
     private val readingDatabase: List<ReadingContent>,
     private val progressTracker: ProgressRepository,
-    private val vocabularyManager: VocabularyManager
+    private val vocabularyManager: VocabularyManager,
+    private val idIndex: Map<String, Int> = emptyMap(),
+    private val weekIndex: Map<Int, List<Int>> = emptyMap(),
+    private val topicIndex: Map<String, List<Int>> = emptyMap()
 ) {
     private val json = Json { ignoreUnknownKeys = true }
-    private var topicRotationState = TopicRotationState()
+    private var topicRotationState = TopicRotationState(
+        recentTopics = emptyMap(),
+        topicFrequency = emptyMap()
+    )
     
     /**
      * Recommend reading content based on available time and user context
@@ -122,7 +128,11 @@ class ContentCurator(
      * Select optimal content based on recommendation context
      */
     private suspend fun selectOptimalContent(context: ReadingRecommendationContext): ReadingContent? {
-        val eligibleContent = readingDatabase.filter { content ->
+        val pool: List<ReadingContent> = run {
+            val idxs = weekIndex[context.currentWeek]
+            if (!idxs.isNullOrEmpty()) idxs.map { readingDatabase[it] } else readingDatabase
+        }
+        val eligibleContent = pool.filter { content ->
             content.weekAppropriate.contains(context.currentWeek) &&
             content.estimatedTime <= context.availableTime &&
             (context.preferredDifficulty == null || content.difficulty == context.preferredDifficulty)
@@ -160,14 +170,16 @@ class ContentCurator(
         
         // Weak area focus bonus (0-0.3)
         val weakAreaBonus = context.weakAreas.sumOf { weakArea ->
-            calculateContentRelevanceScore(content, weakArea)
-        }.coerceAtMost(0.3f)
+            calculateContentRelevanceScore(content, weakArea).toDouble()
+        }.toFloat().coerceAtMost(0.3f)
         score += weakAreaBonus
         
         // Topic variety bonus (0-0.15)
-        val topicVarietyBonus = content.topics.sumOf { topic ->
-            topicRotationState.getTopicWeight(topic)
-        }.average().toFloat() * 0.15f
+        val topicVarietyBonus = if (content.topics.isNotEmpty()) {
+            content.topics.sumOf { topic ->
+                topicRotationState.getTopicWeight(topic).toDouble()
+            }.toFloat() / content.topics.size * 0.15f
+        } else 0f
         score += topicVarietyBonus
         
         // Vocabulary alignment bonus (0-0.1)
@@ -392,25 +404,51 @@ class ContentCurator(
  * Factory class for creating ContentCurator with proper initialization
  */
 object ContentCuratorFactory {
+    private val json by lazy { Json { ignoreUnknownKeys = true } }
+    @Volatile private var cachedDb: List<ReadingContent>? = null
+    @Volatile private var idIndex: Map<String, Int>? = null
+    @Volatile private var weekIndex: Map<Int, List<Int>>? = null
+    @Volatile private var topicIndex: Map<String, List<Int>>? = null
+
     suspend fun create(
         context: Context,
         progressRepository: ProgressRepository,
         vocabularyManager: VocabularyManager
     ): ContentCurator {
-        val readingDatabase = loadReadingDatabase(context)
-        return ContentCurator(context, readingDatabase, progressRepository, vocabularyManager)
+        val db = loadReadingDatabase(context)
+        ensureIndices(db)
+        return ContentCurator(
+            context = context,
+            readingDatabase = db,
+            progressTracker = progressRepository,
+            vocabularyManager = vocabularyManager,
+            idIndex = idIndex ?: emptyMap(),
+            weekIndex = weekIndex ?: emptyMap(),
+            topicIndex = topicIndex ?: emptyMap()
+        )
     }
     
     private fun loadReadingDatabase(context: Context): List<ReadingContent> {
-        return try {
-            val jsonString = context.assets.open("reading_materials.json")
-                .bufferedReader().use { it.readText() }
-            val json = Json { ignoreUnknownKeys = true }
-            json.decodeFromString<List<ReadingContent>>(jsonString)
-        } catch (e: Exception) {
-            // For now, return empty list if file doesn't exist
-            // In production, should have fallback content
-            emptyList()
+        cachedDb?.let { return it }
+        val data = runCatching { context.assets.open("reading_materials.json").bufferedReader().use { it.readText() } }.getOrNull()
+        val db = if (data != null) runCatching { json.decodeFromString<List<ReadingContent>>(data) }.getOrElse { emptyList() } else emptyList()
+        cachedDb = db
+        return db
+    }
+
+    private fun ensureIndices(db: List<ReadingContent>) {
+        if (idIndex != null && weekIndex != null && topicIndex != null) return
+        val idMap = HashMap<String, Int>(db.size)
+        val weekMap = HashMap<Int, MutableList<Int>>()
+        val topicMap = HashMap<String, MutableList<Int>>()
+
+        db.forEachIndexed { idx, c ->
+            idMap[c.id] = idx
+            c.weekAppropriate.forEach { w -> weekMap.getOrPut(w) { mutableListOf() }.add(idx) }
+            c.topics.forEach { t -> topicMap.getOrPut(t.lowercase()) { mutableListOf() }.add(idx) }
         }
+        idIndex = idMap
+        weekIndex = weekMap.mapValues { it.value.toList() }
+        topicIndex = topicMap.mapValues { it.value.toList() }
     }
 }

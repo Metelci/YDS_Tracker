@@ -9,6 +9,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -67,7 +70,7 @@ fun ReadingScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -177,7 +180,7 @@ fun ReadingOverviewCard(overview: ReadingOverview) {
                 StatItem(
                     label = "Articles Read",
                     value = overview.articlesReadThisWeek.toString(),
-                    icon = Icons.Default.Article
+                    icon = Icons.AutoMirrored.Filled.Article
                 )
                 StatItem(
                     label = "Avg WPM",
@@ -241,7 +244,7 @@ fun QuickActionButtons(
         )
         ActionButton(
             text = "Vocabulary",
-            icon = Icons.Default.MenuBook,
+            icon = Icons.AutoMirrored.Filled.MenuBook,
             onClick = onStartVocabFocus,
             modifier = Modifier.weight(1f)
         )
@@ -399,7 +402,10 @@ class ReadingScreenViewModel(
             try {
                 // Initialize integration
                 val vocabularyManager = com.mtlc.studyplan.questions.VocabularyManager(context, progressRepository)
-                val questionGenerator = QuestionGenerator(context)
+                val analyticsEngine = com.mtlc.studyplan.analytics.AnalyticsEngine()
+                val dataProvider = com.mtlc.studyplan.questions.DefaultQuestionDataProvider(progressRepository, vocabularyManager)
+                val performanceTracker = com.mtlc.studyplan.questions.RoomQuestionPerformanceTracker(context)
+                val questionGenerator = QuestionGenerator(context, analyticsEngine, vocabularyManager, dataProvider, performanceTracker)
                 readingIntegration = ReadingSystemIntegration(
                     context, progressRepository, vocabularyManager, questionGenerator
                 )

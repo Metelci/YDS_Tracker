@@ -24,7 +24,7 @@ class QuestionPerformanceTracker(
         runBlocking {
             dataStore.edit { prefs ->
                 val perfRaw = prefs[Keys.QUESTION_PERF] ?: emptySet()
-                val updated = (perfRaw + json.encodeToString(result)).takeLast(1000).toSet()
+                val updated = (perfRaw + json.encodeToString(result)).toList().takeLast(1000).toSet()
                 prefs[Keys.QUESTION_PERF] = updated
 
                 val statsRaw = prefs[Keys.TEMPLATE_STATS] ?: emptySet()

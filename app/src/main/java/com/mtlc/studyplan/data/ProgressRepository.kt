@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import com.mtlc.studyplan.storage.room.StudyPlanDatabase
 import com.mtlc.studyplan.storage.room.TaskLogEntity
+import com.mtlc.studyplan.storage.room.VocabProgressEntity
+import com.mtlc.studyplan.storage.room.VocabSessionEntity
 import com.mtlc.studyplan.PlanDataSource.getAppContext
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
@@ -345,6 +347,42 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
 
         return baseIntervals[newIndex]
     }
+
+    // Save a practice session summary
+    suspend fun savePracticeSession(session: PracticeSessionSummary) {
+        dataStore.edit { preferences ->
+            val cur = preferences[Keys.PRACTICE_SESSIONS] ?: emptySet()
+            preferences[Keys.PRACTICE_SESSIONS] = (cur + encodePracticeSession(session)).toList().takeLast(200).toSet()
+        }
+    }
+
+    private suspend fun migrateTaskLogsIfNeeded() {
+        val prefs = dataStore.data.first()
+        val migrated = prefs[Keys.TASK_LOGS_MIGRATED] ?: false
+        if (migrated) return
+        val raw = prefs[Keys.TASK_LOGS] ?: emptySet()
+        if (raw.isNotEmpty()) {
+            raw.mapNotNull { decodeTaskLog(it) }.forEach { t -> taskLogDao.insert(t.toEntity()) }
+        }
+        dataStore.edit { it[Keys.TASK_LOGS_MIGRATED] = true }
+    }
+
+    private suspend fun migrateVocabularyIfNeeded() {
+        val prefs = dataStore.data.first()
+        val migrated = prefs[booleanPreferencesKey("vocab_migrated")] ?: false
+        if (migrated) return
+        val pRaw = prefs[Keys.VOCABULARY_PROGRESS] ?: emptySet()
+        if (pRaw.isNotEmpty()) {
+            pRaw.mapNotNull { decodeVocabularyProgress(it) }
+                .forEach { vp -> vocabularyDao.upsertProgress(vp.toEntity()) }
+        }
+        val sRaw = prefs[Keys.VOCABULARY_SESSIONS] ?: emptySet()
+        if (sRaw.isNotEmpty()) {
+            sRaw.mapNotNull { decodeVocabularySession(it) }
+                .forEach { vs -> vocabularyDao.insertSession(vs.toEntity()) }
+        }
+        dataStore.edit { it[booleanPreferencesKey("vocab_migrated")] = true }
+    }
 }
 
 // Simple pipe-delimited encode/decode for logs
@@ -391,36 +429,7 @@ private fun decodeVocabularySession(s: String): VocabularySession? = runCatching
     json.decodeFromString<VocabularySession>(s)
 }.getOrNull()
 
-// Room mapping helpers
-private fun TaskLogEntity.toTaskLog(): TaskLog = TaskLog(
-    taskId = taskId,
-    timestampMillis = timestampMillis,
-    minutesSpent = minutesSpent,
-    correct = correct,
-    category = category,
-    pointsEarned = pointsEarned
-)
-
-private fun TaskLog.toEntity(): TaskLogEntity = TaskLogEntity(
-    taskId = taskId,
-    timestampMillis = timestampMillis,
-    minutesSpent = minutesSpent,
-    correct = correct,
-    category = category,
-    pointsEarned = pointsEarned
-)
-
-private suspend fun ProgressRepository.migrateTaskLogsIfNeeded() {
-    val prefs = dataStore.data.first()
-    val migrated = prefs[Keys.TASK_LOGS_MIGRATED] ?: false
-    if (migrated) return
-    val raw = prefs[Keys.TASK_LOGS] ?: emptySet()
-    if (raw.isNotEmpty()) {
-        raw.mapNotNull { decodeTaskLog(it) }
-            .forEach { t -> taskLogDao.insert(t.toEntity()) }
-    }
-    dataStore.edit { it[Keys.TASK_LOGS_MIGRATED] = true }
-}
+// (removed duplicate helpers; see single set below)
 
 // Practice session summary encode/decode
 @kotlinx.serialization.Serializable
@@ -454,17 +463,9 @@ private fun decodePracticeSession(s: String): PracticeSessionSummary? = runCatch
     json.decodeFromString<PracticeSessionSummary>(s)
 }.getOrNull()
 
-// Save a practice session summary
-suspend fun ProgressRepository.savePracticeSession(session: PracticeSessionSummary) {
-    dataStore.edit { preferences ->
-        val cur = preferences[Keys.PRACTICE_SESSIONS] ?: emptySet()
-        preferences[Keys.PRACTICE_SESSIONS] = (cur + encodePracticeSession(session)).toList().takeLast(200).toSet()
-    }
-}
-
 //endregion
 
-// Mapping helpers and migration
+// Mapping helpers and migration (single source of truth)
 private fun TaskLogEntity.toTaskLog(): TaskLog = TaskLog(
     taskId = taskId,
     timestampMillis = timestampMillis,
@@ -525,30 +526,3 @@ private fun VocabularySession.toEntity() = VocabSessionEntity(
     sessionType = sessionType
 )
 
-private suspend fun ProgressRepository.migrateTaskLogsIfNeeded() {
-    val prefs = dataStore.data.first()
-    val migrated = prefs[Keys.TASK_LOGS_MIGRATED] ?: false
-    if (migrated) return
-    val raw = prefs[Keys.TASK_LOGS] ?: emptySet()
-    if (raw.isNotEmpty()) {
-        raw.mapNotNull { decodeTaskLog(it) }.forEach { t -> taskLogDao.insert(t.toEntity()) }
-    }
-    dataStore.edit { it[Keys.TASK_LOGS_MIGRATED] = true }
-}
-
-private suspend fun ProgressRepository.migrateVocabularyIfNeeded() {
-    val prefs = dataStore.data.first()
-    val migrated = prefs[booleanPreferencesKey("vocab_migrated")] ?: false
-    if (migrated) return
-    val pRaw = prefs[Keys.VOCABULARY_PROGRESS] ?: emptySet()
-    if (pRaw.isNotEmpty()) {
-        pRaw.mapNotNull { decodeVocabularyProgress(it) }
-            .forEach { vp -> vocabularyDao.upsertProgress(vp.toEntity()) }
-    }
-    val sRaw = prefs[Keys.VOCABULARY_SESSIONS] ?: emptySet()
-    if (sRaw.isNotEmpty()) {
-        sRaw.mapNotNull { decodeVocabularySession(it) }
-            .forEach { vs -> vocabularyDao.insertSession(vs.toEntity()) }
-    }
-    dataStore.edit { it[booleanPreferencesKey("vocab_migrated")] = true }
-}

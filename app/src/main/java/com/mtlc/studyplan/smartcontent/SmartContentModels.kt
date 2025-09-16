@@ -6,6 +6,7 @@ import com.mtlc.studyplan.questions.SkillCategory
 import com.mtlc.studyplan.reading.ReadingContent
 import com.mtlc.studyplan.reading.TimeSlot
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Contextual
 
 /**
  * Unified Smart Content System Models
@@ -29,8 +30,8 @@ data class DailyContentPack(
     val id: String,
     val date: Long,
     val vocabulary: List<VocabularyItem>,
-    val questions: List<GeneratedQuestion>,
-    val reading: ReadingContent?,
+    val questions: List<@Contextual GeneratedQuestion>,
+    val reading: @Contextual ReadingContent?,
     val recommendedSequence: List<ContentType>,
     val estimatedTotalTime: Int,
     val focusAreas: List<SkillCategory>,
@@ -43,8 +44,8 @@ data class StudySession(
     val id: String,
     val sessionType: SessionType,
     val warmupVocabulary: List<VocabularyItem>,
-    val mainContent: MainContent,
-    val reinforcementQuestions: List<GeneratedQuestion>,
+    val mainContent: @Contextual MainContent,
+    val reinforcementQuestions: List<@Contextual GeneratedQuestion>,
     val cooldownVocabulary: List<VocabularyItem>,
     val sessionGoals: List<String>,
     val estimatedDuration: Int,

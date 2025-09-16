@@ -238,6 +238,7 @@ private fun StreakBackground(
 ) {
     val color = getStreakColor(streakState)
     val isDanger = streakState.isInDanger
+    val errorColor = MaterialTheme.colorScheme.error
 
     Canvas(
         modifier = Modifier
@@ -250,7 +251,7 @@ private fun StreakBackground(
         // Outer glow
         val glowColors = if (isDanger) {
             listOf(
-                MaterialTheme.colorScheme.error.copy(alpha = 0.3f),
+                errorColor.copy(alpha = 0.3f),
                 Color.Transparent
             )
         } else {

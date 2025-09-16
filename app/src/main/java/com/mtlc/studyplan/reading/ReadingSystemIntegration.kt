@@ -11,10 +11,13 @@ import com.mtlc.studyplan.questions.QuestionGenerator
 import com.mtlc.studyplan.questions.GeneratedQuestion
 import com.mtlc.studyplan.questions.SkillCategory
 import com.mtlc.studyplan.storage.room.StudyPlanDatabase
+import com.mtlc.studyplan.storage.room.ReadingSessionEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 import java.util.UUID
 
 /**
@@ -445,7 +448,7 @@ class ReadingSystemIntegration(
     }
     
     private fun encodeComprehensionAnswers(answers: Map<Int, String>): String {
-        return json.encodeToString(Map.serializer(kotlin.serialization.serializers.IntSerializer, kotlin.serialization.serializers.StringSerializer), answers)
+        return Json.encodeToString(answers)
     }
 }
 

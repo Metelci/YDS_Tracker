@@ -208,7 +208,7 @@ class ContentIntelligenceEngine(
         // Calculate new scores using weighted moving average
         val weight = 1f / (existingScore.evaluationCount + 1)
         val newOverallScore = existingScore.overallScore * (1 - weight) + performance.accuracy * weight
-        val newLearningImpact = existingScore.learningImpact * (1 - weight) + performance.accuracy * performance.skillCategory?.let { 1f } ?: 0.8f * weight
+        val newLearningImpact = existingScore.learningImpact * (1 - weight) + performance.accuracy * (performance.skillCategory?.let { 1f } ?: 0.8f) * weight
         val newUserEngagement = existingScore.userEngagement * (1 - weight) + performance.userEngagement * weight
         val newRetentionRate = existingScore.retentionRate * (1 - weight) + calculateRetentionRate(performance) * weight
         val newDifficultyAppropriateness = existingScore.difficultyAppropriateness * (1 - weight) + calculateDifficultyAppropriateness(performance) * weight
@@ -263,7 +263,7 @@ class ContentIntelligenceEngine(
         val recentLogs = progressRepository.taskLogsFlow.first()
             .filter { System.currentTimeMillis() - it.timestampMillis < 7 * 24 * 60 * 60 * 1000 }
 
-        val skillLevel = userProfile.learningSpeed.values.average()
+        val skillLevel = userProfile.learningSpeed.values.average().toFloat()
         val consistency = calculateConsistency(recentLogs)
         val fatigueLevel = calculateFatigueLevel(recentLogs)
         val motivationLevel = userProfile.motivationLevel
@@ -281,7 +281,7 @@ class ContentIntelligenceEngine(
         }
 
         // Use historical performance with user factor adjustments
-        val historicalAverage = historicalPerformance.map { it.accuracy }.average()
+        val historicalAverage = historicalPerformance.map { it.accuracy }.average().toFloat()
         val adjustmentFactor = (userFactors.skillLevel - 0.5f) * 0.2f +
                               (userFactors.consistency - 0.5f) * 0.1f -
                               userFactors.fatigueLevel * 0.15f +
@@ -399,9 +399,9 @@ class ContentIntelligenceEngine(
 
         difficultyLevels.forEach { difficulty ->
             val weight = when {
-                difficulty <= 2 -> 0.2f // Easy content
-                difficulty == 3 -> 0.4f // Medium content (most common)
-                difficulty >= 4 -> 0.4f // Challenging content
+                difficulty <= 2f -> 0.2f // Easy content
+                difficulty == 3f -> 0.4f // Medium content (most common)
+                difficulty >= 4f -> 0.4f // Challenging content
                 else -> 0.1f
             }
             distribution[difficulty] = weight
@@ -571,6 +571,7 @@ class ContentIntelligenceEngine(
         if (userProfile.optimalSessionLength > 30) {
             adjustments.add(PathAdjustment(
                 adjustmentType = AdjustmentType.PACE_ADJUSTMENT,
+                targetSkill = null,
                 description = "Consider shorter, more frequent sessions",
                 expectedImpact = 0.6f,
                 implementationDifficulty = 0.3f

@@ -54,7 +54,7 @@ fun TaskCard(
             }
 
             if (showExpandedDetails) {
-                Divider(Modifier.padding(vertical = 8.dp))
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 Text("Task Details", style = MaterialTheme.typography.labelLarge)
                 task.details?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }

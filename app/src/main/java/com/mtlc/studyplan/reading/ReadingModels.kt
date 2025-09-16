@@ -42,7 +42,7 @@ data class ReadingContent(
     val wordCount: Int,
     val averageSentenceLength: Float,
     val complexityScore: Float, // Calculated complexity metric (0.0 - 1.0)
-    val weekAppropriate: IntRange, // Suitable for which weeks
+    @kotlinx.serialization.Contextual val weekAppropriate: IntRange, // Suitable for which weeks
     val comprehensionQuestions: List<String>? = null, // Optional follow-up questions
     val culturalContext: String? = null, // Cultural appropriateness note
     val sourceType: ContentSourceType = ContentSourceType.CURATED
@@ -181,7 +181,7 @@ data class ContentSequence(
     val title: String,
     val description: String,
     val contentIds: List<String>,
-    val targetWeeks: IntRange,
+    @kotlinx.serialization.Contextual val targetWeeks: IntRange,
     val skillFocus: List<SkillCategory>,
     val difficultyProgression: List<ReadingLevel>,
     val estimatedCompletionTime: Int // total minutes for sequence
