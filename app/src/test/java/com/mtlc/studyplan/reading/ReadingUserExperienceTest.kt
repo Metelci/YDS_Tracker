@@ -23,6 +23,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.ArgumentMatchers.any
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.ByteArrayInputStream
@@ -54,7 +55,7 @@ class ReadingUserExperienceTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         context = ApplicationProvider.getApplicationContext()
-        
+
         // Setup realistic mock data for user experience testing
         setupRealisticMockData()
         
@@ -62,7 +63,14 @@ class ReadingUserExperienceTest {
         readingIntegration = ReadingSystemIntegration(
             context, mockProgressRepository, mockVocabularyManager, mockQuestionGenerator
         )
-        
+
+        contentCurator = ContentCurator(
+            context = context,
+            readingDatabase = emptyList(), // Test with empty database
+            progressTracker = mockProgressRepository,
+            vocabularyManager = mockVocabularyManager
+        )
+
         readingAnalytics = ReadingAnalytics(mockProgressRepository)
     }
 
@@ -103,7 +111,7 @@ class ReadingUserExperienceTest {
         val vocabularyItems = createRealisticVocabularyItems()
         
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(userProgress))
-        `when`(mockVocabularyManager.findByWords(any())).thenReturn(vocabularyItems)
+        `when`(mockVocabularyManager.findByWords(any<Collection<String>>())).thenReturn(vocabularyItems)
         `when`(mockVocabularyManager.getAll()).thenReturn(vocabularyItems)
         
         val testContent = createRealisticReadingContent()
@@ -167,7 +175,7 @@ class ReadingUserExperienceTest {
         val vocabularyItems = createRealisticVocabularyItems()
         
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(userProgress))
-        `when`(mockVocabularyManager.findByWords(any())).thenReturn(vocabularyItems)
+        `when`(mockVocabularyManager.findByWords(any<Collection<String>>())).thenReturn(vocabularyItems)
         `when`(mockVocabularyManager.getAll()).thenReturn(vocabularyItems)
         
         // Create integrated reading session
@@ -216,8 +224,8 @@ class ReadingUserExperienceTest {
         // Test comprehension accuracy tracking
         analytics.trackComprehensionAccuracy("test_content", questionsCorrect = 3, totalQuestions = 4)
         verify(mockProgressRepository).addTaskLog(argThat { 
-            category == "Reading Comprehension" && 
-            pointsEarned == 15 // 3/4 * 20 points
+            it.category == "Reading Comprehension" && 
+            it.pointsEarned == 15 // 3/4 * 20 points
         })
         
         // Test performance improvement tracking
@@ -243,7 +251,7 @@ class ReadingUserExperienceTest {
         
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(userProgress))
         `when`(mockProgressRepository.taskLogsFlow).thenReturn(flowOf(readingLogs))
-        `when`(mockVocabularyManager.findByWords(any())).thenReturn(vocabularyItems)
+        `when`(mockVocabularyManager.findByWords(any<Collection<String>>())).thenReturn(vocabularyItems)
         `when`(mockVocabularyManager.getAll()).thenReturn(vocabularyItems)
         
         // Step 1: Get personalized recommendation
@@ -468,7 +476,7 @@ class ReadingUserExperienceTest {
         return kotlin.math.min(thisWeekLogs.size.toFloat() / 5f, 1f) // Target: 5 readings per week
     }
 
-    private fun setupRealisticMockData() {
+    private fun setupRealisticMockData() = runBlocking {
         // Setup realistic mock returns for user experience testing
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(createRealisticUserProgress()))
         `when`(mockProgressRepository.taskLogsFlow).thenReturn(flowOf(createRealisticTaskLogs()))

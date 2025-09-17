@@ -11,6 +11,7 @@ import com.mtlc.studyplan.questions.SkillCategory
 import com.mtlc.studyplan.questions.VocabularyManager
 import com.mtlc.studyplan.questions.QuestionGenerator
 import com.mtlc.studyplan.storage.room.StudyPlanDatabase
+import com.mtlc.studyplan.data.ReviewDifficulty
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -42,6 +43,9 @@ class ReadingSystemIntegrationTest {
     @Mock
     private lateinit var mockQuestionGenerator: QuestionGenerator
 
+    private lateinit var mockContext: Context
+    private lateinit var mockAssetManager: android.content.res.AssetManager
+
     private lateinit var context: Context
     private lateinit var readingIntegration: ReadingSystemIntegration
     private lateinit var contentCurator: ContentCurator
@@ -51,6 +55,9 @@ class ReadingSystemIntegrationTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         context = ApplicationProvider.getApplicationContext()
+        mockContext = mock(Context::class.java)
+        mockAssetManager = mock(android.content.res.AssetManager::class.java)
+        `when`(mockContext.assets).thenReturn(mockAssetManager)
         
         // Setup mock data
         setupMockData()
@@ -59,7 +66,14 @@ class ReadingSystemIntegrationTest {
         readingIntegration = ReadingSystemIntegration(
             context, mockProgressRepository, mockVocabularyManager, mockQuestionGenerator
         )
-        
+
+        contentCurator = ContentCurator(
+            context = context,
+            readingDatabase = emptyList(), // Test with empty database
+            progressTracker = mockProgressRepository,
+            vocabularyManager = mockVocabularyManager
+        )
+
         readingAnalytics = ReadingAnalytics(mockProgressRepository)
     }
 
@@ -83,11 +97,6 @@ class ReadingSystemIntegrationTest {
             )
         )
         
-        // Create mock context with asset manager
-        val mockContext = mock(Context::class.java)
-        val mockAssetManager = mock(android.content.res.AssetManager::class.java)
-        `when`(mockContext.assets).thenReturn(mockAssetManager)
-        
         val jsonContent = Json.encodeToString(
             kotlinx.serialization.builtins.ListSerializer(ReadingContent.serializer()),
             testReadingContent
@@ -108,7 +117,7 @@ class ReadingSystemIntegrationTest {
         val testContent = createTestReadingContent()
         val testVocabulary = createTestVocabulary()
         
-        `when`(mockVocabularyManager.findByWords(any())).thenReturn(testVocabulary)
+        `when`(mockVocabularyManager.findByWords(any<Collection<String>>())).thenReturn(testVocabulary)
         `when`(mockVocabularyManager.getAll()).thenReturn(testVocabulary)
         
         val curator = ContentCurator(context, listOf(testContent), mockProgressRepository, mockVocabularyManager)
@@ -146,7 +155,7 @@ class ReadingSystemIntegrationTest {
         val testContent = createTestReadingContent()
         val testVocabulary = createTestVocabulary()
         
-        `when`(mockVocabularyManager.findByWords(any())).thenReturn(testVocabulary)
+        `when`(mockVocabularyManager.findByWords(any<Collection<String>>())).thenReturn(testVocabulary)
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(createTestUserProgress()))
         `when`(mockProgressRepository.taskLogsFlow).thenReturn(flowOf(createTestTaskLogs()))
         
@@ -192,7 +201,7 @@ class ReadingSystemIntegrationTest {
             eq("comprehension"),
             eq(false), // looked up = incorrect initially
             eq(5000L),
-            any()
+            any<ReviewDifficulty>()
         )
     }
 
@@ -359,6 +368,5 @@ class ReadingSystemIntegrationTest {
         // Setup common mock returns
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(createTestUserProgress()))
         `when`(mockProgressRepository.taskLogsFlow).thenReturn(flowOf(createTestTaskLogs()))
-        `when`(mockVocabularyManager.getAll()).thenReturn(emptyList())
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:title="@string/search_settings"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_export_settings"
+        android:title="@string/export_settings"
+        android:icon="@drawable/ic_file_export"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_import_settings"
+        android:title="@string/import_settings"
+        android:icon="@drawable/ic_file_import"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_reset_all"
+        android:title="@string/reset_all_settings"
+        android:icon="@drawable/ic_restore"
+        app:showAsAction="never" />
+
+</menu>

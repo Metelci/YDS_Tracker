@@ -58,6 +58,12 @@ fun ReadingScreen(
     LaunchedEffect(Unit) {
         viewModel.loadReadingData()
     }
+
+    LaunchedEffect(uiState.activeSession?.content?.id, uiState.activeSession?.startTime) {
+        val session = uiState.activeSession ?: return@LaunchedEffect
+        onNavigateToSession(session.content.id)
+        viewModel.clearActiveSession()
+    }
     
     Scaffold(
         topBar = {
@@ -93,8 +99,6 @@ fun ReadingScreen(
             }
             
             item {
-                val uiState by viewModel.uiState.collectAsState()
-
                 // Show error if any
                 uiState.error?.let { error ->
                     Card(
@@ -114,24 +118,12 @@ fun ReadingScreen(
                 QuickActionButtons(
                     onStartQuickRead = {
                         viewModel.startQuickReading()
-                        // Navigate to session if successful
-                        uiState.activeSession?.let { session ->
-                            onNavigateToSession(session.content.id)
-                        }
                     },
                     onStartVocabFocus = {
                         viewModel.startVocabularyFocusedReading()
-                        // Navigate to session if successful
-                        uiState.activeSession?.let { session ->
-                            onNavigateToSession(session.content.id)
-                        }
                     },
                     onStartComprehension = {
                         viewModel.startComprehensionReading()
-                        // Navigate to session if successful
-                        uiState.activeSession?.let { session ->
-                            onNavigateToSession(session.content.id)
-                        }
                     },
                     isLoading = uiState.isLoading
                 )
@@ -493,6 +485,7 @@ class ReadingScreenViewModel(
     
     fun startQuickReading() {
         viewModelScope.launch {
+            _uiState.update { it.copy(error = null) }
             try {
                 readingIntegration?.let { integration ->
                     // Get quick reading content (5-10 minute sessions)
@@ -520,6 +513,7 @@ class ReadingScreenViewModel(
 
     fun startVocabularyFocusedReading() {
         viewModelScope.launch {
+            _uiState.update { it.copy(error = null) }
             try {
                 readingIntegration?.let { integration ->
                     // Get vocabulary-focused content
@@ -547,6 +541,7 @@ class ReadingScreenViewModel(
 
     fun startComprehensionReading() {
         viewModelScope.launch {
+            _uiState.update { it.copy(error = null) }
             try {
                 readingIntegration?.let { integration ->
                     // Get comprehension-focused content with questions
@@ -571,6 +566,10 @@ class ReadingScreenViewModel(
             }
         }
     }
+    fun clearActiveSession() {
+        _uiState.update { it.copy(activeSession = null) }
+    }
+
     
     private fun calculateCurrentWeek(completedTasks: Int): Int {
         return kotlin.math.min(kotlin.math.max(completedTasks / 10, 1), 30)

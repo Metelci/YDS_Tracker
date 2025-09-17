@@ -312,4 +312,82 @@
     <!-- Privacy Options -->
     <string name="include_name">Include student name</string>
     <string name="privacy_protected_report">Name will not be included for privacy</string>
+
+    <!-- Bottom Navigation (Default English) -->
+    <string name="nav_home">Home</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_social">Social</string>
+    <string name="nav_settings">Settings</string>
+    <!-- Social Hub Lovable redesign -->
+    <string name="social_tab_profile">Profile</string>
+    <string name="social_tab_ranks">Ranks</string>
+    <string name="social_tab_groups">Groups</string>
+    <string name="social_tab_friends">Friends</string>
+    <string name="social_tab_awards">Awards</string>
+    <string name="social_hub_title">Social Hub</string>
+    <string name="social_invite_friends">Invite Friends</string>
+    <string name="social_invite_stub">Sharing coming soon</string>
+    <string name="social_privacy_banner_title">Privacy First</string>
+    <string name="social_privacy_banner_body">Your real identity is never shared. Only your chosen username and avatar are visible to others.</string>
+    <string name="social_profile_title">Your Profile</string>
+    <string name="social_copy_username_cd">Copy username</string>
+    <string name="social_username_hint">This is how others will see you (3-20 characters)</string>
+    <string name="social_choose_avatar">Choose Your Avatar</string>
+    <string name="social_upload_avatar">Upload Custom Avatar</string>
+    <string name="social_study_level">Study Level: %1$s</string>
+    <string name="social_weekly_goal_title">Weekly Study Goal</string>
+    <string name="social_goal_hours_label">Study hours per week</string>
+    <string name="social_goal_hours_value">%1$d h</string>
+    <string name="social_goal_label_casual">%1$d h (Casual)</string>
+    <string name="social_goal_label_balanced">%1$d h (Balanced)</string>
+    <string name="social_goal_label_intensive">%1$d h (Intensive)</string>
+    <string name="social_goal_daily_target">%1$d min daily target</string>
+    <string name="social_goal_monthly_target">%1$d h monthly goal</string>
+    <string name="social_goal_cancel">Cancel</string>
+    <string name="social_goal_save">Save Goal</string>
+    <string name="social_goal_updated">Weekly goal updated to %1$d hours</string>
+    <string name="social_privacy_settings_title">Privacy &amp; Settings</string>
+    <string name="social_privacy_settings_body">More privacy controls are on the way.</string>
+    <string name="social_study_groups_title">Study Groups</string>
+    <string name="social_create_group">Create Group</string>
+    <string name="social_members_label">members</string>
+    <string name="social_join">Join</string>
+    <string name="social_leave">Leave</string>
+    <string name="social_join_chat_cd">Toggle membership for %1$s</string>
+    <string name="social_share_group_cd">Share %1$s group</string>
+    <string name="social_joined_group">Joined %1$s</string>
+    <string name="social_left_group">Left %1$s</string>
+    <string name="social_shared_group">Share link sent for %1$s</string>
+    <string name="social_create_group_stub">Group creation is coming soon</string>
+    <string name="social_study_buddies_title">Study Buddies</string>
+    <string name="social_add_friend">Add Friend</string>
+    <string name="social_friend_streak">%1$d streak</string>
+    <string name="social_status_online">Online</string>
+    <string name="social_status_offline">Offline</string>
+    <string name="social_status_studying">Studying</string>
+    <string name="social_friend_profile_stub">Profile for %1$s opens soon</string>
+    <string name="social_add_friend_stub">Friend invitations coming soon</string>
+    <string name="social_achievements_title">Community Achievements</string>
+    <string name="social_award_icon_cd">Badge for %1$s</string>
+    <string name="social_unlocked_by">Unlocked by:</string>
+    <string name="social_rarity_rare">Rare</string>
+    <string name="social_rarity_epic">Epic</string>
+    <string name="social_rarity_legendary">Legendary</string>
+    <string name="social_weekly_leaderboard">Weekly Leaderboard</string>
+    <string name="social_rank_number">#%1$d</string>
+    <string name="social_leaderboard_streak">%1$d day streak</string>
+    <string name="social_points_suffix">points</string>
+    <string name="social_stat_rank">Your Rank</string>
+    <string name="social_stat_score">Your Score</string>
+    <string name="social_stat_streak">Day Streak</string>
+
+    <!-- Settings strings -->
+    <string name="expand_selection">Expand selection</string>
+    <string name="settings_category_description">%1$s: %2$s</string>
+    <string name="category_active">Active</string>
+    <string name="search_settings">Search settings</string>
+    <string name="export_settings">Export settings</string>
+    <string name="import_settings">Import settings</string>
+    <string name="reset_all_settings">Reset all settings</string>
 </resources>

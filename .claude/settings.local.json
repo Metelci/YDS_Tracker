@@ -18,7 +18,8 @@
       "Bash(python:*)",
       "Bash(.\\gradlew.bat:*)",
       "Bash(gradlew.bat:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(.\\gradlew.bat build:*)"
     ],
     "deny": [],
     "ask": []

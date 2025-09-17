@@ -55,7 +55,9 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
             lastCompletionDate = preferences[Keys.LAST_COMPLETION_DATE] ?: 0L,
             unlockedAchievements = preferences[Keys.UNLOCKED_ACHIEVEMENTS] ?: emptySet(),
             totalPoints = preferences[Keys.TOTAL_POINTS] ?: 0,
-            currentStreakMultiplier = StreakMultiplier.getMultiplierForStreak(streakCount).multiplier
+            currentStreakMultiplier = StreakMultiplier.getMultiplierForStreak(streakCount).multiplier,
+            dayProgress = emptyList(),
+            totalXp = preferences[Keys.TOTAL_POINTS] ?: 0
         )
     }
 
@@ -93,7 +95,8 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
             preferences[Keys.STREAK_COUNT] = progress.streakCount
             preferences[Keys.LAST_COMPLETION_DATE] = progress.lastCompletionDate
             preferences[Keys.UNLOCKED_ACHIEVEMENTS] = progress.unlockedAchievements
-            preferences[Keys.TOTAL_POINTS] = progress.totalPoints
+            val storedPoints = maxOf(progress.totalPoints, progress.totalXp)
+            preferences[Keys.TOTAL_POINTS] = storedPoints
             preferences[Keys.CURRENT_STREAK_MULTIPLIER] = progress.currentStreakMultiplier
         }
     }
@@ -168,6 +171,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
 
         return progress.copy(
             totalPoints = progress.totalPoints + pointsEarned,
+            totalXp = progress.totalXp + pointsEarned,
             streakCount = newStreakCount,
             lastCompletionDate = now,
             currentStreakMultiplier = newMultiplier

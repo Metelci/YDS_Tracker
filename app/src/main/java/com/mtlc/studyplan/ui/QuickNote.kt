@@ -41,58 +41,10 @@ fun QuickNoteRoute(onClose: () -> Unit) {
 
 @Composable
 fun SettingsScreen() {
-    val context = LocalContext.current
-    val appContext = context.applicationContext
-    val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
-    val cfg by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
-    var showPlanSettings by remember { mutableStateOf(false) }
-    var lastSaved by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
-    Scaffold(topBar = { TopAppBar(title = { Text("Settings") }) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("Plan settings and preferences")
-            Button(onClick = { showPlanSettings = true }) { Text(text = androidx.compose.ui.res.stringResource(id = com.mtlc.studyplan.R.string.open_plan_settings)) }
-            lastSaved?.let { Text("Last note saved: $it") }
-            Text("Notes are stored locally; more settings can be added here.")
-        }
-    }
-
-    if (showPlanSettings) {
-        com.mtlc.studyplan.ui.PlanSettingsDialog(
-            startEpochDay = cfg.startEpochDay,
-            totalWeeks = cfg.totalWeeks,
-            endEpochDay = cfg.endEpochDay,
-            totalMonths = cfg.totalMonths,
-            monMinutes = cfg.monMinutes,
-            tueMinutes = cfg.tueMinutes,
-            wedMinutes = cfg.wedMinutes,
-            thuMinutes = cfg.thuMinutes,
-            friMinutes = cfg.friMinutes,
-            satMinutes = cfg.satMinutes,
-            sunMinutes = cfg.sunMinutes,
-            dateFormatPattern = cfg.dateFormatPattern,
-            onDismiss = { showPlanSettings = false },
-            onSave = { startEpochDay, weeks, endEpochDay, totalMonths, mon, tue, wed, thu, fri, sat, sun, pattern ->
-                scope.launch {
-                    settingsStore.update {
-                        it.copy(
-                            startEpochDay = startEpochDay,
-                            totalWeeks = weeks,
-                            endEpochDay = endEpochDay,
-                            totalMonths = totalMonths,
-                            monMinutes = mon,
-                            tueMinutes = tue,
-                            wedMinutes = wed,
-                            thuMinutes = thu,
-                            friMinutes = fri,
-                            satMinutes = sat,
-                            sunMinutes = sun,
-                            dateFormatPattern = pattern,
-                        )
-                    }
-                }
-                showPlanSettings = false
-            }
-        )
-    }
+    // This function is kept for backward compatibility
+    // The actual settings navigation is now handled in AppNavHost.kt
+    Text(
+        text = "Settings screen moved to new architecture",
+        modifier = Modifier.padding(16.dp)
+    )
 }

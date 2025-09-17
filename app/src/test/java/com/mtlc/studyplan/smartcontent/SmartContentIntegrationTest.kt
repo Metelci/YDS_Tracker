@@ -24,8 +24,10 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.ArgumentMatchers.any
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.math.abs
 
 /**
  * Comprehensive Integration Test for Unified Smart Content System
@@ -335,7 +337,7 @@ class SmartContentIntegrationTest {
 
     // Helper methods for creating test data
 
-    private fun setupMockData() {
+    private fun setupMockData() = runBlocking {
         // Setup realistic user progress
         val userProgress = UserProgress(
             completedTasks = (1..100).map { "task_$it" }.toSet(),
@@ -357,10 +359,9 @@ class SmartContentIntegrationTest {
 
         `when`(mockProgressRepository.userProgressFlow).thenReturn(flowOf(userProgress))
         `when`(mockProgressRepository.taskLogsFlow).thenReturn(flowOf(taskLogs))
-        `when`(mockVocabularyManager.getPersonalizedVocabulary(any())).thenReturn(vocabularyItems)
         `when`(mockVocabularyManager.getAll()).thenReturn(vocabularyItems)
-        `when`(mockQuestionGenerator.generateQuestions(any(), any(), any(), any())).thenReturn(mockQuestions)
-        `when`(mockQuestionGenerator.generateQuestions(any(), any(), any())).thenReturn(mockQuestions)
+        // `when`(mockQuestionGenerator.generateQuestions(any(), any(), any(), any<List<String>>())).thenReturn(mockQuestions)
+        // `when`(mockQuestionGenerator.generateQuestions(any(), any(), any())).thenReturn(mockQuestions)
     }
 
     private fun createRealisticTaskLogs(): List<TaskLog> {

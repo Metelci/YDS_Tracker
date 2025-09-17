@@ -24,5 +24,12 @@
         <item quantity="one">%d gun</item>
         <item quantity="other">%d gun</item>
     </plurals>
+
+    <!-- Bottom Navigation (Turkish) -->
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_tasks">Görevler</string>
+    <string name="nav_progress">İlerleme</string>
+    <string name="nav_social">Sosyal</string>
+    <string name="nav_settings">Ayarlar</string>
 </resources>
 

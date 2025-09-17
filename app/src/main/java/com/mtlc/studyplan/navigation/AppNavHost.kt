@@ -26,10 +26,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.res.stringResource
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
@@ -83,11 +85,11 @@ fun AppNavHost() {
         try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
     }
     val tabs = listOf(
-        Triple("home", Icons.Filled.Home, "Ana Sayfa"),
-        Triple("tasks", Icons.AutoMirrored.Filled.ListAlt, "Görevler"),
-        Triple("progress", Icons.AutoMirrored.Filled.ShowChart, "İlerleme"),
-        Triple("social", Icons.Filled.People, "Sosyal"),
-        Triple("settings", Icons.Filled.Settings, "Ayarlar"),
+        Triple("home", Icons.Filled.Home, stringResource(R.string.nav_home)),
+        Triple("tasks", Icons.Filled.CheckCircle, stringResource(R.string.nav_tasks)),
+        Triple("progress", Icons.AutoMirrored.Filled.TrendingUp, stringResource(R.string.nav_progress)),
+        Triple("social", Icons.Filled.People, stringResource(R.string.nav_social)),
+        Triple("settings", Icons.Filled.Settings, stringResource(R.string.nav_settings)),
     )
     Scaffold(
         bottomBar = {
@@ -231,7 +233,7 @@ fun AppNavHost() {
             }
         }
 
-        // Tasks tab -> full plan
+        // Tasks tab -> new tasks screen
         composable(
             "tasks",
             enterTransition = {
@@ -252,7 +254,7 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "tasks_animation"
             ) { _ ->
-                com.mtlc.studyplan.PlanScreen()
+                com.mtlc.studyplan.feature.tasks.TasksScreen()
             }
         }
 
@@ -436,7 +438,7 @@ fun AppNavHost() {
             }
         }
 
-        // Settings placeholder
+        // Settings main screen
         composable(
             "settings",
             enterTransition = {
@@ -457,8 +459,50 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "settings_animation"
             ) { _ ->
-                com.mtlc.studyplan.ui.SettingsScreen()
+                com.mtlc.studyplan.settings.ui.SettingsScreen(
+                    onNavigateToCategory = { route ->
+                        navController.navigate(route)
+                    },
+                    onBack = { navController.popBackStack() }
+                )
             }
+        }
+
+        // Settings category screens
+        composable("settings/privacy") {
+            com.mtlc.studyplan.settings.ui.PrivacySettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings/notifications") {
+            com.mtlc.studyplan.settings.ui.NotificationSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings/tasks") {
+            com.mtlc.studyplan.settings.ui.TaskSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings/navigation") {
+            com.mtlc.studyplan.settings.ui.NavigationSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings/gamification") {
+            com.mtlc.studyplan.settings.ui.GamificationSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings/social") {
+            com.mtlc.studyplan.settings.ui.SocialSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
         // Mock exam start route
         composable("mock/start") {

@@ -6,6 +6,11 @@ import kotlinx.serialization.Serializable
 data class Task(val id: String, val desc: String, val details: String? = null)
 data class DayPlan(val day: String, val tasks: List<Task>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
+data class DayProgress(
+    val weekIndex: Int,
+    val dayIndex: Int,
+    val completedTasks: Set<String> = emptySet()
+)
 data class Achievement(val id: String, val title: String, val description: String, val condition: (UserProgress) -> Boolean)
 data class ExamInfo(val name: String, val applicationStart: java.time.LocalDate, val applicationEnd: java.time.LocalDate, val examDate: java.time.LocalDate)
 data class UserProgress(
@@ -15,6 +20,9 @@ data class UserProgress(
     val unlockedAchievements: Set<String> = emptySet(),
     val totalPoints: Int = 0, // New field for total points earned
     val currentStreakMultiplier: Float = 1f, // Current multiplier based on streak
+    val dayProgress: List<DayProgress> = emptyList(),
+    val skippedDays: Set<String> = emptySet(),
+    val totalXp: Int = totalPoints
 )
 
 data class TaskLog(

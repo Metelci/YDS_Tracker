@@ -1,20 +1,30 @@
 package com.mtlc.studyplan.ui.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,88 +42,66 @@ fun StudyBottomNav(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
         color = DesignTokens.Surface,
+        contentColor = DesignTokens.Foreground,
         shadowElevation = 8.dp
     ) {
-        NavigationBar(
-            containerColor = DesignTokens.Surface,
-            contentColor = DesignTokens.Foreground,
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             tabs.forEach { (route, icon, label) ->
                 val isSelected = currentRoute.startsWith(route)
-
-                // Enhanced selection animation
-                val selectionScale by animateFloatAsState(
-                    targetValue = if (isSelected) 1.05f else 1f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    ),
-                    label = "navigation_selection_scale"
+                val background by animateColorAsState(
+                    targetValue = if (isSelected) DesignTokens.PrimaryContainer else Color.Transparent,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "bottom_nav_background"
                 )
-
-                // Color transition for icon
-                val iconColor by animateColorAsState(
+                val iconTint by animateColorAsState(
                     targetValue = if (isSelected) DesignTokens.Primary else DesignTokens.MutedForeground,
-                    animationSpec = tween(durationMillis = 300),
-                    label = "navigation_icon_color"
+                    animationSpec = tween(durationMillis = 200),
+                    label = "bottom_nav_icon"
+                )
+                val labelTint by animateColorAsState(
+                    targetValue = if (isSelected) DesignTokens.PrimaryContainerForeground else DesignTokens.MutedForeground,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "bottom_nav_label"
                 )
 
-                // Label color transition
-                val labelColor by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.Primary else DesignTokens.MutedForeground,
-                    animationSpec = tween(durationMillis = 300),
-                    label = "navigation_label_color"
-                )
-
-                NavigationBarItem(
-                    selected = isSelected,
-                    onClick = { onTabSelected(route) },
-                    icon = {
-                        Box {
-                            // Active indicator background
-                            if (isSelected) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(DesignTokens.PrimaryContainer.copy(alpha = 0.3f))
-                                        .scale(selectionScale)
-                                )
-                            }
-
-                            // Icon with enhanced animations
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = label,
-                                tint = iconColor,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .align(Alignment.Center)
-                                    .scale(selectionScale)
-                            )
-                        }
-                    },
-                    label = {
-                        Text(
-                            text = label,
-                            color = labelColor,
-                            fontSize = 12.sp,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            fontFamily = StudyPlanFontFamily,
-                            modifier = Modifier.scale(if (isSelected) 1.05f else 1f)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(background)
+                        .selectable(
+                            selected = isSelected,
+                            onClick = { onTabSelected(route) },
+                            role = Role.Tab
                         )
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = DesignTokens.Primary,
-                        unselectedIconColor = DesignTokens.MutedForeground,
-                        selectedTextColor = DesignTokens.Primary,
-                        unselectedTextColor = DesignTokens.MutedForeground,
-                        indicatorColor = DesignTokens.PrimaryContainer.copy(alpha = 0.12f)
+                        .padding(vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        tint = iconTint,
+                        modifier = Modifier.size(24.dp)
                     )
-                )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = label,
+                        color = labelTint,
+                        fontSize = 11.sp,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                        fontFamily = StudyPlanFontFamily
+                    )
+                }
             }
         }
     }
