@@ -1,26 +1,56 @@
 package com.mtlc.studyplan.ui.animations
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.runtime.*
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.draw.scale
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -423,7 +453,7 @@ object StudyPlanMicroInteractions {
         onSwipeProgress: ((Float) -> Unit)? = null
     ): Modifier = composed {
         val haptics = LocalHapticFeedback.current
-        var swipeOffset by remember { mutableStateOf(0f) }
+        var swipeOffset by remember { mutableFloatStateOf(0f) }
         var isThresholdReached by remember { mutableStateOf(false) }
 
         val animatedOffset by animateFloatAsState(
@@ -492,9 +522,9 @@ object StudyPlanMicroInteractions {
         )
 
         return if (isLoading && !isReducedMotionEnabled()) {
-            derivedStateOf { scale }
+            remember(scale) { derivedStateOf { scale } }
         } else {
-            derivedStateOf { baseScale }
+            remember(baseScale) { derivedStateOf { baseScale } }
         }
     }
 }
@@ -531,7 +561,7 @@ object GestureEnhancements {
         threshold: Float = 200f,
         content: @Composable (swipeProgress: Float) -> Unit
     ) {
-        var swipeProgress by remember { mutableStateOf(0f) }
+        var swipeProgress by remember { mutableFloatStateOf(0f) }
         val haptics = LocalHapticFeedback.current
 
         Card(
@@ -585,7 +615,7 @@ object StateAnimations {
         onMilestone: ((Int) -> Unit)? = null
     ): State<Int> {
         val haptics = LocalHapticFeedback.current
-        val previousCount = remember { mutableStateOf(streakCount) }
+        val previousCount = remember { mutableIntStateOf(streakCount) }
 
         val animatedCount = StudyPlanMicroInteractions.animatedCounter(
             targetValue = streakCount,
@@ -637,7 +667,7 @@ object StateAnimations {
             }
         }
 
-        return derivedStateOf { scale }
+        return remember { derivedStateOf { scale } }
     }
 }
 
