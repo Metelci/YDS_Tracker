@@ -14,7 +14,7 @@ data class TaskEntity(
     val description: String,
     val category: TaskCategory,
     val priority: TaskPriority,
-    val difficulty: TaskDifficulty,
+    val difficulty: TaskDifficulty = TaskDifficulty.MEDIUM,
     val estimatedMinutes: Int,
     val actualMinutes: Int = 0,
     val isCompleted: Boolean = false,

@@ -3,8 +3,8 @@ package com.mtlc.studyplan.data
 
 import kotlinx.serialization.Serializable
 
-data class Task(val id: String, val desc: String, val details: String? = null)
-data class DayPlan(val day: String, val tasks: List<Task>)
+data class PlanTask(val id: String, val desc: String, val details: String? = null)
+data class DayPlan(val day: String, val tasks: List<PlanTask>)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
 data class DayProgress(
     val weekIndex: Int,

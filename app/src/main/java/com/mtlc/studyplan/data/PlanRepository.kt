@@ -56,7 +56,7 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
                 if (o?.hidden == true) {
                     null
                 } else {
-                    Task(
+                    PlanTask(
                         id = t.id,
                         desc = o?.customDesc ?: t.desc,
                         details = o?.customDetails ?: t.details
@@ -69,7 +69,7 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
                 ?.added
                 .orEmpty()
                 .map { ct ->
-                    Task(
+                    PlanTask(
                         id = "custom-w${week.week}-d$dayIndex-${ct.idSuffix}",
                         desc = ct.desc,
                         details = ct.details
@@ -87,7 +87,7 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
     if (base.isEmpty()) return emptyList()
 
     val lastIdx = base.size - 1
-    val ctx = com.mtlc.studyplan.PlanDataSource.getAppContext()
+    val ctx = PlanDataSource.getAppContext()
 
     fun phaseLabelForIndex(i: Int): String {
         return when {
@@ -114,7 +114,7 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
 
         val days = baseWeek.days.mapIndexed { dayIdx, day ->
             DayPlan(day = day.day, tasks = day.tasks.map { t ->
-                Task(id = remapId(t.id, weekNum), desc = t.desc, details = t.details)
+                PlanTask(id = remapId(t.id, weekNum), desc = t.desc, details = t.details)
             })
         }
         WeekPlan(week = weekNum, month = monthNum, title = title, days = days)
@@ -189,7 +189,7 @@ private fun applyAvailability(plan: List<WeekPlan>, cfg: PlanDurationSettings): 
         else -> cfg.sunMinutes
     }.coerceAtLeast(0)
 
-    fun taskPriority(t: Task): Int {
+    fun taskPriority(t: PlanTask): Int {
         val d = (t.desc + " " + (t.details ?: "")).lowercase()
         return when {
             // High-yield: reading, vocab, full or mini exams
@@ -199,7 +199,7 @@ private fun applyAvailability(plan: List<WeekPlan>, cfg: PlanDurationSettings): 
         }
     }
 
-    fun estimateDurationMinutes(t: Task): Int {
+    fun estimateDurationMinutes(t: PlanTask): Int {
         val s = (t.desc + " " + (t.details ?: "")).lowercase()
         // Parse explicit minutes like "180 dakika", "60-75 dk", "60 dk"
         Regex("(\\d{2,3})\\s*(-\\s*(\\d{2,3}))?\\s*(dk|dakika|minute|min)").find(s)?.let { m ->
@@ -224,14 +224,14 @@ private fun applyAvailability(plan: List<WeekPlan>, cfg: PlanDurationSettings): 
     fun packWeek(week: WeekPlan): WeekPlan {
         if (week.days.isEmpty()) return week
         // Create a queue of tasks preserving original intra-week order
-        val taskQueue = ArrayDeque<Task>()
+        val taskQueue = ArrayDeque<PlanTask>()
         week.days.forEach { day -> day.tasks.forEach { taskQueue.addLast(it) } }
 
         val newDays = week.days.mapIndexed { idx, day ->
             var remaining = budgetForDayIndex(dayIndexByName(day.day))
             if (remaining <= 0) return@mapIndexed DayPlan(day.day, emptyList())
 
-            val assigned = mutableListOf<Task>()
+            val assigned = mutableListOf<PlanTask>()
 
             // try to fill with tasks in order; look ahead for a candidate that fits if head doesn't fit
             while (remaining > 0 && taskQueue.isNotEmpty()) {
@@ -268,14 +268,14 @@ private fun applyAvailability(plan: List<WeekPlan>, cfg: PlanDurationSettings): 
                     // Remove at candidateIndex
                     val iter = taskQueue.iterator()
                     var i = 0
-                    var chosen: Task? = null
+                    var chosen: PlanTask? = null
                     while (iter.hasNext()) {
                         val t = iter.next()
                         if (i == candidateIndex) { chosen = t; iter.remove(); break }
                         i++
                     }
                     if (chosen != null) {
-                        assigned += chosen!!
+                        assigned += chosen
                         remaining -= candidateDuration
                     } else break
                 } else {

@@ -10,20 +10,38 @@ data class Task(
     val id: String = UUID.randomUUID().toString(),
     val title: String,
     val description: String = "",
-    val isCompleted: Boolean = false,
-    val priority: TaskPriority = TaskPriority.MEDIUM,
     val category: String = "General",
+    val priority: TaskPriority = TaskPriority.MEDIUM,
     val dueDate: Long? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val completedAt: Long? = null,
-    val estimatedTime: Int? = null, // minutes
-    val tags: List<String> = emptyList()
-)
+    val isCompleted: Boolean = false,
+    val estimatedMinutes: Int = 30,
+    val estimatedTime: Int = estimatedMinutes,
+    val actualMinutes: Int? = null,
+    val tags: List<String> = emptyList(),
+    val streakContribution: Boolean = true,
+    val pointsValue: Int = 10
+) {
+    val desc: String get() = title
+    val details: String? get() = description.takeIf { it.isNotBlank() }
+
+    constructor(
+        id: String,
+        desc: String,
+        details: String? = null
+    ) : this(
+        id = id,
+        title = desc,
+        description = details ?: ""
+    )
+}
 
 enum class TaskPriority(val displayName: String, val color: Long) {
     LOW("Low", 0xFF4CAF50),
     MEDIUM("Medium", 0xFFFF9800),
-    HIGH("High", 0xFFE53E3E)
+    HIGH("High", 0xFFE53E3E),
+    CRITICAL("Critical", 0xFFB71C1C)
 }
 
 data class TaskStats(
@@ -51,39 +69,5 @@ data class StudyStreak(
         return lastCompletionDate?.let {
             today - it < oneDayMs
         } ?: false
-    }
-}
-
-data class Achievement(
-    val id: String,
-    val title: String,
-    val description: String,
-    val icon: String,
-    val unlockedAt: Long? = null,
-    val isUnlocked: Boolean = false
-) {
-    companion object {
-        val EARLY_BIRD = Achievement(
-            id = "early_bird",
-            title = "Early Bird",
-            description = "Complete 5 tasks before 9 AM",
-            icon = "🌅"
-        )
-
-        val STREAK_MASTER = Achievement(
-            id = "streak_master",
-            title = "Streak Master",
-            description = "Maintain a 7-day study streak",
-            icon = "🔥"
-        )
-
-        val TASK_CRUSHER = Achievement(
-            id = "task_crusher",
-            title = "Task Crusher",
-            description = "Complete 50 tasks",
-            icon = "💪"
-        )
-
-        val ALL_ACHIEVEMENTS = listOf(EARLY_BIRD, STREAK_MASTER, TASK_CRUSHER)
     }
 }

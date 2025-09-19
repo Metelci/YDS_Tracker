@@ -44,8 +44,8 @@
 
     <!-- Backup Results -->
     <string name="export_success">Settings exported successfully</string>
-    <string name="import_success_format">Imported %d settings with %d conflicts</string>
-    <string name="sync_success_format">Synced %d settings, resolved %d conflicts</string>
+    <string name="import_success_format" formatted="false">Imported %d settings with %d conflicts</string>
+    <string name="sync_success_format" formatted="false">Synced %d settings, resolved %d conflicts</string>
 
     <!-- Import Conflicts -->
     <string name="import_conflicts_title">Import Conflicts Detected</string>
@@ -143,12 +143,12 @@
     <string name="validation_min_length">Must be at least %d characters</string>
     <string name="validation_max_length">Must be at most %d characters</string>
     <string name="validation_invalid_email">Invalid email format</string>
-    <string name="validation_out_of_range">Value must be between %s and %s</string>
+    <string name="validation_out_of_range" formatted="false">Value must be between %s and %s</string>
 
     <!-- Accessibility Announcements -->
     <string name="announce_setting_enabled">%s enabled</string>
     <string name="announce_setting_disabled">%s disabled</string>
-    <string name="announce_setting_changed">%s changed to %s</string>
+    <string name="announce_setting_changed" formatted="false">%s changed to %s</string>
     <string name="announce_search_results">%d search results found</string>
     <string name="announce_backup_complete">Backup completed</string>
     <string name="announce_import_complete">Import completed</string>
@@ -187,8 +187,8 @@
 
     <!-- Conflict Resolution -->
     <string name="conflict_resolution_title">Resolve Setting Conflicts</string>
-    <string name="conflict_stats_format">%d of %d conflicts resolved</string>
-    <string name="resolution_summary_format">Keep Current: %d • Use Backup: %d • Manual Review: %d</string>
+    <string name="conflict_stats_format" formatted="false">%d of %d conflicts resolved</string>
+    <string name="resolution_summary_format" formatted="false">Keep Current: %d • Use Backup: %d • Manual Review: %d</string>
 
     <string name="apply_current_values_title">Apply All Current Values</string>
     <string name="apply_current_values_message">This will keep all your current settings and ignore the backup values. Are you sure?</string>

@@ -12,6 +12,7 @@ import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
 import com.mtlc.studyplan.data.DayPlan
 import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.PlanTask
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -441,7 +442,7 @@ class CalendarSync(
     /**
      * Estimate task duration in minutes
      */
-    private fun estimateTaskDuration(task: Task): Int {
+    private fun estimateTaskDuration(task: PlanTask): Int {
         // Simple heuristic based on task description keywords
         val description = task.desc.lowercase() + " " + (task.details?.lowercase() ?: "")
         

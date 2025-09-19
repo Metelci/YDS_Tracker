@@ -17,7 +17,7 @@ import com.mtlc.studyplan.storage.room.StudyPlanDatabase
 import com.mtlc.studyplan.storage.room.TaskLogEntity
 import com.mtlc.studyplan.storage.room.VocabProgressEntity
 import com.mtlc.studyplan.storage.room.VocabSessionEntity
-import com.mtlc.studyplan.PlanDataSource.getAppContext
+import com.mtlc.studyplan.data.PlanDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
@@ -61,7 +61,7 @@ class ProgressRepository(private val dataStore: DataStore<Preferences>) {
         )
     }
 
-    private val db by lazy { StudyPlanDatabase.get(getAppContext()) }
+    private val db by lazy { StudyPlanDatabase.get(PlanDataSource.getAppContext()) }
     private val taskLogDao by lazy { db.taskLogDao() }
 
     val taskLogsFlow: Flow<List<TaskLog>> = taskLogDao

@@ -12,11 +12,14 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mtlc.studyplan.gamification.GamificationTaskResult
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.shared.Achievement
+import com.mtlc.studyplan.gamification.AdvancedAchievement
+import kotlin.text.StringBuilder
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -32,11 +35,11 @@ class AnimationManager(private val context: Context) {
     // Task completion animations
     fun animateTaskCompletion(
         taskView: View,
+        result: GamificationTaskResult? = null,
         onAnimationEnd: () -> Unit
     ) {
         val checkmark = createCheckmarkView(taskView)
 
-        // Fade in checkmark
         checkmark.alpha = 0f
         checkmark.scaleX = 0.5f
         checkmark.scaleY = 0.5f
@@ -48,7 +51,6 @@ class AnimationManager(private val context: Context) {
             .setDuration(DURATION_MEDIUM)
             .setInterpolator(OvershootInterpolator())
             .withEndAction {
-                // Fade out entire task with slide
                 taskView.animate()
                     .alpha(0f)
                     .translationX(taskView.width.toFloat())
@@ -57,10 +59,49 @@ class AnimationManager(private val context: Context) {
                     .withEndAction {
                         onAnimationEnd()
                         removeCheckmarkView(checkmark)
+                        result?.let { showGamificationResultToast(it) }
                     }
                     .start()
             }
             .start()
+
+        result?.newAchievements?.forEach { achievement ->
+            animateAchievementUnlock(taskView, achievement) {}
+        }
+    }
+
+    private fun showGamificationResultToast(result: GamificationTaskResult) {
+        val messageBuilder = StringBuilder()
+        messageBuilder.append(
+            context.getString(
+                R.string.gamification_points_earned_message,
+                result.pointsEarned
+            )
+        )
+
+        result.levelUp?.let { level ->
+            messageBuilder.append('\n')
+            messageBuilder.append(
+                context.getString(
+                    R.string.gamification_level_up_message,
+                    level.currentLevel,
+                    level.levelTitle
+                )
+            )
+        }
+
+        if (result.newAchievements.isNotEmpty()) {
+            val titles = result.newAchievements.joinToString { it.title }
+            messageBuilder.append('\n')
+            messageBuilder.append(
+                context.getString(
+                    R.string.gamification_new_achievement_message,
+                    titles
+                )
+            )
+        }
+
+        Toast.makeText(context, messageBuilder.toString(), Toast.LENGTH_LONG).show()
     }
 
     // Progress update animations
@@ -231,7 +272,7 @@ class AnimationManager(private val context: Context) {
     // Achievement unlock animation
     fun animateAchievementUnlock(
         achievementView: View,
-        achievement: Achievement,
+        achievement: AdvancedAchievement,
         onAnimationComplete: () -> Unit
     ) {
         // Create achievement popup
@@ -437,12 +478,12 @@ class AnimationManager(private val context: Context) {
         }
     }
 
-    private fun createAchievementPopup(parent: View, achievement: Achievement): View {
+    private fun createAchievementPopup(parent: View, achievement: AdvancedAchievement): View {
         val popup = FrameLayout(context)
 
         // Create achievement display
         val achievementView = TextView(context).apply {
-            text = "🏆 ${achievement.title}"
+            text = context.getString(R.string.gamification_achievement_banner, achievement.title)
             textSize = 18f
             setTextColor(Color.WHITE)
             setBackgroundColor(Color.parseColor("#FF4CAF50"))
@@ -491,3 +532,7 @@ class AnimationManager(private val context: Context) {
         RIGHT_TO_LEFT
     }
 }
+
+
+
+

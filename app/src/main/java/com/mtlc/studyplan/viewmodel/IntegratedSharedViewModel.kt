@@ -116,7 +116,8 @@ class IntegratedSharedViewModel @Inject constructor(
                 category = category,
                 priority = priority,
                 estimatedMinutes = estimatedMinutes,
-                dueDate = dueDate
+                dueDate = dueDate,
+                difficulty = "intermediate"
             )
             integrationManager.createTask(task)
         }

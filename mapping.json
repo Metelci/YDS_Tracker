@@ -1,0 +1,27 @@
+{
+  "TopAppBar": {
+    "replacement": "acme/u/AppBar",
+    "status": "pending-docs",
+    "notes": "Need acme app bar API; map title slot + navigation icon + action icon"
+  },
+  "FilterChip": {
+    "replacement": "acme/u/FilterPill",
+    "status": "pending-docs",
+    "notes": "Confirm chip variants and selected styling tokens"
+  },
+  "Card": {
+    "replacement": "acme/u/SurfaceCard",
+    "status": "pending-docs",
+    "notes": "Map elevation and padding tokens (surface-container vs card)"
+  },
+  "IconButton": {
+    "replacement": "acme/u/IconButton",
+    "status": "pending-docs",
+    "notes": "Match ripple + focus ring tokens"
+  },
+  "ElevatedButton": {
+    "replacement": "acme/u/Button",
+    "status": "pending-docs",
+    "notes": "Need to map variant=primary -> intent=solid per design"
+  }
+}

@@ -262,6 +262,8 @@ Suggested future features:
 
 ## Contributing
 
+See [Repository Guidelines](AGENTS.md) for contributor onboarding, coding conventions, and review expectations.
+
 ### Code Style
 - Follow Kotlin and Compose conventions (reference ktlint).
 - Use consistent naming: camelCase for variables/functions, PascalCase for classes.
@@ -303,3 +305,4 @@ Debugging
 
 Testing
 - Instrumentation: `./gradlew :app:connectedDebugAndroidTest` (requires a device/emulator). A basic accessibility test exists and analytics logs appear in Logcat during interactions.
+

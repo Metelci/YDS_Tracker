@@ -18,6 +18,12 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 abstract class BaseUITest {
 
+    companion object {
+        private const val DEFAULT_TIMEOUT_MS: Long = 5_000
+        private const val LOADING_CONTENT_DESCRIPTION = "Loading"
+        private const val GENERIC_ERROR_TEXT = "Error"
+    }
+
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -29,39 +35,84 @@ abstract class BaseUITest {
     }
 
     protected fun waitForCondition(
-        timeoutMs: Long = 5000,
+        timeoutMs: Long = DEFAULT_TIMEOUT_MS,
         condition: () -> Boolean
     ) {
-        composeTestRule.waitUntil(timeoutMs) {
-            condition()
-        }
+        composeTestRule.waitUntil(timeoutMs) { condition() }
     }
 
-    protected fun ComposeContentTestRule.waitForText(
+    protected fun ComposeContentTestRule.awaitNodeWithText(
         text: String,
-        timeoutMs: Long = 5000
-    ) {
+        timeoutMs: Long = DEFAULT_TIMEOUT_MS,
+        useUnmergedTree: Boolean = false
+    ): SemanticsNodeInteraction {
+        var node: SemanticsNodeInteraction? = null
         waitUntil(timeoutMs) {
-            try {
-                onNodeWithText(text).assertExists()
+            val candidate = if (useUnmergedTree) {
+                onNodeWithText(text, useUnmergedTree = true)
+            } else {
+                onNodeWithText(text)
+            }
+            val exists = try {
+                candidate.assertExists()
                 true
             } catch (e: AssertionError) {
                 false
             }
+            if (exists) {
+                node = candidate
+            }
+            exists
+        }
+        return node ?: if (useUnmergedTree) {
+            onNodeWithText(text, useUnmergedTree = true)
+        } else {
+            onNodeWithText(text)
         }
     }
 
-    protected fun ComposeContentTestRule.waitForContentDescription(
+    protected fun ComposeContentTestRule.awaitNodeWithContentDescription(
         description: String,
-        timeoutMs: Long = 5000
-    ) {
+        timeoutMs: Long = DEFAULT_TIMEOUT_MS,
+        useUnmergedTree: Boolean = false
+    ): SemanticsNodeInteraction {
+        var node: SemanticsNodeInteraction? = null
         waitUntil(timeoutMs) {
-            try {
-                onNodeWithContentDescription(description).assertExists()
+            val candidate = if (useUnmergedTree) {
+                onNodeWithContentDescription(description, useUnmergedTree = true)
+            } else {
+                onNodeWithContentDescription(description)
+            }
+            val exists = try {
+                candidate.assertExists()
                 true
             } catch (e: AssertionError) {
                 false
             }
+            if (exists) {
+                node = candidate
+            }
+            exists
+        }
+        return node ?: if (useUnmergedTree) {
+            onNodeWithContentDescription(description, useUnmergedTree = true)
+        } else {
+            onNodeWithContentDescription(description)
+        }
+    }
+
+    protected fun ComposeContentTestRule.waitForNodeToDisappear(
+        matcher: SemanticsMatcher,
+        timeoutMs: Long = DEFAULT_TIMEOUT_MS
+    ) {
+        waitUntil(timeoutMs) {
+            val gone = try {
+                onNode(matcher).assertDoesNotExist()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+            gone
         }
     }
 
@@ -89,15 +140,15 @@ abstract class BaseUITest {
     }
 
     protected fun assertLoadingStateVisible() {
-        composeTestRule.onNodeWithContentDescription("Loading").assertExists()
+        composeTestRule.awaitNodeWithContentDescription(LOADING_CONTENT_DESCRIPTION)
     }
 
     protected fun assertLoadingStateHidden() {
-        composeTestRule.onNodeWithContentDescription("Loading").assertDoesNotExist()
+        composeTestRule.waitForNodeToDisappear(hasContentDescription(LOADING_CONTENT_DESCRIPTION))
     }
 
     protected fun assertErrorStateVisible() {
-        composeTestRule.onNodeWithText("Error").assertExists()
+        composeTestRule.awaitNodeWithText(GENERIC_ERROR_TEXT)
     }
 
     protected fun assertBadgeVisible(count: Int) {
@@ -340,3 +391,4 @@ class TestLifecycleManager {
         // Simulate low memory condition
     }
 }
+

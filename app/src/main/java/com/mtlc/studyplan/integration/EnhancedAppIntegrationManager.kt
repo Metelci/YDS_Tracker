@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.repository.*
 import com.mtlc.studyplan.eventbus.*
+import com.mtlc.studyplan.gamification.GamificationManager
+import com.mtlc.studyplan.gamification.GamificationTaskResult
+import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.database.entities.UserSettingsEntity
 import com.mtlc.studyplan.database.entities.TaskEntity
@@ -28,12 +31,14 @@ class EnhancedAppIntegrationManager @Inject constructor(
     private val streakRepository: StreakRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val socialRepository: SocialRepository,
-    private val eventBus: EventBus,
+    val eventBus: EventBus,
     @ApplicationScope private val applicationScope: CoroutineScope
 ) {
 
     // Legacy integration manager for existing features
     private var legacyIntegrationManager: AppIntegrationManager? = null
+
+    private val gamificationManager = GamificationManager(context.dataStore, progressRepository)
 
     // Master app state combining all subsystems
     data class MasterAppState(
@@ -356,9 +361,8 @@ class EnhancedAppIntegrationManager @Inject constructor(
         taskId: String,
         actualMinutes: Int = 0,
         pointsEarned: Int = 10
-    ) {
-        try {
-            // Get task details
+    ): GamificationTaskResult? {
+        return try {
             val task = taskRepository.getTaskById(taskId)
             if (task == null) {
                 eventBus.publish(
@@ -368,25 +372,30 @@ class EnhancedAppIntegrationManager @Inject constructor(
                         isCritical = false
                     )
                 )
-                return
-            }
+                null
+            } else {
+                taskRepository.completeTask(taskId, actualMinutes)
 
-            // Complete the task
-            taskRepository.completeTask(taskId, actualMinutes)
-
-            // Publish task completion event
-            eventBus.publish(
-                TaskEvent.TaskCompleted(
+                val gamificationResult = gamificationManager.completeTaskWithGamification(
                     taskId = taskId,
-                    taskTitle = task.title,
-                    category = task.category.name,
-                    studyMinutes = actualMinutes,
-                    pointsEarned = pointsEarned
+                    taskDescription = task.title,
+                    taskDetails = task.description,
+                    minutesSpent = actualMinutes,
+                    isCorrect = true
                 )
-            )
 
-            // The EventHandler will automatically handle the rest (progress update, achievements, etc.)
+                eventBus.publish(
+                    TaskEvent.TaskCompleted(
+                        taskId = taskId,
+                        taskTitle = task.title,
+                        category = task.category.name,
+                        studyMinutes = actualMinutes,
+                        pointsEarned = gamificationResult.pointsEarned.toInt()
+                    )
+                )
 
+                gamificationResult
+            }
         } catch (e: Exception) {
             eventBus.publish(
                 UIEvent.ErrorOccurred(
@@ -395,6 +404,7 @@ class EnhancedAppIntegrationManager @Inject constructor(
                     isCritical = false
                 )
             )
+            null
         }
     }
 
@@ -577,3 +587,5 @@ class EnhancedAppIntegrationManager @Inject constructor(
         """.trimIndent()
     }
 }
+
+

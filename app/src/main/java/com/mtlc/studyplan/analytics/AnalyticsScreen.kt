@@ -35,6 +35,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.mtlc.studyplan.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.ui.LoadingType
 import com.mtlc.studyplan.ui.components.*
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -190,8 +193,8 @@ fun TimeframeSelector(
             exit = fadeOut() + shrinkVertically()
         ) {
             SearchLoadingState(
-                modifier = Modifier.padding(top = 12.dp),
-                query = selectedTimeframe.displayName
+                query = selectedTimeframe.displayName,
+                modifier = Modifier.padding(top = 12.dp)
             )
         }
     }
@@ -802,6 +805,79 @@ fun getPerformanceColor(score: Float): Color {
         score >= 0.7f -> MaterialTheme.colorScheme.secondary
         else -> MaterialTheme.colorScheme.error
     }
+}
+
+@Composable
+private fun SearchLoadingState(query: String, modifier: Modifier = Modifier) {
+    StudyPlanLoadingState(
+        isLoading = true,
+        loadingType = LoadingType.SPINNER,
+        message = stringResource(id = R.string.analytics_loading_results, query),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+private fun MetricCardSkeleton(modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(96.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ShimmerText(width = 0.45f, height = 14f)
+            ShimmerText(width = 0.65f, height = 20f)
+            ShimmerText(width = 0.35f, height = 12f)
+        }
+    }
+}
+
+@Composable
+private fun ChartSkeleton(modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(180.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        ShimmerOverlay(modifier = Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun ShimmerCard(modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(160.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        ShimmerOverlay(modifier = Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun ShimmerText(width: Float, height: Float) {
+    ShimmerOverlay(
+        modifier = Modifier
+            .fillMaxWidth(width.coerceIn(0f, 1f))
+            .height(height.dp)
+            .clip(RoundedCornerShape(6.dp))
+    )
 }
 
 // Additional specialized cards would be implemented here...

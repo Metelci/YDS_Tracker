@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -178,33 +179,35 @@ fun WorkingTasksScreen(
             }
 
             // Completed Tasks Section
-            AnimatedVisibility(
-                visible = showCompleted && filteredCompletedTasks.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Column {
-                    SectionHeader(
-                        title = "Completed Tasks",
-                        count = filteredCompletedTasks.size,
-                        icon = Icons.Default.CheckCircle
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    filteredCompletedTasks.forEach { task ->
-                        TaskCard(
-                            task = task,
-                            onToggleComplete = {
-                                coroutineScope.launch {
-                                    appIntegrationManager.updateTask(
-                                        task.copy(isCompleted = false, completedAt = null)
-                                    )
-                                }
-                            },
-                            onTaskClick = { /* TODO: Navigate to task details */ }
+            item {
+                AnimatedVisibility(
+                    visible = showCompleted && filteredCompletedTasks.isNotEmpty(),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Column {
+                        SectionHeader(
+                            title = "Completed Tasks",
+                            count = filteredCompletedTasks.size,
+                            icon = Icons.Default.CheckCircle
                         )
+
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        filteredCompletedTasks.forEach { task ->
+                            TaskCard(
+                                task = task,
+                                onToggleComplete = {
+                                    coroutineScope.launch {
+                                        appIntegrationManager.updateTask(
+                                            task.copy(isCompleted = false, completedAt = null)
+                                        )
+                                    }
+                                },
+                                onTaskClick = { /* TODO: Navigate to task details */ }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
             }
@@ -363,6 +366,7 @@ private fun TaskCard(
     )
 
     val priorityColor = when (task.priority) {
+        TaskPriority.CRITICAL -> Color(0xFFB71C1C)
         TaskPriority.HIGH -> Color(0xFFE53E3E)
         TaskPriority.MEDIUM -> Color(0xFFFF9800)
         TaskPriority.LOW -> Color(0xFF4CAF50)

@@ -397,6 +397,7 @@ fun TaskItemCard(
     )
 
     val priorityColor = when (task.priority) {
+        TaskPriority.CRITICAL -> Color(0xFFB71C1C)
         TaskPriority.HIGH -> Color(0xFFE53E3E)
         TaskPriority.MEDIUM -> Color(0xFFFF9800)
         TaskPriority.LOW -> Color(0xFF4CAF50)

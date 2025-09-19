@@ -332,7 +332,7 @@ class StatePreservationTests : BaseUITest() {
         }
 
         // Initially should show default state
-        composeTestRule.waitForText("Default State")
+        composeTestRule.awaitNodeWithText("Default State")
 
         // Click update button
         composeTestRule.onNodeWithText("Update").performClick()
@@ -435,13 +435,3 @@ fun SemanticsNodeInteractionsProvider.onNodeWithTag(tag: String): SemanticsNodeI
     return onNode(hasTestTag(tag))
 }
 
-fun ComposeContentTestRule.waitForText(text: String, timeoutMs: Long = 5000) {
-    waitUntil(timeoutMs) {
-        try {
-            onNodeWithText(text).assertExists()
-            true
-        } catch (e: AssertionError) {
-            false
-        }
-    }
-}

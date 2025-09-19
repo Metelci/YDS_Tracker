@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -88,12 +89,25 @@ class TasksFragment : StateAwareFragment<NavigationStateManager.TasksScreenState
         viewModel.animationTriggers.observe(viewLifecycleOwner) { trigger ->
             when (trigger) {
                 is AnimatedViewModel.AnimationTrigger.TaskCompletionStart -> {
-                    // Find task view and start completion animation
                     findTaskViewById(trigger.taskId)?.let { taskView ->
-                        animationManager.animateTaskCompletion(taskView) {
-                            // Animation completed
-                        }
+                        animationManager.animateTaskCompletion(taskView) {}
                     }
+                }
+                is AnimatedViewModel.AnimationTrigger.TaskCompletionSuccess -> {
+                    val result = trigger.result
+                    val taskView = findTaskViewById(result.task.id) ?: binding.recyclerView
+                    animationManager.animateTaskCompletion(taskView, result.gamification) {}
+                }
+                is AnimatedViewModel.AnimationTrigger.LevelUp -> {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(
+                            R.string.gamification_level_up_message,
+                            trigger.level.currentLevel,
+                            trigger.level.levelTitle
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 is AnimatedViewModel.AnimationTrigger.DataRefreshStart -> {
                     animationManager.animateDataRefresh(
@@ -102,8 +116,7 @@ class TasksFragment : StateAwareFragment<NavigationStateManager.TasksScreenState
                         onRefreshEnd = { /* Refresh complete */ }
                     )
                 }
-                // Handle other animation triggers...
-                else -> { /* Handle other triggers */ }
+                else -> { /* Handle other triggers as needed */ }
             }
         }
     }

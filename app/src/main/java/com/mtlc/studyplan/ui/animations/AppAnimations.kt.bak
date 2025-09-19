@@ -49,9 +49,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -257,6 +255,7 @@ object StudyPlanMicroInteractions {
                 normalSpec = StudyPlanMotion.SPRING_BOUNCY,
                 reducedSpec = snap()
             ),
+            finishedListener = { onAnimationComplete?.invoke() },
             label = "task_completion"
         )
 
@@ -449,15 +448,11 @@ object StudyPlanMicroInteractions {
      * Swipe-to-action gesture with visual feedback
      */
     fun Modifier.swipeToAction(
-        threshold: Dp = 72.dp,
+        threshold: Float = 0.3f,
         onSwipeComplete: () -> Unit,
         onSwipeProgress: ((Float) -> Unit)? = null
     ): Modifier = composed {
         val haptics = LocalHapticFeedback.current
-        val density = LocalDensity.current
-        val thresholdPx = remember(threshold, density) {
-            with(density) { threshold.toPx() }.coerceAtLeast(1f)
-        }
         var swipeOffset by remember { mutableFloatStateOf(0f) }
         var isThresholdReached by remember { mutableStateOf(false) }
 
@@ -470,8 +465,8 @@ object StudyPlanMicroInteractions {
             label = "swipe_offset"
         )
 
-        LaunchedEffect(swipeOffset, thresholdPx) {
-            val progress = (swipeOffset / thresholdPx).coerceIn(0f, 1f)
+        LaunchedEffect(swipeOffset) {
+            val progress = (swipeOffset / threshold).coerceIn(0f, 1f)
             onSwipeProgress?.invoke(progress)
 
             if (progress >= 1f && !isThresholdReached) {
@@ -487,7 +482,7 @@ object StudyPlanMicroInteractions {
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
-                        if (swipeOffset >= thresholdPx) {
+                        if (swipeOffset >= threshold) {
                             onSwipeComplete()
                         }
                         swipeOffset = 0f
@@ -511,12 +506,8 @@ object StudyPlanMicroInteractions {
         baseScale: Float = 1f,
         amplitude: Float = 0.05f
     ): State<Float> {
-        val shouldAnimate = isLoading && !isReducedMotionEnabled()
-        if (!shouldAnimate) {
-            return remember(baseScale) { derivedStateOf { baseScale } }
-        }
-
         val infiniteTransition = rememberInfiniteTransition(label = "breathing")
+
         val scale by infiniteTransition.animateFloat(
             initialValue = baseScale,
             targetValue = baseScale + amplitude,
@@ -530,7 +521,11 @@ object StudyPlanMicroInteractions {
             label = "breathing_scale"
         )
 
-        return remember { derivedStateOf { scale } }
+        return if (isLoading && !isReducedMotionEnabled()) {
+            remember(scale) { derivedStateOf { scale } }
+        } else {
+            remember(baseScale) { derivedStateOf { baseScale } }
+        }
     }
 }
 
@@ -563,7 +558,7 @@ object GestureEnhancements {
     fun SwipeToCompleteCard(
         onComplete: () -> Unit,
         modifier: Modifier = Modifier,
-        threshold: Dp = 72.dp,
+        threshold: Float = 200f,
         content: @Composable (swipeProgress: Float) -> Unit
     ) {
         var swipeProgress by remember { mutableFloatStateOf(0f) }
@@ -728,4 +723,3 @@ data class TaskCompletionAnimationState(
     val progressValue: Float,
     val phase: TaskCompletionPhase
 )
-

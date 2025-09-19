@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mtlc.studyplan.shared.Achievement
+import com.mtlc.studyplan.gamification.AdvancedAchievement
+import com.mtlc.studyplan.gamification.GamificationTaskResult
+import com.mtlc.studyplan.gamification.LevelSystem
 import com.mtlc.studyplan.shared.AppTask
+import com.mtlc.studyplan.ui.celebrations.CelebrationEvent
 import kotlinx.coroutines.launch
 
 abstract class AnimatedViewModel : ViewModel() {
@@ -28,29 +31,23 @@ abstract class AnimatedViewModel : ViewModel() {
     fun completeTaskWithAnimation(taskId: String) {
         viewModelScope.launch {
             try {
-                // Start completion animation
                 triggerAnimation(AnimationTrigger.TaskCompletionStart(taskId))
                 setUiAnimationState(UiAnimationState.TaskCompleting(taskId))
 
-                // Perform actual task completion
                 val result = completeTask(taskId)
 
-                // Trigger success animation
-                triggerAnimation(AnimationTrigger.TaskCompletionSuccess(taskId, result))
-                setUiAnimationState(UiAnimationState.TaskCompleted(taskId))
+                triggerAnimation(AnimationTrigger.TaskCompletionSuccess(result))
+                setUiAnimationState(UiAnimationState.TaskCompleted(result))
 
-                // Check for streak/achievement animations
-                if (result.streakIncreased) {
-                    triggerAnimation(AnimationTrigger.StreakIncrease(result.newStreak))
+                result.gamification.newAchievements.forEach { achievement ->
+                    triggerAnimation(AnimationTrigger.AchievementUnlock(achievement))
                 }
 
-                if (result.achievementUnlocked.isNotEmpty()) {
-                    result.achievementUnlocked.forEach { achievement ->
-                        triggerAnimation(AnimationTrigger.AchievementUnlock(achievement))
-                    }
+                result.gamification.levelUp?.let { level ->
+                    triggerAnimation(AnimationTrigger.LevelUp(level))
+                    setUiAnimationState(UiAnimationState.LevelUpCelebrating(level))
                 }
 
-                // Reset animation state
                 setUiAnimationState(UiAnimationState.Idle)
 
             } catch (e: Exception) {
@@ -59,6 +56,7 @@ abstract class AnimatedViewModel : ViewModel() {
             }
         }
     }
+
 
     // Progress update with animation
     fun updateProgressWithAnimation(fromValue: Int, toValue: Int, duration: Long = 500L) {
@@ -126,8 +124,8 @@ abstract class AnimatedViewModel : ViewModel() {
         )
     }
 
-    // Achievement celebration
-    fun celebrateAchievement(achievement: Achievement) {
+    // AdvancedAchievement celebration
+    fun celebrateAchievement(achievement: AdvancedAchievement) {
         triggerAnimation(AnimationTrigger.AchievementUnlock(achievement))
         setUiAnimationState(UiAnimationState.AchievementCelebrating(achievement))
     }
@@ -218,11 +216,12 @@ abstract class AnimatedViewModel : ViewModel() {
 // Animation trigger types
 sealed class AnimationTrigger(val duration: Long = 300L) {
     data class TaskCompletionStart(val taskId: String) : AnimationTrigger(150L)
-    data class TaskCompletionSuccess(val taskId: String, val result: TaskCompletionResult) : AnimationTrigger(500L)
+    data class TaskCompletionSuccess(val result: TaskCompletionResult) : AnimationTrigger(500L)
     data class TaskCompletionError(val taskId: String, val error: String?) : AnimationTrigger(300L)
     data class StreakIncrease(val newStreak: Int) : AnimationTrigger(750L)
     data class StreakMilestone(val streak: Int) : AnimationTrigger(1000L)
-    data class AchievementUnlock(val achievement: Achievement) : AnimationTrigger(1500L)
+    data class AchievementUnlock(val achievement: AdvancedAchievement) : AnimationTrigger(1500L)
+    data class LevelUp(val level: LevelSystem) : AnimationTrigger(1200L)
     data class ProgressUpdate(val fromValue: Int, val toValue: Int, val animationDuration: Long = 500L) : AnimationTrigger(animationDuration)
     data class BadgeUpdate(val badgeType: BadgeType, val newCount: Int) : AnimationTrigger(300L)
     object DataRefreshStart : AnimationTrigger(200L)
@@ -243,13 +242,13 @@ sealed class UiAnimationState {
     object Idle : UiAnimationState()
     data class Loading(val message: String) : UiAnimationState()
     data class TaskCompleting(val taskId: String) : UiAnimationState()
-    data class TaskCompleted(val taskId: String) : UiAnimationState()
+    data class TaskCompleted(val result: TaskCompletionResult) : UiAnimationState()
     data class ProgressUpdating(val fromValue: Int, val toValue: Int) : UiAnimationState()
     object DataRefreshing : UiAnimationState()
     object DataRefreshed : UiAnimationState()
     data class NavigationAnimating(val fromTab: String, val toTab: String) : UiAnimationState()
     data class CardsRevealing(val cardIds: List<String>) : UiAnimationState()
-    data class AchievementCelebrating(val achievement: Achievement) : UiAnimationState()
+    data class AchievementCelebrating(val achievement: AdvancedAchievement) : UiAnimationState()
     data class StreakCelebrating(val streak: Int) : UiAnimationState()
     data class Error(val message: String) : UiAnimationState()
     data class Success(val message: String) : UiAnimationState()
@@ -258,12 +257,18 @@ sealed class UiAnimationState {
 // Supporting data classes
 data class TaskCompletionResult(
     val task: AppTask,
-    val pointsEarned: Int,
-    val streakIncreased: Boolean,
-    val newStreak: Int,
-    val achievementUnlocked: List<Achievement>
-)
+    val gamification: GamificationTaskResult
+) {
+    val pointsEarned: Long get() = gamification.pointsEarned
+    val newAchievements: List<AdvancedAchievement> get() = gamification.newAchievements
+    val celebrationEvents: List<CelebrationEvent> get() = gamification.celebrationEvents
+    val levelUp: LevelSystem? get() = gamification.levelUp
+}
+
 
 enum class BadgeType {
     TASKS, SOCIAL, PROGRESS, SETTINGS, STREAK_WARNING
 }
+
+
+

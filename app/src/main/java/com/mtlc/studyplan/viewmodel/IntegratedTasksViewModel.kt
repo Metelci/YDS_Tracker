@@ -108,7 +108,8 @@ class IntegratedTasksViewModel @Inject constructor(
                     priority = priority,
                     estimatedMinutes = estimatedMinutes,
                     dueDate = dueDate,
-                    reminderTime = reminderTime
+                    reminderTime = reminderTime,
+                    difficulty = "intermediate"
                 )
 
                 integrationManager.createTask(task)
@@ -134,7 +135,13 @@ class IntegratedTasksViewModel @Inject constructor(
                 val task = taskRepository.getTaskById(taskId)
                 val pointsEarned = calculatePoints(task, actualMinutes)
 
-                integrationManager.completeTask(taskId, actualMinutes, pointsEarned)
+                val gamificationResult = integrationManager.completeTask(taskId, actualMinutes, pointsEarned)
+
+                if (gamificationResult != null) {
+                    showSuccess("Task completed! +${gamificationResult.pointsEarned} pts")
+                } else {
+                    showSuccess("Task completed")
+                }
 
             } catch (e: Exception) {
                 showError("Failed to complete task: ${e.message}")
@@ -322,7 +329,7 @@ class IntegratedTasksViewModel @Inject constructor(
             TaskPriority.LOW -> 5
             TaskPriority.MEDIUM -> 10
             TaskPriority.HIGH -> 15
-            TaskPriority.URGENT -> 20
+            TaskPriority.CRITICAL -> 20
         }
 
         val timeBonus = (actualMinutes / 15) * 2 // 2 points per 15 minutes

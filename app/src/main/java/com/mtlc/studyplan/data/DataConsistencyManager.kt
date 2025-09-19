@@ -17,12 +17,7 @@ class DataConsistencyManager(
     private val localRepository: LocalRepository? = null
 ) {
 
-    private val dataValidationRules = mapOf(
-        "tasks" to TaskDataValidator(),
-        "progress" to ProgressDataValidator(),
-        "streaks" to StreakDataValidator(),
-        "achievements" to AchievementDataValidator()
-    )
+    private val taskValidator = TaskDataValidator()
 
     suspend fun ensureDataConsistency(): ConsistencyResult {
         try {
@@ -90,7 +85,7 @@ class DataConsistencyManager(
 
             // Validate individual data integrity
             tasks.forEach { task ->
-                val validationResult = dataValidationRules["tasks"]?.validate(task)
+                val validationResult = taskValidator.validate(task)
                 if (validationResult is ValidationResult.Invalid) {
                     inconsistencies.add(
                         DataInconsistency.DataValidationError(
@@ -113,39 +108,39 @@ class DataConsistencyManager(
         val fixResults = mutableListOf<FixResult>()
 
         inconsistencies.forEach { inconsistency ->
-            try {
+            val result = try {
                 when (inconsistency) {
                     is DataInconsistency.StatsMismatch -> {
-                        sharedViewModel.updateStudyStats(inconsistency.calculated)
-                        fixResults.add(FixResult.Success("Stats corrected"))
-                        logDataFix("Stats corrected", inconsistency)
+                        localRepository?.let { repository ->
+                            repository.updateStats(inconsistency.calculated)
+                            logDataFix("Stats corrected", inconsistency)
+                            FixResult.Success("Stats corrected")
+                        } ?: run {
+                            Log.w("DataConsistency", "Cannot auto-fix stats mismatch without LocalRepository implementation")
+                            FixResult.RequiresManualFix("Stats mismatch detected; please sync the progress repository manually.")
+                        }
                     }
-
                     is DataInconsistency.StreakMismatch -> {
-                        sharedViewModel.updateStreak(inconsistency.calculated)
-                        fixResults.add(FixResult.Success("Streak corrected"))
-                        logDataFix("Streak corrected", inconsistency)
+                        Log.w("DataConsistency", "Streak mismatch requires manual resolution")
+                        FixResult.RequiresManualFix("Streak mismatch detected; review streak calculation pipeline.")
                     }
-
                     is DataInconsistency.TodayTasksMismatch -> {
-                        // Refresh today's tasks from all tasks
-                        val allTasks = sharedViewModel.allTasks.first()
-                        val correctedTodayTasks = filterTodayTasks(allTasks)
-                        sharedViewModel.updateTodayTasks(correctedTodayTasks)
-                        fixResults.add(FixResult.Success("Today's tasks refreshed"))
-                        logDataFix("Today's tasks refreshed", inconsistency)
+                        Log.w("DataConsistency", "Today's task list mismatch requires a manual refresh")
+                        FixResult.RequiresManualFix("Today's tasks mismatch detected; trigger a fresh tasks sync.")
                     }
-
                     is DataInconsistency.DataValidationError -> {
-                        // For validation errors, we log them but don't auto-fix
-                        fixResults.add(FixResult.RequiresManualFix("Data validation error requires manual review"))
-                        logDataFix("Validation error logged", inconsistency)
+                        Log.w(
+                            "DataConsistency",
+                            "Validation issue for : "
+                        )
+                        FixResult.RequiresManualFix("Data validation error requires manual review.")
                     }
                 }
             } catch (e: Exception) {
-                fixResults.add(FixResult.Failed("Failed to fix: ${e.message}"))
                 Log.e("DataConsistency", "Failed to fix inconsistency", e)
+                FixResult.Failed("Failed to fix: ")
             }
+            fixResults += result
         }
 
         return fixResults
