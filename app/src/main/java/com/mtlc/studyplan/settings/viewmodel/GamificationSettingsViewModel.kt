@@ -293,5 +293,4 @@ class GamificationSettingsViewModel(
 
 /**
  * Data classes for gamification settings
-
-
+ */

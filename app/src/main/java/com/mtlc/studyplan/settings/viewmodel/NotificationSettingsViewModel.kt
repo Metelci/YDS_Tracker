@@ -339,5 +339,5 @@ class NotificationSettingsViewModel(
 
 /**
  * Data classes for notification settings
-
+ */
 

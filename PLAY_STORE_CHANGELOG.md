@@ -1,6 +1,7 @@
 # StudyPlan - Play Store Release Notes
 
 ## Version 2.5.0 (Build 42) - September 19, 2025
+**Version:** 2.5.0 (Build 42)
 
 ### Personalised Control Center
 - Brand-new settings hub lets you toggle themes, notifications, offline mode, and gamification with instant feedback

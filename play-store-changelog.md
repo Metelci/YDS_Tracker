@@ -1,4 +1,5 @@
 # Play Store Release Notes - Version 2.5.0
+**Version:** 2.5.0 (Build 42)
 
 ## Version 2.5.0 (Build 42)
 

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import com.mtlc.studyplan.shared.AppIntegrationManager
+import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.realtime.RealTimeUpdateManager
 import com.mtlc.studyplan.realtime.AchievementUpdateType
 import com.mtlc.studyplan.actions.Achievement

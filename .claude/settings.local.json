@@ -22,7 +22,8 @@
       "Bash(.\\gradlew.bat build:*)",
       "Bash(.gradlew.bat build)",
       "Bash(dir)",
-      "Bash(.gradlew.bat clean)"
+      "Bash(.gradlew.bat clean)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

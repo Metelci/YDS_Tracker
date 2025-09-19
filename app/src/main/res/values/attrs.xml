@@ -8,7 +8,24 @@
     <attr name="colorSurfaceVariant" format="color" />
     <attr name="colorOutline" format="color" />
 
+    <!-- Missing Material 3 attributes -->
+    <attr name="colorOnError" format="color" />
+    <attr name="colorOutlineVariant" format="color" />
+    <attr name="colorOnPrimary" format="color" />
+    <attr name="colorPrimary" format="color" />
+
+    <!-- Text appearance attributes -->
+    <attr name="textAppearanceTitleLarge" format="reference" />
+    <attr name="textAppearanceBodyLarge" format="reference" />
+    <attr name="textAppearanceBodyMedium" format="reference" />
+    <attr name="textAppearanceBodySmall" format="reference" />
+    <attr name="textAppearanceLabelMedium" format="reference" />
+
     <!-- Layout attributes -->
     <attr name="layout_behavior" format="string" />
     <attr name="indicatorColor" format="color" />
+
+    <!-- CardView attributes -->
+    <attr name="cardElevation" format="dimension" />
+    <attr name="cardCornerRadius" format="dimension" />
 </resources>

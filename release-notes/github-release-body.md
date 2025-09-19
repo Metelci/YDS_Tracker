@@ -1,4 +1,5 @@
 # What's New (2.5.0)
+**Version:** 2.5.0
 
 ## Highlights
 - Unified settings control center with instant notification, theme, offline, and gamification toggles

@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2025-01-19
+
+### ✅ Fixed - Core Architecture & Compilation
+- **CRITICAL**: Fixed all major Kotlin compilation errors that prevented app building
+- **Room Database**: Resolved missing entities and type converters for TaskEntity and AchievementEntity
+- **Hilt Dependency Injection**: Fixed missing dependencies and circular injection issues
+- **KSP Processing**: Resolved Kotlin Symbol Processing errors blocking code generation
+- **XML Resources**: Added all missing drawable, string, and style resources for legacy layouts
+- **Material 3 Compatibility**: Fixed theme attributes and component styles for XML layouts
+
+### 🚀 Added - Core Functionality Implementation
+- **WorkingHomeScreen**: Complete functional home screen with real task management
+- **WorkingTasksScreen**: Full task management interface with filtering and completion
+- **AppIntegrationManager**: Core business logic manager connecting all app functionality
+- **TaskRepository**: Complete data layer with CRUD operations and sample data
+- **Navigation System**: Working Home → Tasks navigation flow with proper state management
+- **Task Completion Flow**: Real-time task completion with state updates and statistics
+- **Achievement System**: Basic achievement tracking and unlocking mechanism
+- **Study Streak Tracking**: Automatic streak calculation and display
+
+### 🔧 Technical Improvements
+- **Dependency Management**: Added missing Gson, Material Components, and XML View dependencies
+- **Type Safety**: Created comprehensive enum classes for TaskCategory, TaskPriority, TaskDifficulty
+- **Error Handling**: Implemented proper exception handling and result types
+- **State Management**: Flow-based reactive state management throughout the app
+- **Performance**: Optimized resource loading and compilation speed
+- **Code Organization**: Properly structured package hierarchy for core functionality
+
+### 📱 UI/UX Enhancements
+- **Material 3 Design**: Modern card-based interface with proper theming
+- **Task Cards**: Rich task display with priority indicators, categories, and progress
+- **Statistics Dashboard**: Real-time progress tracking and completion statistics
+- **Smooth Animations**: Spring-based animations for task completion and navigation
+- **Responsive Design**: Proper layout handling for different screen sizes
+
+### 🛠️ Development & Build System
+- **Build Configuration**: Fixed all compilation issues blocking development
+- **Resource Management**: Comprehensive resource organization and conflict resolution
+- **Code Generation**: Proper Room database and Hilt dependency generation
+- **Testing Infrastructure**: Foundation for unit and integration testing
+- **Modular Architecture**: Clean separation between UI, business logic, and data layers
+
+---
+
 ## [2.5.0] - 2025-09-19
 
 ### Added

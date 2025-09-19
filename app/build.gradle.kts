@@ -22,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 42
-        versionName = "2.5.0"
+        versionCode = 43
+        versionName = "2.5.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,12 +91,24 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.7.5")
     implementation("androidx.compose.animation:animation-core:1.7.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
+    // XML View System Dependencies (for legacy XML layouts)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
     // Security dependencies
     implementation(libs.security.crypto)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.biometric)
     implementation(libs.kotlinx.serialization)
+
+    // JSON processing
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // Room (local database for scalable histories)
     implementation("androidx.room:room-runtime:2.6.1")

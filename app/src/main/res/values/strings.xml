@@ -247,6 +247,22 @@
     <string name="tooltip_expand_week_message">Tap any week to expand and see daily tasks. Tap again to collapse.</string>
     <string name="tooltip_task_details_title">Task Information</string>
     <string name="tooltip_task_details_message">Tap any task to see detailed instructions and estimated time.</string>
+
+    <!-- Missing strings for XML layouts -->
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="reset_progress">Reset Progress</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_social">Social</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Missing strings -->
+    <string name="settings">Settings</string>
+    <string name="navigate_up">Navigate up</string>
+    <string name="category_icon_description">Category icon</string>
     <string name="tooltip_got_it">Got it</string>
     <string name="tooltip_close">Close tooltip</string>
     <string name="save">Save</string>
@@ -313,12 +329,6 @@
     <string name="include_name">Include student name</string>
     <string name="privacy_protected_report">Name will not be included for privacy</string>
 
-    <!-- Bottom Navigation (Default English) -->
-    <string name="nav_home">Home</string>
-    <string name="nav_tasks">Tasks</string>
-    <string name="nav_progress">Progress</string>
-    <string name="nav_social">Social</string>
-    <string name="nav_settings">Settings</string>
     <!-- Social Hub Lovable redesign -->
     <string name="social_tab_profile">Profile</string>
     <string name="social_tab_ranks">Ranks</string>

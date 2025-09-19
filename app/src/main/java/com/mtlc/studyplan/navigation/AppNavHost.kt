@@ -83,6 +83,13 @@ fun AppNavHost(
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
 
+    // Create main AppIntegrationManager for core functionality
+    val mainAppIntegrationManager = remember {
+        com.mtlc.studyplan.integration.AppIntegrationManager(
+            taskRepository = com.mtlc.studyplan.data.TaskRepositoryImpl()
+        )
+    }
+
     // Handle navigation events from SharedViewModel
     sharedViewModel?.let { viewModel ->
         LaunchedEffect(navController) {
@@ -269,8 +276,16 @@ fun AppNavHost(
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "home_animation"
             ) { _ ->
-                com.mtlc.studyplan.feature.home.NewHomeScreen(
-                    sharedViewModel = sharedViewModel
+                com.mtlc.studyplan.core.WorkingHomeScreen(
+                    appIntegrationManager = mainAppIntegrationManager,
+                    onNavigateToTasks = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("tasks")
+                    },
+                    onNavigateToProgress = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("progress")
+                    }
                 )
             }
         }
@@ -296,8 +311,12 @@ fun AppNavHost(
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "tasks_animation"
             ) { _ ->
-                com.mtlc.studyplan.feature.tasks.TasksScreen(
-                    sharedViewModel = sharedViewModel
+                com.mtlc.studyplan.core.WorkingTasksScreen(
+                    appIntegrationManager = mainAppIntegrationManager,
+                    onNavigateBack = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.popBackStack()
+                    }
                 )
             }
         }

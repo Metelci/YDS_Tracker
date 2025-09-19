@@ -2,7 +2,7 @@ package com.mtlc.studyplan.actions
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import com.mtlc.studyplan.shared.AppIntegrationManager
+import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.animations.AnimationManager
 import com.mtlc.studyplan.feedback.FeedbackManager
 import com.mtlc.studyplan.achievements.AchievementManager

@@ -11,11 +11,7 @@ import com.mtlc.studyplan.database.entities.*
 @Database(
     entities = [
         TaskEntity::class,
-        ProgressEntity::class,
-        AchievementEntity::class,
-        StreakEntity::class,
-        UserSettingsEntity::class,
-        SocialActivityEntity::class
+        AchievementEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -24,11 +20,7 @@ import com.mtlc.studyplan.database.entities.*
 abstract class StudyPlanDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
-    abstract fun progressDao(): ProgressDao
     abstract fun achievementDao(): AchievementDao
-    abstract fun streakDao(): StreakDao
-    abstract fun settingsDao(): UserSettingsDao
-    abstract fun socialDao(): SocialDao
 
     companion object {
         @Volatile

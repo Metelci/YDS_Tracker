@@ -315,4 +315,5 @@ class PrivacySettingsViewModel(
 
 /**
  * Data classes for privacy settings
+ */
 

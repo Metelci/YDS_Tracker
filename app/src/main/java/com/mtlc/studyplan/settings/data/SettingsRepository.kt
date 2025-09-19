@@ -77,8 +77,6 @@ class SettingsRepository(
                         newValue = getValueForKey(it)
                     )
                 )
-                    )
-                )
             }
         }
     }
