@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -28,9 +29,20 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import com.mtlc.studyplan.ui.theme.DesignTokens
+import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
+import com.mtlc.studyplan.navigation.TaskFilter
+import com.mtlc.studyplan.navigation.TimeRange
+import com.mtlc.studyplan.eventbus.AppEvent
+import kotlinx.coroutines.flow.collect
+import androidx.compose.runtime.derivedStateOf
 
 @Composable
-fun NewHomeScreen() {
+fun NewHomeScreen(
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
+    navigationManager: StudyPlanNavigationManager? = null,
+    settingsManager: com.mtlc.studyplan.settings.manager.SettingsManager? = null,
+    offlineManager: com.mtlc.studyplan.offline.OfflineManager? = null
+) {
     val context = LocalContext.current
     val appContext = context.applicationContext
     val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
@@ -38,8 +50,56 @@ fun NewHomeScreen() {
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
     val progressRepo = remember { ProgressRepository(appContext.dataStore) }
 
-    val plan by planRepo.planFlow.collectAsState(initial = emptyList())
-    val progress by progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
+    // Get current settings if available
+    val userSettings by if (settingsManager != null) {
+        settingsManager.currentSettings.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.settings.data.UserSettings.default()) }
+    }
+
+    // Get offline status if available
+    val isOperatingOffline by if (offlineManager != null) {
+        remember { derivedStateOf { offlineManager.isOperatingOffline() } }
+    } else {
+        remember { mutableStateOf(false) }
+    }
+
+    val pendingActionsCount by if (offlineManager != null) {
+        offlineManager.pendingActions.collectAsState()
+    } else {
+        remember { mutableStateOf(emptyList<com.mtlc.studyplan.offline.OfflineAction>()) }
+    }
+
+    // Use SharedViewModel data when available, fallback to local data
+    val plan by if (sharedViewModel != null) {
+        sharedViewModel.planFlow.collectAsState(initial = emptyList())
+    } else {
+        planRepo.planFlow.collectAsState(initial = emptyList())
+    }
+
+    val progress by if (sharedViewModel != null) {
+        sharedViewModel.userProgress.collectAsState(initial = UserProgress())
+    } else {
+        progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
+    }
+
+    val todayTasks by if (sharedViewModel != null) {
+        sharedViewModel.todayTasks.collectAsState(initial = emptyList())
+    } else {
+        remember { mutableStateOf(emptyList<com.mtlc.studyplan.shared.AppTask>()) }
+    }
+
+    val studyStats by if (sharedViewModel != null) {
+        sharedViewModel.studyStats.collectAsState(initial = com.mtlc.studyplan.shared.StudyStats())
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.shared.StudyStats()) }
+    }
+
+    val uiState by if (sharedViewModel != null) {
+        sharedViewModel.uiState.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.shared.AppUiState()) }
+    }
 
     val today = remember { LocalDate.now() }
     val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
@@ -76,6 +136,25 @@ fun NewHomeScreen() {
 
     val coroutineScope = rememberCoroutineScope()
 
+    // Real-time event handling
+    LaunchedEffect(sharedViewModel) {
+        sharedViewModel?.appEventBus?.events?.collect { event ->
+            when (event) {
+                is AppEvent.TaskCompleted -> {
+                    // Show completion celebration
+                    // Auto-navigate to progress if milestone reached
+                    if (event.result.triggeredMilestone) {
+                        navigationManager?.navigateToProgress(
+                            highlightElement = "daily_progress",
+                            fromScreen = "home"
+                        )
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
     // Calculate days to exam
     val nextExam = ExamCalendarDataSource.getNextExam()
     val daysToExam = nextExam?.let { ChronoUnit.DAYS.between(today, it.examDate) } ?: 274
@@ -87,10 +166,25 @@ fun NewHomeScreen() {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Offline indicator
+        if (isOperatingOffline) {
+            item {
+                OfflineIndicatorCard(
+                    pendingActionsCount = pendingActionsCount.size,
+                    onSyncClick = {
+                        coroutineScope.launch {
+                            offlineManager?.syncPendingActions()
+                        }
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+
         // Header with greeting
         item {
             Column(
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = if (isOperatingOffline) 8.dp else 24.dp, bottom = 8.dp)
             ) {
                 Text(
                     text = "Good morning! 👋",
@@ -140,12 +234,19 @@ fun NewHomeScreen() {
                             )
                         }
 
-                        // Right side - Days to YDS
+                        // Right side - Days to YDS with navigation
                         Column(
-                            horizontalAlignment = Alignment.End
+                            horizontalAlignment = Alignment.End,
+                            modifier = Modifier.clickable {
+                                navigationManager?.navigateToProgress(
+                                    timeRange = TimeRange.WEEK,
+                                    highlightElement = "streak_chart",
+                                    fromScreen = "home"
+                                )
+                            }
                         ) {
                             Text(
-                                text = "-274",
+                                text = daysToExam.toString(),
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = DesignTokens.Foreground
@@ -188,9 +289,15 @@ fun NewHomeScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Points card - softer green
+                // Points card - softer green with navigation
                 Card(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).clickable {
+                        navigationManager?.navigateToProgress(
+                            timeRange = TimeRange.TODAY,
+                            highlightElement = "today_summary",
+                            fromScreen = "home"
+                        )
+                    },
                     colors = CardDefaults.cardColors(
                         containerColor = DesignTokens.PointsGreen
                     ),
@@ -202,7 +309,7 @@ fun NewHomeScreen() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "40",
+                            text = if (sharedViewModel != null) studyStats.totalXP.toString() else "40",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
                             color = DesignTokens.Foreground
@@ -216,9 +323,14 @@ fun NewHomeScreen() {
                     }
                 }
 
-                // Tasks done card - softer coral
+                // Tasks done card - softer coral with navigation
                 Card(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).clickable {
+                        navigationManager?.navigateToTasks(
+                            filter = TaskFilter.TODAY,
+                            fromScreen = "home"
+                        )
+                    },
                     colors = CardDefaults.cardColors(
                         containerColor = DesignTokens.TasksDone
                     ),
@@ -246,10 +358,16 @@ fun NewHomeScreen() {
             }
         }
 
-        // Streak card - matching screenshot exactly
+        // Streak card - matching screenshot exactly with navigation
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable {
+                    navigationManager?.navigateToProgress(
+                        timeRange = TimeRange.WEEK,
+                        highlightElement = "streak_chart",
+                        fromScreen = "home"
+                    )
+                },
                 colors = CardDefaults.cardColors(
                     containerColor = DesignTokens.StreakFire
                 ),
@@ -456,7 +574,12 @@ fun NewHomeScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedButton(
-                        onClick = { },
+                        onClick = {
+                            navigationManager?.navigateToTasks(
+                                filter = TaskFilter.CREATE_NEW,
+                                fromScreen = "home"
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = Color(0xFF2196F3)
@@ -476,55 +599,148 @@ fun NewHomeScreen() {
             }
         }
 
-        // Today's Tasks section - matching screenshot exactly
+        // Today's Tasks section with navigation
         item {
-            Text(
-                text = "Today's Tasks",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Today's Tasks",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                Row {
+                    if (navigationManager != null) {
+                        IconButton(
+                            onClick = {
+                                navigationManager.navigateToTasks(
+                                    filter = TaskFilter.CREATE_NEW,
+                                    fromScreen = "home"
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add Task",
+                                tint = Color(0xFF2196F3)
+                            )
+                        }
+                    }
+
+                    if (sharedViewModel != null || navigationManager != null) {
+                        TextButton(
+                            onClick = {
+                                if (navigationManager != null) {
+                                    navigationManager.navigateToTasks(
+                                        filter = TaskFilter.TODAY,
+                                        fromScreen = "home"
+                                    )
+                                } else {
+                                    sharedViewModel?.navigateToTasks()
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "View All",
+                                color = Color(0xFF2196F3),
+                                fontSize = 14.sp
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
         }
 
-        // Task items - exactly matching screenshot
-        item {
-            TaskItemScreenshot(
-                category = "Grammar",
-                title = "Complete Grammar Practice Set",
-                time = "15min",
-                points = "50 points",
-                isCompleted = false,
-                categoryColor = DesignTokens.TaskGrammar,
-                borderColor = Color(0xFF2196F3),
-                onToggleComplete = { }
-            )
-        }
+        // Real task items from SharedViewModel
+        if (sharedViewModel != null && todayTasks.isNotEmpty()) {
+            items(todayTasks) { task ->
+                TaskItemIntegrated(
+                    task = task,
+                    onToggleComplete = {
+                        sharedViewModel.completeTask(task.id)
+                    },
+                    onTaskClick = {
+                        if (navigationManager != null) {
+                            navigationManager.navigateToTaskDetail(
+                                taskId = task.id,
+                                fromScreen = "home"
+                            )
+                        } else {
+                            sharedViewModel.navigateToTasks(
+                                com.mtlc.studyplan.shared.TaskFilter.ById(task.id)
+                            )
+                        }
+                    }
+                )
+            }
+        } else {
+            // Fallback static tasks when SharedViewModel not available
+            item {
+                TaskItemScreenshot(
+                    category = "Grammar",
+                    title = "Complete Grammar Practice Set",
+                    time = "15min",
+                    points = "50 points",
+                    isCompleted = false,
+                    categoryColor = DesignTokens.TaskGrammar,
+                    borderColor = Color(0xFF2196F3),
+                    onToggleComplete = { },
+                    onTaskClick = {
+                        navigationManager?.navigateToTasks(
+                            filter = TaskFilter.TODAY,
+                            fromScreen = "home"
+                        )
+                    }
+                )
+            }
 
-        item {
-            TaskItemScreenshot(
-                category = "Reading",
-                title = "Reading Comprehension - Science Articles",
-                time = "20min",
-                points = "75 points",
-                isCompleted = false,
-                categoryColor = DesignTokens.TaskReading,
-                borderColor = Color(0xFF4CAF50),
-                onToggleComplete = { }
-            )
-        }
+            item {
+                TaskItemScreenshot(
+                    category = "Reading",
+                    title = "Reading Comprehension - Science Articles",
+                    time = "20min",
+                    points = "75 points",
+                    isCompleted = false,
+                    categoryColor = DesignTokens.TaskReading,
+                    borderColor = Color(0xFF4CAF50),
+                    onToggleComplete = { },
+                    onTaskClick = {
+                        navigationManager?.navigateToTasks(
+                            filter = TaskFilter.TODAY,
+                            fromScreen = "home"
+                        )
+                    }
+                )
+            }
 
-        item {
-            TaskItemScreenshot(
-                category = "Vocabulary",
-                title = "Vocabulary Builder - Advanced Words",
-                time = "10min",
-                points = "25 points",
-                isCompleted = true,
-                categoryColor = DesignTokens.TaskVocabulary,
-                borderColor = Color(0xFF8BC34A),
-                onToggleComplete = { }
-            )
+            item {
+                TaskItemScreenshot(
+                    category = "Vocabulary",
+                    title = "Vocabulary Builder - Advanced Words",
+                    time = "10min",
+                    points = "25 points",
+                    isCompleted = true,
+                    categoryColor = DesignTokens.TaskVocabulary,
+                    borderColor = Color(0xFF8BC34A),
+                    onToggleComplete = { },
+                    onTaskClick = {
+                        navigationManager?.navigateToTasks(
+                            filter = TaskFilter.TODAY,
+                            fromScreen = "home"
+                        )
+                    }
+                )
+            }
         }
 
         // Bottom spacing for navigation
@@ -543,7 +759,8 @@ fun TaskItemScreenshot(
     isCompleted: Boolean,
     categoryColor: Color,
     borderColor: Color,
-    onToggleComplete: () -> Unit
+    onToggleComplete: () -> Unit,
+    onTaskClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -552,7 +769,8 @@ fun TaskItemScreenshot(
                 width = 4.dp,
                 color = borderColor,
                 shape = RoundedCornerShape(12.dp)
-            ),
+            )
+            .clickable { onTaskClick() },
         colors = CardDefaults.cardColors(
             containerColor = if (isCompleted) categoryColor else categoryColor.copy(alpha = 0.3f)
         ),
@@ -637,6 +855,178 @@ fun TaskItemScreenshot(
                         .border(2.dp, Color.Gray.copy(alpha = 0.3f), CircleShape)
                 ) {
                     // Empty circle for incomplete tasks
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TaskItemIntegrated(
+    task: com.mtlc.studyplan.shared.AppTask,
+    onToggleComplete: () -> Unit,
+    onTaskClick: () -> Unit
+) {
+    val categoryColor = when (task.category) {
+        com.mtlc.studyplan.shared.TaskCategory.GRAMMAR -> DesignTokens.TaskGrammar
+        com.mtlc.studyplan.shared.TaskCategory.READING -> DesignTokens.TaskReading
+        com.mtlc.studyplan.shared.TaskCategory.VOCABULARY -> DesignTokens.TaskVocabulary
+        com.mtlc.studyplan.shared.TaskCategory.LISTENING -> Color(0xFFFF9800)
+        com.mtlc.studyplan.shared.TaskCategory.PRACTICE_EXAM -> Color(0xFF9C27B0)
+        com.mtlc.studyplan.shared.TaskCategory.OTHER -> Color(0xFF607D8B)
+    }
+
+    val borderColor = when (task.category) {
+        com.mtlc.studyplan.shared.TaskCategory.GRAMMAR -> Color(0xFF2196F3)
+        com.mtlc.studyplan.shared.TaskCategory.READING -> Color(0xFF4CAF50)
+        com.mtlc.studyplan.shared.TaskCategory.VOCABULARY -> Color(0xFF8BC34A)
+        com.mtlc.studyplan.shared.TaskCategory.LISTENING -> Color(0xFFFF9800)
+        com.mtlc.studyplan.shared.TaskCategory.PRACTICE_EXAM -> Color(0xFF9C27B0)
+        com.mtlc.studyplan.shared.TaskCategory.OTHER -> Color(0xFF607D8B)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onTaskClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = categoryColor
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Completion checkbox
+            Checkbox(
+                checked = task.isCompleted,
+                onCheckedChange = { onToggleComplete() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = borderColor,
+                    uncheckedColor = Color.White,
+                    checkmarkColor = Color.White
+                )
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Task content
+            Column(modifier = Modifier.weight(1f)) {
+                // Category tag
+                Surface(
+                    color = Color.White.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        text = task.category.name,
+                        fontSize = 10.sp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Task title
+                Text(
+                    text = task.title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Time and points
+                Row {
+                    Text(
+                        text = "${task.estimatedMinutes}min",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "${task.xpReward} points",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            // Completion indicator
+            if (task.isCompleted) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Completed",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun OfflineIndicatorCard(
+    pendingActionsCount: Int,
+    onSyncClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFC107)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CloudOff,
+                    contentDescription = "Offline",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Offline Mode",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "$pendingActionsCount actions pending sync",
+                        fontSize = 12.sp,
+                        color = Color.Black.copy(alpha = 0.7f)
+                    )
+                }
+            }
+
+            if (pendingActionsCount > 0) {
+                com.mtlc.studyplan.ui.SettingsAwareTextButton(
+                    onClick = onSyncClick,
+                    hapticType = com.mtlc.studyplan.utils.HapticType.LIGHT_CLICK
+                ) {
+                    Text(
+                        text = "Sync",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

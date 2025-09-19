@@ -109,6 +109,18 @@ import com.mtlc.studyplan.ui.components.UndoAction
 import com.mtlc.studyplan.ui.components.UndoSnackbarEffect
 import com.mtlc.studyplan.ui.components.rememberUndoManager
 import com.mtlc.studyplan.utils.Constants
+import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.settings.integration.AppIntegrationManager
+import com.mtlc.studyplan.settings.integration.AppIntegrationViewModel
+import com.mtlc.studyplan.settings.integration.rememberThemeState
+import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.gamification.GamificationManager
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -428,6 +440,14 @@ object LanguageManager {
 
 //region ANA ACTIVITY VE YARDIMCI FONKSİYONLAR
 class MainActivity : ComponentActivity() {
+    private lateinit var progressRepository: ProgressRepository
+    private lateinit var appIntegrationManager: AppIntegrationManager
+    private lateinit var sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel
+    private lateinit var settingsManager: com.mtlc.studyplan.settings.manager.SettingsManager
+    private lateinit var themeManager: com.mtlc.studyplan.theme.ThemeManager
+    private lateinit var notificationManager: com.mtlc.studyplan.notifications.NotificationManager
+    private lateinit var offlineManager: com.mtlc.studyplan.offline.OfflineManager
+
     override fun attachBaseContext(newBase: Context?) {
         val currentLanguage = LanguageManager.getCurrentLanguage(newBase ?: super.getBaseContext())
         val updatedContext = LanguageManager.updateLocale(newBase ?: super.getBaseContext(), currentLanguage)
@@ -440,16 +460,81 @@ class MainActivity : ComponentActivity() {
         // PlanDataSource'u initialize et
         PlanDataSource.initialize(this)
 
+        // Initialize repositories and managers
+        progressRepository = ProgressRepository(dataStore)
+        val settingsRepository = SettingsRepository(this)
+        val gamificationManager = GamificationManager(dataStore, progressRepository)
+
+        // Initialize new settings system
+        val appEventBus = com.mtlc.studyplan.eventbus.AppEventBus()
+        val networkMonitor = com.mtlc.studyplan.network.NetworkMonitor(this)
+
+        settingsManager = com.mtlc.studyplan.settings.manager.SettingsManager(
+            settingsRepository = settingsRepository,
+            appEventBus = appEventBus
+        )
+
+        themeManager = com.mtlc.studyplan.theme.ThemeManager(this)
+
+        notificationManager = com.mtlc.studyplan.notifications.NotificationManager(
+            context = this,
+            settingsManager = settingsManager,
+            appIntegrationManager = appIntegrationManager,
+            appEventBus = appEventBus
+        )
+
+        offlineManager = com.mtlc.studyplan.offline.OfflineManager(
+            context = this,
+            networkMonitor = networkMonitor,
+            settingsManager = settingsManager,
+            appEventBus = appEventBus
+        )
+
+        // Set manager dependencies to avoid circular injection
+        settingsManager.setThemeManager(themeManager)
+        settingsManager.setNotificationManager(notificationManager)
+        settingsManager.setOfflineManager(offlineManager)
+
+        appIntegrationManager = AppIntegrationManager(this, settingsRepository, gamificationManager)
+
+        // Initialize SharedViewModel
+        sharedViewModel = ViewModelProvider(this)[com.mtlc.studyplan.shared.SharedAppViewModel::class.java]
+
+        // Connect SharedViewModel with AppIntegrationManager
+        sharedViewModel.initializeIntegration(appIntegrationManager)
+
+        // Setup navigation event handling
+        setupNavigationObserver()
+
         // Get real certificate pins for network security configuration
         // UNCOMMENT THIS LINE IN DEBUG MODE TO GET ACTUAL CERTIFICATE HASHES
         // CertificatePinRetriever.getCertificatePins()
 
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
-                AppNavHost()
+            // Use new theme system
+            com.mtlc.studyplan.theme.StudyPlanTheme(themeManager = themeManager) {
+                com.mtlc.studyplan.ui.SettingsAwareContent(settingsManager = settingsManager) { settings ->
+                    AppNavHost(
+                        appIntegrationManager = appIntegrationManager,
+                        sharedViewModel = sharedViewModel
+                    )
+                }
             }
         }
+    }
+
+    private fun setupNavigationObserver() {
+        lifecycleScope.launch {
+            sharedViewModel.navigationEvent.collect { event ->
+                handleNavigationEvent(event)
+            }
+        }
+    }
+
+    private fun handleNavigationEvent(event: com.mtlc.studyplan.shared.NavigationEvent) {
+        // Navigation events will be handled by the composable navigation system
+        // This is here for any Activity-level navigation needs
     }
 }
 

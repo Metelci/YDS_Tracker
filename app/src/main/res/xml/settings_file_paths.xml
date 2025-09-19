@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- External storage for backup files -->
+    <external-files-path
+        name="settings_backups"
+        path="backups/" />
+
+    <!-- Cache directory for temporary files -->
+    <cache-path
+        name="settings_cache"
+        path="settings/" />
+
+    <!-- Internal storage for sensitive settings -->
+    <files-path
+        name="settings_secure"
+        path="secure/" />
+</paths>

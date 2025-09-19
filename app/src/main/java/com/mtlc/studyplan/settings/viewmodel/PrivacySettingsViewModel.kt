@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,16 +19,16 @@ class PrivacySettingsViewModel(
 ) : ViewModel() {
 
     data class PrivacyUiState(
-        val isLoading: Boolean = false,
-        val isError: Boolean = false,
-        val isSuccess: Boolean = false,
+        override val isLoading: Boolean = false,
+        override val isError: Boolean = false,
+        override val isSuccess: Boolean = false,
         val settings: List<SettingItem> = emptyList(),
-        val error: AppError? = null,
+        override val error: AppError? = null,
         val profileVisibilityEnabled: Boolean = true,
         val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
         val anonymousAnalytics: Boolean = true,
         val progressSharing: Boolean = true
-    )
+    ) : BaseSettingsUiState
 
     private val _uiState = MutableStateFlow(PrivacyUiState())
     val uiState: StateFlow<PrivacyUiState> = _uiState.asStateFlow()
@@ -94,6 +95,8 @@ class PrivacySettingsViewModel(
                 title = "Profile Visibility",
                 description = "Allow others to see your study profile",
                 value = privacyData.profileVisibilityEnabled,
+                key = SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
+                defaultValue = true,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 1
@@ -122,6 +125,7 @@ class PrivacySettingsViewModel(
                     )
                 ),
                 currentValue = privacyData.profileVisibilityLevel,
+                key = SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
                 isEnabled = privacyData.profileVisibilityEnabled,
                 category = "privacy",
                 sortOrder = 2
@@ -133,6 +137,8 @@ class PrivacySettingsViewModel(
                 title = "Anonymous Analytics",
                 description = "Help improve the app by sharing anonymous usage data",
                 value = privacyData.anonymousAnalytics,
+                key = SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
+                defaultValue = true,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 3
@@ -144,6 +150,8 @@ class PrivacySettingsViewModel(
                 title = "Progress Sharing",
                 description = "Allow sharing of your study progress and achievements",
                 value = privacyData.progressSharing,
+                key = SettingsKeys.Privacy.PROGRESS_SHARING,
+                defaultValue = true,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 4
@@ -307,31 +315,4 @@ class PrivacySettingsViewModel(
 
 /**
  * Data classes for privacy settings
- */
-data class PrivacyData(
-    val profileVisibilityEnabled: Boolean = true,
-    val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
-    val anonymousAnalytics: Boolean = true,
-    val progressSharing: Boolean = true
-)
 
-enum class ProfileVisibilityLevel {
-    PUBLIC, FRIENDS_ONLY, PRIVATE
-}
-
-/**
- * Factory for creating PrivacySettingsViewModel
- */
-class PrivacySettingsViewModelFactory(
-    private val repository: SettingsRepository,
-    private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PrivacySettingsViewModel::class.java)) {
-            return PrivacySettingsViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}

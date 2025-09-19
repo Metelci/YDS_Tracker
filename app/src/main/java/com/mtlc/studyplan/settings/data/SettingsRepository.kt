@@ -33,16 +33,50 @@ class SettingsRepository(
     // Cache for preference values to avoid repeated SharedPreferences access
     private val valueCache = ConcurrentHashMap<String, Any?>()
 
+    private val privacyState = MutableStateFlow(loadPrivacyData())
+    private val notificationState = MutableStateFlow(loadNotificationData())
+    private val gamificationState = MutableStateFlow(loadGamificationData())
+
+    private val privacyKeys = setOf(
+        SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
+        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
+        SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
+        SettingsKeys.Privacy.PROGRESS_SHARING
+    )
+
+    private val notificationKeys = setOf(
+        SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
+        SettingsKeys.Notifications.STUDY_REMINDERS,
+        SettingsKeys.Notifications.STUDY_REMINDER_TIME,
+        SettingsKeys.Notifications.ACHIEVEMENT_ALERTS,
+        SettingsKeys.Notifications.EMAIL_SUMMARIES,
+        SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY
+    )
+
+    private val gamificationKeys = setOf(
+        SettingsKeys.Gamification.STREAK_TRACKING,
+        SettingsKeys.Gamification.POINTS_REWARDS,
+        SettingsKeys.Gamification.CELEBRATION_EFFECTS,
+        SettingsKeys.Gamification.STREAK_RISK_WARNINGS
+    )
+
     // Preference change listener for reactive updates
     private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         coroutineScope.launch {
             key?.let {
                 valueCache.remove(it)
+                when (it) {
+                    in privacyKeys -> privacyState.value = loadPrivacyData()
+                    in notificationKeys -> notificationState.value = loadNotificationData()
+                    in gamificationKeys -> gamificationState.value = loadGamificationData()
+                }
                 _changeEvents.emit(
                     SettingChangeEvent(
                         key = it,
-                        oldValue = null, // We don't track old values in this simple implementation
+                        oldValue = null,
                         newValue = getValueForKey(it)
+                    )
+                )
                     )
                 )
             }
@@ -113,6 +147,21 @@ class SettingsRepository(
     }
 
     /**
+     * Observe privacy settings.
+     */
+    fun getPrivacySettings(): Flow<PrivacyData> = privacyState.asStateFlow()
+
+    /**
+     * Observe notification settings.
+     */
+    fun getNotificationSettings(): Flow<NotificationData> = notificationState.asStateFlow()
+
+    /**
+     * Observe gamification settings.
+     */
+    fun getGamificationSettings(): Flow<GamificationData> = gamificationState.asStateFlow()
+
+    /**
      * Update a setting value with validation and error handling
      */
     suspend fun updateSetting(request: SettingsUpdateRequest): SettingsOperationResult {
@@ -152,6 +201,18 @@ class SettingsRepository(
             SettingsOperationResult.Error("Failed to update setting: ${e.message}", e)
         }
     }
+
+    private fun handleOperationResult(result: SettingsOperationResult) {
+        when (result) {
+            is SettingsOperationResult.Success -> Unit
+            is SettingsOperationResult.ValidationError -> {
+                val message = result.errors.firstOrNull()?.message ?: "Invalid value"
+                throw IllegalArgumentException(message)
+            }
+            is SettingsOperationResult.Error -> throw result.cause ?: RuntimeException(result.message)
+        }
+    }
+
 
     /**
      * Reset all settings to default values
@@ -384,6 +445,298 @@ class SettingsRepository(
         }
     }
 
+    suspend fun updatePrivacySetting(id: String, value: Any) {
+        val result = when (id) {
+            "profile_visibility_enabled" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for profile visibility enabled")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
+                        enabled
+                    )
+                )
+            }
+            "profile_visibility_level" -> {
+                val level = when (value) {
+                    is ProfileVisibilityLevel -> value
+                    is String -> ProfileVisibilityLevel.valueOf(value)
+                    else -> throw IllegalArgumentException("Expected profile visibility level value")
+                }
+                updateSetting(
+                    SettingsUpdateRequest.UpdateString(
+                        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
+                        level.name
+                    )
+                )
+            }
+            "anonymous_analytics" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for anonymous analytics")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
+                        enabled
+                    )
+                )
+            }
+            "progress_sharing" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for progress sharing")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Privacy.PROGRESS_SHARING,
+                        enabled
+                    )
+                )
+            }
+            else -> throw IllegalArgumentException("Unknown privacy setting: $id")
+        }
+
+        handleOperationResult(result)
+        privacyState.value = loadPrivacyData()
+    }
+
+    suspend fun updateNotificationSetting(id: String, value: Any) {
+        val result = when (id) {
+            "push_notifications" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for push notifications")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
+                        enabled
+                    )
+                )
+            }
+            "study_reminders" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for study reminders")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Notifications.STUDY_REMINDERS,
+                        enabled
+                    )
+                )
+            }
+            "study_reminder_time" -> {
+                val timeValue = when (value) {
+                    is TimeValue -> value
+                    is String -> parseTimeValue(value)
+                    else -> throw IllegalArgumentException("Expected TimeValue for reminder time")
+                }
+                updateSetting(
+                    SettingsUpdateRequest.UpdateString(
+                        SettingsKeys.Notifications.STUDY_REMINDER_TIME,
+                        serializeTimeValue(timeValue)
+                    )
+                )
+            }
+            "achievement_alerts" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for achievement alerts")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Notifications.ACHIEVEMENT_ALERTS,
+                        enabled
+                    )
+                )
+            }
+            "email_summaries" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for email summaries")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Notifications.EMAIL_SUMMARIES,
+                        enabled
+                    )
+                )
+            }
+            "email_frequency" -> {
+                val frequency = when (value) {
+                    is EmailFrequency -> value
+                    is String -> EmailFrequency.valueOf(value)
+                    else -> throw IllegalArgumentException("Expected EmailFrequency value")
+                }
+                updateSetting(
+                    SettingsUpdateRequest.UpdateString(
+                        SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY,
+                        frequency.name
+                    )
+                )
+            }
+            else -> throw IllegalArgumentException("Unknown notification setting: $id")
+        }
+
+        handleOperationResult(result)
+        notificationState.value = loadNotificationData()
+    }
+
+    suspend fun updateGamificationSetting(id: String, value: Any) {
+        val result = when (id) {
+            "streak_tracking" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for streak tracking")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Gamification.STREAK_TRACKING,
+                        enabled
+                    )
+                )
+            }
+            "points_rewards" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for points and rewards")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Gamification.POINTS_REWARDS,
+                        enabled
+                    )
+                )
+            }
+            "celebration_effects" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for celebration effects")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Gamification.CELEBRATION_EFFECTS,
+                        enabled
+                    )
+                )
+            }
+            "streak_risk_warnings" -> {
+                val enabled = value as? Boolean
+                    ?: throw IllegalArgumentException("Expected boolean for streak risk warnings")
+                updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean(
+                        SettingsKeys.Gamification.STREAK_RISK_WARNINGS,
+                        enabled
+                    )
+                )
+            }
+            else -> throw IllegalArgumentException("Unknown gamification setting: $id")
+        }
+
+        handleOperationResult(result)
+        gamificationState.value = loadGamificationData()
+    }
+
+    suspend fun sendTestNotification() {
+        delay(300)
+    }
+
+    suspend fun exportPersonalData() {
+        exportSettings()
+    }
+
+    suspend fun clearAllPersonalData() {
+        preferences.edit {
+            putBoolean(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED, true)
+            putString(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL, ProfileVisibilityLevel.FRIENDS_ONLY.name)
+            putBoolean(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS, true)
+            putBoolean(SettingsKeys.Privacy.PROGRESS_SHARING, true)
+        }
+
+        valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED)
+        valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL)
+        valueCache.remove(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS)
+        valueCache.remove(SettingsKeys.Privacy.PROGRESS_SHARING)
+
+        privacyState.value = loadPrivacyData()
+    }
+
+    private fun loadPrivacyData(): PrivacyData {
+        return PrivacyData(
+            profileVisibilityEnabled = preferences.getBoolean(
+                SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED)
+            ),
+            profileVisibilityLevel = preferences.getString(
+                SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
+                ProfileVisibilityLevel.FRIENDS_ONLY.name
+            )?.let { runCatching { ProfileVisibilityLevel.valueOf(it) }.getOrDefault(ProfileVisibilityLevel.FRIENDS_ONLY) }
+                ?: ProfileVisibilityLevel.FRIENDS_ONLY,
+            anonymousAnalytics = preferences.getBoolean(
+                SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS)
+            ),
+            progressSharing = preferences.getBoolean(
+                SettingsKeys.Privacy.PROGRESS_SHARING,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.PROGRESS_SHARING)
+            )
+        )
+    }
+
+    private fun loadNotificationData(): NotificationData {
+        val timeString = preferences.getString(
+            SettingsKeys.Notifications.STUDY_REMINDER_TIME,
+            "09:00"
+        )
+        val frequencyString = preferences.getString(
+            SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY,
+            EmailFrequency.WEEKLY.name
+        )
+
+        return NotificationData(
+            pushNotifications = preferences.getBoolean(
+                SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Notifications.PUSH_NOTIFICATIONS)
+            ),
+            studyReminders = preferences.getBoolean(
+                SettingsKeys.Notifications.STUDY_REMINDERS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Notifications.STUDY_REMINDERS)
+            ),
+            studyReminderTime = parseTimeValue(timeString),
+            achievementAlerts = preferences.getBoolean(
+                SettingsKeys.Notifications.ACHIEVEMENT_ALERTS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS)
+            ),
+            emailSummaries = preferences.getBoolean(
+                SettingsKeys.Notifications.EMAIL_SUMMARIES,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Notifications.EMAIL_SUMMARIES)
+            ),
+            emailFrequency = runCatching { EmailFrequency.valueOf(frequencyString ?: EmailFrequency.WEEKLY.name) }
+                .getOrDefault(EmailFrequency.WEEKLY)
+        )
+    }
+
+    private fun loadGamificationData(): GamificationData {
+        return GamificationData(
+            streakTracking = preferences.getBoolean(
+                SettingsKeys.Gamification.STREAK_TRACKING,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Gamification.STREAK_TRACKING)
+            ),
+            pointsRewards = preferences.getBoolean(
+                SettingsKeys.Gamification.POINTS_REWARDS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Gamification.POINTS_REWARDS)
+            ),
+            celebrationEffects = preferences.getBoolean(
+                SettingsKeys.Gamification.CELEBRATION_EFFECTS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Gamification.CELEBRATION_EFFECTS)
+            ),
+            streakRiskWarnings = preferences.getBoolean(
+                SettingsKeys.Gamification.STREAK_RISK_WARNINGS,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Gamification.STREAK_RISK_WARNINGS)
+            )
+        )
+    }
+
+    private fun serializeTimeValue(timeValue: TimeValue): String {
+        val hour = timeValue.hour.coerceIn(0, 23)
+        val minute = timeValue.minute.coerceIn(0, 59)
+        return "%02d:%02d".format(hour, minute)
+    }
+
+    private fun parseTimeValue(raw: String?): TimeValue {
+        if (raw.isNullOrBlank()) {
+            return TimeValue(9, 0)
+        }
+        val parts = raw.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 9
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        return TimeValue(hour, minute)
+    }
+
     fun dispose() {
         preferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
         coroutineScope.cancel()
@@ -400,7 +753,8 @@ class SettingsRepository(
 private object defaultValues {
     private val defaults = mapOf<String, Any>(
         // Privacy defaults
-        SettingsKeys.Privacy.PROFILE_VISIBILITY to true,
+        SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED to true,
+        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL to ProfileVisibilityLevel.FRIENDS_ONLY.name,
         SettingsKeys.Privacy.ANONYMOUS_ANALYTICS to false,
         SettingsKeys.Privacy.PROGRESS_SHARING to true,
         SettingsKeys.Privacy.DATA_COLLECTION_CONSENT to false,
@@ -412,8 +766,10 @@ private object defaultValues {
         // Notification defaults
         SettingsKeys.Notifications.PUSH_NOTIFICATIONS to true,
         SettingsKeys.Notifications.STUDY_REMINDERS to true,
+        SettingsKeys.Notifications.STUDY_REMINDER_TIME to "09:00",
         SettingsKeys.Notifications.ACHIEVEMENT_ALERTS to true,
         SettingsKeys.Notifications.EMAIL_SUMMARIES to false,
+        SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY to EmailFrequency.WEEKLY.name,
         SettingsKeys.Notifications.WEEKLY_REPORTS to true,
         SettingsKeys.Notifications.STREAK_WARNINGS to true,
         SettingsKeys.Notifications.GOAL_REMINDERS to true,
@@ -527,3 +883,5 @@ private object defaultValues {
 
     fun getTypeForKey(key: String): kotlin.reflect.KClass<*>? = defaults[key]?.let { it::class }
 }
+
+

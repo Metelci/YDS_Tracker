@@ -76,9 +76,49 @@ import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
-fun AppNavHost() {
+fun AppNavHost(
+    appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null,
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null
+) {
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
+
+    // Handle navigation events from SharedViewModel
+    sharedViewModel?.let { viewModel ->
+        LaunchedEffect(navController) {
+            viewModel.navigationEvent.collect { event ->
+                when (event) {
+                    is com.mtlc.studyplan.shared.NavigationEvent.GoToHome -> {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                    is com.mtlc.studyplan.shared.NavigationEvent.GoToTasks -> {
+                        navController.navigate("tasks") {
+                            launchSingleTop = true
+                        }
+                    }
+                    is com.mtlc.studyplan.shared.NavigationEvent.GoToProgress -> {
+                        navController.navigate("progress") {
+                            launchSingleTop = true
+                        }
+                    }
+                    is com.mtlc.studyplan.shared.NavigationEvent.GoToSocial -> {
+                        navController.navigate("social") {
+                            launchSingleTop = true
+                        }
+                    }
+                    is com.mtlc.studyplan.shared.NavigationEvent.GoToSettings -> {
+                        navController.navigate("settings") {
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Schedule background prefetch once per app start
     val appCtx = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(Unit) {
@@ -229,7 +269,9 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "home_animation"
             ) { _ ->
-                com.mtlc.studyplan.feature.home.NewHomeScreen()
+                com.mtlc.studyplan.feature.home.NewHomeScreen(
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
 
@@ -254,7 +296,9 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "tasks_animation"
             ) { _ ->
-                com.mtlc.studyplan.feature.tasks.TasksScreen()
+                com.mtlc.studyplan.feature.tasks.TasksScreen(
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
 
@@ -409,7 +453,9 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "progress_animation"
             ) { _ ->
-                ProgressScreen()
+                ProgressScreen(
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
 
@@ -434,7 +480,9 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "social_animation"
             ) { _ ->
-                com.mtlc.studyplan.social.SocialScreen()
+                com.mtlc.studyplan.social.SocialScreen(
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
 
@@ -459,12 +507,19 @@ fun AppNavHost() {
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "settings_animation"
             ) { _ ->
-                com.mtlc.studyplan.settings.ui.SettingsScreen(
-                    onNavigateToCategory = { route ->
-                        navController.navigate(route)
-                    },
-                    onBack = { navController.popBackStack() }
-                )
+                if (appIntegrationManager != null) {
+                    com.mtlc.studyplan.settings.ui.EnhancedSettingsScreen(
+                        appIntegrationManager = appIntegrationManager,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                } else {
+                    com.mtlc.studyplan.settings.ui.SettingsScreen(
+                        onNavigateToCategory = { route ->
+                            navController.navigate(route)
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
 

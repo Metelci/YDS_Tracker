@@ -44,8 +44,9 @@ sealed class SettingItem {
         override val isEnabled: Boolean = true,
         override val category: String,
         override val sortOrder: Int = 0,
-        val key: String,
         val defaultValue: Boolean = false,
+        val value: Boolean = defaultValue,
+        val key: String? = null,
         val requiresRestart: Boolean = false,
         val validationRules: List<ValidationRule> = emptyList()
     ) : SettingItem()
@@ -57,18 +58,31 @@ sealed class SettingItem {
         override val isEnabled: Boolean = true,
         override val category: String,
         override val sortOrder: Int = 0,
-        val key: String,
         val options: List<SelectionOption<T>>,
-        val selectedIndex: Int = 0,
+        val currentValue: T,
+        val key: String? = null,
         val requiresRestart: Boolean = false,
         val validationRules: List<ValidationRule> = emptyList()
     ) : SettingItem() {
+        val selectedIndex: Int
+            get() = options.indexOfFirst { it.value == currentValue }.takeIf { it >= 0 } ?: 0
+
         val selectedOption: SelectionOption<T>?
             get() = options.getOrNull(selectedIndex)
-
-        val selectedValue: T?
-            get() = selectedOption?.value
     }
+
+    data class TimeSetting(
+        override val id: String,
+        override val title: String,
+        override val description: String,
+        override val isEnabled: Boolean = true,
+        override val category: String,
+        override val sortOrder: Int = 0,
+        val currentTime: TimeValue,
+        val key: String? = null,
+        val requiresRestart: Boolean = false,
+        val validationRules: List<ValidationRule> = emptyList()
+    ) : SettingItem()
 
     data class ActionSetting(
         override val id: String,
@@ -78,9 +92,13 @@ sealed class SettingItem {
         override val category: String,
         override val sortOrder: Int = 0,
         val action: SettingAction,
+        val buttonText: String = title,
+        val actionType: ActionType = ActionType.SECONDARY,
         val confirmationRequired: Boolean = false,
         val confirmationMessage: String? = null
-    ) : SettingItem()
+    ) : SettingItem() {
+        enum class ActionType { PRIMARY, SECONDARY, DESTRUCTIVE }
+    }
 
     data class RangeSetting(
         override val id: String,
@@ -116,34 +134,35 @@ sealed class SettingItem {
         val validationRules: List<ValidationRule> = emptyList()
     ) : SettingItem()
 }
-
 /**
  * Represents an option in a selection setting
  */
 data class SelectionOption<T>(
-    val label: String,
+    val display: String,
     val value: T,
     val description: String? = null,
     @DrawableRes val iconRes: Int? = null,
     val isEnabled: Boolean = true
 )
 
-/**
- * Represents an action that can be performed from settings
- */
-sealed class SettingAction {
-    object ClearCache : SettingAction()
-    object ExportData : SettingAction()
-    object ImportData : SettingAction()
-    object ResetSettings : SettingAction()
-    object ContactSupport : SettingAction()
-    object ShowAbout : SettingAction()
-    object OpenPrivacyPolicy : SettingAction()
-    object OpenTermsOfService : SettingAction()
-    object ResetProgress : SettingAction()
-    object SyncData : SettingAction()
-    data class OpenUrl(val url: String) : SettingAction()
-    data class Custom(val actionId: String, val data: Map<String, Any> = emptyMap()) : SettingAction()
+data class TimeValue(
+    val hour: Int,
+    val minute: Int
+) {
+    fun formatTime(): String {
+        val normalizedHour = ((hour % 24) + 24) % 24
+        val displayHour = when (val h = normalizedHour % 12) {
+            0 -> 12
+            else -> h
+        }
+        val minuteString = minute.coerceIn(0, 59).toString().padStart(2, '0')
+        val suffix = if (normalizedHour >= 12) "PM" else "AM"
+        return "$displayHour:$minuteString $suffix"
+    }
+}
+
+enum class EmailFrequency {
+    DAILY, WEEKLY, MONTHLY, NEVER
 }
 
 /**
@@ -240,6 +259,13 @@ sealed class ValidationRule {
     }
 }
 
+typealias ToggleSetting = SettingItem.ToggleSetting
+typealias SelectionSetting<T> = SettingItem.SelectionSetting<T>
+typealias TimeSetting = SettingItem.TimeSetting
+typealias ActionSetting = SettingItem.ActionSetting
+typealias RangeSetting = SettingItem.RangeSetting
+typealias TextSetting = SettingItem.TextSetting
+
 /**
  * Result of a validation operation
  */
@@ -317,4 +343,57 @@ sealed class SettingsOperationResult {
     object Success : SettingsOperationResult()
     data class Error(val message: String, val cause: Throwable? = null) : SettingsOperationResult()
     data class ValidationError(val errors: List<ValidationResult.Invalid>) : SettingsOperationResult()
+}
+
+/**
+ * Setting constraints that enforce business rules
+ */
+data class SettingConstraint(
+    val type: Type,
+    val description: String,
+    val condition: ((Any?) -> Boolean)? = null,
+    val relatedSettings: List<String> = emptyList()
+) {
+    enum class Type {
+        REQUIRES_FEATURE,      // Setting requires a specific feature to be available
+        MUTUALLY_EXCLUSIVE,    // Setting cannot be enabled with certain other settings
+        DEPENDENCY,            // Setting depends on other settings being enabled
+        PERMISSION_REQUIRED    // Setting requires specific permissions
+    }
+}
+
+/**
+ * Setting dependencies that control enablement
+ */
+data class SettingDependency(
+    val parentSettingId: String,
+    val condition: DependencyCondition,
+    val description: String
+)
+
+/**
+ * Dependency conditions
+ */
+sealed class DependencyCondition {
+    abstract fun isMet(parentValue: Any?): Boolean
+
+    object MustBeEnabled : DependencyCondition() {
+        override fun isMet(parentValue: Any?): Boolean = parentValue == true
+    }
+
+    object MustBeDisabled : DependencyCondition() {
+        override fun isMet(parentValue: Any?): Boolean = parentValue == false
+    }
+
+    data class MustEqual(val expectedValue: Any) : DependencyCondition() {
+        override fun isMet(parentValue: Any?): Boolean = parentValue == expectedValue
+    }
+
+    data class MustNotEqual(val forbiddenValue: Any) : DependencyCondition() {
+        override fun isMet(parentValue: Any?): Boolean = parentValue != forbiddenValue
+    }
+
+    data class Custom(val predicate: (Any?) -> Boolean) : DependencyCondition() {
+        override fun isMet(parentValue: Any?): Boolean = predicate(parentValue)
+    }
 }

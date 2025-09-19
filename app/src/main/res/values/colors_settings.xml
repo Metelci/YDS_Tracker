@@ -2,7 +2,7 @@
 <resources>
     <!-- Settings-specific colors -->
     <color name="card_selected_background">#E3F2FD</color>
-    <color name="card_background">?attr/colorSurfaceContainerLow</color>
+    <color name="card_background">#F8F9FA</color>
     <color name="icon_selected_tint">?attr/colorPrimary</color>
     <color name="search_highlight_color">#FFEB3B</color>
     <color name="selection_overlay_color">?attr/colorPrimary</color>

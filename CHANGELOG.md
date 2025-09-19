@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-09-19
+
+### Added
+- Unified settings hub with Hilt-backed repositories, offline controls, and real-time notification toggles across the app
+- Navigation badges, shared view model, and Compose micro-interactions powering the rebuilt Home, Tasks, Progress, and Social experiences
+- Calendar sync worker plus multi-channel notifications with snooze/mute actions and smarter scheduling
+
+### Improved
+- Home dashboard, task board, and progress analytics now surface richer stats, streak coaching, and offline status at a glance
+- Settings fragments and loading components adopt consistent Material 3 styling, haptic-aware feedback, and leaner rendering paths
+- Social hub cards and achievement timelines gained better filtering, polish, and live updates from the shared state engine
+
+### Fixed
+- Resolved badge counts and navigation state getting out of sync after backgrounding the app
+- Hardened notification scheduling, calendar sync recovery, and offline queue retries to avoid silent failures
+- Addressed settings persistence edge cases and loading indicators that could stall during heavy refreshes
+
 ## [2.4.0] - 2025-09-16
 
 ### Added
@@ -408,5 +425,7 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
+
 
 

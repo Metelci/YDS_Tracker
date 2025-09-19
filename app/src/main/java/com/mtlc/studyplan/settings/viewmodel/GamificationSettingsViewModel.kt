@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,18 +19,16 @@ class GamificationSettingsViewModel(
 ) : ViewModel() {
 
     data class GamificationUiState(
-        val isLoading: Boolean = false,
-        val isError: Boolean = false,
-        val isSuccess: Boolean = false,
+        override val isLoading: Boolean = false,
+        override val isError: Boolean = false,
+        override val isSuccess: Boolean = false,
         val settings: List<SettingItem> = emptyList(),
-        val error: AppError? = null,
+        override val error: AppError? = null,
         val streakTracking: Boolean = true,
         val pointsRewards: Boolean = true,
         val celebrationEffects: Boolean = true,
-        val streakRiskWarnings: Boolean = true,
-        val currentStreak: Int = 0,
-        val totalPoints: Int = 0
-    )
+        val streakRiskWarnings: Boolean = true
+    ) : BaseSettingsUiState
 
     private val _uiState = MutableStateFlow(GamificationUiState())
     val uiState: StateFlow<GamificationUiState> = _uiState.asStateFlow()
@@ -91,6 +90,8 @@ class GamificationSettingsViewModel(
                 title = "Streak Tracking",
                 description = "Track daily study streaks (Current: ${gamificationData.currentStreak} days)",
                 value = gamificationData.streakTracking,
+                key = SettingsKeys.Gamification.STREAK_TRACKING,
+                defaultValue = true,
                 isEnabled = true,
                 category = "gamification",
                 sortOrder = 1
@@ -102,6 +103,8 @@ class GamificationSettingsViewModel(
                 title = "Points & Rewards",
                 description = "Earn points for completed tasks (Total: ${gamificationData.totalPoints} points)",
                 value = gamificationData.pointsRewards,
+                key = SettingsKeys.Gamification.POINTS_REWARDS,
+                defaultValue = true,
                 isEnabled = true,
                 category = "gamification",
                 sortOrder = 2
@@ -113,6 +116,8 @@ class GamificationSettingsViewModel(
                 title = "Celebration Effects",
                 description = "Show confetti and animations when achieving milestones",
                 value = gamificationData.celebrationEffects,
+                key = SettingsKeys.Gamification.CELEBRATION_EFFECTS,
+                defaultValue = true,
                 isEnabled = true,
                 category = "gamification",
                 sortOrder = 3
@@ -124,6 +129,8 @@ class GamificationSettingsViewModel(
                 title = "Streak Risk Warnings",
                 description = "Get notified when your streak is at risk of breaking",
                 value = gamificationData.streakRiskWarnings,
+                key = SettingsKeys.Gamification.STREAK_RISK_WARNINGS,
+                defaultValue = true,
                 isEnabled = gamificationData.streakTracking,
                 category = "gamification",
                 sortOrder = 4
@@ -286,29 +293,5 @@ class GamificationSettingsViewModel(
 
 /**
  * Data classes for gamification settings
- */
-data class GamificationData(
-    val streakTracking: Boolean = true,
-    val pointsRewards: Boolean = true,
-    val celebrationEffects: Boolean = true,
-    val streakRiskWarnings: Boolean = true,
-    val currentStreak: Int = 0,
-    val totalPoints: Int = 0
-)
 
-/**
- * Factory for creating GamificationSettingsViewModel
- */
-class GamificationSettingsViewModelFactory(
-    private val repository: SettingsRepository,
-    private val context: Context
-) : ViewModelProvider.Factory {
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(GamificationSettingsViewModel::class.java)) {
-            return GamificationSettingsViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}

@@ -1,7 +1,7 @@
 # Road to YDS (StudyPlan)
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-[![Version](https://img.shields.io/badge/version-1.9.2-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![API](https://img.shields.io/badge/API-30%2B-orange.svg)](https://android-arsenal.com/api?level=30)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org/)

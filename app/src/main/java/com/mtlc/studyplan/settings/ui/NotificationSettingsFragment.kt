@@ -1,6 +1,5 @@
 package com.mtlc.studyplan.settings.ui
 
-import android.app.TimePickerDialog
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -10,13 +9,11 @@ import com.mtlc.studyplan.settings.data.*
 import com.mtlc.studyplan.settings.viewmodel.NotificationSettingsViewModel
 import com.mtlc.studyplan.settings.viewmodel.NotificationSettingsViewModelFactory
 import kotlinx.coroutines.flow.Flow
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Fragment for notification settings with time picker and frequency selection
  */
-class NotificationSettingsFragment : BaseSettingsFragment() {
+class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsViewModel.NotificationUiState>() {
 
     private val viewModel: NotificationSettingsViewModel by viewModels {
         NotificationSettingsViewModelFactory(
@@ -35,13 +32,10 @@ class NotificationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    override fun getUiStateFlow(): Flow<*> = viewModel.uiState
+    override fun getUiStateFlow(): Flow<NotificationSettingsViewModel.NotificationUiState> = viewModel.uiState
 
-    override fun extractSettingsFromUiState(uiState: Any): List<SettingItem> {
-        return when (uiState) {
-            is NotificationSettingsViewModel.NotificationUiState -> uiState.settings
-            else -> emptyList()
-        }
+    override fun extractSettingsFromUiState(uiState: NotificationSettingsViewModel.NotificationUiState): List<SettingItem> {
+        return uiState.settings
     }
 
     override fun getCurrentSettingValue(setting: SettingItem): Any? {
@@ -81,9 +75,9 @@ class NotificationSettingsFragment : BaseSettingsFragment() {
                 }
             }
             "email_frequency" -> {
-                if (newValue is String) {
-                    val frequency = EmailFrequency.valueOf(newValue)
-                    viewModel.updateEmailFrequency(frequency)
+                when (newValue) {
+                    is EmailFrequency -> viewModel.updateEmailFrequency(newValue)
+                    is String -> viewModel.updateEmailFrequency(EmailFrequency.valueOf(newValue))
                 }
             }
             "notification_test" -> {
@@ -177,13 +171,7 @@ class NotificationSettingsFragment : BaseSettingsFragment() {
             val newTime = TimeValue(timePicker.hour, timePicker.minute)
             onTimeSelected(newTime)
 
-            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, newTime.hour)
-                set(Calendar.MINUTE, newTime.minute)
-            }
-            val timeString = timeFormat.format(calendar.time)
-
+            val timeString = newTime.formatTime()
             showSettingFeedback("Reminder time set to $timeString")
         }
 
@@ -213,36 +201,6 @@ class NotificationSettingsFragment : BaseSettingsFragment() {
         "Notification settings are not available at the moment. Please try again later."
 }
 
-/**
- * Data classes for notification settings
- */
-data class TimeValue(
-    val hour: Int,
-    val minute: Int
-) {
-    fun formatTime(): String {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-        }
-        val format = SimpleDateFormat("h:mm a", Locale.getDefault())
-        return format.format(calendar.time)
-    }
-}
 
-enum class EmailFrequency {
-    DAILY, WEEKLY, MONTHLY, NEVER
-}
 
-/**
- * Custom setting type for time selection
- */
-data class TimeSetting(
-    override val id: String,
-    override val title: String,
-    override val description: String,
-    val currentTime: TimeValue,
-    override val isEnabled: Boolean,
-    override val category: String,
-    override val sortOrder: Int
-) : SettingItem
+

@@ -1,5 +1,19 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.5.0 (Build 42) - September 19, 2025
+
+### Personalised Control Center
+- Brand-new settings hub lets you toggle themes, notifications, offline mode, and gamification with instant feedback
+- Calendar sync, quiet hours, and reminder scheduling now live directly inside the app
+
+### Smarter Daily Flow
+- Home, Tasks, Progress, and Social tabs are rebuilt with live badges, streak coaching, and offline indicators
+- Fresh micro-animations and haptic touches make completing tasks, checking stats, and celebrating wins feel responsive
+
+### Reliability Boosts
+- Notifications gain snooze/mute actions plus sturdier scheduling so reminders arrive on time
+- Offline queue, calendar sync, and loading states recover gracefully even on flaky connections
+
 ## Version 2.4.0 (Build 40) - September 16, 2025
 
 ### Unified Smart Content Intelligence
@@ -137,6 +151,7 @@ Revolutionary AI analytics engine that transforms the StudyPlan experience with 
 - 🎨 Focus Score Calculation: Session continuity and accuracy correlation analysis
 - 💡 Weak Area Intelligence: Error pattern analysis with automated improvement suggestions
 - 📅 SmartScheduler Integration: Unified AI system combining analytics with intelligent scheduling
+
 
 
 

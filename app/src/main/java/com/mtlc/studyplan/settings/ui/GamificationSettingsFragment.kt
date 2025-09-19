@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Fragment for gamification settings with streak tracking and rewards
  */
-class GamificationSettingsFragment : BaseSettingsFragment() {
+class GamificationSettingsFragment : BaseSettingsFragment<GamificationSettingsViewModel.GamificationUiState>() {
 
     private val viewModel: GamificationSettingsViewModel by viewModels {
         GamificationSettingsViewModelFactory(
@@ -30,13 +30,10 @@ class GamificationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    override fun getUiStateFlow(): Flow<*> = viewModel.uiState
+    override fun getUiStateFlow(): Flow<GamificationSettingsViewModel.GamificationUiState> = viewModel.uiState
 
-    override fun extractSettingsFromUiState(uiState: Any): List<SettingItem> {
-        return when (uiState) {
-            is GamificationSettingsViewModel.GamificationUiState -> uiState.settings
-            else -> emptyList()
-        }
+    override fun extractSettingsFromUiState(uiState: GamificationSettingsViewModel.GamificationUiState): List<SettingItem> {
+        return uiState.settings
     }
 
     override fun getCurrentSettingValue(setting: SettingItem): Any? {

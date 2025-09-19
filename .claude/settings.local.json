@@ -19,7 +19,10 @@
       "Bash(.\\gradlew.bat:*)",
       "Bash(gradlew.bat:*)",
       "Bash(git checkout:*)",
-      "Bash(.\\gradlew.bat build:*)"
+      "Bash(.\\gradlew.bat build:*)",
+      "Bash(.gradlew.bat build)",
+      "Bash(dir)",
+      "Bash(.gradlew.bat clean)"
     ],
     "deny": [],
     "ask": []

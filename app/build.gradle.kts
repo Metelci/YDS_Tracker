@@ -9,6 +9,9 @@ plugins {
     
     // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
+
+    // Dependency Injection with Hilt
+    id("com.google.dagger.hilt.android") version "2.48"
 }
 
 android {
@@ -19,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 41
-        versionName = "2.4.1"
+        versionCode = 42
+        versionName = "2.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -100,6 +103,13 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
+    // Dependency Injection with Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    ksp("androidx.hilt:hilt-compiler:1.1.0")
+
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
@@ -119,4 +129,11 @@ dependencies {
 
 ksp {
     arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
 }
+
+
+
+
+
+

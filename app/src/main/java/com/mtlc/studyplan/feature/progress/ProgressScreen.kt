@@ -71,6 +71,15 @@ import com.mtlc.studyplan.feature.progress.viewmodel.ProgressViewModelFactory
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.realtime.RealTimeUpdateManager
+import com.mtlc.studyplan.realtime.ProgressUpdateType
+import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
+import com.mtlc.studyplan.navigation.TimeRange
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.ui.draw.scale
+import kotlinx.coroutines.flow.collect
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -222,7 +231,11 @@ private enum class SkillType(
 }
 
 @Composable
-fun ProgressScreen() {
+fun ProgressScreen(
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
+    realTimeUpdateManager: RealTimeUpdateManager? = null,
+    navigationManager: StudyPlanNavigationManager? = null
+) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
     val appContext = remember(context) { context.applicationContext as Context }
@@ -244,6 +257,113 @@ fun ProgressScreen() {
 
     val uiState by viewModel.uiState.collectAsState()
     val globalError by viewModel.globalError.collectAsState()
+
+    // Collect SharedViewModel state for real-time updates
+    val sharedProgress by if (sharedViewModel != null) {
+        sharedViewModel.userProgress.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.data.UserProgress()) }
+    }
+
+    val sharedStudyStats by if (sharedViewModel != null) {
+        sharedViewModel.studyStats.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.shared.StudyStats()) }
+    }
+
+    val sharedCurrentStreak by if (sharedViewModel != null) {
+        sharedViewModel.currentStreak.collectAsState()
+    } else {
+        remember { mutableStateOf(0) }
+    }
+
+    val sharedAchievements by if (sharedViewModel != null) {
+        sharedViewModel.achievements.collectAsState()
+    } else {
+        remember { mutableStateOf(emptyList<com.mtlc.studyplan.data.Achievement>()) }
+    }
+
+    // Real-time update states
+    var animatingProgress by remember { mutableStateOf(false) }
+    var animatingPoints by remember { mutableStateOf(false) }
+    var animatingStreak by remember { mutableStateOf(false) }
+    var animatingAchievements by remember { mutableStateOf(false) }
+    val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    // Handle deep link parameters for navigation
+    LaunchedEffect(deepLinkParams) {
+        deepLinkParams?.let { params ->
+            params.progressTimeRange?.let { timeRange ->
+                // Handle navigation to specific progress view
+                // Could scroll to specific chart or highlight element
+            }
+            params.highlightElement?.let { element ->
+                // Highlight specific UI element
+                when (element) {
+                    "daily_progress" -> animatingProgress = true
+                    "streak_chart" -> animatingStreak = true
+                    "today_summary" -> animatingProgress = true
+                }
+            }
+        }
+    }
+
+    // Real-time progress updates
+    LaunchedEffect(realTimeUpdateManager) {
+        realTimeUpdateManager?.progressUpdates?.collect { update ->
+            when (update.type) {
+                ProgressUpdateType.TASK_COMPLETED -> {
+                    animatingProgress = true
+                    animatingPoints = true
+                    kotlinx.coroutines.delay(1500)
+                    animatingProgress = false
+                    animatingPoints = false
+                }
+                ProgressUpdateType.DAILY_SUMMARY -> {
+                    animatingProgress = true
+                    kotlinx.coroutines.delay(1000)
+                    animatingProgress = false
+                }
+                ProgressUpdateType.MILESTONE_REACHED -> {
+                    animatingProgress = true
+                    animatingAchievements = true
+                    kotlinx.coroutines.delay(2000)
+                    animatingProgress = false
+                    animatingAchievements = false
+                }
+                else -> {}
+            }
+        }
+    }
+
+    // Real-time streak updates
+    LaunchedEffect(realTimeUpdateManager) {
+        realTimeUpdateManager?.streakUpdates?.collect { update ->
+            if (update.isExtension) {
+                animatingStreak = true
+                kotlinx.coroutines.delay(1500)
+                animatingStreak = false
+            }
+        }
+    }
+
+    // Real-time achievement updates
+    LaunchedEffect(realTimeUpdateManager) {
+        realTimeUpdateManager?.achievementUpdates?.collect { update ->
+            animatingAchievements = true
+            kotlinx.coroutines.delay(2000)
+            animatingAchievements = false
+        }
+    }
+
+    // Real-time points updates
+    LaunchedEffect(realTimeUpdateManager) {
+        realTimeUpdateManager?.pointsUpdates?.collect { update ->
+            animatingPoints = true
+            kotlinx.coroutines.delay(1000)
+            animatingPoints = false
+        }
+    }
 
     // Handle global errors
     globalError?.let { error ->
@@ -280,12 +400,23 @@ fun ProgressScreen() {
             )
         }
         else -> {
-            // Convert ViewModel UI state to legacy format
-            val legacyUiState = convertToLegacyUiState(uiState)
+            // Use SharedViewModel data if available, fallback to local ViewModel
+            val legacyUiState = if (sharedViewModel != null) {
+                convertSharedDataToLegacyUiState(sharedStudyStats, sharedProgress, sharedAchievements, sharedCurrentStreak)
+            } else {
+                convertToLegacyUiState(uiState)
+            }
 
             ProgressScreenContent(
                 uiState = legacyUiState,
                 streakData = uiState.streakData,
+                sharedStudyStats = sharedStudyStats,
+                sharedCurrentStreak = sharedCurrentStreak,
+                animatingProgress = animatingProgress,
+                animatingPoints = animatingPoints,
+                animatingStreak = animatingStreak,
+                animatingAchievements = animatingAchievements,
+                navigationManager = navigationManager,
                 onRefresh = { viewModel.refresh() },
                 onResetProgress = { viewModel.resetProgress() },
                 onExportProgress = { format -> viewModel.exportProgress(format) },
@@ -302,6 +433,13 @@ fun ProgressScreen() {
 private fun ProgressScreenContent(
     uiState: ProgressUiState,
     streakData: com.mtlc.studyplan.feature.progress.viewmodel.StreakData?,
+    sharedStudyStats: com.mtlc.studyplan.shared.StudyStats,
+    sharedCurrentStreak: Int,
+    animatingProgress: Boolean,
+    animatingPoints: Boolean,
+    animatingStreak: Boolean,
+    animatingAchievements: Boolean,
+    navigationManager: StudyPlanNavigationManager?,
     onRefresh: () -> Unit,
     onResetProgress: () -> Unit,
     onExportProgress: (String) -> Unit,
@@ -323,14 +461,35 @@ private fun ProgressScreenContent(
         ProgressTabRow(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
 
         when (selectedTab) {
-            ProgressTab.OVERVIEW -> OverviewTabContent(uiState.overview)
-            ProgressTab.SKILLS -> SkillsTabContent(uiState.skills)
-            ProgressTab.AWARDS -> AwardsTabContent(uiState.awards)
+            ProgressTab.OVERVIEW -> OverviewTabContent(
+                overview = uiState.overview,
+                animatingProgress = animatingProgress,
+                animatingPoints = animatingPoints,
+                navigationManager = navigationManager
+            )
+            ProgressTab.SKILLS -> SkillsTabContent(
+                skills = uiState.skills,
+                animatingProgress = animatingProgress
+            )
+            ProgressTab.AWARDS -> AwardsTabContent(
+                awards = uiState.awards,
+                animatingAchievements = animatingAchievements,
+                navigationManager = navigationManager
+            )
             ProgressTab.ANALYTICS -> AnalyticsTabContent(
                 selectedRange = selectedRange,
                 onRangeSelected = { selectedRange = it },
                 analytics = uiState.analytics,
-                streakState = streakState
+                animatingStreak = animatingStreak,
+                streakState = streakData?.let { data ->
+                    StreakState(
+                        currentStreak = data.currentStreak,
+                        multiplier = StreakMultiplier.getMultiplierForStreak(data.currentStreak),
+                        isInDanger = data.isInDanger,
+                        hoursUntilBreak = data.hoursUntilBreak,
+                        lastActivityDate = data.lastActivityTimestamp
+                    )
+                }
             )
         }
     }
@@ -404,11 +563,24 @@ private fun ProgressTabRow(
 }
 
 @Composable
-private fun OverviewTabContent(overview: OverviewData) {
+private fun OverviewTabContent(
+    overview: OverviewData,
+    animatingProgress: Boolean,
+    animatingPoints: Boolean,
+    navigationManager: StudyPlanNavigationManager?
+) {
     val spacing = LocalSpacing.current
     Column(verticalArrangement = Arrangement.spacedBy(spacing.md)) {
-        OverviewSummaryRow(overview.summaryCards)
-        WeeklyProgressCard(overview.weeklyProgress)
+        AnimatedOverviewSummaryRow(
+            summaries = overview.summaryCards,
+            animatingPoints = animatingPoints,
+            navigationManager = navigationManager
+        )
+        AnimatedWeeklyProgressCard(
+            days = overview.weeklyProgress,
+            animatingProgress = animatingProgress,
+            navigationManager = navigationManager
+        )
         StudyTimeCard(overview.studyTime)
     }
 }
@@ -587,11 +759,17 @@ private fun StudyTimeCard(studyTime: StudyTimeStats) {
 }
 
 @Composable
-private fun SkillsTabContent(skills: List<SkillCardData>) {
+private fun SkillsTabContent(
+    skills: List<SkillCardData>,
+    animatingProgress: Boolean
+) {
     val spacing = LocalSpacing.current
     Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
         skills.forEach { skill ->
-            SkillProgressCard(skill)
+            AnimatedSkillProgressCard(
+                skill = skill,
+                isAnimating = animatingProgress
+            )
         }
     }
 }
@@ -682,11 +860,25 @@ private fun SkillProgressCard(skill: SkillCardData) {
 }
 
 @Composable
-private fun AwardsTabContent(awards: List<AwardCardData>) {
+private fun AwardsTabContent(
+    awards: List<AwardCardData>,
+    animatingAchievements: Boolean,
+    navigationManager: StudyPlanNavigationManager?
+) {
     val spacing = LocalSpacing.current
     Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
         awards.forEach { award ->
-            AwardCard(award)
+            AnimatedAwardCard(
+                award = award,
+                isAnimating = animatingAchievements && award.isUnlocked,
+                onClick = {
+                    navigationManager?.navigateToSocial(
+                        tab = com.mtlc.studyplan.navigation.SocialTab.ACHIEVEMENTS,
+                        achievementId = award.id,
+                        fromScreen = "progress"
+                    )
+                }
+            )
         }
     }
 }
@@ -755,6 +947,7 @@ private fun AnalyticsTabContent(
     selectedRange: AnalyticsRange,
     onRangeSelected: (AnalyticsRange) -> Unit,
     analytics: Map<AnalyticsRange, AnalyticsSnapshot>,
+    animatingStreak: Boolean,
     streakState: StreakState?
 ) {
     val spacing = LocalSpacing.current
@@ -764,7 +957,10 @@ private fun AnalyticsTabContent(
         if (snapshot != null) {
             AnalyticsSummaryCard(range = selectedRange, snapshot = snapshot)
         }
-        WeeklyStreakCard(streakState)
+        AnimatedWeeklyStreakCard(
+            streakState = streakState,
+            isAnimating = animatingStreak
+        )
     }
 }
 
@@ -1371,4 +1567,486 @@ private fun convertToLegacyUiState(
         awards = awards,
         analytics = emptyMap() // Would need analytics conversion
     )
+}
+
+// Convert SharedViewModel data to legacy format for real-time updates
+private fun convertSharedDataToLegacyUiState(
+    sharedStudyStats: com.mtlc.studyplan.shared.StudyStats,
+    sharedProgress: com.mtlc.studyplan.data.UserProgress,
+    sharedAchievements: List<com.mtlc.studyplan.data.Achievement>,
+    sharedCurrentStreak: Int
+): ProgressUiState {
+    // Build overview data using SharedViewModel stats
+    val overview = OverviewData(
+        summaryCards = listOf(
+            OverviewSummary(
+                "Genel",
+                "${((sharedStudyStats.totalTasksCompleted / 100.0) * 100).toInt()}%",
+                DesignTokens.PrimaryContainer,
+                DesignTokens.PrimaryContainerForeground
+            ),
+            OverviewSummary(
+                "Puan",
+                NumberFormat.getIntegerInstance(turkishLocale).format(sharedStudyStats.totalXP),
+                DesignTokens.SecondaryContainer,
+                DesignTokens.SecondaryContainerForeground
+            ),
+            OverviewSummary(
+                "Ödül",
+                NumberFormat.getIntegerInstance(turkishLocale).format(sharedAchievements.size),
+                DesignTokens.TertiaryContainer,
+                DesignTokens.TertiaryContainerForeground
+            )
+        ),
+        weeklyProgress = emptyList(), // Could build from SharedViewModel weekly data
+        studyTime = StudyTimeStats(
+            totalMinutes = sharedStudyStats.thisWeekStudyTime,
+            averageMinutes = sharedStudyStats.averageSessionTime
+        )
+    )
+
+    // Convert achievements to award cards using shared data
+    val awards = sharedAchievements.map { achievement ->
+        AwardCardData(
+            id = achievement.id,
+            title = achievement.title,
+            description = achievement.description,
+            isUnlocked = achievement.isUnlocked,
+            earnedDate = achievement.unlockedDate,
+            icon = Icons.Outlined.EmojiEvents
+        )
+    }
+
+    // Build basic skills from shared data
+    val skills = SkillType.values().map { skillType ->
+        val progress = 0.5f // Default progress, could calculate from shared stats
+        SkillCardData(
+            type = skillType,
+            pointsLabel = "${(progress * skillType.targetPoints).toInt()}/${skillType.targetPoints} puan",
+            percent = progress,
+            percentLabel = "${(progress * 100).toInt()}%",
+            level = levelForPercent(progress, skillType)
+        )
+    }
+
+    return ProgressUiState(
+        overallPercent = ((sharedStudyStats.totalTasksCompleted / 100.0) * 100).toInt().coerceIn(0, 100),
+        totalPoints = sharedStudyStats.totalXP,
+        awardsCount = sharedAchievements.size,
+        overview = overview,
+        skills = skills,
+        awards = awards,
+        analytics = emptyMap() // Could build analytics from shared stats
+    )
+}
+
+// Animated components for real-time updates
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AnimatedOverviewSummaryRow(
+    summaries: List<OverviewSummary>,
+    animatingPoints: Boolean,
+    navigationManager: StudyPlanNavigationManager?
+) {
+    val spacing = LocalSpacing.current
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(spacing.sm)
+    ) {
+        summaries.forEachIndexed { index, summary ->
+            val isPointsCard = summary.title == "Puan"
+            val scale by animateFloatAsState(
+                targetValue = if (animatingPoints && isPointsCard) 1.1f else 1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+
+            Surface(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+                    .scale(scale)
+                    .clickable {
+                        navigationManager?.navigateToProgress(
+                            timeRange = when (summary.title) {
+                                "Genel" -> TimeRange.TODAY
+                                "Puan" -> TimeRange.WEEK
+                                else -> TimeRange.ALL_TIME
+                            },
+                            highlightElement = summary.title.lowercase(),
+                            fromScreen = "progress"
+                        )
+                    },
+                color = summary.color,
+                contentColor = summary.contentColor,
+                shape = RoundedCornerShape(18.dp),
+                shadowElevation = if (animatingPoints && isPointsCard) 8.dp else 0.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = spacing.md, vertical = spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(spacing.xs)
+                ) {
+                    Text(
+                        text = summary.title,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = summary.contentColor.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        text = summary.value,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (animatingPoints && isPointsCard)
+                            MaterialTheme.colorScheme.primary
+                        else summary.contentColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnimatedWeeklyProgressCard(
+    days: List<WeeklyDayProgress>,
+    animatingProgress: Boolean,
+    navigationManager: StudyPlanNavigationManager?
+) {
+    val spacing = LocalSpacing.current
+    val scale by animateFloatAsState(
+        targetValue = if (animatingProgress) 1.02f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale)
+            .clickable {
+                navigationManager?.navigateToProgress(
+                    timeRange = TimeRange.WEEK,
+                    highlightElement = "weekly_chart",
+                    fromScreen = "progress"
+                )
+            },
+        color = DesignTokens.Surface,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = if (animatingProgress) 4.dp else 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.sm)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Outlined.TrendingUp,
+                    contentDescription = null,
+                    tint = if (animatingProgress) MaterialTheme.colorScheme.primary else DesignTokens.Primary
+                )
+                Spacer(modifier = Modifier.width(spacing.xs))
+                Text(
+                    text = "Haftalık İlerleme",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = if (animatingProgress) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                days.forEach { day ->
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = day.dayLabel,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (day.isToday) FontWeight.SemiBold else FontWeight.Normal
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = day.percentLabel,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(DesignTokens.SurfaceContainerHigh)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(day.percent.coerceIn(0f, 1f))
+                                    .fillMaxHeight()
+                                    .background(
+                                        if (animatingProgress && day.isToday)
+                                            MaterialTheme.colorScheme.primary
+                                        else DesignTokens.Primary
+                                    )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnimatedSkillProgressCard(
+    skill: SkillCardData,
+    isAnimating: Boolean
+) {
+    val spacing = LocalSpacing.current
+    val scale by animateFloatAsState(
+        targetValue = if (isAnimating) 1.02f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale),
+        color = skill.type.containerColor,
+        shape = RoundedCornerShape(20.dp),
+        shadowElevation = if (isAnimating) 4.dp else 0.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.sm)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    modifier = Modifier.size(40.dp),
+                    shape = CircleShape,
+                    color = DesignTokens.Surface,
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        androidx.compose.material3.Icon(
+                            imageVector = skill.type.icon,
+                            contentDescription = null,
+                            tint = if (isAnimating) MaterialTheme.colorScheme.primary else DesignTokens.Primary
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(spacing.sm))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = skill.type.displayName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = skill.pointsLabel,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = skill.level.background,
+                    contentColor = skill.level.foreground
+                ) {
+                    Text(
+                        text = skill.level.label,
+                        modifier = Modifier.padding(horizontal = spacing.sm, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(DesignTokens.Surface)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(skill.percent.coerceIn(0f, 1f))
+                        .fillMaxHeight()
+                        .background(
+                            if (isAnimating) MaterialTheme.colorScheme.primary else DesignTokens.Primary
+                        )
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = skill.percentLabel,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isAnimating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = skill.level.label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnimatedAwardCard(
+    award: AwardCardData,
+    isAnimating: Boolean,
+    onClick: () -> Unit
+) {
+    val spacing = LocalSpacing.current
+    val surfaceColor = if (award.isUnlocked) DesignTokens.SuccessContainer else DesignTokens.Surface
+    val iconTint = if (award.isUnlocked) DesignTokens.Success else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+
+    val scale by animateFloatAsState(
+        targetValue = if (isAnimating) 1.05f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale)
+            .clickable { onClick() },
+        color = surfaceColor,
+        shape = RoundedCornerShape(20.dp),
+        tonalElevation = if (award.isUnlocked) 2.dp else 0.dp,
+        shadowElevation = if (isAnimating) 8.dp else 0.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+        ) {
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = DesignTokens.Surface,
+                tonalElevation = 1.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    androidx.compose.material3.Icon(
+                        imageVector = award.icon,
+                        contentDescription = null,
+                        tint = if (isAnimating) MaterialTheme.colorScheme.primary else iconTint
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = award.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isAnimating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = award.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                val dateText = award.earnedDate?.let { formatDate(it) } ?: "Henüz kilit açılmadı"
+                Text(
+                    text = dateText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+            androidx.compose.material3.Icon(
+                imageVector = if (award.isUnlocked) Icons.Outlined.CheckCircle else Icons.Outlined.Lock,
+                contentDescription = null,
+                tint = if (isAnimating && award.isUnlocked) MaterialTheme.colorScheme.primary else iconTint
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnimatedWeeklyStreakCard(
+    streakState: StreakState?,
+    isAnimating: Boolean
+) {
+    val spacing = LocalSpacing.current
+    val scale by animateFloatAsState(
+        targetValue = if (isAnimating) 1.05f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale),
+        color = DesignTokens.SuccessContainer,
+        shape = RoundedCornerShape(20.dp),
+        shadowElevation = if (isAnimating) 8.dp else 0.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+        ) {
+            Surface(
+                modifier = Modifier.size(44.dp),
+                shape = CircleShape,
+                color = DesignTokens.Surface
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    androidx.compose.material3.Icon(
+                        imageVector = Icons.Outlined.Whatshot,
+                        contentDescription = null,
+                        tint = if (isAnimating) MaterialTheme.colorScheme.primary else DesignTokens.Success
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Haftalık Seri",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isAnimating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                val streakValue = streakState?.currentStreak ?: 0
+                val message = if (streakValue > 0) {
+                    "Harikasın! ${streakValue} gündür serin sürüyor."
+                } else {
+                    "Serini başlatmak için bugün bir görev tamamla."
+                }
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                )
+            }
+            if (isAnimating) {
+                Text(
+                    text = "🔥",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+        }
+    }
 }

@@ -51,11 +51,27 @@ import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import kotlinx.coroutines.launch
+import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
+import com.mtlc.studyplan.social.SocialAchievementManager
+import com.mtlc.studyplan.realtime.RealTimeUpdateManager
+import com.mtlc.studyplan.realtime.AchievementUpdateType
+import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.ui.draw.scale
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Celebration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
-    repository: SocialRepository = remember { FakeSocialRepository() }
+    repository: SocialRepository = remember { FakeSocialRepository() },
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
+    navigationManager: StudyPlanNavigationManager? = null,
+    socialAchievementManager: SocialAchievementManager? = null,
+    realTimeUpdateManager: RealTimeUpdateManager? = null
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
@@ -68,7 +84,78 @@ fun SocialScreen(
     val friends by repository.friends.collectAsState()
     val awards by repository.awards.collectAsState()
 
+    // Collect SharedViewModel state for real-time updates
+    val sharedAchievements by if (sharedViewModel != null) {
+        sharedViewModel.achievements.collectAsState()
+    } else {
+        remember { mutableStateOf(emptyList<com.mtlc.studyplan.data.Achievement>()) }
+    }
+
+    val sharedStudyStats by if (sharedViewModel != null) {
+        sharedViewModel.studyStats.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.shared.StudyStats()) }
+    }
+
+    val sharedCurrentStreak by if (sharedViewModel != null) {
+        sharedViewModel.currentStreak.collectAsState()
+    } else {
+        remember { mutableStateOf(0) }
+    }
+
     var selectedTab by rememberSaveable { mutableStateOf(SocialTab.Profile) }
+    var showCelebrationOverlay by remember { mutableStateOf(false) }
+    var celebrationAchievement by remember { mutableStateOf<com.mtlc.studyplan.actions.Achievement?>(null) }
+    var animatingAchievements by remember { mutableStateOf(false) }
+
+    val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    // Handle deep link parameters for navigation
+    LaunchedEffect(deepLinkParams) {
+        deepLinkParams?.let { params ->
+            params.socialTab?.let { tab ->
+                selectedTab = when (tab) {
+                    com.mtlc.studyplan.navigation.SocialTab.FEED -> SocialTab.Profile // No feed tab in current design
+                    com.mtlc.studyplan.navigation.SocialTab.ACHIEVEMENTS -> SocialTab.Awards
+                    com.mtlc.studyplan.navigation.SocialTab.LEADERBOARD -> SocialTab.Ranks
+                }
+            }
+
+            params.achievementId?.let { achievementId ->
+                // Navigate to awards tab and highlight specific achievement
+                selectedTab = SocialTab.Awards
+                // Could implement scrolling to specific achievement
+            }
+        }
+    }
+
+    // Real-time achievement celebrations
+    LaunchedEffect(realTimeUpdateManager) {
+        realTimeUpdateManager?.achievementUpdates?.collect { update ->
+            when (update.type) {
+                AchievementUpdateType.UNLOCKED -> {
+                    celebrationAchievement = update.achievement
+                    showCelebrationOverlay = true
+                    animatingAchievements = true
+
+                    // Auto-navigate to achievements tab if not already there
+                    if (selectedTab != SocialTab.Awards) {
+                        kotlinx.coroutines.delay(2000) // Let celebration show first
+                        selectedTab = SocialTab.Awards
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
+    // Reset animation after delay
+    LaunchedEffect(animatingAchievements) {
+        if (animatingAchievements) {
+            kotlinx.coroutines.delay(3000)
+            animatingAchievements = false
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -128,6 +215,8 @@ fun SocialScreen(
             when (selectedTab) {
                 SocialTab.Profile -> ProfileTab(
                     profile = profile,
+                    sharedStudyStats = sharedStudyStats,
+                    sharedCurrentStreak = sharedCurrentStreak,
                     onAvatarSelected = { id -> scope.launch { repository.selectAvatar(id) } },
                     onSaveGoal = { hours ->
                         scope.launch {
@@ -195,7 +284,236 @@ fun SocialScreen(
                         }
                     }
                 )
-                SocialTab.Awards -> AwardsTab(awards = awards)
+                SocialTab.Awards -> AwardsTab(
+                    awards = awards,
+                    sharedAchievements = sharedAchievements,
+                    animatingAchievements = animatingAchievements,
+                    onAchievementShare = { achievement ->
+                        scope.launch {
+                            socialAchievementManager?.shareAchievement(
+                                com.mtlc.studyplan.actions.Achievement(
+                                    id = achievement.id,
+                                    title = achievement.title,
+                                    description = achievement.description,
+                                    pointsReward = 100, // Default points
+                                    category = com.mtlc.studyplan.actions.AchievementCategory.TASKS
+                                )
+                            )?.fold(
+                                onSuccess = {
+                                    val message = "Achievement shared successfully!"
+                                    snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                },
+                                onFailure = {
+                                    val message = "Failed to share achievement"
+                                    snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            )
+                        }
+                    },
+                    onAchievementCelebrate = { achievement ->
+                        scope.launch {
+                            socialAchievementManager?.celebrateWithFriends(
+                                com.mtlc.studyplan.actions.Achievement(
+                                    id = achievement.id,
+                                    title = achievement.title,
+                                    description = achievement.description,
+                                    pointsReward = 100,
+                                    category = com.mtlc.studyplan.actions.AchievementCategory.TASKS
+                                )
+                            )?.fold(
+                                onSuccess = { notifications ->
+                                    val message = "Celebration sent to ${notifications.size} friends!"
+                                    snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                },
+                                onFailure = {
+                                    val message = "Failed to send celebration"
+                                    snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        }
+
+        // Achievement celebration overlay
+        if (showCelebrationOverlay && celebrationAchievement != null) {
+            AchievementCelebrationOverlay(
+                achievement = celebrationAchievement!!,
+                onDismiss = {
+                    showCelebrationOverlay = false
+                    celebrationAchievement = null
+                },
+                onShare = {
+                    scope.launch {
+                        socialAchievementManager?.shareAchievement(celebrationAchievement!!)?.fold(
+                            onSuccess = {
+                                val message = "Achievement shared successfully!"
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = SnackbarDuration.Short
+                                )
+                            },
+                            onFailure = {
+                                val message = "Failed to share achievement"
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        )
+                    }
+                    showCelebrationOverlay = false
+                    celebrationAchievement = null
+                },
+                onCelebrate = {
+                    scope.launch {
+                        socialAchievementManager?.celebrateWithFriends(celebrationAchievement!!)?.fold(
+                            onSuccess = { notifications ->
+                                val message = "Celebration sent to ${notifications.size} friends!"
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = SnackbarDuration.Short
+                                )
+                            },
+                            onFailure = {
+                                val message = "Failed to send celebration"
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        )
+                    }
+                    showCelebrationOverlay = false
+                    celebrationAchievement = null
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun AchievementCelebrationOverlay(
+    achievement: com.mtlc.studyplan.actions.Achievement,
+    onDismiss: () -> Unit,
+    onShare: () -> Unit,
+    onCelebrate: () -> Unit
+) {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f))
+            .clickable { onDismiss() },
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.material3.Card(
+            modifier = Modifier
+                .padding(32.dp)
+                .clickable(enabled = false) { /* Prevent click through */ },
+            elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            ) {
+                // Achievement icon with animation
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    // Animated background
+                    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                        drawCircle(
+                            color = androidx.compose.ui.graphics.Color(0xFFFFD700), // Gold
+                            radius = size.minDimension / 2,
+                            alpha = 0.3f
+                        )
+                    }
+
+                    Text(
+                        text = "🏆",
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                }
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Achievement Unlocked! 🎉",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = achievement.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = achievement.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(24.dp))
+
+                // Action buttons
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = onShare,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(4.dp))
+                        Text("Share")
+                    }
+
+                    androidx.compose.material3.Button(
+                        onClick = onCelebrate,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Celebration,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(4.dp))
+                        Text("Celebrate!")
+                    }
+                }
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(12.dp))
+
+                androidx.compose.material3.TextButton(onClick = onDismiss) {
+                    Text("Close")
+                }
             }
         }
     }

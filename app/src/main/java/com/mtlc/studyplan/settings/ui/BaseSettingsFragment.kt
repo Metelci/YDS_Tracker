@@ -17,7 +17,10 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.databinding.FragmentBaseSettingsBinding
 import com.mtlc.studyplan.settings.data.SettingItem
+import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import com.mtlc.studyplan.ui.components.ErrorCard
+import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
+import com.mtlc.studyplan.accessibility.AccessibilityUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -26,12 +29,13 @@ import kotlinx.coroutines.launch
 /**
  * Base fragment providing common functionality for all settings fragments
  */
-abstract class BaseSettingsFragment : Fragment() {
+abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() {
 
     private var _binding: FragmentBaseSettingsBinding? = null
     protected val binding get() = _binding!!
 
     protected lateinit var settingsAdapter: BaseSettingsAdapter
+    protected lateinit var accessibilityManager: AccessibilityEnhancementManager
     private var loadingAnimator: ValueAnimator? = null
     private var pendingUndo: PendingUndoAction? = null
 
@@ -70,8 +74,12 @@ abstract class BaseSettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize accessibility manager
+        accessibilityManager = AccessibilityEnhancementManager(requireContext())
+
         setupRecyclerView()
         setupSwipeRefresh()
+        setupAccessibility()
         observeUiState()
 
         // Set fragment title
@@ -108,6 +116,36 @@ abstract class BaseSettingsFragment : Fragment() {
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
             refreshSettings()
+        }
+    }
+
+    /**
+     * Setup accessibility enhancements
+     */
+    private fun setupAccessibility() {
+        // Apply accessibility-friendly minimum sizes
+        AccessibilityUtils.applyAccessibilityMinimumSizes(binding.root, accessibilityManager)
+
+        // Apply high contrast colors if needed
+        AccessibilityUtils.applyHighContrastColors(binding.root, accessibilityManager)
+
+        // Enhance fragment title accessibility
+        getFragmentTitle()?.let { title ->
+            AccessibilityUtils.enhanceSectionHeaderAccessibility(
+                binding.fragmentTitle,
+                title,
+                getSettingsCount()
+            )
+        }
+
+        // Setup accessibility announcements for important changes
+        if (accessibilityManager.isTalkBackEnabled()) {
+            setupAccessibilityAnnouncements()
+        }
+
+        // Reduce animations if needed
+        if (accessibilityManager.isReduceMotionEnabled()) {
+            disableAnimations()
         }
     }
 
@@ -195,7 +233,7 @@ abstract class BaseSettingsFragment : Fragment() {
     /**
      * Show success state with settings list
      */
-    protected open fun showSuccess(uiState: Any) {
+    protected open fun showSuccess(uiState: UiState) {
         binding.apply {
             loadingContainer.isVisible = false
             errorContainer.isVisible = false
@@ -243,6 +281,15 @@ abstract class BaseSettingsFragment : Fragment() {
 
         // Apply change immediately for UI responsiveness
         applySettingChange(setting, newValue)
+
+        // Announce change for accessibility
+        if (accessibilityManager.isTalkBackEnabled()) {
+            val announcement = accessibilityManager.getAccessibilityAnnouncement(
+                setting.title,
+                newValue?.toString() ?: "disabled"
+            )
+            AccessibilityUtils.announceForAccessibility(binding.root, announcement)
+        }
 
         // Show undo snackbar for important changes
         if (isImportantSetting(setting)) {
@@ -323,8 +370,8 @@ abstract class BaseSettingsFragment : Fragment() {
 
     // Abstract methods to be implemented by subclasses
     protected abstract fun createAdapter(): BaseSettingsAdapter
-    protected abstract fun getUiStateFlow(): Flow<*>
-    protected abstract fun extractSettingsFromUiState(uiState: Any): List<SettingItem>
+    protected abstract fun getUiStateFlow(): Flow<UiState>
+    protected abstract fun extractSettingsFromUiState(uiState: UiState): List<SettingItem>
     protected abstract fun getCurrentSettingValue(setting: SettingItem): Any?
     protected abstract fun applySettingChange(setting: SettingItem, newValue: Any?)
     protected abstract fun persistSettingChange(setting: SettingItem, newValue: Any?)
@@ -338,4 +385,44 @@ abstract class BaseSettingsFragment : Fragment() {
     protected open fun isImportantSetting(setting: SettingItem): Boolean = false
     protected open fun getSettingChangeMessage(setting: SettingItem, newValue: Any?): String =
         "${setting.title} updated"
+
+    // Accessibility helper methods
+    protected open fun getSettingsCount(): Int = 0
+
+    private fun setupAccessibilityAnnouncements() {
+        // Setup live region for important announcements
+        binding.root.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+    }
+
+    private fun disableAnimations() {
+        // Disable animations for users with reduce motion enabled
+        binding.settingsRecyclerView.itemAnimator = null
+        loadingAnimator?.cancel()
+    }
+
+    /**
+     * Highlight specific setting (for deep linking)
+     */
+    fun highlightSetting(settingId: String) {
+        val position = settingsAdapter.findSettingPosition(settingId)
+        if (position >= 0) {
+            binding.settingsRecyclerView.scrollToPosition(position)
+
+            // Highlight the item temporarily
+            binding.settingsRecyclerView.postDelayed({
+                val viewHolder = binding.settingsRecyclerView.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.let { itemView ->
+                    // Temporarily highlight for accessibility
+                    AccessibilityUtils.temporarilyDisableAccessibility(itemView, 500)
+
+                    // Announce for screen readers
+                    if (accessibilityManager.isTalkBackEnabled()) {
+                        val setting = settingsAdapter.getSettingAt(position)
+                        val announcement = "Navigated to ${setting?.title}"
+                        AccessibilityUtils.announceForAccessibility(itemView, announcement)
+                    }
+                }
+            }, 300)
+        }
+    }
 }

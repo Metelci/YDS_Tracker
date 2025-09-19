@@ -203,7 +203,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
         val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
 
         when (currentFragment) {
-            is BaseSettingsFragment -> {
+            is BaseSettingsFragment<*> -> {
                 // TODO: Implement setting highlighting in base fragment
                 highlightSettingInFragment(currentFragment, settingId, highlightText)
             }
@@ -214,7 +214,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
      * Highlight setting in fragment
      */
     private fun highlightSettingInFragment(
-        fragment: BaseSettingsFragment,
+        fragment: BaseSettingsFragment<*>,
         settingId: String,
         highlightText: String?
     ) {

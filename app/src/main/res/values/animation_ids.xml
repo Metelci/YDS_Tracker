@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Animation resource IDs for custom animations -->
+    <item name="shimmer_animator" type="id" />
+    <item name="pulse_animator" type="id" />
+    <item name="scale_animator" type="id" />
+    <item name="color_animator" type="id" />
+    <item name="rotation_animator" type="id" />
+    <item name="bounce_animator" type="id" />
+</resources>

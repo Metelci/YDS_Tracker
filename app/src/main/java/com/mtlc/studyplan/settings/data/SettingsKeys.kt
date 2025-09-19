@@ -16,7 +16,8 @@ object SettingsKeys {
      * Privacy-related settings
      */
     object Privacy {
-        const val PROFILE_VISIBILITY = "privacy_profile_visibility"
+        const val PROFILE_VISIBILITY_ENABLED = "privacy_profile_visibility_enabled"
+        const val PROFILE_VISIBILITY_LEVEL = "privacy_profile_visibility_level"
         const val ANONYMOUS_ANALYTICS = "privacy_anonymous_analytics"
         const val PROGRESS_SHARING = "privacy_progress_sharing"
         const val DATA_COLLECTION_CONSENT = "privacy_data_collection_consent"
@@ -32,8 +33,10 @@ object SettingsKeys {
     object Notifications {
         const val PUSH_NOTIFICATIONS = "notifications_push_enabled"
         const val STUDY_REMINDERS = "notifications_study_reminders"
+        const val STUDY_REMINDER_TIME = "notifications_study_reminder_time"
         const val ACHIEVEMENT_ALERTS = "notifications_achievement_alerts"
         const val EMAIL_SUMMARIES = "notifications_email_summaries"
+        const val EMAIL_SUMMARY_FREQUENCY = "notifications_email_summary_frequency"
         const val WEEKLY_REPORTS = "notifications_weekly_reports"
         const val STREAK_WARNINGS = "notifications_streak_warnings"
         const val GOAL_REMINDERS = "notifications_goal_reminders"
@@ -229,12 +232,12 @@ object SettingsKeys {
  * Extension functions to get all keys from each category
  */
 private fun SettingsKeys.Privacy.getAllKeys(): List<String> = listOf(
-    PROFILE_VISIBILITY, ANONYMOUS_ANALYTICS, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
+    PROFILE_VISIBILITY_ENABLED, PROFILE_VISIBILITY_LEVEL, ANONYMOUS_ANALYTICS, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
     CRASH_REPORTING, PERFORMANCE_ANALYTICS, LOCATION_SHARING, CONTACT_SYNC
 )
 
 private fun SettingsKeys.Notifications.getAllKeys(): List<String> = listOf(
-    PUSH_NOTIFICATIONS, STUDY_REMINDERS, ACHIEVEMENT_ALERTS, EMAIL_SUMMARIES,
+    PUSH_NOTIFICATIONS, STUDY_REMINDERS, STUDY_REMINDER_TIME, ACHIEVEMENT_ALERTS, EMAIL_SUMMARIES, EMAIL_SUMMARY_FREQUENCY,
     WEEKLY_REPORTS, STREAK_WARNINGS, GOAL_REMINDERS, SOCIAL_NOTIFICATIONS,
     QUIET_HOURS_ENABLED, QUIET_HOURS_START, QUIET_HOURS_END, NOTIFICATION_SOUND,
     VIBRATION_ENABLED
@@ -292,3 +295,4 @@ private fun SettingsKeys.Developer.getAllKeys(): List<String> = listOf(
     DEBUG_MODE, SHOW_PERFORMANCE_OVERLAY, MOCK_DATA, CRASH_SIMULATION,
     NETWORK_SIMULATION, LOG_LEVEL, FEATURE_FLAGS
 )
+

@@ -1,5 +1,12 @@
-# Play Store Release Notes - Version 1.9.2
+# Play Store Release Notes - Version 2.5.0
 
+## Version 2.5.0 (Build 42)
+
+- New settings control center with instant theme, notification, offline, and gamification toggles
+- Rebuilt Home, Tasks, Progress, and Social tabs with live badges, streak tips, and richer animations
+- Calendar sync, notifications, and offline queue are more resilient on slow or unstable connections
+
+---
 ## What's New in Version 1.9.2 🚀
 
 ### ✨ Enhanced User Experience
@@ -45,3 +52,4 @@ This release focuses on **transparency, security, and user experience**. We've m
 *As always, Road to YDS remains **100% free** with **no ads**, **no subscriptions**, and **complete privacy**. Your study progress stays on your device and belongs to you.*
 
 **Continue your English mastery journey with confidence!**
+

@@ -1,0 +1,338 @@
+package com.mtlc.studyplan.data
+
+import com.mtlc.studyplan.shared.SharedAppViewModel
+import com.mtlc.studyplan.shared.StudyStats
+import com.mtlc.studyplan.shared.AppTask
+import kotlinx.coroutines.flow.first
+import android.util.Log
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+
+/**
+ * Data Consistency Management System
+ * Ensures all data displays consistently across all screens
+ */
+class DataConsistencyManager(
+    private val sharedViewModel: SharedAppViewModel,
+    private val localRepository: LocalRepository? = null
+) {
+
+    private val dataValidationRules = mapOf(
+        "tasks" to TaskDataValidator(),
+        "progress" to ProgressDataValidator(),
+        "streaks" to StreakDataValidator(),
+        "achievements" to AchievementDataValidator()
+    )
+
+    suspend fun ensureDataConsistency(): ConsistencyResult {
+        try {
+            val inconsistencies = findDataInconsistencies()
+
+            return if (inconsistencies.isNotEmpty()) {
+                Log.w("DataConsistency", "Found ${inconsistencies.size} data inconsistencies")
+                val fixResults = fixDataInconsistencies(inconsistencies)
+                ConsistencyResult.Fixed(inconsistencies, fixResults)
+            } else {
+                Log.d("DataConsistency", "Data is consistent")
+                ConsistencyResult.Consistent
+            }
+        } catch (e: Exception) {
+            Log.e("DataConsistency", "Error checking data consistency", e)
+            return ConsistencyResult.Error(e.message ?: "Unknown error")
+        }
+    }
+
+    private suspend fun findDataInconsistencies(): List<DataInconsistency> {
+        val inconsistencies = mutableListOf<DataInconsistency>()
+
+        try {
+            // Get current data
+            val tasks = sharedViewModel.allTasks.first()
+            val todayTasks = sharedViewModel.todayTasks.first()
+            val progress = sharedViewModel.studyStats.first()
+            val currentStreak = sharedViewModel.currentStreak.first()
+
+            // Check task completion vs progress data
+            val calculatedStats = calculateStatsFromTasks(tasks)
+            if (!statsMatch(calculatedStats, progress)) {
+                inconsistencies.add(
+                    DataInconsistency.StatsMismatch(
+                        calculated = calculatedStats,
+                        stored = progress,
+                        description = "Task completion count doesn't match progress data"
+                    )
+                )
+            }
+
+            // Check streak consistency
+            val calculatedStreak = calculateStreakFromTasks(tasks)
+            if (currentStreak != calculatedStreak) {
+                inconsistencies.add(
+                    DataInconsistency.StreakMismatch(
+                        calculated = calculatedStreak,
+                        stored = currentStreak,
+                        description = "Calculated streak doesn't match stored streak"
+                    )
+                )
+            }
+
+            // Check today's tasks vs all tasks
+            val todayTasksFromAll = filterTodayTasks(tasks)
+            if (todayTasks.size != todayTasksFromAll.size) {
+                inconsistencies.add(
+                    DataInconsistency.TodayTasksMismatch(
+                        todayTasksCount = todayTasks.size,
+                        calculatedCount = todayTasksFromAll.size,
+                        description = "Today's tasks count doesn't match filtered tasks from all tasks"
+                    )
+                )
+            }
+
+            // Validate individual data integrity
+            tasks.forEach { task ->
+                val validationResult = dataValidationRules["tasks"]?.validate(task)
+                if (validationResult is ValidationResult.Invalid) {
+                    inconsistencies.add(
+                        DataInconsistency.DataValidationError(
+                            dataType = "Task",
+                            itemId = task.id,
+                            error = validationResult.error
+                        )
+                    )
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("DataConsistency", "Error finding inconsistencies", e)
+        }
+
+        return inconsistencies
+    }
+
+    private suspend fun fixDataInconsistencies(inconsistencies: List<DataInconsistency>): List<FixResult> {
+        val fixResults = mutableListOf<FixResult>()
+
+        inconsistencies.forEach { inconsistency ->
+            try {
+                when (inconsistency) {
+                    is DataInconsistency.StatsMismatch -> {
+                        sharedViewModel.updateStudyStats(inconsistency.calculated)
+                        fixResults.add(FixResult.Success("Stats corrected"))
+                        logDataFix("Stats corrected", inconsistency)
+                    }
+
+                    is DataInconsistency.StreakMismatch -> {
+                        sharedViewModel.updateStreak(inconsistency.calculated)
+                        fixResults.add(FixResult.Success("Streak corrected"))
+                        logDataFix("Streak corrected", inconsistency)
+                    }
+
+                    is DataInconsistency.TodayTasksMismatch -> {
+                        // Refresh today's tasks from all tasks
+                        val allTasks = sharedViewModel.allTasks.first()
+                        val correctedTodayTasks = filterTodayTasks(allTasks)
+                        sharedViewModel.updateTodayTasks(correctedTodayTasks)
+                        fixResults.add(FixResult.Success("Today's tasks refreshed"))
+                        logDataFix("Today's tasks refreshed", inconsistency)
+                    }
+
+                    is DataInconsistency.DataValidationError -> {
+                        // For validation errors, we log them but don't auto-fix
+                        fixResults.add(FixResult.RequiresManualFix("Data validation error requires manual review"))
+                        logDataFix("Validation error logged", inconsistency)
+                    }
+                }
+            } catch (e: Exception) {
+                fixResults.add(FixResult.Failed("Failed to fix: ${e.message}"))
+                Log.e("DataConsistency", "Failed to fix inconsistency", e)
+            }
+        }
+
+        return fixResults
+    }
+
+    private fun calculateStatsFromTasks(tasks: List<AppTask>): StudyStats {
+        val completedTasks = tasks.filter { it.isCompleted }
+        val totalStudyTime = completedTasks.sumOf { it.estimatedMinutes }
+        val totalXP = completedTasks.sumOf { it.xpReward }
+
+        // Calculate this week's stats
+        val today = LocalDate.now()
+        val weekStart = today.minusDays(today.dayOfWeek.value - 1L)
+
+        // For now, use simple calculation - in real app this would use actual completion dates
+        val thisWeekTasks = completedTasks.size / 7 // Rough estimate
+        val thisWeekStudyTime = totalStudyTime / 7 // Rough estimate
+
+        return StudyStats(
+            totalTasksCompleted = completedTasks.size,
+            currentStreak = 0, // Calculated separately
+            totalStudyTime = totalStudyTime,
+            thisWeekTasks = thisWeekTasks,
+            thisWeekStudyTime = thisWeekStudyTime,
+            averageSessionTime = if (completedTasks.isNotEmpty()) totalStudyTime / completedTasks.size else 0,
+            totalXP = totalXP
+        )
+    }
+
+    private fun calculateStreakFromTasks(tasks: List<AppTask>): Int {
+        // Simple streak calculation - in real app this would use actual completion dates
+        val completedTasks = tasks.filter { it.isCompleted }
+        return if (completedTasks.isNotEmpty()) {
+            // For demo purposes, return streak based on completed tasks
+            minOf(completedTasks.size, 30) // Cap at 30 days
+        } else {
+            0
+        }
+    }
+
+    private fun filterTodayTasks(tasks: List<AppTask>): List<AppTask> {
+        // For demo purposes, return incomplete tasks as "today's tasks"
+        return tasks.filter { !it.isCompleted }.take(10) // Limit to 10 tasks per day
+    }
+
+    private fun statsMatch(calculated: StudyStats, stored: StudyStats): Boolean {
+        return calculated.totalTasksCompleted == stored.totalTasksCompleted &&
+               calculated.totalXP == stored.totalXP &&
+               kotlin.math.abs(calculated.totalStudyTime - stored.totalStudyTime) <= 5 // Allow small variance
+    }
+
+    private fun logDataFix(action: String, inconsistency: DataInconsistency) {
+        Log.i("DataConsistency", "$action - ${inconsistency.description}")
+    }
+
+    // Public method to manually trigger consistency check
+    suspend fun validateAndFix(): ConsistencyResult {
+        return ensureDataConsistency()
+    }
+
+    // Method to get detailed consistency report
+    suspend fun getConsistencyReport(): ConsistencyReport {
+        val inconsistencies = findDataInconsistencies()
+        val taskCount = sharedViewModel.allTasks.first().size
+        val completedCount = sharedViewModel.allTasks.first().count { it.isCompleted }
+        val stats = sharedViewModel.studyStats.first()
+
+        return ConsistencyReport(
+            totalTasks = taskCount,
+            completedTasks = completedCount,
+            currentStats = stats,
+            inconsistencies = inconsistencies,
+            lastChecked = System.currentTimeMillis()
+        )
+    }
+}
+
+// Data classes for consistency management
+sealed class DataInconsistency {
+    abstract val description: String
+
+    data class StatsMismatch(
+        val calculated: StudyStats,
+        val stored: StudyStats,
+        override val description: String
+    ) : DataInconsistency()
+
+    data class StreakMismatch(
+        val calculated: Int,
+        val stored: Int,
+        override val description: String
+    ) : DataInconsistency()
+
+    data class TodayTasksMismatch(
+        val todayTasksCount: Int,
+        val calculatedCount: Int,
+        override val description: String
+    ) : DataInconsistency()
+
+    data class DataValidationError(
+        val dataType: String,
+        val itemId: String,
+        val error: String,
+        override val description: String = "Validation error in $dataType ($itemId): $error"
+    ) : DataInconsistency()
+}
+
+sealed class ConsistencyResult {
+    object Consistent : ConsistencyResult()
+    data class Fixed(
+        val inconsistencies: List<DataInconsistency>,
+        val fixResults: List<FixResult>
+    ) : ConsistencyResult()
+    data class Error(val message: String) : ConsistencyResult()
+}
+
+sealed class FixResult {
+    data class Success(val message: String) : FixResult()
+    data class Failed(val message: String) : FixResult()
+    data class RequiresManualFix(val message: String) : FixResult()
+}
+
+data class ConsistencyReport(
+    val totalTasks: Int,
+    val completedTasks: Int,
+    val currentStats: StudyStats,
+    val inconsistencies: List<DataInconsistency>,
+    val lastChecked: Long
+)
+
+// Validation interfaces and implementations
+interface DataValidator<T> {
+    fun validate(data: T): ValidationResult
+}
+
+sealed class ValidationResult {
+    object Valid : ValidationResult()
+    data class Invalid(val error: String) : ValidationResult()
+}
+
+class TaskDataValidator : DataValidator<AppTask> {
+    override fun validate(data: AppTask): ValidationResult {
+        return when {
+            data.id.isBlank() -> ValidationResult.Invalid("Task ID cannot be blank")
+            data.title.isBlank() -> ValidationResult.Invalid("Task title cannot be blank")
+            data.estimatedMinutes <= 0 -> ValidationResult.Invalid("Estimated minutes must be positive")
+            data.xpReward < 0 -> ValidationResult.Invalid("XP reward cannot be negative")
+            else -> ValidationResult.Valid
+        }
+    }
+}
+
+class ProgressDataValidator : DataValidator<StudyStats> {
+    override fun validate(data: StudyStats): ValidationResult {
+        return when {
+            data.totalTasksCompleted < 0 -> ValidationResult.Invalid("Total tasks completed cannot be negative")
+            data.totalStudyTime < 0 -> ValidationResult.Invalid("Total study time cannot be negative")
+            data.totalXP < 0 -> ValidationResult.Invalid("Total XP cannot be negative")
+            data.currentStreak < 0 -> ValidationResult.Invalid("Current streak cannot be negative")
+            else -> ValidationResult.Valid
+        }
+    }
+}
+
+class StreakDataValidator : DataValidator<Int> {
+    override fun validate(data: Int): ValidationResult {
+        return when {
+            data < 0 -> ValidationResult.Invalid("Streak cannot be negative")
+            data > 3650 -> ValidationResult.Invalid("Streak seems unreasonably high (>10 years)")
+            else -> ValidationResult.Valid
+        }
+    }
+}
+
+class AchievementDataValidator : DataValidator<Achievement> {
+    override fun validate(data: Achievement): ValidationResult {
+        return when {
+            data.id.isBlank() -> ValidationResult.Invalid("Achievement ID cannot be blank")
+            data.title.isBlank() -> ValidationResult.Invalid("Achievement title cannot be blank")
+            else -> ValidationResult.Valid
+        }
+    }
+}
+
+// Placeholder interface for local repository
+interface LocalRepository {
+    suspend fun getTasks(): List<AppTask>
+    suspend fun getStats(): StudyStats
+    suspend fun updateStats(stats: StudyStats)
+}

@@ -1,372 +1,316 @@
 package com.mtlc.studyplan.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-
-/**
- * Shimmer loading effect utilities for StudyPlan app
- */
+import com.mtlc.studyplan.ui.LoadingType
+import com.mtlc.studyplan.error.ErrorEvent
+import com.mtlc.studyplan.error.ErrorType
 
 @Composable
-fun shimmerBrush(showShimmer: Boolean = true): Brush {
-    return if (showShimmer) {
-        val shimmerColors = listOf(
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.2f),
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-        )
-
-        val transition = rememberInfiniteTransition(label = "shimmer")
-        val translateAnimation = transition.animateFloat(
-            initialValue = 0f,
-            targetValue = 1000f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(800),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "shimmer_translate"
-        )
-
-        Brush.linearGradient(
-            colors = shimmerColors,
-            start = Offset.Zero,
-            end = Offset(x = translateAnimation.value, y = translateAnimation.value)
-        )
-    } else {
-        Brush.linearGradient(
-            colors = listOf(Color.Transparent, Color.Transparent),
-            start = Offset.Zero,
-            end = Offset.Zero
-        )
-    }
-}
-
-fun Modifier.shimmer(showShimmer: Boolean = true) = composed {
-    if (showShimmer) {
-        this.background(shimmerBrush(showShimmer))
-    } else {
-        this
-    }
-}
-
-/**
- * Loading card with shimmer effect
- */
-@Composable
-fun ShimmerCard(
+fun StudyPlanLoadingState(
+    isLoading: Boolean,
+    loadingType: LoadingType = LoadingType.SHIMMER,
+    message: String = "Loading...",
+    progress: Float = 0f,
     modifier: Modifier = Modifier,
-    showShimmer: Boolean = true
+    content: @Composable () -> Unit
 ) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .shimmer(showShimmer)
-        )
+    Box(modifier = modifier) {
+        content()
+
+        if (isLoading) {
+            when (loadingType) {
+                LoadingType.SHIMMER -> {
+                    ShimmerOverlay(modifier = Modifier.fillMaxSize())
+                }
+                LoadingType.SPINNER -> {
+                    SpinnerOverlay(
+                        message = message,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                LoadingType.PROGRESS_BAR -> {
+                    ProgressBarOverlay(
+                        progress = progress,
+                        message = message,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                LoadingType.SKELETON -> {
+                    SkeletonLoader(modifier = Modifier.fillMaxSize())
+                }
+                LoadingType.PULL_TO_REFRESH -> {
+                    // Handled by SwipeRefresh
+                }
+            }
+        }
     }
 }
 
-/**
- * Shimmer text placeholder
- */
 @Composable
-fun ShimmerText(
-    modifier: Modifier = Modifier,
-    showShimmer: Boolean = true,
-    width: Float = 0.7f,
-    height: Float = 16f
-) {
+fun ShimmerOverlay(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "shimmer_alpha"
+    )
+
     Box(
         modifier = modifier
-            .fillMaxWidth(width)
-            .height(height.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .shimmer(showShimmer)
+            .background(
+                Color.Gray.copy(alpha = alpha),
+                shape = RoundedCornerShape(8.dp)
+            )
     )
 }
 
-/**
- * Skeleton screen for metric cards
- */
 @Composable
-fun MetricCardSkeleton(
-    modifier: Modifier = Modifier,
-    showShimmer: Boolean = true
+fun SpinnerOverlay(
+    message: String,
+    modifier: Modifier = Modifier
 ) {
-    ElevatedCard(
-        modifier = modifier.width(140.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+    Box(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.5f)),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Card(
+            modifier = Modifier.padding(32.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            // Icon placeholder
-            Box(
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ProgressBarOverlay(
+    progress: Float,
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.5f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier.padding(32.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "${(progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SkeletonLoader(modifier: Modifier = Modifier) {
+    LazyColumn(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(5) {
+            SkeletonTaskItem()
+        }
+    }
+}
+
+@Composable
+fun SkeletonTaskItem() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ShimmerOverlay(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .shimmer(showShimmer)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Value placeholder
-            ShimmerText(
-                width = 0.8f,
-                height = 20f,
-                showShimmer = showShimmer
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            // Subtitle placeholder
-            ShimmerText(
-                width = 0.6f,
-                height = 12f,
-                showShimmer = showShimmer
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                ShimmerOverlay(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(16.dp)
+                )
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Title placeholder
-            ShimmerText(
-                width = 0.9f,
-                height = 11f,
-                showShimmer = showShimmer
-            )
-        }
-    }
-}
+                ShimmerOverlay(
+                    modifier = Modifier
+                        .fillMaxWidth(0.4f)
+                        .height(12.dp)
+                )
+            }
 
-/**
- * Skeleton screen for chart loading
- */
-@Composable
-fun ChartSkeleton(
-    modifier: Modifier = Modifier,
-    showShimmer: Boolean = true
-) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Title placeholder
-            ShimmerText(
-                width = 0.4f,
-                height = 18f,
-                showShimmer = showShimmer
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Chart area placeholder
-            Box(
+            ShimmerOverlay(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .shimmer(showShimmer)
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(20.dp))
             )
         }
     }
 }
 
-/**
- * Skeleton for heatmap loading
- */
 @Composable
-fun HeatmapSkeleton(
-    modifier: Modifier = Modifier,
-    showShimmer: Boolean = true
+fun ErrorDialog(
+    errorEvent: ErrorEvent,
+    onDismiss: () -> Unit,
+    onRetry: (() -> Unit)? = null
 ) {
-    Column(modifier = modifier) {
-        // Title
-        ShimmerText(
-            width = 0.5f,
-            height = 18f,
-            showShimmer = showShimmer
-        )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = when (errorEvent.error.type) {
+                    ErrorType.NO_INTERNET -> Icons.Default.CloudOff
+                    ErrorType.NETWORK -> Icons.Default.NetworkCheck
+                    ErrorType.PERMISSION -> Icons.Default.Security
+                    ErrorType.DATABASE -> Icons.Default.Storage
+                    ErrorType.VALIDATION -> Icons.Default.Warning
+                    else -> Icons.Default.Error
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error
+            )
+        },
+        title = {
+            Text(
+                text = errorEvent.error.title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = errorEvent.error.message,
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-        // Heatmap grid simulation
-        repeat(12) { week ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                repeat(7) { day ->
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .shimmer(showShimmer)
-                    )
+                Text(
+                    text = errorEvent.error.userAction,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            if (errorEvent.error.isRetryable && onRetry != null) {
+                Button(onClick = onRetry) {
+                    Text("Retry")
+                }
+            } else {
+                Button(onClick = onDismiss) {
+                    Text("OK")
                 }
             }
-            if (week < 11) Spacer(modifier = Modifier.height(2.dp))
-        }
-    }
-}
-
-/**
- * Task card skeleton
- */
-@Composable
-fun TaskCardSkeleton(
-    modifier: Modifier = Modifier,
-    showShimmer: Boolean = true
-) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Left colored strip
-            Box(
-                modifier = Modifier
-                    .width(6.dp)
-                    .height(56.dp)
-                    .shimmer(showShimmer)
-            )
-
-            Spacer(Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
-                // Title placeholder
-                ShimmerText(
-                    width = 0.8f,
-                    height = 16f,
-                    showShimmer = showShimmer
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Details placeholder
-                ShimmerText(
-                    width = 0.6f,
-                    height = 14f,
-                    showShimmer = showShimmer
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Minutes placeholder
-                ShimmerText(
-                    width = 0.3f,
-                    height = 12f,
-                    showShimmer = showShimmer
-                )
-            }
-
-            // Checkbox placeholder
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(12.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .shimmer(showShimmer)
-            )
-        }
-    }
-}
-
-/**
- * Loading indicator with accessibility support
- */
-@Composable
-fun LoadingIndicator(
-    modifier: Modifier = Modifier,
-    message: String = "Loading...",
-    showProgress: Boolean = true
-) {
-    Column(
-        modifier = modifier.semantics {
-            contentDescription = message
         },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        if (showProgress) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(16.dp))
+        dismissButton = {
+            if (errorEvent.error.isRetryable && onRetry != null) {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
         }
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
+    )
 }
 
-/**
- * Search loading state
- */
 @Composable
-fun SearchLoadingState(
-    modifier: Modifier = Modifier,
-    query: String = ""
+fun ErrorSnackbar(
+    errorEvent: ErrorEvent,
+    onRetry: (() -> Unit)? = null,
+    onDismiss: () -> Unit
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Snackbar(
+        modifier = Modifier.padding(16.dp),
+        action = {
+            if (errorEvent.error.isRetryable && onRetry != null) {
+                TextButton(onClick = onRetry) {
+                    Text("RETRY")
+                }
+            }
+        },
+        dismissAction = {
+            IconButton(onClick = onDismiss) {
+                Icon(Icons.Default.Close, contentDescription = "Dismiss")
+            }
+        }
     ) {
-        CircularProgressIndicator(modifier = Modifier.size(32.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = if (query.isNotEmpty()) "Searching for \"$query\"..." else "Searching...",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-/**
- * Progressive disclosure loading for expanding content
- */
-@Composable
-fun ProgressiveDisclosureLoading(
-    modifier: Modifier = Modifier,
-    isExpanding: Boolean = true
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(16.dp),
-            strokeWidth = 2.dp
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = if (isExpanding) "Expanding..." else "Loading details...",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text(text = errorEvent.error.message)
     }
 }

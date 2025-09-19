@@ -35,6 +35,10 @@ import com.mtlc.studyplan.feature.tasks.viewmodel.TasksViewModel
 import com.mtlc.studyplan.feature.tasks.viewmodel.TasksViewModelFactory
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.data.*
+import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
+import com.mtlc.studyplan.navigation.TaskFilter
+import com.mtlc.studyplan.navigation.TimeRange
+import kotlinx.coroutines.flow.collect
 
 data class TaskItem(
     val id: String,
@@ -80,7 +84,10 @@ data class SkillProgress(
 }
 
 @Composable
-fun TasksScreen() {
+fun TasksScreen(
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
+    navigationManager: StudyPlanNavigationManager? = null
+) {
     val context = LocalContext.current
 
     // Initialize ViewModel with error handling
@@ -94,6 +101,59 @@ fun TasksScreen() {
 
     val uiState by viewModel.uiState.collectAsState()
     val globalError by viewModel.globalError.collectAsState()
+
+    // Collect SharedViewModel state for real-time updates
+    val sharedTasks by if (sharedViewModel != null) {
+        sharedViewModel.allTasks.collectAsState(initial = emptyList())
+    } else {
+        remember { mutableStateOf(emptyList<com.mtlc.studyplan.shared.AppTask>()) }
+    }
+
+    val sharedStudyStats by if (sharedViewModel != null) {
+        sharedViewModel.studyStats.collectAsState()
+    } else {
+        remember { mutableStateOf(com.mtlc.studyplan.shared.StudyStats()) }
+    }
+
+    val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    var currentFilter by remember { mutableStateOf<TaskFilter?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
+    var highlightedTaskId by remember { mutableStateOf<String?>(null) }
+
+    // Handle deep link parameters
+    LaunchedEffect(deepLinkParams) {
+        deepLinkParams?.let { params ->
+            // Apply filter from navigation
+            params.taskFilter?.let { filter ->
+                currentFilter = filter
+
+                // Handle specific filter types
+                when (filter) {
+                    is TaskFilter.CREATE_NEW -> {
+                        // Show create task dialog or navigate to creation
+                        // This would open a task creation interface
+                    }
+                    is TaskFilter.PENDING -> {
+                        // Focus on pending tasks
+                        currentFilter = TaskFilter.PENDING
+                    }
+                    is TaskFilter.TODAY -> {
+                        currentFilter = TaskFilter.TODAY
+                    }
+                    else -> {
+                        currentFilter = filter
+                    }
+                }
+            }
+
+            // Highlight specific task
+            params.taskId?.let { taskId ->
+                highlightedTaskId = taskId
+                // Auto-scroll to task would be implemented here
+            }
+        }
+    }
 
     // Handle global errors
     globalError?.let { error ->
@@ -132,12 +192,30 @@ fun TasksScreen() {
         else -> {
             TasksScreenContent(
                 uiState = uiState,
-                onTaskComplete = { taskId -> viewModel.completeTask(taskId) },
+                sharedTasks = sharedTasks,
+                sharedStudyStats = sharedStudyStats,
+                currentFilter = currentFilter,
+                highlightedTaskId = highlightedTaskId,
+                navigationManager = navigationManager,
+                onTaskComplete = { taskId ->
+                    // Use SharedViewModel if available, fallback to local ViewModel
+                    if (sharedViewModel != null) {
+                        sharedViewModel.completeTask(taskId)
+                    } else {
+                        viewModel.completeTask(taskId)
+                    }
+                },
                 onTaskUncomplete = { taskId -> viewModel.uncompleteTask(taskId) },
                 onCategoryFilter = { category -> viewModel.filterByCategory(category) },
                 onDifficultyFilter = { difficulty -> viewModel.filterByDifficulty(difficulty) },
                 onClearFilters = { viewModel.clearFilters() },
-                onRefresh = { viewModel.refresh() }
+                onRefresh = { viewModel.refresh() },
+                onTaskClick = { task ->
+                    navigationManager?.navigateToTaskDetail(
+                        taskId = task.id,
+                        fromScreen = "tasks"
+                    )
+                }
             )
         }
     }
@@ -146,40 +224,73 @@ fun TasksScreen() {
 @Composable
 private fun TasksScreenContent(
     uiState: com.mtlc.studyplan.feature.tasks.viewmodel.TasksUiState,
+    sharedTasks: List<com.mtlc.studyplan.shared.AppTask>,
+    sharedStudyStats: com.mtlc.studyplan.shared.StudyStats,
+    currentFilter: TaskFilter?,
+    highlightedTaskId: String?,
+    navigationManager: StudyPlanNavigationManager?,
     onTaskComplete: (String) -> Unit,
     onTaskUncomplete: (String) -> Unit,
     onCategoryFilter: (com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory?) -> Unit,
     onDifficultyFilter: (com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty?) -> Unit,
     onClearFilters: () -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onTaskClick: (TaskItem) -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(TabType.DAILY) }
     var selectedFilter by remember { mutableStateOf(FilterType.ALL) }
 
-    // Convert ViewModel data to legacy format for existing UI
-    val legacyTasks = uiState.filteredTasks.map { task ->
-        TaskItem(
-            id = task.id,
-            title = task.title,
-            category = convertTaskCategory(task.category),
-            difficulty = convertTaskDifficulty(task.difficulty),
-            duration = task.duration,
-            xp = task.xp,
-            isCompleted = task.isCompleted
-        )
+    // Use SharedViewModel data if available, fallback to local ViewModel
+    val legacyTasks = if (sharedTasks.isNotEmpty()) {
+        // Convert SharedViewModel data to legacy format
+        sharedTasks.map { task ->
+            TaskItem(
+                id = task.id,
+                title = task.title,
+                category = convertSharedTaskCategory(task.category),
+                difficulty = convertSharedTaskDifficulty(task.difficulty),
+                duration = task.estimatedMinutes,
+                xp = task.xpReward,
+                isCompleted = task.isCompleted
+            )
+        }
+    } else {
+        // Convert local ViewModel data to legacy format
+        uiState.filteredTasks.map { task ->
+            TaskItem(
+                id = task.id,
+                title = task.title,
+                category = convertTaskCategory(task.category),
+                difficulty = convertTaskDifficulty(task.difficulty),
+                duration = task.duration,
+                xp = task.xp,
+                isCompleted = task.isCompleted
+            )
+        }
     }
 
+    // Use SharedViewModel XP if available, fallback to local ViewModel
+    val totalXp = if (sharedTasks.isNotEmpty()) sharedStudyStats.totalXP else uiState.totalXp
+
     val skillsProgress = listOf(
-        SkillProgress(TaskCategory.VOCABULARY, uiState.totalXp / 4, 1000),
-        SkillProgress(TaskCategory.GRAMMAR, uiState.totalXp / 3, 1000),
-        SkillProgress(TaskCategory.READING, uiState.totalXp / 5, 1000),
-        SkillProgress(TaskCategory.LISTENING, uiState.totalXp / 6, 1000)
+        SkillProgress(TaskCategory.VOCABULARY, totalXp / 4, 1000),
+        SkillProgress(TaskCategory.GRAMMAR, totalXp / 3, 1000),
+        SkillProgress(TaskCategory.READING, totalXp / 5, 1000),
+        SkillProgress(TaskCategory.LISTENING, totalXp / 6, 1000)
     )
 
+    // Apply navigation filter first, then UI filter
+    val navigationFilteredTasks = when (currentFilter) {
+        TaskFilter.TODAY -> legacyTasks.filter { /* Add today logic */ true }
+        TaskFilter.PENDING -> legacyTasks.filter { !it.isCompleted }
+        TaskFilter.COMPLETED -> legacyTasks.filter { it.isCompleted }
+        else -> legacyTasks
+    }
+
     val filteredTasks = when (selectedFilter) {
-        FilterType.ALL -> legacyTasks
-        FilterType.VOCABULARY -> legacyTasks.filter { it.category == TaskCategory.VOCABULARY }
-        FilterType.GRAMMAR -> legacyTasks.filter { it.category == TaskCategory.GRAMMAR }
+        FilterType.ALL -> navigationFilteredTasks
+        FilterType.VOCABULARY -> navigationFilteredTasks.filter { it.category == TaskCategory.VOCABULARY }
+        FilterType.GRAMMAR -> navigationFilteredTasks.filter { it.category == TaskCategory.GRAMMAR }
     }
 
     Column(
@@ -188,7 +299,15 @@ private fun TasksScreenContent(
             .background(DesignTokens.Background)
     ) {
         // Header with Tasks title and XP badge
-        TasksHeader(xpPoints = xpPoints)
+        TasksHeader(
+            xpPoints = totalXp,
+            onAddTaskClick = {
+                navigationManager?.navigateToTasks(
+                    filter = TaskFilter.CREATE_NEW,
+                    fromScreen = "tasks"
+                )
+            }
+        )
 
         // Tab navigation
         TabNavigation(
@@ -203,7 +322,11 @@ private fun TasksScreenContent(
                     skillsProgress = skillsProgress,
                     tasks = filteredTasks,
                     selectedFilter = selectedFilter,
-                    onFilterSelected = { selectedFilter = it }
+                    highlightedTaskId = highlightedTaskId,
+                    onFilterSelected = { selectedFilter = it },
+                    onTaskComplete = onTaskComplete,
+                    onTaskUncomplete = onTaskUncomplete,
+                    onTaskClick = onTaskClick
                 )
             }
             TabType.WEEKLY -> {
@@ -217,7 +340,10 @@ private fun TasksScreenContent(
 }
 
 @Composable
-private fun TasksHeader(xpPoints: Int) {
+private fun TasksHeader(
+    xpPoints: Int,
+    onAddTaskClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -232,27 +358,46 @@ private fun TasksHeader(xpPoints: Int) {
             color = DesignTokens.Foreground
         )
 
-        Surface(
-            color = DesignTokens.Success,
-            shape = RoundedCornerShape(20.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Add Task Button
+            IconButton(
+                onClick = onAddTaskClick,
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Bolt,
-                    contentDescription = null,
-                    tint = DesignTokens.PrimaryForeground,
-                    modifier = Modifier.size(16.dp)
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Task",
+                    tint = DesignTokens.Primary,
+                    modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "$xpPoints XP",
-                    color = DesignTokens.PrimaryForeground,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+            }
+
+            // XP Badge
+            Surface(
+                color = DesignTokens.Success,
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Bolt,
+                        contentDescription = null,
+                        tint = DesignTokens.PrimaryForeground,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "$xpPoints XP",
+                        color = DesignTokens.PrimaryForeground,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }
@@ -496,15 +641,26 @@ private fun FilterButton(
 private fun TaskCard(
     task: TaskItem,
     onStartTask: () -> Unit,
-    onTaskToggle: () -> Unit
+    onTaskToggle: () -> Unit,
+    onTaskClick: () -> Unit = {},
+    isHighlighted: Boolean = false
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onTaskClick() }
+            .then(
+                if (isHighlighted) Modifier.border(
+                    width = 2.dp,
+                    color = DesignTokens.Primary,
+                    shape = RoundedCornerShape(12.dp)
+                ) else Modifier
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.Surface
+            containerColor = if (isHighlighted) DesignTokens.PrimaryContainer else DesignTokens.Surface
         ),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isHighlighted) 4.dp else 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -672,7 +828,11 @@ private fun DailyTabContent(
     skillsProgress: List<SkillProgress>,
     tasks: List<TaskItem>,
     selectedFilter: FilterType,
-    onFilterSelected: (FilterType) -> Unit
+    highlightedTaskId: String?,
+    onFilterSelected: (FilterType) -> Unit,
+    onTaskComplete: (String) -> Unit,
+    onTaskUncomplete: (String) -> Unit,
+    onTaskClick: (TaskItem) -> Unit
 ) {
     Column {
         // Today's Progress section
@@ -693,8 +853,19 @@ private fun DailyTabContent(
             items(tasks) { task ->
                 TaskCard(
                     task = task,
-                    onStartTask = { /* Handle start task */ },
-                    onTaskToggle = { /* Handle task completion toggle */ }
+                    isHighlighted = highlightedTaskId == task.id,
+                    onStartTask = {
+                        // Start task - could navigate to task details or begin timer
+                        onTaskComplete(task.id)
+                    },
+                    onTaskToggle = {
+                        if (task.isCompleted) {
+                            onTaskUncomplete(task.id)
+                        } else {
+                            onTaskComplete(task.id)
+                        }
+                    },
+                    onTaskClick = { onTaskClick(task) }
                 )
             }
         }
@@ -1106,5 +1277,29 @@ private fun convertTaskDifficulty(
         com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.EASY -> TaskDifficulty.EASY
         com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
         com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.HARD -> TaskDifficulty.HARD
+    }
+}
+
+// Conversion functions for SharedViewModel data classes
+private fun convertSharedTaskCategory(
+    sharedCategory: com.mtlc.studyplan.shared.TaskCategory
+): TaskCategory {
+    return when (sharedCategory) {
+        com.mtlc.studyplan.shared.TaskCategory.VOCABULARY -> TaskCategory.VOCABULARY
+        com.mtlc.studyplan.shared.TaskCategory.GRAMMAR -> TaskCategory.GRAMMAR
+        com.mtlc.studyplan.shared.TaskCategory.READING -> TaskCategory.READING
+        com.mtlc.studyplan.shared.TaskCategory.LISTENING -> TaskCategory.LISTENING
+        com.mtlc.studyplan.shared.TaskCategory.PRACTICE_EXAM -> TaskCategory.READING // Default mapping
+        com.mtlc.studyplan.shared.TaskCategory.OTHER -> TaskCategory.VOCABULARY // Default mapping
+    }
+}
+
+private fun convertSharedTaskDifficulty(
+    sharedDifficulty: com.mtlc.studyplan.shared.TaskDifficulty
+): TaskDifficulty {
+    return when (sharedDifficulty) {
+        com.mtlc.studyplan.shared.TaskDifficulty.EASY -> TaskDifficulty.EASY
+        com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
+        com.mtlc.studyplan.shared.TaskDifficulty.HARD -> TaskDifficulty.HARD
     }
 }

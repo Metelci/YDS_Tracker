@@ -5,9 +5,7 @@ import androidx.lifecycle.*
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.*
-import com.mtlc.studyplan.settings.ui.EmailFrequency
-import com.mtlc.studyplan.settings.ui.TimeSetting
-import com.mtlc.studyplan.settings.ui.TimeValue
+import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,18 +19,18 @@ class NotificationSettingsViewModel(
 ) : ViewModel() {
 
     data class NotificationUiState(
-        val isLoading: Boolean = false,
-        val isError: Boolean = false,
-        val isSuccess: Boolean = false,
+        override val isLoading: Boolean = false,
+        override val isError: Boolean = false,
+        override val isSuccess: Boolean = false,
         val settings: List<SettingItem> = emptyList(),
-        val error: AppError? = null,
+        override val error: AppError? = null,
         val pushNotifications: Boolean = true,
         val studyReminders: Boolean = true,
         val studyReminderTime: TimeValue = TimeValue(9, 0),
         val achievementAlerts: Boolean = true,
         val emailSummaries: Boolean = false,
         val emailFrequency: EmailFrequency = EmailFrequency.WEEKLY
-    )
+    ) : BaseSettingsUiState
 
     private val _uiState = MutableStateFlow(NotificationUiState())
     val uiState: StateFlow<NotificationUiState> = _uiState.asStateFlow()
@@ -94,6 +92,8 @@ class NotificationSettingsViewModel(
                 title = "Push Notifications",
                 description = "Receive notifications on your device",
                 value = notificationData.pushNotifications,
+                key = SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
+                defaultValue = true,
                 isEnabled = true,
                 category = "notifications",
                 sortOrder = 1
@@ -105,6 +105,8 @@ class NotificationSettingsViewModel(
                 title = "Study Reminders",
                 description = "Daily reminders to maintain your study streak",
                 value = notificationData.studyReminders,
+                key = SettingsKeys.Notifications.STUDY_REMINDERS,
+                defaultValue = true,
                 isEnabled = notificationData.pushNotifications,
                 category = "notifications",
                 sortOrder = 2
@@ -116,6 +118,7 @@ class NotificationSettingsViewModel(
                 title = "Reminder Time",
                 description = "When to send daily study reminders",
                 currentTime = notificationData.studyReminderTime,
+                key = SettingsKeys.Notifications.STUDY_REMINDER_TIME,
                 isEnabled = notificationData.pushNotifications && notificationData.studyReminders,
                 category = "notifications",
                 sortOrder = 3
@@ -127,6 +130,8 @@ class NotificationSettingsViewModel(
                 title = "Achievement Alerts",
                 description = "Get notified when you unlock achievements",
                 value = notificationData.achievementAlerts,
+                key = SettingsKeys.Notifications.ACHIEVEMENT_ALERTS,
+                defaultValue = true,
                 isEnabled = notificationData.pushNotifications,
                 category = "notifications",
                 sortOrder = 4
@@ -138,6 +143,8 @@ class NotificationSettingsViewModel(
                 title = "Email Summaries",
                 description = "Receive progress summaries via email",
                 value = notificationData.emailSummaries,
+                key = SettingsKeys.Notifications.EMAIL_SUMMARIES,
+                defaultValue = false,
                 isEnabled = true,
                 category = "notifications",
                 sortOrder = 5
@@ -171,6 +178,7 @@ class NotificationSettingsViewModel(
                     )
                 ),
                 currentValue = notificationData.emailFrequency,
+                key = SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY,
                 isEnabled = notificationData.emailSummaries,
                 category = "notifications",
                 sortOrder = 6
@@ -331,29 +339,5 @@ class NotificationSettingsViewModel(
 
 /**
  * Data classes for notification settings
- */
-data class NotificationData(
-    val pushNotifications: Boolean = true,
-    val studyReminders: Boolean = true,
-    val studyReminderTime: TimeValue = TimeValue(9, 0),
-    val achievementAlerts: Boolean = true,
-    val emailSummaries: Boolean = false,
-    val emailFrequency: EmailFrequency = EmailFrequency.WEEKLY
-)
 
-/**
- * Factory for creating NotificationSettingsViewModel
- */
-class NotificationSettingsViewModelFactory(
-    private val repository: SettingsRepository,
-    private val context: Context
-) : ViewModelProvider.Factory {
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NotificationSettingsViewModel::class.java)) {
-            return NotificationSettingsViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}

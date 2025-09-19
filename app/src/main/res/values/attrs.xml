@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 color attributes for compatibility -->
+    <attr name="colorSurface" format="color" />
+    <attr name="colorOnSurface" format="color" />
+    <attr name="colorOnSurfaceVariant" format="color" />
+    <attr name="colorPrimaryContainer" format="color" />
+    <attr name="colorSurfaceVariant" format="color" />
+    <attr name="colorOutline" format="color" />
+
+    <!-- Layout attributes -->
+    <attr name="layout_behavior" format="string" />
+    <attr name="indicatorColor" format="color" />
+</resources>

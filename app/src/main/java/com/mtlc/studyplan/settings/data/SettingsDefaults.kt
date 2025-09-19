@@ -98,11 +98,11 @@ object SettingsDefaults {
             description = "Control what information is shared",
             items = listOf(
                 SettingItem.ToggleSetting(
-                    id = "profile_visibility",
+                    id = "profile_visibility_enabled",
                     title = "Profile Visibility",
                     description = "Make your profile visible to other users",
                     category = SettingsCategory.PRIVACY_ID,
-                    key = SettingsKeys.Privacy.PROFILE_VISIBILITY,
+                    key = SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
                     defaultValue = true,
                     sortOrder = 1
                 ),
@@ -602,7 +602,7 @@ object SettingsDefaults {
                         SelectionOption("Every 6 hours", 360, "Sync every 6 hours"),
                         SelectionOption("Daily", 1440, "Sync once daily")
                     ),
-                    selectedIndex = 2,
+                    currentValue = 60,
                     sortOrder = 3
                 )
             ),

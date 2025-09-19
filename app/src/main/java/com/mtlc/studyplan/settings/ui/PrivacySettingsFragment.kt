@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Fragment for privacy settings with comprehensive privacy controls
  */
-class PrivacySettingsFragment : BaseSettingsFragment() {
+class PrivacySettingsFragment : BaseSettingsFragment<PrivacySettingsViewModel.PrivacyUiState>() {
 
     private val viewModel: PrivacySettingsViewModel by viewModels {
         PrivacySettingsViewModelFactory(
@@ -32,13 +32,10 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    override fun getUiStateFlow(): Flow<*> = viewModel.uiState
+    override fun getUiStateFlow(): Flow<PrivacySettingsViewModel.PrivacyUiState> = viewModel.uiState
 
-    override fun extractSettingsFromUiState(uiState: Any): List<SettingItem> {
-        return when (uiState) {
-            is PrivacySettingsViewModel.PrivacyUiState -> uiState.settings
-            else -> emptyList()
-        }
+    override fun extractSettingsFromUiState(uiState: PrivacySettingsViewModel.PrivacyUiState): List<SettingItem> {
+        return uiState.settings
     }
 
     override fun getCurrentSettingValue(setting: SettingItem): Any? {
@@ -58,9 +55,9 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                 }
             }
             "profile_visibility_level" -> {
-                if (newValue is String) {
-                    val visibilityLevel = ProfileVisibilityLevel.valueOf(newValue)
-                    viewModel.updateProfileVisibilityLevel(visibilityLevel)
+                when (newValue) {
+                    is ProfileVisibilityLevel -> viewModel.updateProfileVisibilityLevel(newValue)
+                    is String -> viewModel.updateProfileVisibilityLevel(ProfileVisibilityLevel.valueOf(newValue))
                 }
             }
             "anonymous_analytics" -> {
@@ -254,3 +251,4 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
     override fun getEmptyStateMessage(): String =
         "Privacy settings are not available at the moment. Please try again later."
 }
+
