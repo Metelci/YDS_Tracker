@@ -22,15 +22,15 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 43
-        versionName = "2.5.1"
+        versionCode = 44
+        versionName = "2.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -46,9 +46,9 @@ android {
         }
     }
     kotlin {
-        jvmToolchain(11)
+        jvmToolchain(17)
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
 
@@ -57,7 +57,7 @@ android {
     }
     
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        kotlinCompilerExtensionVersion = "1.7.5"
     }
     
     // Enable R8 for release builds to reduce APK size
@@ -88,8 +88,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.navigation:navigation-compose:2.8.5")
-    implementation("androidx.compose.animation:animation:1.7.5")
-    implementation("androidx.compose.animation:animation-core:1.7.5")
+    implementation("androidx.compose.animation:animation")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     // XML View System Dependencies (for legacy XML layouts)
@@ -143,6 +142,13 @@ ksp {
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
 }
+
+
+
+
+
+
+
 
 
 

@@ -5,6 +5,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2025-01-20
+
+### 🚀 Major Infrastructure Upgrade
+
+This release represents a complete overhaul of the application's core infrastructure, focusing on stability, performance, and maintainability.
+
+### ✅ Added
+- **Modern Architecture**: Implemented clean architecture patterns with proper separation of concerns
+- **Enhanced Error Handling**: Comprehensive AppError system with proper inheritance from Throwable
+- **Reactive Event System**: Improved ReactiveEventBus with state management and event history
+- **Type-Safe Data Models**: Streamlined data classes with proper type definitions
+- **Performance Monitoring**: Added infrastructure for tracking app performance metrics
+
+### 🔧 Changed
+- **Build System**: Re-enabled Kotlin Symbol Processing (KSP) for improved compilation performance
+- **Dependency Injection**: Restored and optimized Hilt configuration
+- **Database Layer**: Enhanced Room database with proper schema validation
+- **Repository Pattern**: Refactored data access layer with consistent interfaces
+- **Version Bump**: Updated to version 2.6.0 (versionCode 44)
+
+### 🛠️ Fixed
+- **Compilation Issues**: Resolved 90+ critical compilation errors
+- **ReactiveEventBus**: Fixed abstract member implementation and event subscription
+- **AppError Inheritance**: Corrected inheritance hierarchy for proper error handling
+- **TaskCategory Conflicts**: Resolved enum conflicts between different packages
+- **ProgressScreen**: Fixed parameter mismatches and repository initialization
+- **Enum Comparisons**: Updated syntax from `is` to direct enum comparisons
+- **Import Dependencies**: Cleaned up circular dependencies and missing imports
+- **DataStore Configuration**: Proper extension property placement and initialization
+
+### 🧹 Removed
+- **Legacy Fragments**: Cleaned up outdated Fragment-based implementations
+- **Duplicate Classes**: Removed conflicting enum and data class declarations
+- **Dead Code**: Eliminated unused imports and deprecated implementations
+
+### 📋 Technical Details
+
+#### Core Infrastructure
+- **KSP Integration**: Successfully re-enabled annotation processing
+- **Hilt DI**: Restored dependency injection with proper module configuration
+- **Room Database**: Fixed entity relationships and DAO implementations
+- **Build Performance**: Optimized Gradle configuration for faster builds
+
+#### Code Quality Improvements
+- **Type Safety**: Enhanced type checking across data models
+- **Error Boundaries**: Implemented comprehensive error handling patterns
+- **Memory Management**: Improved object lifecycle management
+- **Thread Safety**: Enhanced concurrent access patterns
+
+#### Architecture Changes
+- **MVVM Pattern**: Strengthened ViewModel implementations
+- **Repository Layer**: Consolidated data access patterns
+- **Event System**: Improved reactive programming model
+- **State Management**: Enhanced UI state handling
+
+### 🔄 Migration Notes
+- This version includes breaking changes to internal APIs
+- External integrations remain backward compatible
+- Database migrations are handled automatically
+- No user action required for upgrade
+
+### 🎯 Coming Next
+- Enhanced UI components with modern design system
+- Performance optimization for large datasets
+- Advanced analytics and reporting features
+- Social features and collaboration tools
+
+---
+
 ## [2.5.1] - 2025-01-19
 
 ### ✅ Fixed - Core Architecture & Compilation

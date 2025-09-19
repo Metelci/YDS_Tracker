@@ -1,8 +1,16 @@
 package com.mtlc.studyplan.feature.progress
 
 import android.content.Context
+import com.mtlc.studyplan.data.PlanRepository
+import com.mtlc.studyplan.data.PlanOverridesStore
+import com.mtlc.studyplan.data.PlanSettingsStore
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,21 +73,20 @@ import com.mtlc.studyplan.data.TaskCategory
 import com.mtlc.studyplan.data.TaskLog
 import com.mtlc.studyplan.data.ProgressRepository
 import com.mtlc.studyplan.data.UserProgress
+import com.mtlc.studyplan.gamification.AdvancedAchievement
 import com.mtlc.studyplan.data.dataStore
 import com.mtlc.studyplan.feature.progress.viewmodel.ProgressViewModel
 import com.mtlc.studyplan.feature.progress.viewmodel.ProgressViewModelFactory
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
-import com.mtlc.studyplan.realtime.RealTimeUpdateManager
-import com.mtlc.studyplan.realtime.ProgressUpdateType
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.navigation.TimeRange
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.ui.draw.scale
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.delay
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -89,6 +96,8 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.roundToInt
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "progress_data")
 
 private val turkishLocale = Locale("tr", "TR")
 
@@ -233,22 +242,27 @@ private enum class SkillType(
 @Composable
 fun ProgressScreen(
     sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
-    realTimeUpdateManager: RealTimeUpdateManager? = null,
     navigationManager: StudyPlanNavigationManager? = null
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
     val appContext = remember(context) { context.applicationContext as Context }
     val dataStore = remember(appContext) { appContext.dataStore }
-    val repository = remember(dataStore) { ProgressRepository(dataStore) }
-    val streakManager = remember(repository) { StreakManager(repository) }
-    val achievementTracker = remember(dataStore, repository) { AchievementTracker(dataStore, repository) }
+    val progressRepository = remember(dataStore) { ProgressRepository(dataStore) }
+    val planRepository = remember(dataStore) {
+        PlanRepository(
+            store = PlanOverridesStore(dataStore) as PlanOverridesStore,
+            settings = PlanSettingsStore(dataStore) as PlanSettingsStore
+        )
+    }
+    val streakManager = remember(progressRepository) { StreakManager(progressRepository) }
+    val achievementTracker = remember(dataStore, progressRepository) { AchievementTracker(dataStore, progressRepository) }
 
     // Use ViewModel with error handling
     val viewModel: ProgressViewModel = viewModel(
         factory = ProgressViewModelFactory(
-            progressRepository = repository,
-            planRepository = repository, // Assuming repository implements both interfaces
+            progressRepository = progressRepository,
+            planRepository = planRepository,
             achievementTracker = achievementTracker,
             streakManager = streakManager,
             context = appContext
@@ -260,7 +274,7 @@ fun ProgressScreen(
 
     // Collect SharedViewModel state for real-time updates
     val sharedProgress by if (sharedViewModel != null) {
-        sharedViewModel.userProgress.collectAsState()
+        sharedViewModel.userProgress.collectAsState(initial = com.mtlc.studyplan.data.UserProgress())
     } else {
         remember { mutableStateOf(com.mtlc.studyplan.data.UserProgress()) }
     }
@@ -280,7 +294,7 @@ fun ProgressScreen(
     val sharedAchievements by if (sharedViewModel != null) {
         sharedViewModel.achievements.collectAsState()
     } else {
-        remember { mutableStateOf(emptyList<com.mtlc.studyplan.data.Achievement>()) }
+        remember { mutableStateOf(emptyList<AdvancedAchievement>()) }
     }
 
     // Real-time update states
@@ -308,61 +322,48 @@ fun ProgressScreen(
         }
     }
 
-    // Real-time progress updates
-    LaunchedEffect(realTimeUpdateManager) {
-        realTimeUpdateManager?.progressUpdates?.collect { update ->
-            when (update.type) {
-                ProgressUpdateType.TASK_COMPLETED -> {
-                    animatingProgress = true
-                    animatingPoints = true
-                    kotlinx.coroutines.delay(1500)
-                    animatingProgress = false
-                    animatingPoints = false
-                }
-                ProgressUpdateType.DAILY_SUMMARY -> {
-                    animatingProgress = true
-                    kotlinx.coroutines.delay(1000)
-                    animatingProgress = false
-                }
-                ProgressUpdateType.MILESTONE_REACHED -> {
-                    animatingProgress = true
-                    animatingAchievements = true
-                    kotlinx.coroutines.delay(2000)
-                    animatingProgress = false
-                    animatingAchievements = false
-                }
-                else -> {}
-            }
-        }
-    }
+    var previousTasksCompleted by remember { mutableStateOf(sharedStudyStats.totalTasksCompleted) }
+    var previousXp by remember { mutableStateOf(sharedStudyStats.totalXP) }
+    var previousStreak by remember { mutableStateOf(sharedCurrentStreak) }
+    var previousUnlockedCount by remember { mutableStateOf(sharedAchievements.count { it.isUnlocked }) }
 
-    // Real-time streak updates
-    LaunchedEffect(realTimeUpdateManager) {
-        realTimeUpdateManager?.streakUpdates?.collect { update ->
-            if (update.isExtension) {
-                animatingStreak = true
-                kotlinx.coroutines.delay(1500)
-                animatingStreak = false
-            }
-        }
-    }
-
-    // Real-time achievement updates
-    LaunchedEffect(realTimeUpdateManager) {
-        realTimeUpdateManager?.achievementUpdates?.collect { update ->
-            animatingAchievements = true
-            kotlinx.coroutines.delay(2000)
-            animatingAchievements = false
-        }
-    }
-
-    // Real-time points updates
-    LaunchedEffect(realTimeUpdateManager) {
-        realTimeUpdateManager?.pointsUpdates?.collect { update ->
+    LaunchedEffect(sharedStudyStats.totalTasksCompleted) {
+        if (sharedStudyStats.totalTasksCompleted > previousTasksCompleted) {
+            animatingProgress = true
             animatingPoints = true
-            kotlinx.coroutines.delay(1000)
+            delay(1500)
+            animatingProgress = false
             animatingPoints = false
         }
+        previousTasksCompleted = sharedStudyStats.totalTasksCompleted
+    }
+
+    LaunchedEffect(sharedStudyStats.totalXP) {
+        if (sharedStudyStats.totalXP > previousXp) {
+            animatingPoints = true
+            delay(1000)
+            animatingPoints = false
+        }
+        previousXp = sharedStudyStats.totalXP
+    }
+
+    LaunchedEffect(sharedCurrentStreak) {
+        if (sharedCurrentStreak > previousStreak) {
+            animatingStreak = true
+            delay(1500)
+            animatingStreak = false
+        }
+        previousStreak = sharedCurrentStreak
+    }
+
+    LaunchedEffect(sharedAchievements) {
+        val unlockedCount = sharedAchievements.count { it.isUnlocked }
+        if (unlockedCount > previousUnlockedCount) {
+            animatingAchievements = true
+            delay(2000)
+            animatingAchievements = false
+        }
+        previousUnlockedCount = unlockedCount
     }
 
     // Handle global errors
@@ -1553,7 +1554,7 @@ private fun convertToLegacyUiState(
             title = achievement.title,
             description = achievement.description,
             isUnlocked = achievement.isUnlocked,
-            earnedDate = achievement.unlockedDate,
+            earnedDate = achievement.unlockedDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() },
             icon = Icons.Outlined.EmojiEvents
         )
     }
@@ -1573,7 +1574,7 @@ private fun convertToLegacyUiState(
 private fun convertSharedDataToLegacyUiState(
     sharedStudyStats: com.mtlc.studyplan.shared.StudyStats,
     sharedProgress: com.mtlc.studyplan.data.UserProgress,
-    sharedAchievements: List<com.mtlc.studyplan.data.Achievement>,
+    sharedAchievements: List<AdvancedAchievement>,
     sharedCurrentStreak: Int
 ): ProgressUiState {
     // Build overview data using SharedViewModel stats
@@ -1612,7 +1613,7 @@ private fun convertSharedDataToLegacyUiState(
             title = achievement.title,
             description = achievement.description,
             isUnlocked = achievement.isUnlocked,
-            earnedDate = achievement.unlockedDate,
+            earnedDate = achievement.unlockedDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() },
             icon = Icons.Outlined.EmojiEvents
         )
     }
@@ -2050,3 +2051,11 @@ private fun AnimatedWeeklyStreakCard(
         }
     }
 }
+
+
+
+
+
+
+
+

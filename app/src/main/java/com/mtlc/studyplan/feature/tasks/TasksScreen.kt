@@ -39,6 +39,12 @@ import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.navigation.TaskFilter
 import com.mtlc.studyplan.navigation.TimeRange
 import kotlinx.coroutines.flow.collect
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import android.content.Context
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tasks_data")
 
 data class TaskItem(
     val id: String,
@@ -91,10 +97,19 @@ fun TasksScreen(
     val context = LocalContext.current
 
     // Initialize ViewModel with error handling
+    val dataStore = remember(context) { context.dataStore }
+    val progressRepository = remember(dataStore) { ProgressRepository(dataStore) }
+    val planRepository = remember(dataStore) {
+        PlanRepository(
+            store = PlanOverridesStore(dataStore),
+            settings = PlanSettingsStore(dataStore)
+        )
+    }
+
     val viewModel: TasksViewModel = viewModel(
         factory = TasksViewModelFactory(
-            planRepository = remember { ProgressRepository(context.dataStore) }, // Placeholder
-            progressRepository = remember { ProgressRepository(context.dataStore) },
+            planRepository = planRepository,
+            progressRepository = progressRepository,
             context = context
         )
     )
@@ -130,15 +145,15 @@ fun TasksScreen(
 
                 // Handle specific filter types
                 when (filter) {
-                    is TaskFilter.CREATE_NEW -> {
+                    TaskFilter.CREATE_NEW -> {
                         // Show create task dialog or navigate to creation
                         // This would open a task creation interface
                     }
-                    is TaskFilter.PENDING -> {
+                    TaskFilter.PENDING -> {
                         // Focus on pending tasks
                         currentFilter = TaskFilter.PENDING
                     }
-                    is TaskFilter.TODAY -> {
+                    TaskFilter.TODAY -> {
                         currentFilter = TaskFilter.TODAY
                     }
                     else -> {
@@ -231,8 +246,8 @@ private fun TasksScreenContent(
     navigationManager: StudyPlanNavigationManager?,
     onTaskComplete: (String) -> Unit,
     onTaskUncomplete: (String) -> Unit,
-    onCategoryFilter: (com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory?) -> Unit,
-    onDifficultyFilter: (com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty?) -> Unit,
+    onCategoryFilter: (com.mtlc.studyplan.data.TaskCategory?) -> Unit,
+    onDifficultyFilter: (com.mtlc.studyplan.shared.TaskDifficulty?) -> Unit,
     onClearFilters: () -> Unit,
     onRefresh: () -> Unit,
     onTaskClick: (TaskItem) -> Unit
@@ -1260,23 +1275,26 @@ private fun WeeklyStatCard(
 
 // Conversion functions between ViewModel and Legacy UI data classes
 private fun convertTaskCategory(
-    viewModelCategory: com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory
+    viewModelCategory: com.mtlc.studyplan.data.TaskCategory
 ): TaskCategory {
     return when (viewModelCategory) {
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory.VOCABULARY -> TaskCategory.VOCABULARY
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory.GRAMMAR -> TaskCategory.GRAMMAR
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory.READING -> TaskCategory.READING
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskCategory.LISTENING -> TaskCategory.LISTENING
+        com.mtlc.studyplan.data.TaskCategory.VOCABULARY -> TaskCategory.VOCABULARY
+        com.mtlc.studyplan.data.TaskCategory.GRAMMAR -> TaskCategory.GRAMMAR
+        com.mtlc.studyplan.data.TaskCategory.READING -> TaskCategory.READING
+        com.mtlc.studyplan.data.TaskCategory.LISTENING -> TaskCategory.LISTENING
+        com.mtlc.studyplan.data.TaskCategory.PRACTICE_EXAM -> TaskCategory.OTHER
+        com.mtlc.studyplan.data.TaskCategory.OTHER -> TaskCategory.OTHER
     }
 }
 
 private fun convertTaskDifficulty(
-    viewModelDifficulty: com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty
+    viewModelDifficulty: com.mtlc.studyplan.shared.TaskDifficulty
 ): TaskDifficulty {
     return when (viewModelDifficulty) {
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.EASY -> TaskDifficulty.EASY
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
-        com.mtlc.studyplan.feature.tasks.viewmodel.TaskDifficulty.HARD -> TaskDifficulty.HARD
+        com.mtlc.studyplan.shared.TaskDifficulty.EASY -> TaskDifficulty.EASY
+        com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
+        com.mtlc.studyplan.shared.TaskDifficulty.HARD -> TaskDifficulty.HARD
+        com.mtlc.studyplan.shared.TaskDifficulty.EXPERT -> TaskDifficulty.HARD
     }
 }
 

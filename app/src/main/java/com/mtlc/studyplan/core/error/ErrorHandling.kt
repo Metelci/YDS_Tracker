@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap
  * Comprehensive error types for the StudyPlan application
  */
 sealed class AppError(
-    open val message: String,
+    override val message: String,
     open val userMessage: String,
     open val isRecoverable: Boolean = true,
-    open val cause: Throwable? = null
-) {
+    override val cause: Throwable? = null
+) : Throwable(message, cause) {
 
     /**
      * Network-related errors

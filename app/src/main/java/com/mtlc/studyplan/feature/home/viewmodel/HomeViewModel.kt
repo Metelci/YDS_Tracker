@@ -480,7 +480,17 @@ class HomeViewModel(
     }
 
     private fun getTodaysTasks(plan: List<WeekPlan>, weekIndex: Int, dayIndex: Int): List<Task> {
-        return plan.getOrNull(weekIndex)?.days?.getOrNull(dayIndex)?.tasks ?: emptyList()
+        return plan.getOrNull(weekIndex)?.days?.getOrNull(dayIndex)?.tasks?.map { planTask ->
+            Task(
+                id = planTask.id,
+                title = planTask.desc,
+                description = planTask.details ?: "",
+                category = "General",
+                priority = TaskPriority.MEDIUM,
+                estimatedMinutes = 30,
+                isCompleted = false
+            )
+        } ?: emptyList()
     }
 
     private fun getTodaysProgress(progress: UserProgress, weekIndex: Int, dayIndex: Int): DayProgress? {

@@ -83,17 +83,20 @@ class ReactiveEventBus @Inject constructor(
         updateEventCounts(event)
     }
 
-    override fun <T : Event> subscribe(eventType: KClass<T>): Flow<T> {
-        return _eventFlow
-            .filterIsInstance(eventType.java)
-            .onStart {
-                // Emit current state if it exists for state-based events
-                getCurrentState(eventType)?.let { emit(it) }
-            }
-    }
-
     override fun subscribeToAll(): Flow<Event> {
         return _eventFlow.asSharedFlow()
+    }
+
+    override fun <T : Event> subscribe(eventType: KClass<T>): Flow<T> {
+        return _eventFlow
+            .filter { eventType.isInstance(it) }
+            .map {
+                @Suppress("UNCHECKED_CAST")
+                it as T
+            }
+            .onStart {
+                getCurrentState(eventType)?.let { emit(it) }
+            }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -123,7 +126,11 @@ class ReactiveEventBus @Inject constructor(
      */
     fun <T : Event> subscribeToCategory(categoryType: KClass<T>): Flow<T> {
         return _eventFlow
-            .filterIsInstance(categoryType.java)
+            .filter { categoryType.isInstance(it) }
+            .map {
+                @Suppress("UNCHECKED_CAST")
+                it as T
+            }
     }
 
     /**
@@ -285,3 +292,9 @@ private fun <T> Flow<T>.windowLatest(windowMs: Long): Flow<List<T>> = flow {
         }
     }
 }
+
+
+
+
+
+
