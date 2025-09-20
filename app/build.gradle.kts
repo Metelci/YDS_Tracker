@@ -54,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     
     composeOptions {
@@ -83,10 +84,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material:material")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
+    implementation("androidx.compose.material:material")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.compose.animation:animation")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
@@ -142,6 +143,10 @@ ksp {
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
 }
+
+
+
+
 
 
 
