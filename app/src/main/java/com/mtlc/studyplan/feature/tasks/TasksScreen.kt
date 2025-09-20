@@ -423,38 +423,27 @@ private fun TabNavigation(
     selectedTab: TabType,
     onTabSelected: (TabType) -> Unit
 ) {
-    Row(
+    val selectedTabIndex = TabType.values().indexOf(selectedTab)
+
+    TabRow(
+        selectedTabIndex = selectedTabIndex,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
-        TabType.values().forEach { tab ->
-            val isSelected = selectedTab == tab
-            val backgroundColor by animateColorAsState(
-                targetValue = if (isSelected) DesignTokens.Foreground else Color.Transparent,
-                animationSpec = tween(200),
-                label = "tab_background"
+        TabType.values().forEachIndexed { index, tab ->
+            Tab(
+                selected = selectedTabIndex == index,
+                onClick = { onTabSelected(tab) },
+                text = {
+                    Text(
+                        text = tab.displayName,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             )
-            val textColor by animateColorAsState(
-                targetValue = if (isSelected) DesignTokens.Background else DesignTokens.MutedForeground,
-                animationSpec = tween(200),
-                label = "tab_text_color"
-            )
-
-            Surface(
-                color = backgroundColor,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.clickable { onTabSelected(tab) }
-            ) {
-                Text(
-                    text = tab.displayName,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    color = textColor,
-                    fontSize = 14.sp,
-                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                )
-            }
         }
     }
 }
