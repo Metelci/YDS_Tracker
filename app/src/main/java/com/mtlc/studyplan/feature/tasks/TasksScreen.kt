@@ -60,14 +60,17 @@ enum class TaskCategory(val displayName: String, val icon: ImageVector, val colo
     VOCABULARY("Vocabulary", Icons.AutoMirrored.Filled.MenuBook, DesignTokens.Success),
     GRAMMAR("Grammar", Icons.Filled.School, DesignTokens.Primary),
     READING("Reading", Icons.AutoMirrored.Filled.Article, DesignTokens.Tertiary),
-    LISTENING("Listening", Icons.Filled.Headphones, DesignTokens.Warning)
+    LISTENING("Listening", Icons.Filled.Headphones, DesignTokens.Warning),
+    OTHER("Other", Icons.Filled.Assignment, DesignTokens.Secondary)
 }
 
 enum class TaskDifficulty(val displayName: String, val color: Color, val dots: Int) {
     EASY("easy", DesignTokens.Success, 1),
     MEDIUM("medium", DesignTokens.Warning, 3),
-    HARD("hard", DesignTokens.Destructive, 5)
+    HARD("hard", DesignTokens.Destructive, 5),
+    EXPERT("expert", DesignTokens.Primary, 5)
 }
+
 
 enum class TabType(val displayName: String) {
     DAILY("Daily"),
@@ -275,8 +278,8 @@ private fun TasksScreenContent(
             TaskItem(
                 id = task.id,
                 title = task.title,
-                category = convertTaskCategory(task.category),
-                difficulty = convertTaskDifficulty(task.difficulty),
+                category = task.category,
+                difficulty = task.difficulty,
                 duration = task.duration,
                 xp = task.xp,
                 isCompleted = task.isCompleted
@@ -1259,7 +1262,7 @@ private fun convertTaskDifficulty(
         com.mtlc.studyplan.shared.TaskDifficulty.EASY -> TaskDifficulty.EASY
         com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
         com.mtlc.studyplan.shared.TaskDifficulty.HARD -> TaskDifficulty.HARD
-        com.mtlc.studyplan.shared.TaskDifficulty.EXPERT -> TaskDifficulty.HARD
+        com.mtlc.studyplan.shared.TaskDifficulty.EXPERT -> TaskDifficulty.EXPERT
     }
 }
 
@@ -1268,12 +1271,14 @@ private fun convertSharedTaskCategory(
     sharedCategory: com.mtlc.studyplan.shared.TaskCategory
 ): TaskCategory {
     return when (sharedCategory) {
-        com.mtlc.studyplan.shared.TaskCategory.VOCABULARY -> TaskCategory.VOCABULARY
-        com.mtlc.studyplan.shared.TaskCategory.GRAMMAR -> TaskCategory.GRAMMAR
-        com.mtlc.studyplan.shared.TaskCategory.READING -> TaskCategory.READING
-        com.mtlc.studyplan.shared.TaskCategory.LISTENING -> TaskCategory.LISTENING
-        com.mtlc.studyplan.shared.TaskCategory.PRACTICE_EXAM -> TaskCategory.READING // Default mapping
-        com.mtlc.studyplan.shared.TaskCategory.OTHER -> TaskCategory.VOCABULARY // Default mapping
+        com.mtlc.studyplan.shared.TaskCategory.MATHEMATICS -> TaskCategory.GRAMMAR
+        com.mtlc.studyplan.shared.TaskCategory.SCIENCE -> TaskCategory.GRAMMAR
+        com.mtlc.studyplan.shared.TaskCategory.LANGUAGE -> TaskCategory.VOCABULARY
+        com.mtlc.studyplan.shared.TaskCategory.HISTORY -> TaskCategory.READING
+        com.mtlc.studyplan.shared.TaskCategory.ENGLISH_LITERATURE -> TaskCategory.READING
+        com.mtlc.studyplan.shared.TaskCategory.COMPUTER_SCIENCE -> TaskCategory.OTHER
+        com.mtlc.studyplan.shared.TaskCategory.GENERAL -> TaskCategory.OTHER
+        com.mtlc.studyplan.shared.TaskCategory.OTHER -> TaskCategory.OTHER
     }
 }
 
@@ -1284,5 +1289,6 @@ private fun convertSharedTaskDifficulty(
         com.mtlc.studyplan.shared.TaskDifficulty.EASY -> TaskDifficulty.EASY
         com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM -> TaskDifficulty.MEDIUM
         com.mtlc.studyplan.shared.TaskDifficulty.HARD -> TaskDifficulty.HARD
+        com.mtlc.studyplan.shared.TaskDifficulty.EXPERT -> TaskDifficulty.EXPERT
     }
 }

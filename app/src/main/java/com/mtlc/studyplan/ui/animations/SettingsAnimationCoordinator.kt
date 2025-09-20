@@ -2,6 +2,7 @@ package com.mtlc.studyplan.ui.animations
 
 import android.animation.Animator
 import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -9,24 +10,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.mtlc.studyplan.accessibility.AccessibilityManager
-import com.mtlc.studyplan.ui.animations.AnimationIntegrationManager
-import com.mtlc.studyplan.ui.animations.SharedElementTransitionHelper
-import kotlinx.coroutines.flow.StateFlow
 
 class SettingsAnimationCoordinator(
     private val context: Context,
     private val accessibilityManager: AccessibilityManager
 ) {
 
-    private val animationIntegrationManager = AnimationIntegrationManager(context, accessibilityManager)
     private val sharedElementHelper = SharedElementTransitionHelper(accessibilityManager)
-    private val appAnimations = AppAnimations(context)
-
     private val activeAnimators = mutableSetOf<Animator>()
+
+    private fun scaledDuration(base: Long): Long =
+        if (accessibilityManager.shouldUseReducedMotion()) 0L else base
 
     fun setupFragment(fragment: Fragment) {
         sharedElementHelper.setupSharedElementTransitions(fragment)
-        animationIntegrationManager.setupActivityTransitions(fragment)
     }
 
     fun animateSettingToggle(
@@ -34,12 +31,11 @@ class SettingsAnimationCoordinator(
         isEnabled: Boolean,
         onComplete: (() -> Unit)? = null
     ) {
-        val animator = animationIntegrationManager.animateSettingToggle(view, isEnabled) {
-            onComplete?.invoke()
+        val targetAlpha = if (isEnabled) 1f else 0.6f
+        val animator = ObjectAnimator.ofFloat(view, View.ALPHA, view.alpha, targetAlpha).apply {
+            duration = scaledDuration(180L)
         }
-
-        trackAnimator(animator)
-        animator.start()
+        startAnimator(animator, onComplete)
     }
 
     fun animateValueChange(
@@ -48,39 +44,29 @@ class SettingsAnimationCoordinator(
         toValue: String,
         onComplete: (() -> Unit)? = null
     ) {
-        val animator = animationIntegrationManager.animateValueChange(view, fromValue, toValue) {
-            onComplete?.invoke()
-        }
-
-        trackAnimator(animator)
-        animator.start()
+        onComplete?.invoke()
     }
 
     fun animateSearchResults(resultsContainer: ViewGroup, itemCount: Int) {
-        animationIntegrationManager.animateSearchResults(resultsContainer, itemCount)
+        // No-op stub
     }
 
-    fun animateConflictResolution(
-        conflictView: View,
-        resolution: AnimationIntegrationManager.ConflictResolution
-    ) {
-        animationIntegrationManager.animateConflictResolution(conflictView, resolution)
+    fun animateConflictResolution(conflictView: View, resolution: Any?) {
+        // No-op stub
     }
 
     fun createLoadingAnimation(view: View): Animator {
-        val animator = animationIntegrationManager.createLoadingAnimation(view)
-        trackAnimator(animator)
-        return animator
+        return ObjectAnimator.ofFloat(view, View.ALPHA, 0.3f, 1f).apply {
+            duration = scaledDuration(400L)
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }
     }
 
-    fun animateProgress(
-        progressView: View,
-        fromProgress: Float,
-        toProgress: Float
-    ): Animator {
-        val animator = animationIntegrationManager.animateProgress(progressView, fromProgress, toProgress)
-        trackAnimator(animator)
-        return animator
+    fun animateProgress(progressView: View, fromProgress: Float, toProgress: Float): Animator {
+        return ObjectAnimator.ofFloat(progressView, View.ALPHA, 1f).apply {
+            duration = scaledDuration(250L)
+        }
     }
 
     fun animateBackupProgress(
@@ -89,19 +75,13 @@ class SettingsAnimationCoordinator(
         progressValue: Float,
         statusMessage: String
     ): Animator {
-        val animator = animationIntegrationManager.animateBackupProgress(
-            progressContainer, statusText, progressValue, statusMessage
-        )
-        trackAnimator(animator)
-        return animator
+        return ObjectAnimator.ofFloat(progressContainer, View.ALPHA, progressContainer.alpha, 1f).apply {
+            duration = scaledDuration(250L)
+        }
     }
 
     fun setupListAnimations(recyclerView: RecyclerView) {
-        if (!accessibilityManager.shouldUseReducedMotion()) {
-            recyclerView.itemAnimator = animationIntegrationManager.createStaggeredListAnimation(recyclerView)
-        } else {
-            recyclerView.itemAnimator = null
-        }
+        recyclerView.itemAnimator = null
     }
 
     fun addSharedElements(
@@ -140,66 +120,18 @@ class SettingsAnimationCoordinator(
         sharedElementHelper.enhanceAccessibilityForTransitions(view, description)
     }
 
-    fun animateSettingsEntry(
-        container: ViewGroup,
-        onComplete: (() -> Unit)? = null
-    ) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
-            onComplete?.invoke()
-            return
+    fun animateSettingsEntry(container: ViewGroup, onComplete: (() -> Unit)? = null) {
+        val animator = ObjectAnimator.ofFloat(container, View.ALPHA, 0f, 1f).apply {
+            duration = scaledDuration(220L)
         }
-
-        val slideAnimation = appAnimations.createSlideInFromBottomAnimation(container)
-        val fadeAnimation = appAnimations.createFadeInAnimation(container)
-
-        val animatorSet = AnimatorSet().apply {
-            playTogether(slideAnimation, fadeAnimation)
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    onComplete?.invoke()
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationCancel(animation: Animator) {
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
-        }
-
-        trackAnimator(animatorSet)
-        animatorSet.start()
+        startAnimator(animator, onComplete)
     }
 
-    fun animateSettingsExit(
-        container: ViewGroup,
-        onComplete: (() -> Unit)? = null
-    ) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
-            onComplete?.invoke()
-            return
+    fun animateSettingsExit(container: ViewGroup, onComplete: (() -> Unit)? = null) {
+        val animator = ObjectAnimator.ofFloat(container, View.ALPHA, container.alpha, 0f).apply {
+            duration = scaledDuration(180L)
         }
-
-        val slideAnimation = appAnimations.createSlideOutToTopAnimation(container)
-        val fadeAnimation = appAnimations.createFadeOutAnimation(container)
-
-        val animatorSet = AnimatorSet().apply {
-            playTogether(slideAnimation, fadeAnimation)
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    onComplete?.invoke()
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationCancel(animation: Animator) {
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
-        }
-
-        trackAnimator(animatorSet)
-        animatorSet.start()
+        startAnimator(animator, onComplete)
     }
 
     fun animatePageTransition(
@@ -208,125 +140,71 @@ class SettingsAnimationCoordinator(
         direction: PageTransitionDirection,
         onComplete: (() -> Unit)? = null
     ) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (shouldUseReducedMotion()) {
             exitingView.visibility = View.GONE
             enteringView.visibility = View.VISIBLE
             onComplete?.invoke()
             return
         }
 
-        val (exitAnimation, enterAnimation) = when (direction) {
-            PageTransitionDirection.FORWARD -> {
-                appAnimations.createSlideOutToLeftAnimation(exitingView) to
-                appAnimations.createSlideInFromRightAnimation(enteringView)
-            }
-            PageTransitionDirection.BACKWARD -> {
-                appAnimations.createSlideOutToRightAnimation(exitingView) to
-                appAnimations.createSlideInFromLeftAnimation(enteringView)
-            }
-            PageTransitionDirection.UP -> {
-                appAnimations.createSlideOutToTopAnimation(exitingView) to
-                appAnimations.createSlideInFromBottomAnimation(enteringView)
-            }
-            PageTransitionDirection.DOWN -> {
-                appAnimations.createSlideOutToBottomAnimation(exitingView) to
-                appAnimations.createSlideInFromTopAnimation(enteringView)
-            }
+        val exitAnimator = ObjectAnimator.ofFloat(exitingView, View.ALPHA, 1f, 0f).apply {
+            duration = scaledDuration(200L)
+        }
+        val enterAnimator = ObjectAnimator.ofFloat(enteringView, View.ALPHA, 0f, 1f).apply {
+            duration = scaledDuration(200L)
         }
 
-        val animatorSet = AnimatorSet().apply {
-            playTogether(exitAnimation, enterAnimation)
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    onComplete?.invoke()
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationCancel(animation: Animator) {
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
+        AnimatorSet().apply {
+            playTogether(exitAnimator, enterAnimator)
+            startAnimator(this, onComplete)
         }
-
-        trackAnimator(animatorSet)
-        animatorSet.start()
     }
 
-    fun animateErrorState(
-        errorView: View,
-        onComplete: (() -> Unit)? = null
-    ) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+    fun animateErrorState(errorView: View, onComplete: (() -> Unit)? = null) {
+        if (shouldUseReducedMotion()) {
             onComplete?.invoke()
             return
         }
 
-        val shakeAnimation = appAnimations.createShakeAnimation(errorView)
-        val pulseAnimation = appAnimations.createPulseAnimation(errorView)
-
-        val animatorSet = AnimatorSet().apply {
-            play(shakeAnimation).before(pulseAnimation)
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    onComplete?.invoke()
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationCancel(animation: Animator) {
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
+        val animator = ObjectAnimator.ofFloat(errorView, View.TRANSLATION_X, 0f, -8f, 8f, 0f).apply {
+            duration = scaledDuration(300L)
         }
-
-        trackAnimator(animatorSet)
-        animatorSet.start()
+        startAnimator(animator, onComplete)
     }
 
-    fun animateSuccessState(
-        successView: View,
-        onComplete: (() -> Unit)? = null
-    ) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+    fun animateSuccessState(successView: View, onComplete: (() -> Unit)? = null) {
+        if (shouldUseReducedMotion()) {
             onComplete?.invoke()
             return
         }
 
-        val bounceAnimation = appAnimations.createBounceAnimation(successView)
-        val fadeAnimation = appAnimations.createFadeInAnimation(successView)
-
-        val animatorSet = AnimatorSet().apply {
-            playTogether(bounceAnimation, fadeAnimation)
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {}
-                override fun onAnimationEnd(animation: Animator) {
-                    onComplete?.invoke()
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationCancel(animation: Animator) {
-                    removeAnimator(this@apply)
-                }
-                override fun onAnimationRepeat(animation: Animator) {}
-            })
+        val scaleX = ObjectAnimator.ofFloat(successView, View.SCALE_X, 0.85f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(successView, View.SCALE_Y, 0.85f, 1f)
+        AnimatorSet().apply {
+            duration = scaledDuration(240L)
+            playTogether(scaleX, scaleY)
+            startAnimator(this, onComplete)
         }
+    }
 
-        trackAnimator(animatorSet)
-        animatorSet.start()
+    private fun startAnimator(animator: Animator, onComplete: (() -> Unit)?) {
+        trackAnimator(animator)
+        animator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {}
+            override fun onAnimationEnd(animation: Animator) {
+                onComplete?.invoke()
+                removeAnimator(animator)
+            }
+            override fun onAnimationCancel(animation: Animator) {
+                removeAnimator(animator)
+            }
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
+        animator.start()
     }
 
     private fun trackAnimator(animator: Animator) {
         activeAnimators.add(animator)
-        animator.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {}
-            override fun onAnimationEnd(animation: Animator) {
-                removeAnimator(animation)
-            }
-            override fun onAnimationCancel(animation: Animator) {
-                removeAnimator(animation)
-            }
-            override fun onAnimationRepeat(animation: Animator) {}
-        })
     }
 
     private fun removeAnimator(animator: Animator) {
@@ -338,17 +216,11 @@ class SettingsAnimationCoordinator(
         activeAnimators.clear()
     }
 
-    fun isAnimating(): Boolean {
-        return activeAnimators.isNotEmpty()
-    }
+    fun isAnimating(): Boolean = activeAnimators.isNotEmpty()
 
-    fun getAnimationDuration(baseDuration: Long): Long {
-        return accessibilityManager.getAnimationDuration(baseDuration)
-    }
+    fun getAnimationDuration(baseDuration: Long): Long = scaledDuration(baseDuration)
 
-    fun shouldUseReducedMotion(): Boolean {
-        return accessibilityManager.shouldUseReducedMotion()
-    }
+    fun shouldUseReducedMotion(): Boolean = accessibilityManager.shouldUseReducedMotion()
 
     enum class PageTransitionDirection {
         FORWARD, BACKWARD, UP, DOWN

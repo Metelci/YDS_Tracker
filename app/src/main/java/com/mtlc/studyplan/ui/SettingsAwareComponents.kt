@@ -1,5 +1,6 @@
 package com.mtlc.studyplan.ui
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -191,7 +192,7 @@ fun SettingsAwareCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     hapticType: HapticType = HapticType.LIGHT_CLICK,
-    content: @Composable () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val settings = LocalUserSettings.current
     val context = LocalContext.current

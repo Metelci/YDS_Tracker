@@ -8,6 +8,7 @@ import android.view.animation.*
 import androidx.core.animation.addListener
 import androidx.core.view.isVisible
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import com.mtlc.studyplan.R
 import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume

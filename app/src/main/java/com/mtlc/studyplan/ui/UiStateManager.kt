@@ -55,7 +55,7 @@ class UiStateManager {
         description: String = "Try refreshing or check back later",
         actionText: String? = null,
         action: (() -> Unit)? = null,
-        @DrawableRes icon: Int = R.drawable.ic_empty_state
+        @DrawableRes icon: Int = R.drawable.ic_list
     ): UiState {
         return UiState.Empty(
             message = message,
@@ -172,7 +172,7 @@ sealed class UiState {
         val description: String = "",
         val actionText: String? = null,
         val action: (() -> Unit)? = null,
-        @DrawableRes val icon: Int = R.drawable.ic_empty_state
+        @DrawableRes val icon: Int = R.drawable.ic_list
     ) : UiState()
 
     data class Success(
@@ -306,7 +306,7 @@ fun ImageView.updateForState(state: UiState, imageType: UiImageType) {
         UiImageType.OFFLINE_ICON -> {
             visibility = if (state is UiState.Offline) View.VISIBLE else View.GONE
             if (state is UiState.Offline) {
-                setImageResource(R.drawable.ic_cloud_off)
+                setImageResource(R.drawable.ic_cloud)
             }
         }
     }
@@ -319,14 +319,14 @@ fun ImageView.updateForState(state: UiState, imageType: UiImageType) {
 fun UiStateContent(
     state: UiState,
     onRetry: (() -> Unit)? = null,
-    loadingContent: @Composable () -> Unit = { DefaultLoadingContent(state) },
+    loadingContent: @Composable (UiState.Loading) -> Unit = { DefaultLoadingContent(it) },
     errorContent: @Composable (UiState.Error) -> Unit = { DefaultErrorContent(it, onRetry) },
     emptyContent: @Composable (UiState.Empty) -> Unit = { DefaultEmptyContent(it) },
     offlineContent: @Composable (UiState.Offline) -> Unit = { DefaultOfflineContent(it) },
     content: @Composable () -> Unit
 ) {
     when (state) {
-        is UiState.Loading -> loadingContent()
+        is UiState.Loading -> loadingContent(state)
         is UiState.Error -> errorContent(state)
         is UiState.Empty -> emptyContent(state)
         is UiState.Offline -> {
@@ -416,13 +416,13 @@ object CommonUiStates {
     fun networkError(retryAction: () -> Unit) = UiState.Error(
         message = "Network connection error. Please check your internet connection.",
         retryAction = retryAction,
-        icon = R.drawable.ic_wifi_off
+        icon = R.drawable.ic_cloud
     )
 
     fun serverError(retryAction: () -> Unit) = UiState.Error(
         message = "Server error. Please try again later.",
         retryAction = retryAction,
-        icon = R.drawable.ic_server_error
+        icon = R.drawable.ic_error
     )
 
     fun noTasks(createAction: () -> Unit) = UiState.Empty(
@@ -430,19 +430,19 @@ object CommonUiStates {
         description = "Create your first task to get started with your study journey",
         actionText = "Create Task",
         action = createAction,
-        icon = R.drawable.ic_task_add
+        icon = R.drawable.ic_task
     )
 
     fun noProgress() = UiState.Empty(
         message = "No progress data",
         description = "Complete some tasks to see your progress",
-        icon = R.drawable.ic_trending_up
+        icon = R.drawable.ic_arrow_forward
     )
 
     fun noAchievements() = UiState.Empty(
         message = "No achievements yet",
         description = "Keep studying to unlock your first achievement!",
-        icon = R.drawable.ic_trophy
+        icon = R.drawable.ic_star
     )
 
     fun noFriends(addFriendsAction: () -> Unit) = UiState.Empty(
@@ -450,10 +450,11 @@ object CommonUiStates {
         description = "Add friends to share your study progress and compete together",
         actionText = "Add Friends",
         action = addFriendsAction,
-        icon = R.drawable.ic_people_add
+        icon = R.drawable.ic_people
     )
 
     val loadingTasks = UiState.Loading("Loading your tasks...")
     val loadingProgress = UiState.Loading("Loading progress data...")
     val syncingOfflineActions = UiState.Syncing(hasData = true, pendingActions = 5)
 }
+

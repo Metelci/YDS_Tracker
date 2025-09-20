@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import androidx.compose.material3.CardDefaults
-import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.PlanTask
 import com.mtlc.studyplan.data.UserPlanOverrides
 import com.mtlc.studyplan.data.WeekPlan
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -162,7 +162,7 @@ private fun WeekCard(
 
 @Composable
 private fun TaskRow(
-    task: Task,
+    task: PlanTask,
     hidden: Boolean,
     onToggleHidden: (Boolean) -> Unit,
     onRequestEdit: () -> Unit,

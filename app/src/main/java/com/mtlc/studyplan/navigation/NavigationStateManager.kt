@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.mtlc.studyplan.R
 import com.mtlc.studyplan.shared.TaskFilter
 import com.mtlc.studyplan.shared.TaskSortOrder
 import java.time.LocalDateTime
@@ -16,6 +15,7 @@ class NavigationStateManager(private val context: Context) {
     private val gson = Gson()
 
     companion object {
+        private const val DEFAULT_TAB_ID = 0
         private const val KEY_NAVIGATION_STATE = "navigation_state"
         private const val KEY_TASKS_STATE = "tasks_state"
         private const val KEY_PROGRESS_STATE = "progress_state"
@@ -25,7 +25,7 @@ class NavigationStateManager(private val context: Context) {
     }
 
     data class NavigationState(
-        val currentTab: Int = R.id.nav_home,
+        val currentTab: Int = DEFAULT_TAB_ID,
         val lastActiveTime: Long = System.currentTimeMillis(),
         val sessionId: String = "",
         val isFirstLaunch: Boolean = true

@@ -202,6 +202,12 @@ class AccessibilityEnhancementManager(private val context: Context) {
     /**
      * Check if accessibility features require special handling
      */
+    fun shouldUseReducedMotion(): Boolean = isReduceMotionEnabled()
+
+    fun getAnimationDuration(baseDuration: Long): Long = if (isReduceMotionEnabled()) 0L else baseDuration
+
+    fun isScreenReaderActive(): Boolean = isTalkBackEnabled()
+
     fun requiresAccessibilityEnhancements(): Boolean {
         val state = _accessibilityState.value
         return state.isTalkBackEnabled ||
@@ -300,3 +306,5 @@ class AccessibilityEnhancementManager(private val context: Context) {
         val success: Int
     )
 }
+
+typealias AccessibilityManager = AccessibilityEnhancementManager

@@ -608,3 +608,18 @@ data class PerformanceValidationReport(
     var recommendations: List<String> = emptyList(),
     var error: String? = null
 )
+data class PerformanceTestResult(
+    val testName: String,
+    val duration: Long = 0L,
+    val averageFps: Double = 0.0,
+    val minFps: Double = 0.0,
+    val maxFps: Double = 0.0,
+    val averageMemoryMB: Double = 0.0,
+    val peakMemoryMB: Double = 0.0,
+    val latencyMs: Double = 0.0,
+    val stabilityScore: Double = 0.0,
+    val frameDropPercentage: Double = 0.0,
+    val passed: Boolean = false,
+    val details: String = ""
+)
+

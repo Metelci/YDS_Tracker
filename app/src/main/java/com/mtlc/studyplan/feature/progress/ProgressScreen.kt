@@ -83,6 +83,7 @@ import com.mtlc.studyplan.feature.progress.viewmodel.ProgressViewModelFactory
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.theme.ShapeTokens
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.navigation.TimeRange
 import androidx.compose.animation.core.Spring
@@ -489,9 +490,9 @@ private fun ProgressScreenContent(
                     StreakState(
                         currentStreak = data.currentStreak,
                         multiplier = StreakMultiplier.getMultiplierForStreak(data.currentStreak),
-                        isInDanger = data.isInDanger,
-                        hoursUntilBreak = data.hoursUntilBreak,
-                        lastActivityDate = data.lastActivityTimestamp
+                        isInDanger = data.isStreakAtRisk,
+                        hoursUntilBreak = if (data.isStreakAtRisk) 12 else 24,
+                        lastActivityDate = data.lastStudyDate?.atStartOfDay()?.atZone(java.time.ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: 0L
                     )
                 }
             )
@@ -1172,7 +1173,21 @@ private fun ProgressScreenPreview() {
         hoursUntilBreak = 12,
         lastActivityDate = Instant.now().toEpochMilli()
     )
-    ProgressScreenContent(uiState = sampleState, streakState = streak)
+    ProgressScreenContent(
+        uiState = sampleState,
+        streakData = null,
+        sharedStudyStats = com.mtlc.studyplan.shared.StudyStats(),
+        sharedCurrentStreak = 7,
+        animatingProgress = false,
+        animatingPoints = false,
+        animatingStreak = false,
+        animatingAchievements = false,
+        navigationManager = null,
+        onRefresh = {},
+        onResetProgress = {},
+        onExportProgress = {},
+        onRecalculateStats = {}
+    )
 }
 
 private fun sampleProgressUiState(): ProgressUiState {
@@ -1537,7 +1552,7 @@ private fun convertToLegacyUiState(
             title = achievement.title,
             description = achievement.description,
             isUnlocked = achievement.isUnlocked,
-            earnedDate = achievement.unlockedDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() },
+            earnedDate = achievement.unlockedDate,
             icon = Icons.Outlined.EmojiEvents
         )
     }
@@ -2034,6 +2049,7 @@ private fun AnimatedWeeklyStreakCard(
         }
     }
 }
+
 
 
 

@@ -9,6 +9,7 @@ import com.mtlc.studyplan.eventbus.*
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.shared.TaskCategory
 import com.mtlc.studyplan.shared.TaskPriority
+import com.mtlc.studyplan.shared.TaskDifficulty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -117,7 +118,7 @@ class IntegratedSharedViewModel @Inject constructor(
                 priority = priority,
                 estimatedMinutes = estimatedMinutes,
                 dueDate = dueDate,
-                difficulty = "intermediate"
+                difficulty = TaskDifficulty.MEDIUM
             )
             integrationManager.createTask(task)
         }
@@ -275,3 +276,4 @@ class IntegratedSharedViewModel @Inject constructor(
         // Clean up any resources if needed
     }
 }
+

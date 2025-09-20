@@ -124,10 +124,19 @@ Key implementation files include `app/src/main/java/com/mtlc/studyplan/security/
 
 | Category | Libraries/Tools |
 |----------|-----------------|
-| **Language/UI** | Kotlin, Jetpack Compose, Material 3 |
+| **Language/UI** | Kotlin, Jetpack Compose, **Material 3** |
 | **AndroidX** | Lifecycle, DataStore Preferences, WorkManager |
 | **Security/Net** | AndroidX Security Crypto, OkHttp (+ logging), Biometric, kotlinx.serialization |
 | **SDK** | Min SDK 30, Target SDK 36, Compile SDK 36 |
+
+### Material 3 Migration Status
+This app has been migrated from Material 2 to **Material 3** for modern UI consistency:
+- ✅ **UI Components**: All screens use Material 3 components (NavigationBar, PrimaryTabRow, Material 3 color schemes)
+- ✅ **Design System**: Consistent spacing tokens, shape tokens, and color schemes
+- ✅ **Theming**: Dynamic Material 3 theming with proper light/dark mode support
+- ⚠️ **Build Status**: Some compilation issues remain in legacy components (see `.claude/VALIDATION_REPORT.md`)
+
+For detailed migration information, see the [Migration Documentation](#migration-documentation) section.
 
 ## App Id & Entry Point
 
@@ -161,6 +170,23 @@ adb shell am start -n com.mtlc.studyplan/.MainActivity
 # Instrumentation tests (requires device/emulator)
 ./gradlew :app:connectedDebugAndroidTest
 ```
+
+### Code Quality & Guardrails
+```bash
+# Static analysis (when configured)
+./gradlew detekt
+
+# Code formatting check
+./gradlew ktlintCheck
+
+# Lint analysis
+./gradlew lint
+```
+
+**Guardrails in place:**
+- **Detekt rules**: Block legacy Material 2 imports (`androidx.compose.material`, `com.google.accompanist.swiperefresh`)
+- **Build checks**: Prevent reintroduction of deprecated dependencies
+- **Migration validation**: See `.claude/VALIDATION_REPORT.md` for current status
 
 ## Troubleshooting
 
@@ -260,6 +286,23 @@ Suggested future features:
 - Encrypted at rest and protected by biometric/PIN.
 - Network calls use TLS with certificate pinning when enabled.
 
+## Migration Documentation
+
+This project underwent a comprehensive migration from Material 2 to Material 3. All migration artifacts are preserved for reference:
+
+### Migration Artifacts
+- **`.claude/AUDIT_REPORT.md`** - Initial legacy UI audit and mapping
+- **`.claude/MIGRATION.md`** - Detailed migration process and changes made
+- **`.claude/REMOVAL_REPORT.md`** - Legacy code removal and cleanup documentation
+- **`.claude/VALIDATION_REPORT.md`** - Final validation results and current status
+- **`.claude/mapping.json`** - Component mapping from Material 2 to Material 3
+- **`legacy-usage.csv`** - Complete inventory of legacy components found
+
+### Design System
+- **Design Tokens**: `app/src/main/java/com/mtlc/studyplan/ui/theme/DesignTokens.kt`
+- **Shape Tokens**: `app/src/main/java/com/mtlc/studyplan/ui/theme/ShapeTokens.kt`
+- **Spacing System**: `app/src/main/java/com/mtlc/studyplan/ui/theme/LocalSpacing.kt`
+
 ## Contributing
 
 See [Repository Guidelines](AGENTS.md) for contributor onboarding, coding conventions, and review expectations.
@@ -268,14 +311,28 @@ See [Repository Guidelines](AGENTS.md) for contributor onboarding, coding conven
 - Follow Kotlin and Compose conventions (reference ktlint).
 - Use consistent naming: camelCase for variables/functions, PascalCase for classes.
 - Add comprehensive KDoc for public functions.
+- **Material 3 Only**: Use Material 3 components exclusively - no Material 2 imports allowed.
+
+### Material 3 Development Guidelines
+- **Components**: Use `androidx.compose.material3.*` components only
+- **Colors**: Use `MaterialTheme.colorScheme.*` for all colors
+- **Typography**: Use `MaterialTheme.typography.*` for text styles
+- **Spacing**: Use `LocalSpacing.current.*` for consistent spacing
+- **Shapes**: Use `ShapeTokens.*` for consistent corner radiuses
 
 ### Testing
 - All new features require unit tests (target 80% coverage).
 - Use Compose UI testing for new screens.
+- Test both light and dark Material 3 themes.
 
 ### Security Reviews
 - Mandate lint scans for PRs affecting auth, storage, or networking.
 - Security changes require review by project maintainer.
+
+### Migration Guardrails
+- **Forbidden imports**: `androidx.compose.material` (Material 2), `com.google.accompanist.swiperefresh`
+- **Required reviews**: Any changes to UI components must use Material 3 equivalents
+- **Build validation**: Detekt rules prevent legacy component reintroduction
 
 Open issues and PRs are welcome. Please follow the security guidance in `SECURITY_POLICY.md` and reference `SECURITY_INTEGRATION_GUIDE.md` for any feature touching authentication, storage, or networking.
 

@@ -279,6 +279,12 @@
     <string name="social_tab_friends">Friends</string>
     <string name="social_tab_awards">Awards</string>
     <string name="social_hub_title">Social Hub</string>
+    <string name="social_hub_subtitle">Share progress with your study circle</string>
+    <string name="social_stat_completed">Completed tasks</string>
+    <string name="social_stat_streak_value">%1$d day streak</string>
+    <string name="social_stat_streak_placeholder">No active streak</string>
+    <string name="social_stat_goal_hours">Weekly goal</string>
+    <string name="social_stat_goal_hours_value">%1$d hrs</string>
     <string name="social_invite_friends">Invite Friends</string>
     <string name="social_invite_stub">Sharing coming soon</string>
     <string name="social_privacy_banner_title">Privacy First</string>

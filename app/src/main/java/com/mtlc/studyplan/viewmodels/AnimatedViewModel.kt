@@ -249,6 +249,7 @@ sealed class UiAnimationState {
     data class NavigationAnimating(val fromTab: String, val toTab: String) : UiAnimationState()
     data class CardsRevealing(val cardIds: List<String>) : UiAnimationState()
     data class AchievementCelebrating(val achievement: AdvancedAchievement) : UiAnimationState()
+    data class LevelUpCelebrating(val level: LevelSystem) : UiAnimationState()
     data class StreakCelebrating(val streak: Int) : UiAnimationState()
     data class Error(val message: String) : UiAnimationState()
     data class Success(val message: String) : UiAnimationState()

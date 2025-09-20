@@ -15,10 +15,10 @@ import java.time.LocalDate
  * UI State for Tasks with comprehensive error handling
  */
 data class TasksUiState(
-    val tasks: List<TaskItem> = emptyList(),
-    val filteredTasks: List<TaskItem> = emptyList(),
-    val selectedCategory: TaskCategory? = null,
-    val selectedDifficulty: TaskDifficulty? = null,
+    val tasks: List<com.mtlc.studyplan.feature.tasks.TaskItem> = emptyList(),
+    val filteredTasks: List<com.mtlc.studyplan.feature.tasks.TaskItem> = emptyList(),
+    val selectedCategory: com.mtlc.studyplan.data.TaskCategory? = null,
+    val selectedDifficulty: com.mtlc.studyplan.shared.TaskDifficulty? = null,
     val completedTasksCount: Int = 0,
     val totalXp: Int = 0,
     val totalStudyTime: Int = 0,
@@ -53,8 +53,8 @@ class TasksViewModel(
     val globalError: StateFlow<AppError?> = _globalError.asStateFlow()
 
     // Filter states
-    private val _categoryFilter = MutableStateFlow<TaskCategory?>(null)
-    private val _difficultyFilter = MutableStateFlow<TaskDifficulty?>(null)
+    private val _categoryFilter = MutableStateFlow<com.mtlc.studyplan.data.TaskCategory?>(null)
+    private val _difficultyFilter = MutableStateFlow<com.mtlc.studyplan.shared.TaskDifficulty?>(null)
 
     init {
         loadTasks()
@@ -232,11 +232,11 @@ class TasksViewModel(
         }
     }
 
-    fun filterByCategory(category: TaskCategory?) {
+    fun filterByCategory(category: com.mtlc.studyplan.data.TaskCategory?) {
         _categoryFilter.value = category
     }
 
-    fun filterByDifficulty(difficulty: TaskDifficulty?) {
+    fun filterByDifficulty(difficulty: com.mtlc.studyplan.shared.TaskDifficulty?) {
         _difficultyFilter.value = difficulty
     }
 
@@ -339,11 +339,11 @@ class TasksViewModel(
         }
     }
 
-    private fun findTaskById(taskId: String): TaskItem? {
+    private fun findTaskById(taskId: String): com.mtlc.studyplan.feature.tasks.TaskItem? {
         return _uiState.value.tasks.find { it.id == taskId }
     }
 
-    private fun updateTaskInState(updatedTask: TaskItem) {
+    private fun updateTaskInState(updatedTask: com.mtlc.studyplan.feature.tasks.TaskItem) {
         val currentTasks = _uiState.value.tasks.toMutableList()
         val index = currentTasks.indexOfFirst { it.id == updatedTask.id }
         if (index != -1) {
@@ -370,11 +370,13 @@ class TasksViewModel(
         val tasks = _uiState.value.tasks
         val filteredTasks = tasks.filter { task ->
             val categoryMatch = _uiState.value.selectedCategory?.let { category ->
-                task.category == category
+                // Convert task.category to data.TaskCategory for comparison
+                convertTaskCategoryToData(task.category) == category
             } ?: true
 
             val difficultyMatch = _uiState.value.selectedDifficulty?.let { difficulty ->
-                task.difficulty == difficulty
+                // Convert task.difficulty to shared.TaskDifficulty for comparison
+                convertTaskDifficultyToShared(task.difficulty) == difficulty
             } ?: true
 
             categoryMatch && difficultyMatch
@@ -383,20 +385,20 @@ class TasksViewModel(
         _uiState.value = _uiState.value.copy(filteredTasks = filteredTasks)
     }
 
-    private fun generateTasksFromPlan(plan: List<WeekPlan>, progress: UserProgress): List<TaskItem> {
+    private fun generateTasksFromPlan(plan: List<WeekPlan>, progress: UserProgress): List<com.mtlc.studyplan.feature.tasks.TaskItem> {
         // Convert plan data to TaskItems
         // This is a simplified implementation
-        val tasks = mutableListOf<TaskItem>()
+        val tasks = mutableListOf<com.mtlc.studyplan.feature.tasks.TaskItem>()
 
         plan.forEachIndexed { weekIndex, weekPlan ->
             weekPlan.days.forEachIndexed { dayIndex, dayPlan ->
                 dayPlan.tasks.forEach { task ->
-                    val taskItem = TaskItem(
+                    val taskItem = com.mtlc.studyplan.feature.tasks.TaskItem(
                         id = "${weekIndex}_${dayIndex}_${task.id}",
-                        title = task.description,
+                        title = task.desc,
                         category = mapTaskToCategory(task),
                         difficulty = mapTaskToDifficulty(task),
-                        duration = task.durationMinutes,
+                        duration = 30, // Default duration since PlanTask doesn't have durationMinutes
                         xp = calculateXpForTask(task),
                         isCompleted = isTaskCompleted(task, progress)
                     )
@@ -408,7 +410,7 @@ class TasksViewModel(
         return tasks
     }
 
-    private fun calculateTaskStatistics(tasks: List<TaskItem>, progress: UserProgress): TaskStatistics {
+    private fun calculateTaskStatistics(tasks: List<com.mtlc.studyplan.feature.tasks.TaskItem>, progress: UserProgress): TaskStatistics {
         val completedCount = tasks.count { it.isCompleted }
         val totalXp = tasks.filter { it.isCompleted }.sumOf { it.xp }
         val totalStudyTime = tasks.filter { it.isCompleted }.sumOf { it.duration }
@@ -426,41 +428,68 @@ class TasksViewModel(
         // Implementation would check progress data and update task states
     }
 
-    private fun updateTaskCompletion(progress: UserProgress, task: TaskItem, completed: Boolean): UserProgress {
+    private fun updateTaskCompletion(progress: UserProgress, task: com.mtlc.studyplan.feature.tasks.TaskItem, completed: Boolean): UserProgress {
         // Update progress data with task completion
         // This would be the actual implementation to save task completion
         return progress
     }
 
-    private fun mapTaskToCategory(task: Task): TaskCategory {
+    private fun mapTaskToCategory(task: PlanTask): com.mtlc.studyplan.feature.tasks.TaskCategory {
         // Map task type to category enum
         return when {
-            task.description.contains("vocabulary", ignoreCase = true) -> TaskCategory.VOCABULARY
-            task.description.contains("grammar", ignoreCase = true) -> TaskCategory.GRAMMAR
-            task.description.contains("reading", ignoreCase = true) -> TaskCategory.READING
-            task.description.contains("listening", ignoreCase = true) -> TaskCategory.LISTENING
-            else -> TaskCategory.VOCABULARY
+            task.desc.contains("vocabulary", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskCategory.VOCABULARY
+            task.desc.contains("grammar", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskCategory.GRAMMAR
+            task.desc.contains("reading", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskCategory.READING
+            task.desc.contains("listening", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskCategory.LISTENING
+            else -> com.mtlc.studyplan.feature.tasks.TaskCategory.VOCABULARY
         }
     }
 
-    private fun mapTaskToDifficulty(task: Task): TaskDifficulty {
-        // Map task difficulty based on duration or other factors
+    private fun mapTaskToDifficulty(task: PlanTask): com.mtlc.studyplan.feature.tasks.TaskDifficulty {
+        // Map task difficulty based on description or other factors since PlanTask doesn't have durationMinutes
         return when {
-            task.durationMinutes <= 15 -> TaskDifficulty.EASY
-            task.durationMinutes <= 30 -> TaskDifficulty.MEDIUM
-            else -> TaskDifficulty.HARD
+            task.desc.contains("easy", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskDifficulty.EASY
+            task.desc.contains("hard", ignoreCase = true) -> com.mtlc.studyplan.feature.tasks.TaskDifficulty.HARD
+            else -> com.mtlc.studyplan.feature.tasks.TaskDifficulty.MEDIUM
         }
     }
 
-    private fun calculateXpForTask(task: Task): Int {
-        // Calculate XP based on task complexity and duration
-        return task.durationMinutes * 2
+    private fun calculateXpForTask(task: PlanTask): Int {
+        // Calculate XP based on task complexity
+        return when {
+            task.desc.contains("hard", ignoreCase = true) -> 50
+            task.desc.contains("easy", ignoreCase = true) -> 20
+            else -> 30
+        }
     }
 
-    private fun isTaskCompleted(task: Task, progress: UserProgress): Boolean {
+    private fun isTaskCompleted(task: PlanTask, progress: UserProgress): Boolean {
         // Check if task is completed in progress data
         return false // Placeholder
     }
+
+    // Converter functions for filter comparisons
+    private fun convertTaskCategoryToData(category: com.mtlc.studyplan.feature.tasks.TaskCategory): com.mtlc.studyplan.data.TaskCategory {
+        return when (category) {
+            com.mtlc.studyplan.feature.tasks.TaskCategory.VOCABULARY -> com.mtlc.studyplan.data.TaskCategory.VOCABULARY
+            com.mtlc.studyplan.feature.tasks.TaskCategory.GRAMMAR -> com.mtlc.studyplan.data.TaskCategory.GRAMMAR
+            com.mtlc.studyplan.feature.tasks.TaskCategory.READING -> com.mtlc.studyplan.data.TaskCategory.READING
+            com.mtlc.studyplan.feature.tasks.TaskCategory.LISTENING -> com.mtlc.studyplan.data.TaskCategory.LISTENING
+            com.mtlc.studyplan.feature.tasks.TaskCategory.OTHER -> com.mtlc.studyplan.data.TaskCategory.OTHER
+        }
+    }
+
+    private fun convertTaskDifficultyToShared(difficulty: com.mtlc.studyplan.feature.tasks.TaskDifficulty): com.mtlc.studyplan.shared.TaskDifficulty {
+        return when (difficulty) {
+            com.mtlc.studyplan.feature.tasks.TaskDifficulty.EASY -> com.mtlc.studyplan.shared.TaskDifficulty.EASY
+            com.mtlc.studyplan.feature.tasks.TaskDifficulty.MEDIUM -> com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM
+            com.mtlc.studyplan.feature.tasks.TaskDifficulty.HARD -> com.mtlc.studyplan.shared.TaskDifficulty.HARD
+            com.mtlc.studyplan.feature.tasks.TaskDifficulty.EXPERT -> com.mtlc.studyplan.shared.TaskDifficulty.EXPERT
+        }
+    }
+
+
+
 
     override fun onCleared() {
         super.onCleared()
@@ -471,7 +500,7 @@ class TasksViewModel(
      * Data classes for internal use
      */
     private data class TaskData(
-        val tasks: List<TaskItem>,
+        val tasks: List<com.mtlc.studyplan.feature.tasks.TaskItem>,
         val stats: TaskStatistics
     )
 

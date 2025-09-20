@@ -27,7 +27,13 @@
       "Bash(git switch:*)",
       "Bash(findstr:*)",
       "Bash(cmd /c:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\settings\\ui\\SettingsCategoryAdapter.kt\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\settings\\ui\\SettingsDetailAdapter.kt\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\settings\\ui\\BaseSettingsAdapter.kt\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\settings\\ui\\PrivacySettingsAdapter.kt\")",
+      "Bash(.\\gradlew.bat clean:*)",
+      "Bash(.gradlew clean build)"
     ],
     "deny": [],
     "ask": []

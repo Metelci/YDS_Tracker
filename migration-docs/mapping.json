@@ -1,0 +1,19 @@
+{
+  "imports": {
+    "androidx.compose.material": "androidx.compose.material3",
+    "com.google.accompanist.swiperefresh": "androidx.compose.material.pullrefresh"
+  },
+  "components": {
+    "BottomNavigation": "NavigationBar",
+    "BottomNavigationItem": "NavigationBarItem",
+    "TabRow": "TabRow (material3)",
+    "Tab": "Tab (material3)",
+    "Divider": "HorizontalDivider",
+    "TopAppBar (manual Surface/Row)": "TopAppBar (material3)"
+  },
+  "theme": {
+    "MaterialTheme.colors.*": "MaterialTheme.colorScheme.*",
+    "Color(...)": "MaterialTheme.colorScheme token",
+    "magic dp spacing": "central spacing constants (e.g., Spacing.M, Spacing.L)"
+  }
+}

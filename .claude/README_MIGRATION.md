@@ -7,7 +7,7 @@ This repository contains AI-agent-friendly prompts and checklists to guide the *
 ## 📂 Files Overview
 
 ### Phase 2 — Legacy UI Audit
-- **`phase2_audit_prompt.md`** *(not yet exported, see conversation)*  
+- **[`phase2_audit_prompt.md`](./phase2_audit_prompt.md)**  
   Instructs the agent to scan the repo for legacy UI patterns and produce:  
   - `legacy-usage.csv`  
   - `mapping.json`  
@@ -45,6 +45,18 @@ This repository contains AI-agent-friendly prompts and checklists to guide the *
 - **[`REMOVAL_REPORT.md`](./REMOVAL_REPORT.md)**  
   Final cleanup documentation, listing removed components and confirming guardrails.
 
+### Phase 6 — Validation & Final QA
+- **[`phase6_validation_prompt.md`](./phase6_validation_prompt.md)**  
+  Instructs the agent to:  
+  - Run full build and test suite  
+  - Validate UI via Previews and smoke flows  
+  - Verify accessibility (content descriptions, font scaling, dark mode, RTL)  
+  - Ensure guardrails prevent regressions  
+  - Produce `VALIDATION_REPORT.md`
+
+- **[`VALIDATION_REPORT.md`](./VALIDATION_REPORT.md)**  
+  Final QA documentation with build/test results, UI validation, accessibility/i18n checks, and sign-off.
+
 ---
 
 ## ▶️ Execution Order
@@ -70,6 +82,12 @@ This repository contains AI-agent-friendly prompts and checklists to guide the *
    - Strengthens guardrails in CI.  
    - Outputs: `REMOVAL_REPORT.md`.
 
+5. **Phase 6 Validation & Final QA**  
+   - Agent runs `phase6_validation_prompt.md`.  
+   - Runs full validation suite.  
+   - Confirms guardrails, UI correctness, accessibility.  
+   - Outputs: `VALIDATION_REPORT.md`.
+
 ---
 
 ## ✅ Definition of Done
@@ -79,15 +97,17 @@ This repository contains AI-agent-friendly prompts and checklists to guide the *
 - All screens use Material 3 components  
 - `MIGRATION.md` completed and reviewed  
 - `SCREEN_CHECKLIST.md` fully checked off  
-- `REMOVAL_REPORT.md` confirms cleanup and enforcement
+- `REMOVAL_REPORT.md` confirms cleanup and enforcement  
+- `VALIDATION_REPORT.md` confirms build/tests/QA passed
 
 ---
 
 ## 🔒 Guardrails
 - Detekt rules block legacy imports.  
 - CI fails if regressions occur.  
-- Legacy dependencies cannot be reintroduced.
+- Legacy dependencies cannot be reintroduced.  
+- Validation ensures the app is **production-ready**.
 
 ---
 
-With this structure, your AI agent can auto-discover **Phases 2 → 5** in the correct order by scanning for the `phase*_*.md` files in this directory.
+With this structure, your AI agent can auto-discover **Phases 2 → 6** in the correct order by scanning for the `phase*_*.md` files in this directory.

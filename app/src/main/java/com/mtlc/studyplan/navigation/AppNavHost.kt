@@ -433,8 +433,13 @@ fun AppNavHost(
 
         // Add route for the regular study plan screen
         composable(PLAN_ROUTE) {
-            // Use the existing PlanScreen composable from MainActivity
-            com.mtlc.studyplan.PlanScreen()
+            // TODO: Implement PlanScreen or use TodayScreen as placeholder
+            com.mtlc.studyplan.feature.today.TodayRoute(
+                onNavigateToPlan = { navController.navigate("plan") },
+                onNavigateToLesson = { lessonId -> navController.navigate("lesson/$lessonId") },
+                onNavigateToMock = { navController.navigate("mock/start") },
+                onNavigateToFocus = { taskId -> navController.navigate("focus/$taskId") }
+            )
         }
 
         // Lightweight demo route to open reader with a sample passage

@@ -1,6 +1,5 @@
 package com.mtlc.studyplan.integration
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -8,9 +7,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.repository.*
 import com.mtlc.studyplan.eventbus.*
-import com.mtlc.studyplan.gamification.GamificationManager
+import com.mtlc.studyplan.gamification.PointBreakdown
 import com.mtlc.studyplan.gamification.GamificationTaskResult
-import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.ui.celebrations.CelebrationEvent
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.database.entities.UserSettingsEntity
 import com.mtlc.studyplan.database.entities.TaskEntity
@@ -24,7 +23,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class EnhancedAppIntegrationManager @Inject constructor(
-    private val context: Context,
     private val taskRepository: TaskRepository,
     private val progressRepository: ProgressRepository,
     private val achievementRepository: AchievementRepository,
@@ -37,9 +35,6 @@ class EnhancedAppIntegrationManager @Inject constructor(
 
     // Legacy integration manager for existing features
     private var legacyIntegrationManager: AppIntegrationManager? = null
-
-    private val gamificationManager = GamificationManager(context.dataStore, progressRepository)
-
     // Master app state combining all subsystems
     data class MasterAppState(
         val taskState: TaskState,
@@ -143,11 +138,19 @@ class EnhancedAppIntegrationManager @Inject constructor(
     val userSettings: Flow<UserSettingsEntity?> = userSettingsRepository.getUserSettings()
     val socialStats: Flow<SocialRepository.UserSocialStats> = socialRepository.getUserStats("default_user")
 
+    private data class CombinedStateInputs(
+        val taskProgress: TaskRepository.TaskProgress,
+        val progressStats: ProgressRepository.DailyStats,
+        val achievementStats: AchievementRepository.AchievementStats,
+        val streakInfo: StreakRepository.DailyStreakInfo,
+        val userSettings: UserSettingsEntity?
+    )
+
     // Event flows for UI reactions
-    val taskEvents: Flow<TaskEvent> = eventBus.subscribeToCategory(TaskEvent::class)
-    val achievementEvents: Flow<AchievementEvent> = eventBus.subscribeToCategory(AchievementEvent::class)
-    val streakEvents: Flow<StreakEvent> = eventBus.subscribeToCategory(StreakEvent::class)
-    val uiEvents: Flow<UIEvent> = eventBus.subscribeToCategory(UIEvent::class)
+    val taskEvents: Flow<TaskEvent> = eventBus.subscribe(TaskEvent::class)
+    val achievementEvents: Flow<AchievementEvent> = eventBus.subscribe(AchievementEvent::class)
+    val streakEvents: Flow<StreakEvent> = eventBus.subscribe(StreakEvent::class)
+    val uiEvents: Flow<UIEvent> = eventBus.subscribe(UIEvent::class)
 
     // Navigation and UI state
     val navigationEvents: Flow<UIEvent.NavigationRequested> = eventBus.subscribeToUIEvents()
@@ -259,13 +262,22 @@ class EnhancedAppIntegrationManager @Inject constructor(
      */
     private fun combineAllStates() {
         combine(
-            taskProgress,
-            progressStats,
-            achievementStats,
-            streakInfo,
-            userSettings,
+            combine(taskProgress, progressStats, achievementStats, streakInfo, userSettings) { taskProg, progStats, achStats, streakInf, settings ->
+                CombinedStateInputs(
+                    taskProgress = taskProg,
+                    progressStats = progStats,
+                    achievementStats = achStats,
+                    streakInfo = streakInf,
+                    userSettings = settings
+                )
+            },
             socialStats
-        ) { taskProg, progStats, achStats, streakInf, settings, socialSt ->
+        ) { combined, socialSt ->
+            val taskProg = combined.taskProgress
+            val progStats = combined.progressStats
+            val achStats = combined.achievementStats
+            val streakInf = combined.streakInfo
+            val settings = combined.userSettings
 
             val taskState = TaskState(
                 totalTasks = taskProg.completedTotal + taskProg.pendingTotal,
@@ -373,26 +385,33 @@ class EnhancedAppIntegrationManager @Inject constructor(
                     )
                 )
                 null
-            } else {
-                taskRepository.completeTask(taskId, actualMinutes)
+            } else {                taskRepository.completeTask(taskId, actualMinutes)
 
-                val gamificationResult = gamificationManager.completeTaskWithGamification(
-                    taskId = taskId,
-                    taskDescription = task.title,
-                    taskDetails = task.description,
-                    minutesSpent = actualMinutes,
-                    isCorrect = true
-                )
+
+
+                val gamificationResult = basicGamificationResult(pointsEarned)
+
+
 
                 eventBus.publish(
+
                     TaskEvent.TaskCompleted(
+
                         taskId = taskId,
+
                         taskTitle = task.title,
+
                         category = task.category.name,
+
                         studyMinutes = actualMinutes,
+
                         pointsEarned = gamificationResult.pointsEarned.toInt()
+
                     )
+
                 )
+
+
 
                 gamificationResult
             }
@@ -571,6 +590,25 @@ class EnhancedAppIntegrationManager @Inject constructor(
         }
     }
 
+    private fun basicGamificationResult(pointsEarned: Int): GamificationTaskResult {
+        return GamificationTaskResult(
+            pointsEarned = pointsEarned.toLong(),
+            pointBreakdown = PointBreakdown(
+                base = pointsEarned.toLong(),
+                category = 0,
+                streak = 0,
+                time = 0,
+                accuracy = 0,
+                bonus = 0
+            ),
+            newAchievements = emptyList(),
+            challengeProgress = null,
+            levelUp = null,
+            comebackBonusApplied = null,
+            celebrationEvents = emptyList<CelebrationEvent>()
+        )
+    }
+
     /**
      * Get summary of app state for debugging
      */
@@ -587,5 +625,7 @@ class EnhancedAppIntegrationManager @Inject constructor(
         """.trimIndent()
     }
 }
+
+
 
 

@@ -255,12 +255,13 @@ class DataArchitectureValidator @Inject constructor(
 
         try {
             // Perform multiple operations to test performance
-            repeat(5) { index ->
-                val testTask = TaskEntity(
-                    id = "perf_test_$index",
-                    title = "Performance Test Task $index",
+            repeat(5) { index ->                val testTask = TaskEntity(
+                    id = "perf_test_\$index",
+                    title = "Performance Test Task \$index",
+                    description = "Generated for validation",
                     category = TaskCategory.OTHER,
-                    priority = TaskPriority.MEDIUM
+                    priority = TaskPriority.MEDIUM,
+                    estimatedMinutes = 30
                 )
 
                 integrationManager.createTask(testTask)

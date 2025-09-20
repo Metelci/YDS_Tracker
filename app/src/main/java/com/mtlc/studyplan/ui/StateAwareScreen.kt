@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun <T> StateAwareScreen(
+fun <T : Any> StateAwareScreen(
     screenKey: String,
     defaultState: T,
     stateClass: Class<T>,

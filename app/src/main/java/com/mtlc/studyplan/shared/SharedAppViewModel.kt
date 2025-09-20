@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.gamification.GamificationManager
 import kotlinx.coroutines.flow.*
@@ -66,9 +67,9 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // Settings state
-    val appSettings = settingsRepository.settingsState.map { settingsMap ->
-        AppSettings.fromMap(settingsMap)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
+    val appSettings = settingsRepository.settingsState
+        .map { AppSettings() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
     // Navigation events
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
@@ -208,11 +209,11 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             try {
                 // Update individual settings in repository
-                settingsRepository.updateSetting("notifications_enabled", settings.notificationsEnabled)
-                settingsRepository.updateSetting("gamification_enabled", settings.gamificationEnabled)
-                settingsRepository.updateSetting("theme_mode", settings.themeMode)
-                settingsRepository.updateSetting("difficulty_auto_adjust", settings.autoAdjustDifficulty)
-                settingsRepository.updateSetting("daily_goal_tasks", settings.dailyGoalTasks)
+                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("notifications_enabled", settings.notificationsEnabled))
+                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("gamification_enabled", settings.gamificationEnabled))
+                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString("theme_mode", settings.themeMode))
+                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("difficulty_auto_adjust", settings.autoAdjustDifficulty))
+                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateInt("daily_goal_tasks", settings.dailyGoalTasks))
 
                 showSettingsUpdatedFeedback()
             } catch (e: Exception) {
@@ -240,71 +241,46 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
 
     // ============ DATA CALCULATION HELPERS ============
 
-    private fun getTodayTasksFromPlan(plan: List<DayPlan>, progress: UserProgress): List<AppTask> {
+    private fun getTodayTasksFromPlan(plan: List<WeekPlan>, progress: UserProgress): List<AppTask> {
+        val flattenedDays = plan.flatMap { it.days }
         val today = LocalDate.now()
-        val todayPlan = plan.find {
-            it.date.dayOfYear == today.dayOfYear && it.date.year == today.year
-        }
 
-        return todayPlan?.tasks?.map { task ->
+        val targetDay = flattenedDays.firstOrNull { day ->
+            day.day.equals(today.dayOfWeek.name, ignoreCase = true)
+        } ?: flattenedDays.firstOrNull() ?: return emptyList()
+
+        return targetDay.tasks.map { task ->
             AppTask(
                 id = task.id,
-                title = task.description,
+                title = task.desc,
                 description = task.details ?: "",
-                category = TaskCategory.fromString(task.description),
+                category = TaskCategory.GENERAL,
                 difficulty = TaskDifficulty.MEDIUM,
                 estimatedMinutes = 15,
-                isCompleted = progress.completedTaskIds.contains(task.id),
+                isCompleted = progress.completedTasks.contains(task.id),
                 xpReward = 10
             )
-        } ?: emptyList()
+        }
     }
 
-    private fun getAllTasksFromPlan(plan: List<DayPlan>, logs: List<TaskLog>): List<AppTask> {
+    private fun getAllTasksFromPlan(plan: List<WeekPlan>, logs: List<TaskLog>): List<AppTask> {
         val completedTaskIds = logs.map { it.taskId }.toSet()
 
-        return plan.flatMap { dayPlan ->
-            dayPlan.tasks.map { task ->
-                AppTask(
-                    id = task.id,
-                    title = task.description,
-                    description = task.details ?: "",
-                    category = TaskCategory.fromString(task.description),
-                    difficulty = TaskDifficulty.MEDIUM,
-                    estimatedMinutes = 15,
-                    isCompleted = completedTaskIds.contains(task.id),
-                    xpReward = 10
-                )
+        return plan.flatMap { week ->
+            week.days.flatMap { day ->
+                day.tasks.map { task ->
+                    AppTask(
+                        id = task.id,
+                        title = task.desc,
+                        description = task.details ?: "",
+                        category = TaskCategory.GENERAL,
+                        difficulty = TaskDifficulty.MEDIUM,
+                        estimatedMinutes = 15,
+                        isCompleted = completedTaskIds.contains(task.id),
+                        xpReward = logs.find { it.taskId == task.id }?.pointsEarned ?: 10
+                    )
+                }
             }
-        }
-    }
-
-    private fun calculateStudyStats(progress: UserProgress, logs: List<TaskLog>): StudyStats {
-        val today = LocalDate.now()
-        val thisWeek = logs.filter {
-            val logDate = LocalDate.ofEpochDay(it.timestampMillis / (24 * 60 * 60 * 1000))
-            ChronoUnit.DAYS.between(logDate, today) <= 7
-        }
-
-        return StudyStats(
-            totalTasksCompleted = progress.completedTaskIds.size,
-            currentStreak = progress.streakCount,
-            totalStudyTime = logs.sumOf { it.timeSpentMinutes },
-            thisWeekTasks = thisWeek.size,
-            thisWeekStudyTime = thisWeek.sumOf { it.timeSpentMinutes },
-            averageSessionTime = if (logs.isNotEmpty()) logs.map { it.timeSpentMinutes }.average().toInt() else 0,
-            totalXP = progress.totalPoints.toInt()
-        )
-    }
-
-    private fun findTaskDetails(taskId: String): TaskDetails? {
-        val allTasksValue = allTasks.value
-        return allTasksValue.find { it.id == taskId }?.let {
-            TaskDetails(
-                description = it.title,
-                details = it.description,
-                estimatedMinutes = it.estimatedMinutes
-            )
         }
     }
 
@@ -418,6 +394,7 @@ data class TaskDetails(
     val estimatedMinutes: Int
 )
 
+
 enum class TaskCategory {
     VOCABULARY, GRAMMAR, READING, LISTENING, PRACTICE_EXAM, OTHER;
 
@@ -435,7 +412,7 @@ enum class TaskCategory {
     }
 }
 
-enum class TaskDifficulty { EASY, MEDIUM, HARD }
+enum class TaskDifficulty { EASY, MEDIUM, HARD, EXPERT }
 
 enum class FeedbackType { SUCCESS, ERROR, INFO, WARNING, CELEBRATION }
 

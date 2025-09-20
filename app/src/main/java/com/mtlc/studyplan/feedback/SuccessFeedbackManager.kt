@@ -248,7 +248,7 @@ class SuccessFeedbackManager(private val context: Context) {
     private fun createTrophyAnimation(): View {
         val container = FrameLayout(context)
         val imageView = ImageView(context).apply {
-            setImageResource(R.drawable.ic_trophy)
+            setImageResource(R.drawable.ic_star)
             layoutParams = FrameLayout.LayoutParams(150, 150).apply {
                 gravity = Gravity.CENTER
             }
@@ -456,3 +456,4 @@ enum class AnimationType(val duration: Long) {
     MAJOR_PROGRESS(1000),
     GOOD_PROGRESS(800)
 }
+

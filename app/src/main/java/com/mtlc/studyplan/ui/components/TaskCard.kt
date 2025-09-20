@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.mtlc.studyplan.Task
+import com.mtlc.studyplan.data.Task
 
 enum class Skill { GRAMMAR, READING, LISTENING, VOCAB, OTHER }
 
@@ -61,4 +61,5 @@ fun TaskCard(
         }
     }
 }
+
 

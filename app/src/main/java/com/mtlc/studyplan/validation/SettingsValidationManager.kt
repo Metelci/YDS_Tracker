@@ -211,7 +211,7 @@ sealed class ValidationResult(val message: String) {
     class Error(message: String) : ValidationResult(message)
 }
 
-data class PerformanceMetrics(
+data class SettingsPerformanceMetrics(
     val settingsLoadTime: Long = 0L,
     val themeChangeTime: Long = 0L,
     val notificationSetupTime: Long = 0L,
@@ -220,8 +220,8 @@ data class PerformanceMetrics(
     val cacheHitRate: Double = 0.0
 )
 
-class PerformanceMonitor {
-    private val metrics = MutableStateFlow(PerformanceMetrics())
+class SettingsPerformanceMonitor {
+    private val metrics = MutableStateFlow(SettingsPerformanceMetrics())
 
     fun recordSettingsLoadTime(time: Long) {
         metrics.value = metrics.value.copy(settingsLoadTime = time)
@@ -239,7 +239,7 @@ class PerformanceMonitor {
         metrics.value = metrics.value.copy(offlineSyncTime = time)
     }
 
-    fun getMetrics(): StateFlow<PerformanceMetrics> = metrics.asStateFlow()
+    fun getMetrics(): StateFlow<SettingsPerformanceMetrics> = metrics.asStateFlow()
 
     fun logPerformanceReport() {
         val current = metrics.value

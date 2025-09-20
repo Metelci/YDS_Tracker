@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -375,9 +376,9 @@ private fun RecoveryOptionsRow(
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = null,
-                    width = 1.dp
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline
                 )
             ) {
                 Text(

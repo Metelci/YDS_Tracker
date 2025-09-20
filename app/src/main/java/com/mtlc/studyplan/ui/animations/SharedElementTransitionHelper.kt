@@ -2,24 +2,27 @@ package com.mtlc.studyplan.ui.animations
 
 import android.app.ActivityOptions
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.util.Pair
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair as AndroidXPair
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.transition.*
-import com.mtlc.studyplan.accessibility.AccessibilityManager
+import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
 
 class SharedElementTransitionHelper(
-    private val accessibilityManager: AccessibilityManager
+    private val accessibilityManager: AccessibilityEnhancementManager
 ) {
 
     companion object {
+
         const val SHARED_ELEMENT_TRANSITION_DURATION = 300L
         const val TRANSITION_NAME_SETTING_CARD = "setting_card"
         const val TRANSITION_NAME_SETTING_ICON = "setting_icon"
@@ -29,8 +32,10 @@ class SharedElementTransitionHelper(
         const val TRANSITION_NAME_BACK_BUTTON = "back_button"
     }
 
+    private fun scaledDuration(base: Long): Long = if (accessibilityManager.isReduceMotionEnabled()) 0L else base
+
     fun createSharedElementTransition(): Transition {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return Fade().apply {
                 duration = 0L
             }
@@ -40,58 +45,40 @@ class SharedElementTransitionHelper(
             ordering = TransitionSet.ORDERING_TOGETHER
 
             addTransition(ChangeBounds().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
             })
 
             addTransition(ChangeTransform().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
             })
 
             addTransition(ChangeClipBounds().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
             })
 
             addTransition(ChangeImageTransform().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
             })
 
             interpolator = FastOutSlowInInterpolator()
-
-            addListener(object : TransitionListenerAdapter() {
-                override fun onTransitionStart(transition: Transition) {
-                    super.onTransitionStart(transition)
-                    // Announce transition start for accessibility
-                    if (accessibilityManager.isScreenReaderActive()) {
-                        accessibilityManager.announceForAccessibility("Navigating to settings")
-                    }
-                }
-
-                override fun onTransitionEnd(transition: Transition) {
-                    super.onTransitionEnd(transition)
-                    // Announce transition completion for accessibility
-                    if (accessibilityManager.isScreenReaderActive()) {
-                        accessibilityManager.announceForAccessibility("Navigation complete")
-                    }
-                }
-            })
         }
     }
 
     fun createEnterTransition(): Transition {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return Fade().apply { duration = 0L }
         }
 
         return TransitionSet().apply {
             addTransition(Slide().apply {
                 slideEdge = android.view.Gravity.END
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
                 addTarget(android.R.id.content)
             })
 
             addTransition(Fade().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION / 2)
-                startDelay = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION / 4)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION / 2)
+                startDelay = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION / 4)
             })
 
             interpolator = DecelerateInterpolator()
@@ -99,19 +86,19 @@ class SharedElementTransitionHelper(
     }
 
     fun createExitTransition(): Transition {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return Fade().apply { duration = 0L }
         }
 
         return TransitionSet().apply {
             addTransition(Slide().apply {
                 slideEdge = android.view.Gravity.START
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
                 addTarget(android.R.id.content)
             })
 
             addTransition(Fade().apply {
-                duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION / 2)
+                duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION / 2)
             })
 
             interpolator = AccelerateInterpolator()
@@ -119,7 +106,7 @@ class SharedElementTransitionHelper(
     }
 
     fun setupSharedElementTransitions(fragment: Fragment) {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             // Use simple fade transitions for accessibility
             fragment.enterTransition = Fade().apply { duration = 0L }
             fragment.exitTransition = Fade().apply { duration = 0L }
@@ -142,7 +129,7 @@ class SharedElementTransitionHelper(
         transaction: FragmentTransaction,
         sharedElements: List<SharedElementPair>
     ): FragmentTransaction {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return transaction
         }
 
@@ -163,7 +150,7 @@ class SharedElementTransitionHelper(
         context: Context,
         sharedElements: List<SharedElementPair>
     ): ActivityOptionsCompat? {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return null
         }
 
@@ -181,7 +168,7 @@ class SharedElementTransitionHelper(
     fun createActivityOptions(
         sharedElements: List<SharedElementPair>
     ): ActivityOptions? {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return null
         }
 
@@ -199,7 +186,7 @@ class SharedElementTransitionHelper(
         sourceView: View,
         targetTransitionName: String
     ) {
-        if (accessibilityManager.shouldUseReducedMotion()) return
+        if (accessibilityManager.isReduceMotionEnabled()) return
 
         // Set the transition name for the source view
         ViewCompat.setTransitionName(sourceView, targetTransitionName)
@@ -252,13 +239,13 @@ class SharedElementTransitionHelper(
     }
 
     fun postponeEnterTransition(fragment: Fragment) {
-        if (accessibilityManager.shouldUseReducedMotion()) return
+        if (accessibilityManager.isReduceMotionEnabled()) return
 
         fragment.postponeEnterTransition()
     }
 
     fun startPostponedEnterTransition(fragment: Fragment) {
-        if (accessibilityManager.shouldUseReducedMotion()) return
+        if (accessibilityManager.isReduceMotionEnabled()) return
 
         fragment.startPostponedEnterTransition()
     }
@@ -267,7 +254,7 @@ class SharedElementTransitionHelper(
         fragment: Fragment,
         onMapSharedElements: (names: MutableList<String>, sharedElements: MutableMap<String, View>) -> Unit
     ) {
-        if (accessibilityManager.shouldUseReducedMotion()) return
+        if (accessibilityManager.isReduceMotionEnabled()) return
 
         fragment.setSharedElementEnterTransition(createSharedElementTransition())
 
@@ -286,7 +273,7 @@ class SharedElementTransitionHelper(
         endView: View,
         transitionName: String
     ): Transition {
-        if (accessibilityManager.shouldUseReducedMotion()) {
+        if (accessibilityManager.isReduceMotionEnabled()) {
             return Fade().apply { duration = 0L }
         }
 
@@ -297,16 +284,14 @@ class SharedElementTransitionHelper(
             addTransition(ChangeBounds())
             addTransition(ChangeTransform())
             addTransition(AutoTransition())
-            duration = accessibilityManager.getAnimationDuration(SHARED_ELEMENT_TRANSITION_DURATION)
+            duration = scaledDuration(SHARED_ELEMENT_TRANSITION_DURATION)
             interpolator = FastOutSlowInInterpolator()
         }
     }
 
     fun enhanceAccessibilityForTransitions(view: View, description: String) {
-        if (accessibilityManager.isScreenReaderActive()) {
-            view.contentDescription = "$description. Will animate when selected."
-            view.isAccessibilityFocusable = true
-        }
+        if (accessibilityManager.isTalkBackEnabled()) {
+            view.contentDescription = "$description. Will animate when selected."        }
     }
 
     data class SharedElementPair(
@@ -314,3 +299,6 @@ class SharedElementTransitionHelper(
         val transitionName: String
     )
 }
+
+
+

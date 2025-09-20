@@ -1,13 +1,14 @@
 package com.mtlc.studyplan.validation
 
 import android.content.Context
+import com.mtlc.studyplan.performance.PerformanceMonitor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Minimal validation runner stub to keep the build healthy until the production validation suite is restored.
+ * Lightweight validation runner that delegates to the concrete validation services.
  */
 @Singleton
 class ValidationRunner @Inject constructor(
@@ -31,26 +32,3 @@ sealed class ValidationState {
     data class Completed(val report: String) : ValidationState()
     data class Error(val message: String) : ValidationState()
 }
-
-class PerformanceMonitor @Inject constructor() {
-    val performanceMetrics: StateFlow<PerformanceMetrics> = MutableStateFlow(PerformanceMetrics())
-}
-
-data class PerformanceMetrics(
-    val currentFps: Double = 60.0,
-    val memoryUsageMB: Double = 0.0
-)
-
-class ProductionValidator @Inject constructor() {
-    fun generateValidationReport(): String = ""
-    fun runCompleteValidation() {}
-    val validationResults: MutableStateFlow<ValidationSummary> = MutableStateFlow(ValidationSummary())
-}
-
-class PlayStoreValidator @Inject constructor(private val context: Context) {
-    fun generatePlayStoreReport(): String = ""
-}
-
-data class ValidationSummary(
-    val overallScore: Int = 100
-)

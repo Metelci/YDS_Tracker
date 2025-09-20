@@ -9,6 +9,7 @@ import com.mtlc.studyplan.repository.TaskRepository
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.shared.TaskCategory
 import com.mtlc.studyplan.shared.TaskPriority
+import com.mtlc.studyplan.shared.TaskDifficulty
 import com.mtlc.studyplan.eventbus.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -109,7 +110,7 @@ class IntegratedTasksViewModel @Inject constructor(
                     estimatedMinutes = estimatedMinutes,
                     dueDate = dueDate,
                     reminderTime = reminderTime,
-                    difficulty = "intermediate"
+                    difficulty = TaskDifficulty.MEDIUM
                 )
 
                 integrationManager.createTask(task)
@@ -395,3 +396,5 @@ class IntegratedTasksViewModel @Inject constructor(
         PRIORITY, DUE_DATE, CREATED_DATE, TITLE, CATEGORY
     }
 }
+
+

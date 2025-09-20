@@ -1,0 +1,8 @@
+file,legacy_usage,line,replacement_candidate
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,TopAppBar,85,acme/u/app-bar?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,FilterChip,129,acme/u/chip?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,Card,242,acme/u/card?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,Card,375,acme/u/card?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,Card,552,acme/u/card?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,IconButton,101,acme/u/icon-button?todo
+app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt,Button (contained),453,acme/u/button?todo

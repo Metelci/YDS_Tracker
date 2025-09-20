@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import com.mtlc.studyplan.MainActivity
+import com.mtlc.studyplan.MinimalMainActivity
 import com.mtlc.studyplan.R
 
 //region BİLDİRİM VE ARKA PLAN İŞLERİ
@@ -19,7 +19,7 @@ object NotificationHelper {
     fun showStudyReminderNotification(context: Context) {
         // 1. Adım: Uygulamayı açacak olan Intent'i oluştur.
         // Bu, MainActivity'yi hedef alır.
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
@@ -48,7 +48,7 @@ object NotificationHelper {
     // SINAV BAŞVURU BİLDİRİMİ İÇİN DE AYNI DÜZELTME
     fun showApplicationReminderNotification(context: Context, title: String, message: String, notificationId: Int) {
         // Aynı şekilde bu bildirim için de bir PendingIntent oluşturuyoruz.
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: android.app.PendingIntent = android.app.PendingIntent.getActivity(

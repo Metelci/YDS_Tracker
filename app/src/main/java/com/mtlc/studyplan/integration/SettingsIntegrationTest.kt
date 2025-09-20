@@ -2,11 +2,9 @@ package com.mtlc.studyplan.integration
 
 import com.mtlc.studyplan.settings.data.ThemeMode
 import com.mtlc.studyplan.settings.data.UserSettings
-import com.mtlc.studyplan.settings.data.SettingsKey
+import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.validation.SettingsValidationManager
 import com.mtlc.studyplan.validation.ValidationResult
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest
 
 class SettingsIntegrationValidator {
 
@@ -99,13 +97,13 @@ class SettingsIntegrationValidator {
     }
 
     fun validateSettingsKeys(): Boolean {
-        val allKeys = SettingsKey.values()
+        val allKeys = SettingsKeys.allKeys
         val requiredKeys = setOf(
-            SettingsKey.THEME_MODE,
-            SettingsKey.NOTIFICATIONS_ENABLED,
-            SettingsKey.GAMIFICATION_ENABLED,
-            SettingsKey.OFFLINE_MODE,
-            SettingsKey.HAPTIC_FEEDBACK
+            SettingsKeys.Appearance.THEME_MODE,
+            SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
+            SettingsKeys.Gamification.STREAK_TRACKING,
+            SettingsKeys.Data.OFFLINE_MODE,
+            SettingsKeys.Navigation.HAPTIC_FEEDBACK
         )
 
         return requiredKeys.all { it in allKeys }
@@ -149,16 +147,16 @@ class SettingsIntegrationValidator {
 }
 
 data class SettingsIntegrationReport(
-    private val tests: MutableMap<String, Boolean> = mutableMapOf()
+    private val _tests: MutableMap<String, Boolean> = mutableMapOf()
 ) {
     fun addTest(name: String, passed: Boolean) {
-        tests[name] = passed
+        _tests[name] = passed
     }
 
-    val passedCount: Int get() = tests.values.count { it }
-    val failedCount: Int get() = tests.values.count { !it }
-    val totalCount: Int get() = tests.size
+    val passedCount: Int get() = _tests.values.count { it }
+    val failedCount: Int get() = _tests.values.count { !it }
+    val totalCount: Int get() = _tests.size
     val successRate: Int get() = if (totalCount > 0) (passedCount * 100) / totalCount else 0
 
-    val tests: Map<String, Boolean> get() = this.tests.toMap()
+    val tests: Map<String, Boolean> get() = _tests.toMap()
 }

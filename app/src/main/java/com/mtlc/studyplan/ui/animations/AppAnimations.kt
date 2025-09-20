@@ -109,9 +109,9 @@ object StudyPlanMotion {
 object NavigationTransitions {
 
     // Slide transitions for main navigation tabs
-    fun slideTransition(
+    fun <T> slideTransition(
         isForward: Boolean = true
-    ): AnimatedContentTransitionScope<*>.() -> ContentTransform = {
+    ): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
         val direction = if (isForward) AnimatedContentTransitionScope.SlideDirection.Left
                        else AnimatedContentTransitionScope.SlideDirection.Right
 
@@ -131,7 +131,7 @@ object NavigationTransitions {
     }
 
     // Fade transition for overlay screens
-    fun fadeTransition(): AnimatedContentTransitionScope<*>.() -> ContentTransform = {
+    fun <T> fadeTransition(): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
         fadeIn(
             animationSpec = tween(
                 durationMillis = StudyPlanMotion.MEDIUM_1.inWholeMilliseconds.toInt(),
@@ -146,7 +146,7 @@ object NavigationTransitions {
     }
 
     // Scale + fade for modal content
-    fun scaleTransition(): AnimatedContentTransitionScope<*>.() -> ContentTransform = {
+    fun <T> scaleTransition(): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
         (fadeIn(
             animationSpec = tween(
                 durationMillis = StudyPlanMotion.MEDIUM_2.inWholeMilliseconds.toInt(),

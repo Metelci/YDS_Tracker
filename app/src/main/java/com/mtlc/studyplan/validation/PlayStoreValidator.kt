@@ -432,7 +432,8 @@ class PlayStoreValidator @Inject constructor(
 
     private fun getApkSize(): Long = try {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val sourceDir = packageInfo.applicationInfo.sourceDir
+        val appInfo = packageInfo.applicationInfo ?: context.applicationInfo
+        val sourceDir = appInfo.sourceDir
         java.io.File(sourceDir).length()
     } catch (e: Exception) { 0L }
 
@@ -573,3 +574,4 @@ data class StoreListingResults(
     val hasScreenshots: Boolean = false,
     val hasIcon: Boolean = false
 )
+

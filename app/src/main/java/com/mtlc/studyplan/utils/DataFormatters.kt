@@ -158,13 +158,13 @@ object DataFormatters {
             isTaskOverdue(task) -> TaskStatusInfo(
                 status = "Overdue",
                 color = Color.parseColor("#F44336"), // Red
-                icon = R.drawable.ic_warning,
+                icon = R.drawable.ic_error,
                 description = "Needs attention"
             )
             isTaskDueToday(task) -> TaskStatusInfo(
                 status = "Due Today",
                 color = Color.parseColor("#FF9800"), // Orange
-                icon = R.drawable.ic_today,
+                icon = R.drawable.ic_schedule,
                 description = "Complete today"
             )
             else -> TaskStatusInfo(
@@ -179,69 +179,85 @@ object DataFormatters {
     // Category formatting
     fun formatTaskCategory(category: TaskCategory): TaskCategoryInfo {
         return when (category) {
-            TaskCategory.VOCABULARY -> TaskCategoryInfo(
-                name = "Vocabulary",
-                icon = R.drawable.ic_book,
+            TaskCategory.MATHEMATICS -> TaskCategoryInfo(
+                name = "Mathematics",
+                icon = R.drawable.ic_task,
+                color = Color.parseColor("#3F51B5"), // Indigo
+                description = "Solve numerical challenges"
+            )
+            TaskCategory.SCIENCE -> TaskCategoryInfo(
+                name = "Science",
+                icon = R.drawable.ic_shield,
+                color = Color.parseColor("#009688"), // Teal
+                description = "Experiment and explore"
+            )
+            TaskCategory.LANGUAGE -> TaskCategoryInfo(
+                name = "Language",
+                icon = R.drawable.ic_people,
                 color = Color.parseColor("#9C27B0"), // Purple
-                description = "Learn new words"
+                description = "Build communication skills"
             )
-            TaskCategory.GRAMMAR -> TaskCategoryInfo(
-                name = "Grammar",
-                icon = R.drawable.ic_edit,
-                color = Color.parseColor("#2196F3"), // Blue
-                description = "Master language rules"
+            TaskCategory.HISTORY -> TaskCategoryInfo(
+                name = "History",
+                icon = R.drawable.ic_history,
+                color = Color.parseColor("#795548"), // Brown
+                description = "Learn from the past"
             )
-            TaskCategory.READING -> TaskCategoryInfo(
-                name = "Reading",
-                icon = R.drawable.ic_menu_book,
+            TaskCategory.ENGLISH_LITERATURE -> TaskCategoryInfo(
+                name = "English Literature",
+                icon = R.drawable.ic_list,
+                color = Color.parseColor("#FF7043"), // Deep Orange
+                description = "Analyze classic works"
+            )
+            TaskCategory.COMPUTER_SCIENCE -> TaskCategoryInfo(
+                name = "Computer Science",
+                icon = R.drawable.ic_storage,
+                color = Color.parseColor("#607D8B"), // Blue Gray
+                description = "Code and compute"
+            )
+            TaskCategory.GENERAL -> TaskCategoryInfo(
+                name = "General Study",
+                icon = R.drawable.ic_task,
                 color = Color.parseColor("#4CAF50"), // Green
-                description = "Improve comprehension"
-            )
-            TaskCategory.LISTENING -> TaskCategoryInfo(
-                name = "Listening",
-                icon = R.drawable.ic_headphones,
-                color = Color.parseColor("#FF9800"), // Orange
-                description = "Enhance audio skills"
-            )
-            TaskCategory.PRACTICE_EXAM -> TaskCategoryInfo(
-                name = "Practice Exam",
-                icon = R.drawable.ic_assignment,
-                color = Color.parseColor("#F44336"), // Red
-                description = "Test your knowledge"
+                description = "Keep learning every day"
             )
             TaskCategory.OTHER -> TaskCategoryInfo(
-                name = "General Study",
-                icon = R.drawable.ic_school,
-                color = Color.parseColor("#607D8B"), // Blue Gray
-                description = "Various activities"
+                name = "Other",
+                icon = R.drawable.ic_people,
+                color = Color.parseColor("#9E9E9E"), // Grey
+                description = "Miscellaneous activities"
             )
         }
     }
-
     // Difficulty formatting
     fun formatTaskDifficulty(difficulty: TaskDifficulty): TaskDifficultyInfo {
         return when (difficulty) {
             TaskDifficulty.EASY -> TaskDifficultyInfo(
                 name = "Easy",
                 color = Color.parseColor("#4CAF50"), // Green
-                icon = "🟢",
+                icon = "(E)",
                 description = "Beginner friendly"
             )
             TaskDifficulty.MEDIUM -> TaskDifficultyInfo(
                 name = "Medium",
                 color = Color.parseColor("#FF9800"), // Orange
-                icon = "🟡",
+                icon = "(M)",
                 description = "Moderate challenge"
             )
             TaskDifficulty.HARD -> TaskDifficultyInfo(
                 name = "Hard",
                 color = Color.parseColor("#F44336"), // Red
-                icon = "🔴",
+                icon = "(H)",
                 description = "Advanced level"
+            )
+            TaskDifficulty.EXPERT -> TaskDifficultyInfo(
+                name = "Expert",
+                color = Color.parseColor("#9C27B0"), // Purple
+                icon = "(X)",
+                description = "Mastery required"
             )
         }
     }
-
     // Date formatting
     fun formatDate(date: LocalDate): String {
         val today = LocalDate.now()

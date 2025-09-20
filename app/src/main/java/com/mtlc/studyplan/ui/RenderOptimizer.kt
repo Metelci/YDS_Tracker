@@ -163,6 +163,8 @@ fun <T> rememberStableCallback(
     }
 }
 
+
+private const val ENABLE_COMPOSITION_DEBUG = false
 class CompositionTracker {
     private var compositionCount = 0
     private val compositionCountState = mutableStateOf(0)
@@ -176,7 +178,7 @@ class CompositionTracker {
     fun CompositionCountDisplay() {
         track()
         // Only show in debug builds
-        if (BuildConfig.DEBUG) {
+        if (ENABLE_COMPOSITION_DEBUG) {
             androidx.compose.material3.Text(
                 text = "Compositions: ${compositionCountState.value}",
                 style = androidx.compose.material3.MaterialTheme.typography.labelSmall

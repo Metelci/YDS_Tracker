@@ -71,7 +71,7 @@ class AnimationIntegrationManager(
         if (accessibilityManager.shouldUseReducedMotion()) {
             view.alpha = if (isEnabled) 1.0f else 0.5f
             onAnimationEnd?.invoke()
-            return ValueAnimator.ofFloat(0f, 1f).apply { duration = 0 }
+            return ValueAnimator.ofFloat(0f, 1f).apply { this.duration = 0L }
         }
 
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1.0f, 1.1f, 1.0f)
@@ -97,7 +97,7 @@ class AnimationIntegrationManager(
 
         if (accessibilityManager.shouldUseReducedMotion()) {
             onAnimationEnd?.invoke()
-            return ValueAnimator.ofFloat(0f, 1f).apply { duration = 0 }
+            return ValueAnimator.ofFloat(0f, 1f).apply { this.duration = 0L }
         }
 
         val fadeOut = ObjectAnimator.ofFloat(view, "alpha", 1.0f, 0.3f)
@@ -125,7 +125,7 @@ class AnimationIntegrationManager(
         val duration = getAnimationDuration(ANIMATION_DURATION_SHORT)
 
         if (accessibilityManager.shouldUseReducedMotion()) {
-            return ValueAnimator.ofFloat(0f, 1f).apply { duration = 0 }
+            return ValueAnimator.ofFloat(0f, 1f).apply { this.duration = 0L }
         }
 
         return when (changeType) {
@@ -232,7 +232,7 @@ class AnimationIntegrationManager(
 
     fun createLoadingAnimation(view: View): Animator {
         if (accessibilityManager.shouldUseReducedMotion()) {
-            return ValueAnimator.ofFloat(0f, 1f).apply { duration = 0 }
+            return ValueAnimator.ofFloat(0f, 1f).apply { this.duration = 0L }
         }
 
         val rotation = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f)
@@ -247,7 +247,7 @@ class AnimationIntegrationManager(
 
         if (accessibilityManager.shouldUseReducedMotion()) {
             return ValueAnimator.ofFloat(fromProgress, toProgress).apply {
-                duration = 0
+                this.duration = 0L
                 addUpdateListener { progressView.scaleX = it.animatedValue as Float }
             }
         }
@@ -276,7 +276,7 @@ class AnimationIntegrationManager(
         val duration = getAnimationDuration(ANIMATION_DURATION_MEDIUM)
 
         if (accessibilityManager.shouldUseReducedMotion()) {
-            return ValueAnimator.ofFloat(0f, 1f).apply { duration = 0 }
+            return ValueAnimator.ofFloat(0f, 1f).apply { this.duration = 0L }
         }
 
         val progressAnimation = ObjectAnimator.ofFloat(progressContainer, "scaleX", progressContainer.scaleX, progressValue)

@@ -24,7 +24,7 @@
         android:requestLegacyExternalStorage="false">
 
         <activity
-            android:name=".MainActivitySimple"
+            android:name=".MinimalMainActivity"
             android:exported="true"
             android:theme="@style/Theme.StudyPlan">
             <intent-filter>

@@ -1,6 +1,9 @@
 package com.mtlc.studyplan.integration
 
-import com.mtlc.studyplan.data.*
+import com.mtlc.studyplan.data.StudyStreak
+import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.TaskRepository
+import com.mtlc.studyplan.data.TaskStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +12,70 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
+data class AchievementBadge(
+    val id: String,
+    val title: String,
+    val description: String,
+    val isUnlocked: Boolean,
+    val unlockedAt: Long? = null
+)
+
+private data class AchievementDefinition(
+    val id: String,
+    val title: String,
+    val description: String,
+    val condition: (TaskStats, StudyStreak, Int) -> Boolean
+)
+
+private val achievementDefinitions = listOf(
+    AchievementDefinition(
+        id = "task_starter",
+        title = "Getting Started",
+        description = "Complete your first task",
+        condition = { stats, _, _ -> stats.completedTasks >= 1 }
+    ),
+    AchievementDefinition(
+        id = "task_crusher",
+        title = "Task Crusher",
+        description = "Complete 25 tasks",
+        condition = { stats, _, _ -> stats.completedTasks >= 25 }
+    ),
+    AchievementDefinition(
+        id = "task_master",
+        title = "Task Master",
+        description = "Complete 50 tasks",
+        condition = { stats, _, _ -> stats.completedTasks >= 50 }
+    ),
+    AchievementDefinition(
+        id = "streak_builder",
+        title = "Streak Builder",
+        description = "Maintain a 3-day study streak",
+        condition = { _, streak, _ -> streak.currentStreak >= 3 }
+    ),
+    AchievementDefinition(
+        id = "streak_master",
+        title = "Streak Master",
+        description = "Maintain a 7-day study streak",
+        condition = { _, streak, _ -> streak.currentStreak >= 7 }
+    ),
+    AchievementDefinition(
+        id = "early_bird",
+        title = "Early Bird",
+        description = "Complete 5 tasks before 9 AM",
+        condition = { _, _, earlyCompletions -> earlyCompletions >= 5 }
+    )
+)
+
+private fun initialAchievementBadges(): List<AchievementBadge> = achievementDefinitions.map { definition ->
+    AchievementBadge(
+        id = definition.id,
+        title = definition.title,
+        description = definition.description,
+        isUnlocked = false,
+        unlockedAt = null
+    )
+}
 @Singleton
 class AppIntegrationManager @Inject constructor(
     private val taskRepository: TaskRepository
@@ -17,8 +84,8 @@ class AppIntegrationManager @Inject constructor(
     private val _studyStreak = MutableStateFlow(StudyStreak())
     val studyStreak: StateFlow<StudyStreak> = _studyStreak.asStateFlow()
 
-    private val _achievements = MutableStateFlow<List<Achievement>>(Achievement.ALL_ACHIEVEMENTS)
-    val achievements: StateFlow<List<Achievement>> = _achievements.asStateFlow()
+    private val _achievements = MutableStateFlow(initialAchievementBadges())
+    val achievements: StateFlow<List<AchievementBadge>> = _achievements.asStateFlow()
 
     private val _newAchievementsCount = MutableStateFlow(0)
     private val _unreadSocialCount = MutableStateFlow(0)
@@ -141,39 +208,37 @@ class AppIntegrationManager @Inject constructor(
     // Achievement system
     private suspend fun checkForNewAchievements() {
         val stats = getTaskStats()
-        val currentAchievements = _achievements.value.toMutableList()
-        var newAchievements = 0
+        val streak = _studyStreak.value
+        val earlyMorningCompletions = taskRepository.getEarlyMorningCompletedTasks().size
+        val previous = _achievements.value.associateBy { it.id }
 
-        // Check for task completion achievements
-        currentAchievements.forEachIndexed { index, achievement ->
-            if (!achievement.isUnlocked) {
-                val shouldUnlock = when (achievement.id) {
-                    "task_crusher" -> stats.completedTasks >= 50
-                    "streak_master" -> _studyStreak.value.currentStreak >= 7
-                    "early_bird" -> checkEarlyBirdAchievement()
-                    else -> false
-                }
-
-                if (shouldUnlock) {
-                    currentAchievements[index] = achievement.copy(
-                        isUnlocked = true,
-                        unlockedAt = System.currentTimeMillis()
-                    )
-                    newAchievements++
-                }
+        val updatedBadges = achievementDefinitions.map { definition ->
+            val wasUnlocked = previous[definition.id]?.isUnlocked == true
+            val isUnlocked = definition.condition(stats, streak, earlyMorningCompletions)
+            val unlockedAt = when {
+                !isUnlocked -> null
+                wasUnlocked -> previous[definition.id]?.unlockedAt
+                else -> System.currentTimeMillis()
             }
+
+            AchievementBadge(
+                id = definition.id,
+                title = definition.title,
+                description = definition.description,
+                isUnlocked = isUnlocked,
+                unlockedAt = unlockedAt
+            )
         }
 
-        if (newAchievements > 0) {
-            _achievements.value = currentAchievements
-            _newAchievementsCount.value = _newAchievementsCount.value + newAchievements
+        val newlyUnlocked = updatedBadges.count { badge ->
+            badge.isUnlocked && previous[badge.id]?.isUnlocked != true
         }
-    }
 
-    private suspend fun checkEarlyBirdAchievement(): Boolean {
-        // Check if user has completed 5 tasks before 9 AM
-        val earlyTasks = taskRepository.getEarlyMorningCompletedTasks()
-        return earlyTasks.size >= 5
+        if (newlyUnlocked > 0) {
+            _newAchievementsCount.value = _newAchievementsCount.value + newlyUnlocked
+        }
+
+        _achievements.value = updatedBadges
     }
 
     private suspend fun updateStreakIfNeeded(task: Task) {
@@ -234,3 +299,5 @@ class AppIntegrationManager @Inject constructor(
         _settingsUpdateCount.value = _settingsUpdateCount.value + 1
     }
 }
+
+

@@ -7,14 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.mtlc.studyplan.eventbus.AppEventBus
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class StudyPlanNavigationManager @Inject constructor(
-    private val appEventBus: AppEventBus
-) {
+class StudyPlanNavigationManager @Inject constructor() {
 
     private val _navigationState = MutableStateFlow(NavigationState())
     val navigationState: StateFlow<NavigationState> = _navigationState.asStateFlow()
@@ -127,10 +124,6 @@ class StudyPlanNavigationManager @Inject constructor(
         // Set deep link parameters
         _deepLinkParams.value = params
 
-        // Emit navigation event
-        appEventBus.emitNavigationRequested(
-            NavigationDestination.Custom(destination, params.toMap())
-        )
 
         // Clear params after brief delay (allows destination to consume them)
         CoroutineScope(Dispatchers.Main).launch {
@@ -148,15 +141,11 @@ class StudyPlanNavigationManager @Inject constructor(
         if (currentState.navigationStack.size > 1) {
             val newStack = currentState.navigationStack.dropLast(1)
             val previousDestination = newStack.last()
-
             _navigationState.value = currentState.copy(
                 currentDestination = previousDestination,
                 navigationStack = newStack
             )
 
-            appEventBus.emitNavigationRequested(
-                NavigationDestination.Back(previousDestination)
-            )
         }
     }
 }
@@ -206,7 +195,7 @@ enum class SocialTab {
 }
 
 // Helper extension function
-private fun DeepLinkParams.toMap(): Map<String, Any> {
+private fun StudyPlanNavigationManager.DeepLinkParams.toMap(): Map<String, Any> {
     val map = mutableMapOf<String, Any>()
     taskFilter?.let { map["taskFilter"] = it }
     taskId?.let { map["taskId"] = it }

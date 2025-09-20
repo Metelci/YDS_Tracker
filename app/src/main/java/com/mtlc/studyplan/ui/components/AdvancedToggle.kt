@@ -11,7 +11,6 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
 import com.mtlc.studyplan.accessibility.AccessibilityUtils
 import com.mtlc.studyplan.databinding.ComponentAdvancedToggleBinding
-import com.mtlc.studyplan.settings.data.SettingConstraint
 import com.mtlc.studyplan.settings.data.SettingItem
 import com.mtlc.studyplan.ui.animations.SettingsAnimations
 import kotlinx.coroutines.*
@@ -85,12 +84,6 @@ class AdvancedToggleComponent @JvmOverloads constructor(
         // Update UI with setting information
         binding.toggleTitle.text = setting.title
         binding.toggleDescription.text = setting.description
-
-        // Apply constraints if any
-        setting.constraints?.let { constraints ->
-            applyConstraints(constraints)
-        }
-
         // Update accessibility descriptions
         updateAccessibilityDescriptions()
     }
@@ -276,45 +269,8 @@ class AdvancedToggleComponent @JvmOverloads constructor(
                 return ValidationState.DEPENDENCY_VIOLATION
             }
         }
-
-        // Check setting constraints
-        settingItem?.constraints?.let { constraints ->
-            if (!validateConstraints(constraints, newValue)) {
-                return ValidationState.CONSTRAINT_VIOLATION
-            }
-        }
-
         return ValidationState.VALID
     }
-
-    /**
-     * Validate against setting constraints
-     */
-    private fun validateConstraints(constraints: List<SettingConstraint>, value: Boolean): Boolean {
-        return constraints.all { constraint ->
-            when (constraint.type) {
-                SettingConstraint.Type.REQUIRES_FEATURE -> {
-                    // Check if required feature is available
-                    constraint.condition?.invoke(value) ?: true
-                }
-                SettingConstraint.Type.MUTUALLY_EXCLUSIVE -> {
-                    // Check mutual exclusivity
-                    if (value) {
-                        constraint.condition?.invoke(value) ?: true
-                    } else true
-                }
-                SettingConstraint.Type.DEPENDENCY -> {
-                    // Check dependency satisfaction
-                    constraint.condition?.invoke(value) ?: true
-                }
-                SettingConstraint.Type.PERMISSION_REQUIRED -> {
-                    // Check if permissions are granted
-                    constraint.condition?.invoke(value) ?: true
-                }
-            }
-        }
-    }
-
     /**
      * Update dependent toggles based on current state
      */
@@ -448,20 +404,6 @@ class AdvancedToggleComponent @JvmOverloads constructor(
             val state = if (newValue) "enabled" else "disabled"
             val announcement = "$title $state"
             AccessibilityUtils.announceForAccessibility(this, announcement)
-        }
-    }
-
-    /**
-     * Apply setting constraints to UI
-     */
-    private fun applyConstraints(constraints: List<SettingConstraint>) {
-        // Show constraint indicators if needed
-        val hasConstraints = constraints.isNotEmpty()
-        binding.constraintIndicator.isVisible = hasConstraints
-
-        if (hasConstraints) {
-            val constraintText = constraints.joinToString(", ") { it.description }
-            binding.constraintIndicator.contentDescription = "Constraints: $constraintText"
         }
     }
 

@@ -1,14 +1,13 @@
 package com.mtlc.studyplan.di
 
-import android.content.Context
 import com.mtlc.studyplan.integration.EnhancedAppIntegrationManager
 import com.mtlc.studyplan.repository.*
 import com.mtlc.studyplan.eventbus.EventBus
+import com.mtlc.studyplan.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -19,7 +18,6 @@ object IntegrationModule {
     @Provides
     @Singleton
     fun provideEnhancedAppIntegrationManager(
-        @ApplicationContext context: Context,
         taskRepository: TaskRepository,
         progressRepository: ProgressRepository,
         achievementRepository: AchievementRepository,
@@ -30,7 +28,6 @@ object IntegrationModule {
         @ApplicationScope applicationScope: CoroutineScope
     ): EnhancedAppIntegrationManager {
         return EnhancedAppIntegrationManager(
-            context = context,
             taskRepository = taskRepository,
             progressRepository = progressRepository,
             achievementRepository = achievementRepository,
