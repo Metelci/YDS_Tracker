@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -51,7 +52,7 @@ fun Modifier.optimizedClickable(
             onClickLabel = onClickLabel,
             role = role,
             interactionSource = interactionSource,
-            indication = androidx.compose.material.ripple.rememberRipple()
+            indication = ripple()
         ) {
             if (hapticFeedback) {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -361,7 +362,7 @@ fun Modifier.enhancedClickable(
                 clickable(
                     enabled = enabled,
                     interactionSource = interactionSource,
-                    indication = androidx.compose.material.ripple.rememberRipple(),
+                    indication = ripple(),
                     onClick = { /* Handled by pointerInput */ }
                 )
             } else {

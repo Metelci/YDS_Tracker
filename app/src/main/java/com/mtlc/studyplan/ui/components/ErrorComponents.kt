@@ -445,6 +445,7 @@ private fun getErrorIcon(error: AppError): ImageVector {
         is AppError.SecurityError -> Icons.Default.Security
         is AppError.BusinessError -> Icons.Default.Business
         is AppError.SystemError -> Icons.Default.ErrorOutline
+        is AppError.Generic -> Icons.Default.Error
     }
 }
 
@@ -456,6 +457,7 @@ private fun getErrorTitle(error: AppError): String {
         is AppError.SecurityError -> "Security Error"
         is AppError.BusinessError -> "Operation Failed"
         is AppError.SystemError -> "System Error"
+        is AppError.Generic -> "Error"
     }
 }
 

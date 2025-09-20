@@ -207,6 +207,9 @@ class SettingsFeedbackManager(private val context: Context) {
         cancelLabel: String = "Cancel",
         destructive: Boolean = false
     ): Boolean = suspendCancellableCoroutine { continuation ->
+        continuation.invokeOnCancellation { _ ->
+            // Handle cancellation if needed
+        }
         scope.launch {
             _feedbackEvents.emit(
                 FeedbackEvent.Confirmation(
@@ -217,7 +220,7 @@ class SettingsFeedbackManager(private val context: Context) {
                     destructive = destructive,
                     onResult = { confirmed ->
                         if (continuation.isActive) {
-                            continuation.resume(confirmed)
+                            continuation.resume(confirmed, onCancellation = null)
                         }
                     }
                 )

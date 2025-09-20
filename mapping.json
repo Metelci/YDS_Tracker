@@ -1,19 +1,46 @@
 {
-  "imports": {
-    "androidx.compose.material": "androidx.compose.material3",
-    "com.google.accompanist.swiperefresh": "androidx.compose.material.pullrefresh"
+  "androidx.compose.material.*": {
+    "replaceWith": "androidx.compose.material3.*",
+    "notes": "Use BOM-managed Material3 artifacts; remove direct Material2 imports."
   },
-  "components": {
-    "BottomNavigation": "NavigationBar",
-    "BottomNavigationItem": "NavigationBarItem",
-    "TabRow": "TabRow (material3)",
-    "Tab": "Tab (material3)",
-    "Divider": "HorizontalDivider",
-    "TopAppBar (manual Surface/Row)": "TopAppBar (material3)"
+  "Divider": {
+    "replaceWith": "HorizontalDivider",
+    "notes": "Material3 renamed Divider to HorizontalDivider."
   },
-  "theme": {
-    "MaterialTheme.colors.*": "MaterialTheme.colorScheme.*",
-    "Color(...)": "MaterialTheme.colorScheme token",
-    "magic dp spacing": "central spacing constants (e.g., Spacing.M, Spacing.L)"
+  "BottomNavigation": {
+    "replaceWith": "NavigationBar",
+    "notes": "Material3 bottom navigation component."
+  },
+  "BottomNavigationItem": {
+    "replaceWith": "NavigationBarItem",
+    "notes": "Material3 navigation bar items."
+  },
+  "TabRow": {
+    "replaceWith": "PrimaryTabRow / SecondaryTabRow",
+    "notes": "Material3 splits tab rows; choose variant per design."
+  },
+  "ScrollableTabRow": {
+    "replaceWith": "SecondaryTabRow",
+    "notes": "Use Material3 scrollable tab row API."
+  },
+  "Tab": {
+    "replaceWith": "Tab (material3)",
+    "notes": "Adopt material3 Tab with new parameters."
+  },
+  "MaterialTheme.colors": {
+    "replaceWith": "MaterialTheme.colorScheme",
+    "notes": "Access Material3 color tokens via colorScheme."
+  },
+  "com.google.accompanist.swiperefresh": {
+    "replaceWith": "androidx.compose.material.pullrefresh",
+    "notes": "Switch to official pullRefresh APIs."
+  },
+  "Color(0xFF...)": {
+    "replaceWith": "MaterialTheme.colorScheme / StudyPlanColorTokens",
+    "notes": "Route colors through theme tokens for dynamic color compatibility."
+  },
+  "<n>.dp": {
+    "replaceWith": "Spacing tokens",
+    "notes": "Replace magic dp values with shared spacing definitions."
   }
 }

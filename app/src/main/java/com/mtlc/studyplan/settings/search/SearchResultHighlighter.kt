@@ -8,6 +8,8 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import androidx.core.content.ContextCompat
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.settings.search.SettingsSearchEngine.SearchResult
+import com.mtlc.studyplan.settings.search.SettingsSearchEngine.HighlightRange
 
 /**
  * Advanced search result highlighting with multiple highlight styles
@@ -332,7 +334,8 @@ class SearchResultHighlighter(private val context: android.content.Context) {
  * Extension functions for search result highlighting
  */
 fun SearchResult.getHighlightedTitle(highlighter: SearchResultHighlighter): SpannableString {
-    return highlighter.highlightRanges(this.item.title, this.highlightRanges)
+    val intRanges = this.highlightRanges.map { it.start..it.end }
+    return highlighter.highlightRanges(this.item.title, intRanges)
 }
 
 fun SearchResult.getHighlightedDescription(

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.settings.data.SettingsRepository
-import com.mtlc.studyplan.settings.search.SearchResult
+import com.mtlc.studyplan.settings.search.SettingsSearchEngine.SearchResult
 import com.mtlc.studyplan.settings.search.SettingsSearchEngine
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
@@ -83,8 +83,7 @@ class SettingsSearchViewModel(
                 // Load all settings data
                 val categories = repository.getAllCategoriesSync()
                 val allSettings = categories.associate { category ->
-                    category.id to repository.getCategorySettingsSync(category.id)
-                        .flatMap { it.settings }
+                    category.id to repository.getCategorySettingItems(category.id)
                 }
 
                 // Index settings for search
@@ -377,3 +376,4 @@ class SettingsSearchViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
+

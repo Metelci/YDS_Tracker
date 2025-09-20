@@ -200,7 +200,7 @@ class SettingsDetailViewModel(
         viewModelScope.launch(exceptionHandler) {
             try {
                 val filteredSections = if (query.isBlank()) {
-                    repository.getCategorySettingsSync(categoryId)
+                    repository.getCategorySections(categoryId)
                 } else {
                     repository.searchCategorySettings(categoryId, query)
                 }

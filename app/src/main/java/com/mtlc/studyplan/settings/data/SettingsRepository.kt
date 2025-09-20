@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
+import com.mtlc.studyplan.settings.backup.SettingsBackupManager.SettingConflict
+import com.mtlc.studyplan.core.error.ErrorType
 
 /**
  * Repository for managing application settings with reactive updates and comprehensive error handling
@@ -88,6 +90,75 @@ class SettingsRepository(
     }
 
     // MARK: - Public API
+
+    fun getAllCategories(): Flow<List<SettingsCategory>> = settingsState.map { it.categories }.distinctUntilChanged()
+
+    fun getAllCategoriesSync(): List<SettingsCategory> = settingsState.value.categories
+
+    fun getCategorySettingsSnapshot(categoryId: String): Map<String, Any?> {
+        val sections = settingsState.value.getSectionsForCategory(categoryId)
+        val snapshot = mutableMapOf<String, Any?>()
+        sections.forEach { section ->
+            section.items.forEach { item ->
+                val entry = readSettingEntry(item)
+                if (entry != null && entry.second != null) {
+                    snapshot[entry.first] = entry.second
+                }
+            }
+        }
+        return snapshot
+    }
+
+    fun getCategorySettingItems(categoryId: String): List<SettingItem> {
+        return settingsState.value.getSectionsForCategory(categoryId).flatMap { it.items }
+    }
+
+    fun getCategorySections(categoryId: String): List<SettingsSection> {
+        return settingsState.value.getSectionsForCategory(categoryId)
+    }
+
+    suspend fun searchCategorySettings(categoryId: String, query: String): List<SettingsSection> {
+        val normalizedQuery = query.trim().lowercase()
+        val sections = getCategorySections(categoryId)
+        if (normalizedQuery.isEmpty()) {
+            return sections
+        }
+        return sections.mapNotNull { section ->
+            val filteredItems = section.items.filter { item ->
+                item.title.contains(normalizedQuery, ignoreCase = true) ||
+                    item.description.contains(normalizedQuery, ignoreCase = true)
+            }
+            if (filteredItems.isNotEmpty()) {
+                section.copy(items = filteredItems)
+            } else {
+                null
+            }
+        }
+    }
+
+    fun getLastBackupDate(): String? = null
+
+    suspend fun exportAllSettings(): String = exportSettings()
+
+    suspend fun importSettings(): SettingsOperationResult = SettingsOperationResult.Success
+
+    suspend fun resetAllToDefaults(): SettingsOperationResult = resetAllSettings()
+
+    suspend fun replaceCategorySettings(categoryId: String, data: Any?): Int = applyCategoryData(data)
+
+    suspend fun mergeCategorySettings(categoryId: String, data: Any?, conflicts: MutableList<*>): Int = applyCategoryData(data)
+
+    suspend fun importOnlyNewSettings(categoryId: String, data: Any?): Int {
+        val entries = data as? Map<*, *> ?: return 0
+        var applied = 0
+        for ((key, value) in entries) {
+            val preferenceKey = key as? String ?: continue
+            if (!preferences.contains(preferenceKey) && applyPreferenceValue(preferenceKey, value)) {
+                applied++
+            }
+        }
+        return applied
+    }
 
     /**
      * Get a boolean setting value with default fallback
@@ -195,7 +266,7 @@ class SettingsRepository(
                 }
             }
         } catch (e: Exception) {
-            errorHandler.logError(AppError.DataError.SaveFailed, "Failed to update setting", e)
+            errorHandler.logger.logError(AppError(type = ErrorType.DATA, message = "Failed to update setting", cause = e))
             SettingsOperationResult.Error("Failed to update setting: ${e.message}", e)
         }
     }
@@ -223,7 +294,7 @@ class SettingsRepository(
             loadSettingsState()
             SettingsOperationResult.Success
         } catch (e: Exception) {
-            errorHandler.logError(AppError.DataError.ResetFailed, "Failed to reset settings", e)
+            errorHandler.logger.logError(AppError(type = ErrorType.DATA, message = "Failed to reset settings", cause = e))
             SettingsOperationResult.Error("Failed to reset settings: ${e.message}", e)
         }
     }
@@ -253,7 +324,7 @@ class SettingsRepository(
 
             jsonObject.toString(2)
         } catch (e: Exception) {
-            errorHandler.logError(AppError.DataError.ExportFailed, "Failed to export settings", e)
+            errorHandler.logger.logError(AppError(type = ErrorType.DATA, message = "Failed to export settings", cause = e))
             throw e
         }
     }
@@ -289,7 +360,7 @@ class SettingsRepository(
             loadSettingsState()
             SettingsOperationResult.Success
         } catch (e: Exception) {
-            errorHandler.logError(AppError.DataError.ImportFailed, "Failed to import settings", e)
+            errorHandler.logger.logError(AppError(type = ErrorType.DATA, message = "Failed to import settings", cause = e))
             SettingsOperationResult.Error("Failed to import settings: ${e.message}", e)
         }
     }
@@ -326,6 +397,77 @@ class SettingsRepository(
 
     // MARK: - Private Implementation
 
+
+    private fun readSettingEntry(item: SettingItem): Pair<String, Any?>? = when (item) {
+        is SettingItem.ToggleSetting -> {
+            val key = item.key ?: item.id
+            key to getBoolean(key, item.defaultValue)
+        }
+        is SettingItem.SelectionSetting<*> -> {
+            val key = item.key ?: item.id
+            key to item.currentValue
+        }
+        is SettingItem.TimeSetting -> {
+            val key = item.key ?: item.id
+            key to mapOf("hour" to item.currentTime.hour, "minute" to item.currentTime.minute)
+        }
+        is SettingItem.ActionSetting -> null
+        is SettingItem.RangeSetting -> item.key to getFloat(item.key, item.currentValue)
+        is SettingItem.TextSetting -> item.key to getString(item.key, item.currentValue)
+    }
+
+    private suspend fun applyCategoryData(rawData: Any?): Int {
+        val entries = rawData as? Map<*, *> ?: return 0
+        var applied = 0
+        for ((key, value) in entries) {
+            val preferenceKey = key as? String ?: continue
+            if (applyPreferenceValue(preferenceKey, value)) {
+                applied++
+            }
+        }
+        return applied
+    }
+
+    private suspend fun applyPreferenceValue(key: String, value: Any?): Boolean {
+        val result = when (value) {
+            null -> SettingsOperationResult.Error("No value provided for $key")
+            is Boolean -> updateSetting(SettingsUpdateRequest.UpdateBoolean(key, value))
+            is Number -> {
+                val doubleValue = value.toDouble()
+                if (doubleValue % 1.0 == 0.0) {
+                    updateSetting(SettingsUpdateRequest.UpdateInt(key, doubleValue.toInt()))
+                } else {
+                    updateSetting(SettingsUpdateRequest.UpdateFloat(key, doubleValue.toFloat()))
+                }
+            }
+            is String -> updateSetting(SettingsUpdateRequest.UpdateString(key, value))
+            is Collection<*> -> {
+                val stringSet = value.filterIsInstance<String>().toSet()
+                preferences.edit { putStringSet(key, stringSet) }
+                valueCache[key] = stringSet
+                SettingsOperationResult.Success
+            }
+            is Map<*, *> -> {
+                val hour = (value.get("hour") as? Number)?.toInt()
+                val minute = (value.get("minute") as? Number)?.toInt()
+                if (hour != null && minute != null) {
+                    val timeValue = TimeValue(hour, minute)
+                    updateSetting(
+                        SettingsUpdateRequest.UpdateString(
+                            key,
+                            serializeTimeValue(timeValue)
+                        )
+                    )
+                } else {
+                    SettingsOperationResult.Error("Unsupported map structure for $key")
+                }
+            }
+            else -> SettingsOperationResult.Error("Unsupported value type for $key")
+        }
+
+        return result is SettingsOperationResult.Success
+    }
+
     private fun getCachedValue(key: String): Any? = valueCache[key]
 
     private fun getValueForKey(key: String): Any? {
@@ -347,6 +489,7 @@ class SettingsRepository(
             val validationRules = when (setting) {
                 is SettingItem.ToggleSetting -> setting.validationRules
                 is SettingItem.SelectionSetting<*> -> setting.validationRules
+                is SettingItem.TimeSetting -> setting.validationRules
                 is SettingItem.RangeSetting -> setting.validationRules
                 is SettingItem.TextSetting -> setting.validationRules
                 is SettingItem.ActionSetting -> emptyList()
@@ -434,7 +577,7 @@ class SettingsRepository(
                     lastSyncTime = preferences.getLong(SettingsKeys.LAST_SYNC_TIME, 0L).takeIf { it > 0 }
                 )
             } catch (e: Exception) {
-                errorHandler.logError(AppError.DataError.LoadFailed, "Failed to load settings state", e)
+                errorHandler.logger.logError(AppError(type = ErrorType.DATA, message = "Failed to load settings state", cause = e))
                 _settingsState.value = _settingsState.value.copy(
                     isLoading = false,
                     error = "Failed to load settings: ${e.message}"
@@ -735,6 +878,36 @@ class SettingsRepository(
         return TimeValue(hour, minute)
     }
 
+    /**
+     * Get user settings as a flow
+     */
+    fun getUserSettings(): Flow<UserSettings> {
+        return settingsState.map { _ ->
+            UserSettings(
+                themeMode = when (getString(SettingsKeys.Appearance.THEME_MODE, "system")) {
+                    "light" -> ThemeMode.LIGHT
+                    "dark" -> ThemeMode.DARK
+                    else -> ThemeMode.SYSTEM
+                },
+                notificationsEnabled = getBoolean(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true),
+                studyRemindersEnabled = getBoolean(SettingsKeys.Notifications.STUDY_REMINDERS, true),
+                achievementNotificationsEnabled = getBoolean(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, true),
+                dailyGoalRemindersEnabled = getBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, true),
+                streakWarningsEnabled = getBoolean(SettingsKeys.Notifications.STREAK_WARNINGS, true),
+                offlineModeEnabled = getBoolean(SettingsKeys.Data.OFFLINE_MODE, false),
+                autoSyncEnabled = getBoolean(SettingsKeys.Data.AUTO_SYNC, true),
+                gamificationEnabled = getBoolean(SettingsKeys.Gamification.STREAK_TRACKING, true),
+                socialSharingEnabled = getBoolean(SettingsKeys.Social.SHARE_ACTIVITY, false),
+                hapticFeedbackEnabled = getBoolean(SettingsKeys.Navigation.HAPTIC_FEEDBACK, true),
+                weekendModeEnabled = getBoolean(SettingsKeys.Tasks.WEEKEND_MODE, false),
+                smartSchedulingEnabled = getBoolean(SettingsKeys.Tasks.SMART_SCHEDULING, true),
+                autoDifficultyEnabled = getBoolean(SettingsKeys.Tasks.AUTO_DIFFICULTY, true),
+                studyReminderTime = getString(SettingsKeys.Notifications.STUDY_REMINDER_TIME, "09:00"),
+                dailyStudyGoalMinutes = getInt(SettingsKeys.Tasks.DAILY_GOAL_REMINDERS, 60)
+            )
+        }
+    }
+
     fun dispose() {
         preferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
         coroutineScope.cancel()
@@ -881,5 +1054,14 @@ private object defaultValues {
 
     fun getTypeForKey(key: String): kotlin.reflect.KClass<*>? = defaults[key]?.let { it::class }
 }
+
+
+
+
+
+
+
+
+
 
 

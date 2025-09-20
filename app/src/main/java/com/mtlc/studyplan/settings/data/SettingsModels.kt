@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.settings.data
 
 import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -10,7 +11,8 @@ data class SettingsCategory(
     val id: String,
     val title: String,
     val description: String,
-    @DrawableRes val iconRes: Int,
+    val icon: ImageVector,
+    val route: String = "",
     val isActive: Boolean = true,
     val sortOrder: Int = 0
 ) {
@@ -134,6 +136,15 @@ sealed class SettingItem {
         val validationRules: List<ValidationRule> = emptyList()
     ) : SettingItem()
 }
+
+sealed class SettingAction {
+    object ClearCache : SettingAction()
+    object ResetSettings : SettingAction()
+    object ExportData : SettingAction()
+    object ResetProgress : SettingAction()
+    object SyncData : SettingAction()
+}
+
 /**
  * Represents an option in a selection setting
  */

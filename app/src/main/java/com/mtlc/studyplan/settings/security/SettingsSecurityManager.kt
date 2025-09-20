@@ -2,6 +2,7 @@ package com.mtlc.studyplan.settings.security
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -17,6 +18,9 @@ class SettingsSecurityManager(
     private val securityViolations = ConcurrentHashMap<String, SecurityViolation>()
     private val rateLimiter = RateLimiter()
     private val auditMutex = Mutex()
+
+    // Coroutine scope for async security logging
+    private val securityScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val _securityState = MutableStateFlow(SecurityState())
     val securityState: StateFlow<SecurityState> = _securityState.asStateFlow()
@@ -199,35 +203,43 @@ class SettingsSecurityManager(
         return rateLimiter.checkRateLimit(operation, identifier)
     }
 
-    suspend fun logSecurityEvent(eventType: SecurityEventType, details: String, severity: SecuritySeverity = SecuritySeverity.MEDIUM) {
-        auditMutex.withLock {
-            val event = SecurityAuditEvent(
-                timestamp = System.currentTimeMillis(),
-                eventType = eventType,
-                details = details,
-                severity = severity,
-                source = "SettingsSecurityManager"
-            )
+    fun logSecurityEvent(eventType: SecurityEventType, details: String, severity: SecuritySeverity = SecuritySeverity.MEDIUM) {
+        // Launch coroutine for async security logging (fire-and-forget)
+        securityScope.launch {
+            try {
+                auditMutex.withLock {
+                    val event = SecurityAuditEvent(
+                        timestamp = System.currentTimeMillis(),
+                        eventType = eventType,
+                        details = details,
+                        severity = severity,
+                        source = "SettingsSecurityManager"
+                    )
 
-            auditLog.add(event)
+                    auditLog.add(event)
 
-            // Maintain audit log size
-            if (auditLog.size > MAX_AUDIT_LOG_SIZE) {
-                auditLog.removeAt(0)
-            }
+                    // Maintain audit log size
+                    if (auditLog.size > MAX_AUDIT_LOG_SIZE) {
+                        auditLog.removeAt(0)
+                    }
 
-            // Update security state
-            updateSecurityState(event)
+                    // Update security state
+                    updateSecurityState(event)
 
-            // Log to system
-            when (severity) {
-                SecuritySeverity.LOW -> Log.d(TAG, "Security event: $eventType - $details")
-                SecuritySeverity.MEDIUM -> Log.w(TAG, "Security event: $eventType - $details")
-                SecuritySeverity.HIGH -> Log.e(TAG, "Security event: $eventType - $details")
-                SecuritySeverity.CRITICAL -> {
-                    Log.e(TAG, "CRITICAL Security event: $eventType - $details")
-                    // Could trigger additional alerting mechanisms here
+                    // Log to system
+                    when (severity) {
+                        SecuritySeverity.LOW -> Log.d(TAG, "Security event: $eventType - $details")
+                        SecuritySeverity.MEDIUM -> Log.w(TAG, "Security event: $eventType - $details")
+                        SecuritySeverity.HIGH -> Log.e(TAG, "Security event: $eventType - $details")
+                        SecuritySeverity.CRITICAL -> {
+                            Log.e(TAG, "CRITICAL Security event: $eventType - $details")
+                            // Could trigger additional alerting mechanisms here
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                // Fallback logging if mutex operations fail
+                Log.e(TAG, "Failed to log security event: ${e.message}")
             }
         }
     }

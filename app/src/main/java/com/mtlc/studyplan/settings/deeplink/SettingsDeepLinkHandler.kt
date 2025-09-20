@@ -131,10 +131,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
      * Navigate to main settings
      */
     fun navigateToMainSettings() {
-        fragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SettingsActivity::class.java.name)
-            .addToBackStack("main_settings")
-            .commit()
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     /**
@@ -153,12 +150,6 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
         }
 
         fragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.anim.slide_in_right,
-                R.anim.slide_out_left,
-                R.anim.slide_in_left,
-                R.anim.slide_out_right
-            )
             .replace(R.id.fragment_container, fragment)
             .addToBackStack("category_$categoryId")
             .commit()
@@ -185,12 +176,6 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
         val fragment = SettingsSearchFragment.newInstance(query)
 
         fragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.anim.fade_in,
-                R.anim.fade_out,
-                R.anim.fade_in,
-                R.anim.fade_out
-            )
             .replace(R.id.fragment_container, fragment)
             .addToBackStack("settings_search")
             .commit()

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -40,30 +41,30 @@ class ThemeIntegration(
         settingsRepository.settingsState
             .map { settings ->
                 ThemeState(
-                    darkTheme = when (settings[SettingsKeys.Appearance.THEME_MODE] as? String) {
+                    darkTheme = when (settingsRepository.getString(SettingsKeys.Appearance.THEME_MODE, "system")) {
                         "dark" -> true
                         "light" -> false
                         else -> false // system default handled in compose
                     },
-                    dynamicColor = settings[SettingsKeys.Appearance.ACCENT_COLOR] as? String != "custom",
-                    accentColor = settings[SettingsKeys.Appearance.ACCENT_COLOR] as? String ?: "blue",
-                    fontSize = when (settings[SettingsKeys.Appearance.FONT_SIZE] as? String) {
+                    dynamicColor = settingsRepository.getString(SettingsKeys.Appearance.ACCENT_COLOR, "blue") != "custom",
+                    accentColor = settingsRepository.getString(SettingsKeys.Appearance.ACCENT_COLOR, "blue"),
+                    fontSize = when (settingsRepository.getString(SettingsKeys.Appearance.FONT_SIZE, "normal")) {
                         "small" -> 0.85f
                         "normal" -> 1.0f
                         "large" -> 1.15f
                         "xl" -> 1.3f
                         else -> 1.0f
                     },
-                    fontFamily = settings[SettingsKeys.Appearance.FONT_FAMILY] as? String ?: "default",
-                    animationSpeed = when (settings[SettingsKeys.Appearance.ANIMATION_SPEED] as? String) {
+                    fontFamily = settingsRepository.getString(SettingsKeys.Appearance.FONT_FAMILY, "default"),
+                    animationSpeed = when (settingsRepository.getString(SettingsKeys.Appearance.ANIMATION_SPEED, "normal")) {
                         "disabled" -> 0f
                         "slow" -> 0.5f
                         "normal" -> 1.0f
                         "fast" -> 1.5f
                         else -> 1.0f
                     },
-                    reducedMotion = settings[SettingsKeys.Accessibility.REDUCED_MOTION] as? Boolean ?: false,
-                    highContrast = settings[SettingsKeys.Accessibility.HIGH_CONTRAST_MODE] as? Boolean ?: false
+                    reducedMotion = settingsRepository.getBoolean(SettingsKeys.Accessibility.REDUCED_MOTION, false),
+                    highContrast = settingsRepository.getBoolean(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, false)
                 )
             }
             .onEach { _themeState.value = it }
@@ -74,29 +75,29 @@ class ThemeIntegration(
      * Apply theme settings to the app
      */
     suspend fun updateThemeMode(mode: String) {
-        settingsRepository.updateSetting(SettingsKeys.Appearance.THEME_MODE, mode)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.THEME_MODE, mode))
     }
 
     suspend fun updateAccentColor(color: String) {
-        settingsRepository.updateSetting(SettingsKeys.Appearance.ACCENT_COLOR, color)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.ACCENT_COLOR, color))
     }
 
     suspend fun updateFontSize(size: String) {
-        settingsRepository.updateSetting(SettingsKeys.Appearance.FONT_SIZE, size)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.FONT_SIZE, size))
     }
 
     suspend fun updateAnimationSpeed(speed: String) {
-        settingsRepository.updateSetting(SettingsKeys.Appearance.ANIMATION_SPEED, speed)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.ANIMATION_SPEED, speed))
     }
 
     suspend fun toggleReducedMotion() {
         val current = _themeState.value.reducedMotion
-        settingsRepository.updateSetting(SettingsKeys.Accessibility.REDUCED_MOTION, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Accessibility.REDUCED_MOTION, !current))
     }
 
     suspend fun toggleHighContrast() {
         val current = _themeState.value.highContrast
-        settingsRepository.updateSetting(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, !current))
     }
 
     /**
@@ -113,7 +114,7 @@ class ThemeIntegration(
      * Check if we should use system theme
      */
     fun shouldUseSystemTheme(): Boolean {
-        val themeMode = settingsRepository.settingsState.value[SettingsKeys.Appearance.THEME_MODE] as? String
+        val themeMode = settingsRepository.getString(SettingsKeys.Appearance.THEME_MODE, "system")
         return themeMode == "system" || themeMode == null
     }
 }

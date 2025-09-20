@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.gamification.GamificationManager
 import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -42,16 +43,16 @@ class GamificationIntegration(
         settingsRepository.settingsState
             .map { settings ->
                 GamificationState(
-                    streakTrackingEnabled = settings[SettingsKeys.Gamification.STREAK_TRACKING] as? Boolean ?: true,
-                    pointsRewardsEnabled = settings[SettingsKeys.Gamification.POINTS_REWARDS] as? Boolean ?: true,
-                    celebrationEffectsEnabled = settings[SettingsKeys.Gamification.CELEBRATION_EFFECTS] as? Boolean ?: true,
-                    streakRiskWarningsEnabled = settings[SettingsKeys.Gamification.STREAK_RISK_WARNINGS] as? Boolean ?: true,
-                    achievementBadgesEnabled = settings[SettingsKeys.Gamification.ACHIEVEMENT_BADGES] as? Boolean ?: true,
-                    levelProgressionEnabled = settings[SettingsKeys.Gamification.LEVEL_PROGRESSION] as? Boolean ?: true,
-                    dailyChallengesEnabled = settings[SettingsKeys.Gamification.DAILY_CHALLENGES] as? Boolean ?: true,
-                    leaderboardEnabled = settings[SettingsKeys.Gamification.LEADERBOARD_ENABLED] as? Boolean ?: true,
-                    xpMultipliersEnabled = settings[SettingsKeys.Gamification.XP_MULTIPLIERS] as? Boolean ?: true,
-                    rewardAnimationsEnabled = settings[SettingsKeys.Gamification.REWARD_ANIMATIONS] as? Boolean ?: true
+                    streakTrackingEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.STREAK_TRACKING, true),
+                    pointsRewardsEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.POINTS_REWARDS, true),
+                    celebrationEffectsEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.CELEBRATION_EFFECTS, true),
+                    streakRiskWarningsEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.STREAK_RISK_WARNINGS, true),
+                    achievementBadgesEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, true),
+                    levelProgressionEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.LEVEL_PROGRESSION, true),
+                    dailyChallengesEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.DAILY_CHALLENGES, true),
+                    leaderboardEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.LEADERBOARD_ENABLED, true),
+                    xpMultipliersEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.XP_MULTIPLIERS, true),
+                    rewardAnimationsEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.REWARD_ANIMATIONS, true)
                 )
             }
             .onEach { _gamificationState.value = it }
@@ -131,52 +132,52 @@ class GamificationIntegration(
      */
     suspend fun toggleStreakTracking() {
         val current = _gamificationState.value.streakTrackingEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.STREAK_TRACKING, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.STREAK_TRACKING, !current))
     }
 
     suspend fun togglePointsRewards() {
         val current = _gamificationState.value.pointsRewardsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.POINTS_REWARDS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.POINTS_REWARDS, !current))
     }
 
     suspend fun toggleCelebrationEffects() {
         val current = _gamificationState.value.celebrationEffectsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.CELEBRATION_EFFECTS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.CELEBRATION_EFFECTS, !current))
     }
 
     suspend fun toggleStreakRiskWarnings() {
         val current = _gamificationState.value.streakRiskWarningsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.STREAK_RISK_WARNINGS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.STREAK_RISK_WARNINGS, !current))
     }
 
     suspend fun toggleAchievementBadges() {
         val current = _gamificationState.value.achievementBadgesEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, !current))
     }
 
     suspend fun toggleLevelProgression() {
         val current = _gamificationState.value.levelProgressionEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.LEVEL_PROGRESSION, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.LEVEL_PROGRESSION, !current))
     }
 
     suspend fun toggleDailyChallenges() {
         val current = _gamificationState.value.dailyChallengesEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.DAILY_CHALLENGES, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.DAILY_CHALLENGES, !current))
     }
 
     suspend fun toggleLeaderboard() {
         val current = _gamificationState.value.leaderboardEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.LEADERBOARD_ENABLED, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.LEADERBOARD_ENABLED, !current))
     }
 
     suspend fun toggleXpMultipliers() {
         val current = _gamificationState.value.xpMultipliersEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.XP_MULTIPLIERS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.XP_MULTIPLIERS, !current))
     }
 
     suspend fun toggleRewardAnimations() {
         val current = _gamificationState.value.rewardAnimationsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Gamification.REWARD_ANIMATIONS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.REWARD_ANIMATIONS, !current))
     }
 }
 

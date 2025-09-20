@@ -193,7 +193,7 @@ class SettingsSystemManager(private val context: Context) {
     /**
      * Search settings with performance monitoring and feedback
      */
-    suspend fun searchSettings(query: String): Flow<List<com.mtlc.studyplan.settings.search.SettingsSearchEngine.SearchResult>> {
+    fun searchSettings(query: String): Flow<List<com.mtlc.studyplan.settings.search.SettingsSearchEngine.SearchResult>> {
         return searchEngine.search(query)
             .catch { e ->
                 feedbackManager.showError("Search failed: ${e.message}")
@@ -352,7 +352,7 @@ class SettingsSystemManager(private val context: Context) {
             performanceMetrics = SettingsSystemDiagnostics.PerformanceMetrics(
                 averageLatency = 0.0, // Performance monitor doesn't provide this
                 cacheHitRate = performanceState.cacheHitRate,
-                memoryUsage = performanceState.memoryUsage.toLong(),
+                memoryUsage = performanceState.memoryUsage.usedMemory,
                 activeOperations = 0 // Performance monitor doesn't provide this
             ),
             migrationStatus = SettingsSystemDiagnostics.MigrationStatus(
@@ -640,3 +640,6 @@ This implementation provides a production-ready, comprehensive settings system
 that can handle complex requirements while maintaining excellent performance
 and user experience.
 */
+
+
+

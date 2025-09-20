@@ -1,25 +1,24 @@
 package com.mtlc.studyplan.settings.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
-import com.mtlc.studyplan.settings.repository.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.search.SettingsSearchEngine
-import com.mtlc.studyplan.settings.search.VoiceSearchManager
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 
-class SettingsViewModelFactory(
+class CompositeSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val searchEngine: SettingsSearchEngine,
     private val backupManager: SettingsBackupManager,
     private val deepLinkHandler: SettingsDeepLinkHandler,
     private val accessibilityManager: AccessibilityManager,
     private val performanceMonitor: SettingsPerformanceMonitor,
-    private val animationCoordinator: SettingsAnimationCoordinator,
-    private val voiceSearchManager: VoiceSearchManager
+    private val animationCoordinator: SettingsAnimationCoordinator
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -34,14 +33,6 @@ class SettingsViewModelFactory(
                     animationCoordinator
                 ) as T
             }
-            modelClass.isAssignableFrom(SettingsSearchViewModel::class.java) -> {
-                SettingsSearchViewModel(
-                    searchEngine,
-                    voiceSearchManager,
-                    accessibilityManager,
-                    animationCoordinator
-                ) as T
-            }
             modelClass.isAssignableFrom(SettingsBackupViewModel::class.java) -> {
                 SettingsBackupViewModel(
                     backupManager,
@@ -74,61 +65,43 @@ class SettingsViewModelFactory(
     }
 }
 
-class SettingsSearchViewModelFactory(
-    private val searchEngine: SettingsSearchEngine,
-    private val voiceSearchManager: VoiceSearchManager,
-    private val searchResultHighlighter: com.mtlc.studyplan.settings.search.SearchResultHighlighter,
-    private val accessibilityManager: AccessibilityManager,
-    private val animationCoordinator: SettingsAnimationCoordinator
+class CompositeSettingsSearchViewModelFactory(
+    private val context: Context,
+    private val repository: SettingsRepository,
+    private val searchEngine: SettingsSearchEngine
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(SettingsSearchViewModel::class.java) -> {
-                SettingsSearchViewModel(
-                    searchEngine,
-                    voiceSearchManager,
-                    accessibilityManager,
-                    animationCoordinator
-                ) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(SettingsSearchViewModel::class.java)) {
+            return SettingsSearchViewModel(context, repository, searchEngine) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
 
-class SettingsBackupViewModelFactory(
+class CompositeSettingsBackupViewModelFactory(
     private val backupManager: SettingsBackupManager,
-    private val encryption: com.mtlc.studyplan.settings.security.SettingsEncryption,
     private val accessibilityManager: AccessibilityManager,
     private val animationCoordinator: SettingsAnimationCoordinator
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(SettingsBackupViewModel::class.java) -> {
-                SettingsBackupViewModel(
-                    backupManager,
-                    accessibilityManager,
-                    animationCoordinator
-                ) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(SettingsBackupViewModel::class.java)) {
+            return SettingsBackupViewModel(backupManager, accessibilityManager, animationCoordinator) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
 
 class ConflictResolutionViewModelFactory(
-    private val context: android.content.Context
+    private val context: Context
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
 
@@ -140,37 +113,31 @@ class AdvancedToggleViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(AdvancedToggleViewModel::class.java) -> {
-                AdvancedToggleViewModel(
-                    settingsRepository,
-                    accessibilityManager,
-                    animationCoordinator
-                ) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(AdvancedToggleViewModel::class.java)) {
+            return AdvancedToggleViewModel(
+                settingsRepository,
+                accessibilityManager,
+                animationCoordinator
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
 
 class AccessibilityViewModelFactory(
     private val accessibilityManager: AccessibilityManager,
-    private val fontScalingManager: com.mtlc.studyplan.accessibility.FontScalingManager,
-    private val focusIndicatorManager: com.mtlc.studyplan.accessibility.FocusIndicatorManager,
     private val settingsRepository: SettingsRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(AccessibilityViewModel::class.java) -> {
-                AccessibilityViewModel(
-                    accessibilityManager,
-                    settingsRepository
-                ) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(AccessibilityViewModel::class.java)) {
+            return AccessibilityViewModel(
+                accessibilityManager,
+                settingsRepository
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
 
@@ -182,15 +149,13 @@ class PerformanceViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(PerformanceViewModel::class.java) -> {
-                PerformanceViewModel(
-                    performanceMonitor,
-                    settingsRepository,
-                    accessibilityManager
-                ) as T
-            }
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(PerformanceViewModel::class.java)) {
+            return PerformanceViewModel(
+                performanceMonitor,
+                settingsRepository,
+                accessibilityManager
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

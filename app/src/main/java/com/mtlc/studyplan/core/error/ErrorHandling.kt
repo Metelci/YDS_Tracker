@@ -11,6 +11,16 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 
+enum class ErrorType {
+    NETWORK,
+    VALIDATION,
+    FILE_IO,
+    PERMISSION,
+    DATA,
+    SECURITY,
+    UNKNOWN
+}
+
 /**
  * Comprehensive error types for the StudyPlan application
  */
@@ -20,6 +30,24 @@ sealed class AppError(
     open val isRecoverable: Boolean = true,
     override val cause: Throwable? = null
 ) : Throwable(message, cause) {
+
+    data class Generic(
+        val errorType: ErrorType,
+        override val message: String,
+        override val userMessage: String,
+        override val isRecoverable: Boolean = true,
+        override val cause: Throwable? = null
+    ) : AppError(message, userMessage, isRecoverable, cause)
+
+    companion object {
+        operator fun invoke(
+            type: ErrorType,
+            message: String,
+            userMessage: String = message,
+            isRecoverable: Boolean = true,
+            cause: Throwable? = null
+        ): AppError = Generic(type, message, userMessage, isRecoverable, cause)
+    }
 
     /**
      * Network-related errors
@@ -274,6 +302,7 @@ class ErrorLogger(private val context: Context) {
             is AppError.DataError -> Log.e(TAG, logMessage, error.cause)
             is AppError.ValidationError -> Log.d(TAG, logMessage)
             is AppError.BusinessError -> Log.i(TAG, logMessage)
+            is AppError.Generic -> Log.w(TAG, logMessage, error.cause)
         }
 
         // In production, send to crash reporting service

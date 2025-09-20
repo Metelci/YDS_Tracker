@@ -3,6 +3,7 @@ package com.mtlc.studyplan.settings.migration
 import android.content.Context
 import android.content.SharedPreferences
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsOperationResult
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.json.JSONObject
@@ -376,7 +377,7 @@ class SettingsMigrationManager(
             if (backupFile.exists()) {
                 val backupData = backupFile.readText()
                 val result = settingsRepository.importSettings(backupData)
-                result.success
+                result is SettingsOperationResult.Success
             } else {
                 false
             }

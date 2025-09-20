@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.notifications.NotificationHelper
 import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -49,21 +50,21 @@ class NotificationIntegration(
         settingsRepository.settingsState
             .map { settings ->
                 NotificationState(
-                    pushNotificationsEnabled = settings[SettingsKeys.Notifications.PUSH_NOTIFICATIONS] as? Boolean ?: true,
-                    studyRemindersEnabled = settings[SettingsKeys.Notifications.STUDY_REMINDERS] as? Boolean ?: true,
-                    studyReminderTime = settings[SettingsKeys.Notifications.STUDY_REMINDER_TIME] as? String ?: "09:00",
-                    achievementAlertsEnabled = settings[SettingsKeys.Notifications.ACHIEVEMENT_ALERTS] as? Boolean ?: true,
-                    emailSummariesEnabled = settings[SettingsKeys.Notifications.EMAIL_SUMMARIES] as? Boolean ?: false,
-                    emailSummaryFrequency = settings[SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY] as? String ?: "weekly",
-                    weeklyReportsEnabled = settings[SettingsKeys.Notifications.WEEKLY_REPORTS] as? Boolean ?: true,
-                    streakWarningsEnabled = settings[SettingsKeys.Notifications.STREAK_WARNINGS] as? Boolean ?: true,
-                    goalRemindersEnabled = settings[SettingsKeys.Notifications.GOAL_REMINDERS] as? Boolean ?: true,
-                    socialNotificationsEnabled = settings[SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS] as? Boolean ?: true,
-                    quietHoursEnabled = settings[SettingsKeys.Notifications.QUIET_HOURS_ENABLED] as? Boolean ?: false,
-                    quietHoursStart = settings[SettingsKeys.Notifications.QUIET_HOURS_START] as? String ?: "22:00",
-                    quietHoursEnd = settings[SettingsKeys.Notifications.QUIET_HOURS_END] as? String ?: "08:00",
-                    notificationSound = settings[SettingsKeys.Notifications.NOTIFICATION_SOUND] as? String ?: "default",
-                    vibrationEnabled = settings[SettingsKeys.Notifications.VIBRATION_ENABLED] as? Boolean ?: true
+                    pushNotificationsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true),
+                    studyRemindersEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.STUDY_REMINDERS, true),
+                    studyReminderTime = settingsRepository.getString(SettingsKeys.Notifications.STUDY_REMINDER_TIME, "09:00"),
+                    achievementAlertsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, true),
+                    emailSummariesEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.EMAIL_SUMMARIES, false),
+                    emailSummaryFrequency = settingsRepository.getString(SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY, "weekly"),
+                    weeklyReportsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.WEEKLY_REPORTS, true),
+                    streakWarningsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.STREAK_WARNINGS, true),
+                    goalRemindersEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, true),
+                    socialNotificationsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, true),
+                    quietHoursEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, false),
+                    quietHoursStart = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_START, "22:00"),
+                    quietHoursEnd = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_END, "08:00"),
+                    notificationSound = settingsRepository.getString(SettingsKeys.Notifications.NOTIFICATION_SOUND, "default"),
+                    vibrationEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.VIBRATION_ENABLED, true)
                 )
             }
             .onEach { _notificationState.value = it }
@@ -151,72 +152,72 @@ class NotificationIntegration(
      */
     suspend fun togglePushNotifications() {
         val current = _notificationState.value.pushNotificationsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, !current))
     }
 
     suspend fun toggleStudyReminders() {
         val current = _notificationState.value.studyRemindersEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.STUDY_REMINDERS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.STUDY_REMINDERS, !current))
     }
 
     suspend fun updateStudyReminderTime(time: String) {
-        settingsRepository.updateSetting(SettingsKeys.Notifications.STUDY_REMINDER_TIME, time)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Notifications.STUDY_REMINDER_TIME, time))
     }
 
     suspend fun toggleAchievementAlerts() {
         val current = _notificationState.value.achievementAlertsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, !current))
     }
 
     suspend fun toggleEmailSummaries() {
         val current = _notificationState.value.emailSummariesEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.EMAIL_SUMMARIES, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.EMAIL_SUMMARIES, !current))
     }
 
     suspend fun updateEmailSummaryFrequency(frequency: String) {
-        settingsRepository.updateSetting(SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY, frequency)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY, frequency))
     }
 
     suspend fun toggleWeeklyReports() {
         val current = _notificationState.value.weeklyReportsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.WEEKLY_REPORTS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.WEEKLY_REPORTS, !current))
     }
 
     suspend fun toggleStreakWarnings() {
         val current = _notificationState.value.streakWarningsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.STREAK_WARNINGS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.STREAK_WARNINGS, !current))
     }
 
     suspend fun toggleGoalReminders() {
         val current = _notificationState.value.goalRemindersEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.GOAL_REMINDERS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, !current))
     }
 
     suspend fun toggleSocialNotifications() {
         val current = _notificationState.value.socialNotificationsEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, !current))
     }
 
     suspend fun toggleQuietHours() {
         val current = _notificationState.value.quietHoursEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, !current))
     }
 
     suspend fun updateQuietHoursStart(time: String) {
-        settingsRepository.updateSetting(SettingsKeys.Notifications.QUIET_HOURS_START, time)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Notifications.QUIET_HOURS_START, time))
     }
 
     suspend fun updateQuietHoursEnd(time: String) {
-        settingsRepository.updateSetting(SettingsKeys.Notifications.QUIET_HOURS_END, time)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Notifications.QUIET_HOURS_END, time))
     }
 
     suspend fun updateNotificationSound(sound: String) {
-        settingsRepository.updateSetting(SettingsKeys.Notifications.NOTIFICATION_SOUND, sound)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Notifications.NOTIFICATION_SOUND, sound))
     }
 
     suspend fun toggleVibration() {
         val current = _notificationState.value.vibrationEnabled
-        settingsRepository.updateSetting(SettingsKeys.Notifications.VIBRATION_ENABLED, !current)
+        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.VIBRATION_ENABLED, !current))
     }
 }
 

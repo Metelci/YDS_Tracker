@@ -29,9 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
-import com.mtlc.studyplan.settings.models.SettingItem
-import com.mtlc.studyplan.settings.models.SettingsCategory
-import com.mtlc.studyplan.settings.models.SettingsUiState
+import com.mtlc.studyplan.settings.data.SettingItem
+import com.mtlc.studyplan.settings.data.SettingsCategory
+import com.mtlc.studyplan.settings.viewmodel.SettingsViewModel.SettingsUiState
 import com.mtlc.studyplan.settings.viewmodel.SettingsViewModel
 import com.mtlc.studyplan.settings.viewmodel.SettingsViewModelFactory
 

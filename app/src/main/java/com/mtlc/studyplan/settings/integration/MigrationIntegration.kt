@@ -16,7 +16,7 @@ class MigrationIntegration(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val feedbackManager: SettingsFeedbackManager
-) {
+) : ViewModel() {
 
     private val migrationManager = SettingsMigrationManager(context, settingsRepository)
 

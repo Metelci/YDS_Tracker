@@ -187,7 +187,7 @@ class SettingsBackupManager(
         // Get all categories and their settings
         val categories = repository.getAllCategoriesSync()
         categories.forEach { category ->
-            val categorySettings = repository.getCategorySettingsSync(category.id)
+            val categorySettings = repository.getCategorySettingsSnapshot(category.id)
             settingsData[category.id] = categorySettings
         }
 

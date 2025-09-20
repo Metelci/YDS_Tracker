@@ -119,14 +119,17 @@ class SettingsSearchEngine(private val context: Context) {
      */
     private fun createSearchableItem(setting: SettingItem, category: SettingsCategory): SearchableItem {
         val keywords = mutableListOf<String>().apply {
-            // Add setting-specific keywords
-            addAll(setting.searchKeywords)
-
-            // Add category keywords
-            addAll(category.searchKeywords)
-
             // Add inferred keywords based on setting type and content
             addAll(inferKeywords(setting))
+
+            // Add category title as keyword
+            add(category.title.lowercase())
+
+            // Add setting title words as keywords
+            addAll(setting.title.split(" ").map { it.lowercase() })
+
+            // Add setting description words as keywords
+            addAll(setting.description.split(" ").filter { it.length > 2 }.map { it.lowercase() })
         }
 
         return SearchableItem(
@@ -177,21 +180,32 @@ class SettingsSearchEngine(private val context: Context) {
 
         // Add type-based keywords
         when (setting) {
-            is com.mtlc.studyplan.settings.data.ToggleSetting -> {
+            is SettingItem.ToggleSetting -> {
                 keywords.addAll(listOf("toggle", "switch", "enable", "disable", "on", "off"))
             }
-            is com.mtlc.studyplan.settings.data.SelectionSetting<*> -> {
+            is SettingItem.SelectionSetting<*> -> {
                 keywords.addAll(listOf("selection", "choose", "pick", "option"))
                 // Add option values as keywords
                 setting.options.forEach { option ->
                     keywords.add(option.display.lowercase())
                 }
             }
-            is com.mtlc.studyplan.settings.data.ActionSetting -> {
+            is SettingItem.ActionSetting -> {
                 keywords.addAll(listOf("action", "button", "execute", "run"))
-                if (setting.actionType == com.mtlc.studyplan.settings.data.ActionSetting.ActionType.DESTRUCTIVE) {
+                if (setting.actionType == SettingItem.ActionSetting.ActionType.DESTRUCTIVE) {
                     keywords.addAll(listOf("delete", "remove", "clear", "reset"))
                 }
+            }
+            is SettingItem.RangeSetting -> {
+                keywords.addAll(listOf("range", "slider", "value", "number", "amount"))
+                keywords.add(setting.unit.lowercase())
+            }
+            is SettingItem.TextSetting -> {
+                keywords.addAll(listOf("text", "input", "type", "enter", "field"))
+                keywords.add(setting.placeholder.lowercase())
+            }
+            is SettingItem.TimeSetting -> {
+                keywords.addAll(listOf("time", "clock", "schedule", "timing", "hour", "minute"))
             }
         }
 

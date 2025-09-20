@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.settings.data.*
-import com.mtlc.studyplan.settings.models.SettingItem
-import com.mtlc.studyplan.settings.models.SettingsUiState
-import com.mtlc.studyplan.settings.models.SelectionOption
+import com.mtlc.studyplan.settings.data.SettingItem
+import com.mtlc.studyplan.settings.viewmodel.SettingsViewModel.SettingsUiState
+import com.mtlc.studyplan.settings.data.SelectionOption
 import com.mtlc.studyplan.core.error.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

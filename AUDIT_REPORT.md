@@ -1,23 +1,29 @@
-# Legacy Audit Report
+# Legacy UI Audit Report
 
 ## Totals by Kind
-- deprecated_api: 13
-- hardcoded_color: 329
-- hardcoded_spacing: 436
-- material2_import: 137
-- old_theme_accessor: 437
+- **materialtheme-typography**: 439
+- **magic-spacing**: 432
+- **raw-color**: 287
+- **material2-import**: 138
+- **legacy-tab**: 5
+- **legacy-divider**: 1
 
-## Top 10 Files by Legacy Density
-1. app\src\main\java\com\mtlc\studyplan\feature\progress\ProgressScreen.kt – 62 findings
-2. app\src\main\java\com\mtlc\studyplan\ui\theme\Color.kt – 59 findings
-3. app\src\main\java\com\mtlc\studyplan\feature\tasks\TasksScreen.kt – 46 findings
-4. app\src\main\java\com\mtlc\studyplan\ui\components\AchievementUnlockAnimation.kt – 46 findings
-5. app\src\main\java\com\mtlc\studyplan\ui\components\WeeklyChallengeSystem.kt – 45 findings
-6. app\src\main\java\com\mtlc\studyplan\gamification\MotivationMechanics.kt – 44 findings
-7. app\src\main\java\com\mtlc\studyplan\settings\ui\SettingsScreens.kt – 39 findings
-8. app\src\main\java\com\mtlc\studyplan\ui\components\ErrorComponents.kt – 36 findings
-9. app\src\main\java\com\mtlc\studyplan\ui\components\AchievementNotificationSystem.kt – 35 findings
-10. app\src\main\java\com\mtlc\studyplan\theme\StudyPlanTheme.kt – 34 findings
+## Hotspots (top 10 files)
+- app\src\main\java\com\mtlc\studyplan\gamification\EnhancedProgressCelebrations.kt: raw-color: 47, materialtheme-typography: 13, magic-spacing: 9
+- app\src\main\java\com\mtlc\studyplan\feature\progress\ProgressScreen.kt: materialtheme-typography: 50, material2-import: 12, legacy-tab: 1
+- app\src\main\java\com\mtlc\studyplan\ui\theme\Color.kt: raw-color: 58
+- app\src\main\java\com\mtlc\studyplan\gamification\MotivationMechanics.kt: raw-color: 16, materialtheme-typography: 15, magic-spacing: 14
+- app\src\main\java\com\mtlc\studyplan\ui\components\WeeklyChallengeSystem.kt: materialtheme-typography: 18, magic-spacing: 16, raw-color: 7, material2-import: 4
+- app\src\main\java\com\mtlc\studyplan\feature\tasks\TasksScreen.kt: magic-spacing: 32, material2-import: 5, raw-color: 3, legacy-tab: 2, materialtheme-typography: 2
+- app\src\main\java\com\mtlc\studyplan\ui\components\ErrorComponents.kt: magic-spacing: 19, materialtheme-typography: 15, material2-import: 2
+- app\src\main\java\com\mtlc\studyplan\settings\ui\SettingsScreens.kt: materialtheme-typography: 16, magic-spacing: 16, material2-import: 3
+- app\src\main\java\com\mtlc\studyplan\theme\StudyPlanTheme.kt: raw-color: 31, magic-spacing: 3
+- app\src\main\java\com\mtlc\studyplan\ui\components\AchievementUnlockAnimation.kt: magic-spacing: 19, materialtheme-typography: 11, material2-import: 4
 
-## High-Risk Notes
-- No Accompanist usages detected.
+## Risks & Notes
+- Material2 imports remain widespread; codemods must ensure BOM-managed imports flip to material3 counterparts before adjusting composables.
+- Multiple screens rely on BottomNavigation/TabRow patterns; migration should sequence high-traffic screens first to avoid navigation regressions.
+- Raw Color and dp literals are pervasive; consider introducing centralized design tokens before bulk refactor to avoid inconsistencies.
+- Confirm accompanist usages before removal; ensure pull-to-refresh behaviour is preserved via `pullRefresh`.
+
+

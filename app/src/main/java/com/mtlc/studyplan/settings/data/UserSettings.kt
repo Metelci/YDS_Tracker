@@ -31,3 +31,20 @@ data class UserSettings(
         fun default(): UserSettings = UserSettings()
     }
 }
+
+enum class SettingsKey {
+    THEME_MODE,
+    NOTIFICATIONS_ENABLED,
+    STUDY_REMINDERS,
+    ACHIEVEMENT_NOTIFICATIONS,
+    DAILY_GOAL_REMINDERS,
+    STREAK_WARNINGS,
+    OFFLINE_MODE,
+    AUTO_SYNC,
+    GAMIFICATION_ENABLED,
+    SOCIAL_SHARING,
+    HAPTIC_FEEDBACK,
+    WEEKEND_MODE,
+    SMART_SCHEDULING,
+    AUTO_DIFFICULTY
+}

@@ -6,7 +6,7 @@ import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.accessibility.FontScalingManager
 import com.mtlc.studyplan.accessibility.FocusIndicatorManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
-import com.mtlc.studyplan.settings.repository.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.search.SettingsSearchEngine
 import com.mtlc.studyplan.settings.search.SearchResultHighlighter
 import com.mtlc.studyplan.settings.search.VoiceSearchManager
@@ -22,7 +22,7 @@ class SettingsDependencyInjection private constructor(
 
     // Core dependencies
     private val settingsRepository: SettingsRepository by lazy {
-        SettingsRepositoryImpl(context)
+        SettingsRepository(context)
     }
 
     private val settingsEncryption: SettingsEncryption by lazy {
@@ -52,17 +52,18 @@ class SettingsDependencyInjection private constructor(
     }
 
     private val settingsSearchEngine: SettingsSearchEngine by lazy {
-        SettingsSearchEngine(context, settingsRepository, searchResultHighlighter)
+        SettingsSearchEngine(context)
     }
 
     // Backup dependencies
     private val settingsBackupManager: SettingsBackupManager by lazy {
-        SettingsBackupManager(context, settingsRepository, settingsEncryption)
+        SettingsBackupManager(context, settingsRepository)
     }
 
     // Deep linking dependencies
-    private val settingsDeepLinkHandler: SettingsDeepLinkHandler by lazy {
-        SettingsDeepLinkHandler(context, settingsRepository)
+    // Note: SettingsDeepLinkHandler requires FragmentActivity, will be created when needed
+    fun createDeepLinkHandler(activity: androidx.fragment.app.FragmentActivity): SettingsDeepLinkHandler {
+        return SettingsDeepLinkHandler(activity)
     }
 
     // Performance dependencies
@@ -76,16 +77,15 @@ class SettingsDependencyInjection private constructor(
     }
 
     // ViewModelFactory
-    private val settingsViewModelFactory: SettingsViewModelFactory by lazy {
-        SettingsViewModelFactory(
+    fun createCompositeSettingsViewModelFactory(activity: androidx.fragment.app.FragmentActivity): CompositeSettingsViewModelFactory {
+        return CompositeSettingsViewModelFactory(
             settingsRepository = settingsRepository,
             searchEngine = settingsSearchEngine,
             backupManager = settingsBackupManager,
-            deepLinkHandler = settingsDeepLinkHandler,
+            deepLinkHandler = createDeepLinkHandler(activity),
             accessibilityManager = accessibilityManager,
             performanceMonitor = settingsPerformanceMonitor,
-            animationCoordinator = settingsAnimationCoordinator,
-            voiceSearchManager = voiceSearchManager
+            animationCoordinator = settingsAnimationCoordinator
         )
     }
 
@@ -108,30 +108,27 @@ class SettingsDependencyInjection private constructor(
 
     fun getBackupManager(): SettingsBackupManager = settingsBackupManager
 
-    fun getDeepLinkHandler(): SettingsDeepLinkHandler = settingsDeepLinkHandler
+    fun getDeepLinkHandler(activity: androidx.fragment.app.FragmentActivity): SettingsDeepLinkHandler = createDeepLinkHandler(activity)
 
     fun getPerformanceMonitor(): SettingsPerformanceMonitor = settingsPerformanceMonitor
 
     fun getAnimationCoordinator(): SettingsAnimationCoordinator = settingsAnimationCoordinator
 
-    fun getViewModelFactory(): ViewModelProvider.Factory = settingsViewModelFactory
+    fun getViewModelFactory(activity: androidx.fragment.app.FragmentActivity): ViewModelProvider.Factory = createCompositeSettingsViewModelFactory(activity)
 
-    fun getSearchViewModelFactory(): SettingsSearchViewModelFactory {
-        return SettingsSearchViewModelFactory(
-            settingsSearchEngine,
-            voiceSearchManager,
-            searchResultHighlighter,
-            accessibilityManager,
-            settingsAnimationCoordinator
+    fun getSearchViewModelFactory(): CompositeSettingsSearchViewModelFactory {
+        return CompositeSettingsSearchViewModelFactory(
+            context = context,
+            repository = settingsRepository,
+            searchEngine = settingsSearchEngine
         )
     }
 
-    fun getBackupViewModelFactory(): SettingsBackupViewModelFactory {
-        return SettingsBackupViewModelFactory(
-            settingsBackupManager,
-            settingsEncryption,
-            accessibilityManager,
-            settingsAnimationCoordinator
+    fun getBackupViewModelFactory(): CompositeSettingsBackupViewModelFactory {
+        return CompositeSettingsBackupViewModelFactory(
+            backupManager = settingsBackupManager,
+            accessibilityManager = accessibilityManager,
+            animationCoordinator = settingsAnimationCoordinator
         )
     }
 
@@ -150,8 +147,6 @@ class SettingsDependencyInjection private constructor(
     fun getAccessibilityViewModelFactory(): AccessibilityViewModelFactory {
         return AccessibilityViewModelFactory(
             accessibilityManager,
-            fontScalingManager,
-            focusIndicatorManager,
             settingsRepository
         )
     }
@@ -186,3 +181,4 @@ class SettingsDependencyInjection private constructor(
 fun Context.getSettingsDependencies(): SettingsDependencyInjection {
     return SettingsDependencyInjection.getInstance(this)
 }
+

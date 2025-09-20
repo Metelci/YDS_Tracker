@@ -1,5 +1,7 @@
 package com.mtlc.studyplan.settings.data
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import com.mtlc.studyplan.R
 
 /**
@@ -15,7 +17,8 @@ object SettingsDefaults {
             id = SettingsCategory.PRIVACY_ID,
             title = "Privacy & Data",
             description = "Control your privacy settings and data usage",
-            iconRes = R.drawable.ic_privacy,
+            icon = Icons.Default.Security,
+            route = "privacy",
             isActive = true,
             sortOrder = 1
         ),
@@ -23,7 +26,8 @@ object SettingsDefaults {
             id = SettingsCategory.NOTIFICATIONS_ID,
             title = "Notifications",
             description = "Customize notification preferences",
-            iconRes = R.drawable.ic_notifications,
+            icon = Icons.Default.Notifications,
+            route = "notifications",
             isActive = true,
             sortOrder = 2
         ),
@@ -31,7 +35,8 @@ object SettingsDefaults {
             id = SettingsCategory.GAMIFICATION_ID,
             title = "Gamification",
             description = "Streaks, points, and motivation features",
-            iconRes = R.drawable.ic_gamification,
+            icon = Icons.Default.Star,
+            route = "gamification",
             isActive = true,
             sortOrder = 3
         ),
@@ -39,7 +44,8 @@ object SettingsDefaults {
             id = SettingsCategory.TASKS_ID,
             title = "Study Tasks",
             description = "Task scheduling and learning preferences",
-            iconRes = R.drawable.ic_tasks,
+            icon = Icons.Default.Task,
+            route = "tasks",
             isActive = true,
             sortOrder = 4
         ),
@@ -47,7 +53,8 @@ object SettingsDefaults {
             id = SettingsCategory.NAVIGATION_ID,
             title = "Navigation",
             description = "App navigation and interaction settings",
-            iconRes = R.drawable.ic_navigation,
+            icon = Icons.Default.Navigation,
+            route = "navigation",
             isActive = true,
             sortOrder = 5
         ),
@@ -55,7 +62,8 @@ object SettingsDefaults {
             id = SettingsCategory.SOCIAL_ID,
             title = "Social Features",
             description = "Community and sharing options",
-            iconRes = R.drawable.ic_social,
+            icon = Icons.Default.Group,
+            route = "social",
             isActive = true,
             sortOrder = 6
         ),
@@ -63,7 +71,8 @@ object SettingsDefaults {
             id = SettingsCategory.ACCESSIBILITY_ID,
             title = "Accessibility",
             description = "Make the app more accessible",
-            iconRes = R.drawable.ic_accessibility,
+            icon = Icons.Default.Accessibility,
+            route = "accessibility",
             isActive = true,
             sortOrder = 7
         ),
@@ -71,7 +80,8 @@ object SettingsDefaults {
             id = SettingsCategory.DATA_ID,
             title = "Data & Storage",
             description = "Sync, backup, and storage settings",
-            iconRes = R.drawable.ic_data,
+            icon = Icons.Default.Storage,
+            route = "data",
             isActive = true,
             sortOrder = 8
         )
@@ -644,3 +654,4 @@ object SettingsDefaults {
         )
     )
 }
+

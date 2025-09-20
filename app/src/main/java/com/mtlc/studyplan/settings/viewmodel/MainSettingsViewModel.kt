@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
-import com.mtlc.studyplan.settings.repository.SettingsRepository
-import com.mtlc.studyplan.settings.repository.SettingItem
+import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingItem
 import com.mtlc.studyplan.settings.search.SettingsSearchEngine
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 import kotlinx.coroutines.flow.*
@@ -131,7 +131,7 @@ class MainSettingsViewModel(
     }
 }
 
-class SettingsSearchViewModel(
+class MainSettingsSearchViewModel(
     private val searchEngine: SettingsSearchEngine,
     private val voiceSearchManager: com.mtlc.studyplan.settings.search.VoiceSearchManager,
     private val accessibilityManager: AccessibilityManager,

@@ -2,7 +2,7 @@ package com.mtlc.studyplan.settings.security
 
 import android.content.Context
 import com.mtlc.studyplan.settings.error.SettingsErrorHandler
-import com.mtlc.studyplan.settings.repository.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
