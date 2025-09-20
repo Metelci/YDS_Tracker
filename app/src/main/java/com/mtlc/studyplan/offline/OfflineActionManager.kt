@@ -2,7 +2,8 @@ package com.mtlc.studyplan.offline
 
 import android.content.Context
 import androidx.room.*
-import com.mtlc.studyplan.workflows.OfflineAction
+import com.mtlc.studyplan.offline.OfflineAction
+import com.mtlc.studyplan.offline.OfflineActionType
 import com.mtlc.studyplan.utils.NetworkHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,38 +46,22 @@ object OfflineActionManager {
     suspend fun queueAction(context: Context, action: OfflineAction) {
         if (!isInitialized) initialize(context)
 
-        val entity = when (action) {
-            is OfflineAction.ShareAchievement -> {
-                OfflineActionEntity(
-                    id = UUID.randomUUID().toString(),
-                    type = ActionType.SHARE_ACHIEVEMENT,
-                    data = Json.encodeToString(action),
-                    timestamp = action.timestamp,
-                    retryCount = 0,
-                    status = ActionStatus.PENDING
-                )
-            }
-            is OfflineAction.JoinGroup -> {
-                OfflineActionEntity(
-                    id = UUID.randomUUID().toString(),
-                    type = ActionType.JOIN_GROUP,
-                    data = Json.encodeToString(action),
-                    timestamp = action.timestamp,
-                    retryCount = 0,
-                    status = ActionStatus.PENDING
-                )
-            }
-            is OfflineAction.AddFriend -> {
-                OfflineActionEntity(
-                    id = UUID.randomUUID().toString(),
-                    type = ActionType.ADD_FRIEND,
-                    data = Json.encodeToString(action),
-                    timestamp = action.timestamp,
-                    retryCount = 0,
-                    status = ActionStatus.PENDING
-                )
-            }
-        }
+        val entity = OfflineActionEntity(
+            id = UUID.randomUUID().toString(),
+            type = when (action.type) {
+                OfflineActionType.TASK_COMPLETED -> ActionType.TASK_COMPLETED
+                OfflineActionType.TASK_CREATED -> ActionType.TASK_CREATED
+                OfflineActionType.TASK_UPDATED -> ActionType.TASK_UPDATED
+                OfflineActionType.TASK_DELETED -> ActionType.TASK_DELETED
+                OfflineActionType.PROGRESS_UPDATED -> ActionType.PROGRESS_UPDATED
+                OfflineActionType.SETTINGS_UPDATED -> ActionType.SETTINGS_UPDATED
+                OfflineActionType.ACHIEVEMENT_UNLOCKED -> ActionType.ACHIEVEMENT_UNLOCKED
+            },
+            data = Json.encodeToString(action),
+            timestamp = action.timestamp,
+            retryCount = action.retryCount,
+            status = ActionStatus.PENDING
+        )
 
         database.offlineActionDao().insert(entity)
     }
@@ -105,20 +90,26 @@ object OfflineActionManager {
         pendingActions.forEach { actionEntity ->
             try {
                 when (actionEntity.type) {
-                    ActionType.SHARE_ACHIEVEMENT -> {
-                        processShareAchievement(actionEntity)
-                    }
-                    ActionType.JOIN_GROUP -> {
-                        processJoinGroup(actionEntity)
-                    }
-                    ActionType.ADD_FRIEND -> {
-                        processAddFriend(actionEntity)
-                    }
-                    ActionType.COMPLETE_TASK -> {
+                    ActionType.TASK_COMPLETED -> {
                         processCompleteTask(actionEntity)
                     }
-                    ActionType.UPDATE_PROGRESS -> {
+                    ActionType.TASK_CREATED -> {
+                        processCreateTask(actionEntity)
+                    }
+                    ActionType.TASK_UPDATED -> {
+                        processUpdateTask(actionEntity)
+                    }
+                    ActionType.TASK_DELETED -> {
+                        processDeleteTask(actionEntity)
+                    }
+                    ActionType.PROGRESS_UPDATED -> {
                         processUpdateProgress(actionEntity)
+                    }
+                    ActionType.SETTINGS_UPDATED -> {
+                        processUpdateSettings(actionEntity)
+                    }
+                    ActionType.ACHIEVEMENT_UNLOCKED -> {
+                        processUnlockAchievement(actionEntity)
                     }
                 }
 
@@ -131,31 +122,34 @@ object OfflineActionManager {
         }
     }
 
-    private suspend fun processShareAchievement(actionEntity: OfflineActionEntity) {
-        val action = Json.decodeFromString<OfflineAction.ShareAchievement>(actionEntity.data)
-        // In a real implementation, this would call the social repository
-        android.util.Log.d("OfflineSync", "Syncing share achievement: ${action.achievementId}")
-
-        // Simulate network call
-        kotlinx.coroutines.delay(500)
+    private suspend fun processCreateTask(actionEntity: OfflineActionEntity) {
+        val action = Json.decodeFromString<OfflineAction>(actionEntity.data)
+        android.util.Log.d("OfflineSync", "Syncing task creation: ${action.id}")
+        kotlinx.coroutines.delay(200)
     }
 
-    private suspend fun processJoinGroup(actionEntity: OfflineActionEntity) {
-        val action = Json.decodeFromString<OfflineAction.JoinGroup>(actionEntity.data)
-        // In a real implementation, this would call the social repository
-        android.util.Log.d("OfflineSync", "Syncing join group: ${action.groupId}")
-
-        // Simulate network call
-        kotlinx.coroutines.delay(300)
+    private suspend fun processUpdateTask(actionEntity: OfflineActionEntity) {
+        val action = Json.decodeFromString<OfflineAction>(actionEntity.data)
+        android.util.Log.d("OfflineSync", "Syncing task update: ${action.id}")
+        kotlinx.coroutines.delay(200)
     }
 
-    private suspend fun processAddFriend(actionEntity: OfflineActionEntity) {
-        val action = Json.decodeFromString<OfflineAction.AddFriend>(actionEntity.data)
-        // In a real implementation, this would call the social repository
-        android.util.Log.d("OfflineSync", "Syncing add friend: ${action.friendId}")
+    private suspend fun processDeleteTask(actionEntity: OfflineActionEntity) {
+        val action = Json.decodeFromString<OfflineAction>(actionEntity.data)
+        android.util.Log.d("OfflineSync", "Syncing task deletion: ${action.id}")
+        kotlinx.coroutines.delay(200)
+    }
 
-        // Simulate network call
-        kotlinx.coroutines.delay(300)
+    private suspend fun processUpdateSettings(actionEntity: OfflineActionEntity) {
+        val action = Json.decodeFromString<OfflineAction>(actionEntity.data)
+        android.util.Log.d("OfflineSync", "Syncing settings update: ${action.id}")
+        kotlinx.coroutines.delay(200)
+    }
+
+    private suspend fun processUnlockAchievement(actionEntity: OfflineActionEntity) {
+        val action = Json.decodeFromString<OfflineAction>(actionEntity.data)
+        android.util.Log.d("OfflineSync", "Syncing achievement unlock: ${action.id}")
+        kotlinx.coroutines.delay(200)
     }
 
     private suspend fun processCompleteTask(actionEntity: OfflineActionEntity) {
@@ -196,9 +190,7 @@ object OfflineActionManager {
         }
     }
 
-    private companion object {
-        const val MAX_RETRY_COUNT = 3
-    }
+    private const val MAX_RETRY_COUNT = 3
 }
 
 // Database entities and DAO
@@ -213,11 +205,13 @@ data class OfflineActionEntity(
 )
 
 enum class ActionType {
-    SHARE_ACHIEVEMENT,
-    JOIN_GROUP,
-    ADD_FRIEND,
-    COMPLETE_TASK,
-    UPDATE_PROGRESS
+    TASK_COMPLETED,
+    TASK_CREATED,
+    TASK_UPDATED,
+    TASK_DELETED,
+    PROGRESS_UPDATED,
+    SETTINGS_UPDATED,
+    ACHIEVEMENT_UNLOCKED
 }
 
 enum class ActionStatus {

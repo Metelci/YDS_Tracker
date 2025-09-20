@@ -209,23 +209,20 @@ data class PerformanceIssue(
 )
 
 // Performance measurement annotations and extensions
-inline fun <T> PerformanceMonitor.measured(operationName: String, block: () -> T): T {
-    var result: T
+inline fun <T> PerformanceMonitor.measured(operationName: String, crossinline block: () -> T): T {
+    var result: T? = null
     measureOperation(operationName) {
         result = block()
     }
-    return result
+    return result!!
 }
 
-// Extension for measuring Composable performance
-@Composable
-fun rememberPerformanceTracker(
+// Performance tracker factory
+fun createPerformanceTracker(
     operationName: String,
     performanceMonitor: PerformanceMonitor
 ): PerformanceTracker {
-    return remember(operationName) {
-        PerformanceTracker(operationName, performanceMonitor)
-    }
+    return PerformanceTracker(operationName, performanceMonitor)
 }
 
 class PerformanceTracker(

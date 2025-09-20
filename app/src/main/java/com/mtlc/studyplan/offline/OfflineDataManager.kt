@@ -3,7 +3,10 @@ package com.mtlc.studyplan.offline
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.*
-import com.mtlc.studyplan.data.AppDatabase
+import com.mtlc.studyplan.storage.room.StudyPlanDatabase
+import com.mtlc.studyplan.offline.ActionType
+import com.mtlc.studyplan.offline.ActionStatus
+import com.mtlc.studyplan.offline.OfflineActionEntity
 import com.mtlc.studyplan.shared.AppTask
 import com.mtlc.studyplan.shared.StudyStats
 import com.mtlc.studyplan.shared.TaskCategory
@@ -123,9 +126,9 @@ class OfflineDataManager(
         )
     }
 
-    suspend fun synchronizeWhenOnline(): SyncResult {
+    suspend fun synchronizeWhenOnline(): OfflineDataSyncResult {
         if (!NetworkHelper.isOnline()) {
-            return SyncResult.Failed("No internet connection")
+            return OfflineDataSyncResult.Failed("No internet connection")
         }
 
         return try {
@@ -169,11 +172,11 @@ class OfflineDataManager(
                 .apply()
 
             showSyncCompleted()
-            SyncResult.Success(syncResults)
+            OfflineDataSyncResult.Success(syncResults)
 
         } catch (e: Exception) {
             handleSyncError(e)
-            SyncResult.Failed(e.message ?: "Sync failed")
+            OfflineDataSyncResult.Failed(e.message ?: "Sync failed")
         }
     }
 
@@ -189,7 +192,7 @@ class OfflineDataManager(
             // Queue for sync when online
             val action = OfflineActionEntity(
                 id = UUID.randomUUID().toString(),
-                type = ActionType.CREATE_TASK,
+                type = ActionType.TASK_CREATED,
                 data = Json.encodeToString(task),
                 timestamp = System.currentTimeMillis(),
                 retryCount = 0,
@@ -213,7 +216,7 @@ class OfflineDataManager(
             // Queue completion for sync
             val action = OfflineActionEntity(
                 id = UUID.randomUUID().toString(),
-                type = ActionType.COMPLETE_TASK,
+                type = ActionType.TASK_COMPLETED,
                 data = Json.encodeToString(mapOf("taskId" to taskId)),
                 timestamp = System.currentTimeMillis(),
                 retryCount = 0,
@@ -242,7 +245,7 @@ class OfflineDataManager(
             // Queue for sync
             val action = OfflineActionEntity(
                 id = UUID.randomUUID().toString(),
-                type = ActionType.UPDATE_PROGRESS,
+                type = ActionType.PROGRESS_UPDATED,
                 data = Json.encodeToString(stats),
                 timestamp = System.currentTimeMillis(),
                 retryCount = 0,
@@ -288,18 +291,18 @@ class OfflineDataManager(
     // Helper methods
     private suspend fun processOfflineAction(action: OfflineActionEntity) {
         when (action.type) {
-            ActionType.CREATE_TASK -> {
+            ActionType.TASK_CREATED -> {
                 val task = Json.decodeFromString<AppTask>(action.data)
                 // Send to remote repository
                 android.util.Log.d("OfflineSync", "Syncing created task: ${task.title}")
             }
-            ActionType.COMPLETE_TASK -> {
+            ActionType.TASK_COMPLETED -> {
                 val data = Json.decodeFromString<Map<String, String>>(action.data)
                 val taskId = data["taskId"]
                 // Send completion to remote repository
                 android.util.Log.d("OfflineSync", "Syncing task completion: $taskId")
             }
-            ActionType.UPDATE_PROGRESS -> {
+            ActionType.PROGRESS_UPDATED -> {
                 val stats = Json.decodeFromString<StudyStats>(action.data)
                 // Send progress to remote repository
                 android.util.Log.d("OfflineSync", "Syncing progress: ${stats.totalXP} XP")
@@ -541,9 +544,9 @@ sealed class OfflineResult {
     data class Failed(val message: String) : OfflineResult()
 }
 
-sealed class SyncResult {
-    data class Success(val syncedItems: List<String>) : SyncResult()
-    data class Failed(val message: String) : SyncResult()
+sealed class OfflineDataSyncResult {
+    data class Success(val syncedItems: List<String>) : OfflineDataSyncResult()
+    data class Failed(val message: String) : OfflineDataSyncResult()
 }
 
 // Data classes

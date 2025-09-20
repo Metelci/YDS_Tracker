@@ -37,7 +37,7 @@ class PerformanceOptimizer private constructor(
 
     // Resource pooling
     private val viewHolderPool = RecyclerView.RecycledViewPool()
-    private val coroutinePool = Executors.newFixedThreadPoolContext(4, "optimization-pool")
+    private val coroutinePool = Dispatchers.IO.limitedParallelism(4)
 
     companion object {
         @Volatile
@@ -470,7 +470,9 @@ class PerformanceOptimizer private constructor(
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppStopped() {
-        performMemoryOptimizations()
+        CoroutineScope(Dispatchers.Main).launch {
+            performMemoryOptimizations()
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

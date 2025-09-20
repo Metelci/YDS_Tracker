@@ -49,12 +49,6 @@ class SettingsViewModelFactory(
                     animationCoordinator
                 ) as T
             }
-            modelClass.isAssignableFrom(ConflictResolutionViewModel::class.java) -> {
-                ConflictResolutionViewModel(
-                    backupManager,
-                    accessibilityManager
-                ) as T
-            }
             modelClass.isAssignableFrom(AdvancedToggleViewModel::class.java) -> {
                 AdvancedToggleViewModel(
                     settingsRepository,
@@ -133,13 +127,6 @@ class ConflictResolutionViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(ConflictResolutionViewModel::class.java) -> {
-                val dependencies = com.mtlc.studyplan.settings.di.SettingsDependencyInjection.getInstance(context)
-                ConflictResolutionViewModel(
-                    dependencies.getBackupManager(),
-                    dependencies.getAccessibilityManager()
-                ) as T
-            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

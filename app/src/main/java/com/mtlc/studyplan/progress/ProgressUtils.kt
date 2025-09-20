@@ -16,15 +16,15 @@ private fun computePercentCore(items: List<Triple<String, String, String?>>, com
     return ((completed.toFloat() / planned.toFloat()) * 100f).roundToInt().coerceIn(0, 100)
 }
 
-// Overload for UI Task model
-fun computeProgressPercent(tasks: List<com.mtlc.studyplan.Task>, completedIds: Set<String>): Int {
-    val items = tasks.map { Triple(it.id, it.desc, it.details) }
+// Overload for data Task model
+fun computeProgressPercent(tasks: List<com.mtlc.studyplan.data.Task>, completedIds: Set<String>): Int {
+    val items = tasks.map { Triple(it.id, it.title, it.description) }
     return computePercentCore(items, completedIds)
 }
 
-// Overload for data Task model
+// Alternative overload for compatibility
 fun computeProgressPercentData(tasks: List<com.mtlc.studyplan.data.Task>, completedIds: Set<String>): Int {
-    val items = tasks.map { Triple(it.id, it.desc, it.details) }
+    val items = tasks.map { Triple(it.id, it.title, it.description) }
     return computePercentCore(items, completedIds)
 }
 

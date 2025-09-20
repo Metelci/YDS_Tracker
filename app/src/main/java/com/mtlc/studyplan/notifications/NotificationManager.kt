@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.mtlc.studyplan.MainActivity
+import com.mtlc.studyplan.MinimalMainActivity
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.eventbus.AppEvent
 import com.mtlc.studyplan.eventbus.AppEventBus
@@ -342,7 +342,7 @@ class NotificationManager @Inject constructor(
     }
 
     private fun createOpenAppPendingIntent(): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
@@ -355,7 +355,7 @@ class NotificationManager @Inject constructor(
     }
 
     private fun createOpenTasksPendingIntent(): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             putExtra("navigate_to", "tasks")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -369,7 +369,7 @@ class NotificationManager @Inject constructor(
     }
 
     private fun createOpenSocialPendingIntent(): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             putExtra("navigate_to", "social")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -405,7 +405,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     private fun createOpenAppPendingIntent(context: Context): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, MinimalMainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 

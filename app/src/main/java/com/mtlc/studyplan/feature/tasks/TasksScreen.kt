@@ -61,7 +61,7 @@ enum class TaskCategory(val displayName: String, val icon: ImageVector, val colo
     GRAMMAR("Grammar", Icons.Filled.School, DesignTokens.Primary),
     READING("Reading", Icons.AutoMirrored.Filled.Article, DesignTokens.Tertiary),
     LISTENING("Listening", Icons.Filled.Headphones, DesignTokens.Warning),
-    PRACTICE_EXAM("Practice Exam", Icons.Filled.Assignment, DesignTokens.Error),
+    PRACTICE_EXAM("Practice Exam", Icons.Filled.Quiz, DesignTokens.Destructive),
     OTHER("Other", Icons.Filled.Assignment, DesignTokens.Secondary)
 }
 

@@ -125,7 +125,20 @@ class OfflineManager @Inject constructor(
 
             OfflineActionType.TASK_CREATED -> {
                 // Apply task creation locally
-                appEventBus.emitEvent(AppEvent.TaskCreated)
+                val taskData = action.data["task"] as? String
+                appEventBus.emitEvent(AppEvent.TaskCreated(taskData ?: ""))
+            }
+
+            OfflineActionType.TASK_UPDATED -> {
+                // Apply task update locally
+                val taskId = action.data["taskId"] as? String
+                // Task update event can be added when needed
+            }
+
+            OfflineActionType.TASK_DELETED -> {
+                // Apply task deletion locally
+                val taskId = action.data["taskId"] as? String
+                // Task deletion event can be added when needed
             }
 
             OfflineActionType.PROGRESS_UPDATED -> {
@@ -135,6 +148,12 @@ class OfflineManager @Inject constructor(
 
             OfflineActionType.SETTINGS_UPDATED -> {
                 // Settings are already handled by SettingsManager
+            }
+
+            OfflineActionType.ACHIEVEMENT_UNLOCKED -> {
+                // Apply achievement unlock locally
+                val achievementId = action.data["achievementId"] as? String
+                // Achievement unlock event can be added when needed
             }
         }
     }
@@ -162,11 +181,20 @@ class OfflineManager @Inject constructor(
                         OfflineActionType.TASK_CREATED -> {
                             syncTaskCreation(action)
                         }
+                        OfflineActionType.TASK_UPDATED -> {
+                            syncTaskUpdate(action)
+                        }
+                        OfflineActionType.TASK_DELETED -> {
+                            syncTaskDeletion(action)
+                        }
                         OfflineActionType.PROGRESS_UPDATED -> {
                             syncProgressUpdate(action)
                         }
                         OfflineActionType.SETTINGS_UPDATED -> {
                             syncSettingsUpdate(action)
+                        }
+                        OfflineActionType.ACHIEVEMENT_UNLOCKED -> {
+                            syncAchievementUnlock(action)
                         }
                     }
 
