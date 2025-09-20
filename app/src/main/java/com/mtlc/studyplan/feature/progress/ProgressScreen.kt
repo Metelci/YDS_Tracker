@@ -519,46 +519,25 @@ private fun ProgressTabRow(
     selectedTab: ProgressTab,
     onTabSelected: (ProgressTab) -> Unit
 ) {
-    val spacing = LocalSpacing.current
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = DesignTokens.Surface,
-        shape = RoundedCornerShape(28.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing.xs),
-            horizontalArrangement = Arrangement.spacedBy(spacing.xs)
-        ) {
-            ProgressTab.values().forEach { tab ->
-                val isSelected = tab == selectedTab
-                val background by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.PrimaryContainer else Color.Transparent,
-                    animationSpec = tween(200),
-                    label = "tab_background"
-                )
-                val contentColor = if (isSelected) DesignTokens.PrimaryContainerForeground else MaterialTheme.colorScheme.onSurface
+    val selectedTabIndex = ProgressTab.values().indexOf(selectedTab)
 
-                Surface(
-                    onClick = { onTabSelected(tab) },
-                    shape = RoundedCornerShape(24.dp),
-                    color = background,
-                    contentColor = contentColor
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = spacing.md, vertical = spacing.xs),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = tab.title,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-                        )
-                    }
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ) {
+        ProgressTab.values().forEachIndexed { index, tab ->
+            Tab(
+                selected = selectedTabIndex == index,
+                onClick = { onTabSelected(tab) },
+                text = {
+                    Text(
+                        text = tab.title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
-            }
+            )
         }
     }
 }
@@ -602,7 +581,7 @@ private fun OverviewSummaryRow(summaries: List<OverviewSummary>) {
                     .fillMaxWidth(),
                 color = summary.color,
                 contentColor = summary.contentColor,
-                shape = RoundedCornerShape(18.dp)
+                shape = RoundedCornerShape(ShapeTokens.RadiusMdPlus)
             ) {
                 Column(
                     modifier = Modifier
@@ -631,7 +610,7 @@ private fun WeeklyProgressCard(days: List<WeeklyDayProgress>) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DesignTokens.Surface,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
         tonalElevation = 1.dp
     ) {
         Column(
@@ -675,8 +654,8 @@ private fun WeeklyProgressCard(days: List<WeeklyDayProgress>) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .height(spacing.xs)
+                                .clip(RoundedCornerShape(ShapeTokens.RadiusMd))
                                 .background(DesignTokens.SurfaceContainerHigh)
                         ) {
                             Box(
@@ -699,7 +678,7 @@ private fun StudyTimeCard(studyTime: StudyTimeStats) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DesignTokens.PrimaryContainer.copy(alpha = 0.6f),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg)
     ) {
         Column(
             modifier = Modifier.padding(spacing.md),
@@ -781,7 +760,7 @@ private fun SkillProgressCard(skill: SkillCardData) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = skill.type.containerColor,
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg)
     ) {
         Column(
             modifier = Modifier.padding(spacing.md),
@@ -815,7 +794,7 @@ private fun SkillProgressCard(skill: SkillCardData) {
                     )
                 }
                 Surface(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(ShapeTokens.RadiusLg),
                     color = skill.level.background,
                     contentColor = skill.level.foreground
                 ) {
@@ -830,8 +809,8 @@ private fun SkillProgressCard(skill: SkillCardData) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .height(spacing.xs)
+                    .clip(RoundedCornerShape(ShapeTokens.RadiusMd))
                     .background(DesignTokens.Surface)
             ) {
                 Box(
@@ -892,7 +871,7 @@ private fun AwardCard(award: AwardCardData) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = surfaceColor,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
         tonalElevation = if (award.isUnlocked) 2.dp else 0.dp
     ) {
         Row(
@@ -974,7 +953,7 @@ private fun AnalyticsRangeRow(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DesignTokens.Surface,
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(ShapeTokens.RadiusXl)
     ) {
         Row(
             modifier = Modifier
@@ -992,7 +971,7 @@ private fun AnalyticsRangeRow(
                 val contentColor = if (isSelected) DesignTokens.PrimaryContainerForeground else MaterialTheme.colorScheme.onSurface
                 Surface(
                     onClick = { onRangeSelected(range) },
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(ShapeTokens.RadiusMdPlus),
                     color = background,
                     contentColor = contentColor
                 ) {
@@ -1017,7 +996,7 @@ private fun AnalyticsSummaryCard(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DesignTokens.PrimaryContainer.copy(alpha = 0.65f),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg)
     ) {
         Column(
             modifier = Modifier.padding(spacing.md),
@@ -1106,7 +1085,7 @@ private fun AnalyticsSummaryCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(6.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(ShapeTokens.RadiusMd))
                             .background(DesignTokens.Surface)
                     ) {
                         val width = change.deltaPercent.coerceIn(-100f, 100f) / 100f
@@ -1137,7 +1116,7 @@ private fun WeeklyStreakCard(streakState: StreakState?) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DesignTokens.SuccessContainer,
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg)
     ) {
         Row(
             modifier = Modifier.padding(spacing.md),
@@ -1683,8 +1662,8 @@ private fun AnimatedOverviewSummaryRow(
                     },
                 color = summary.color,
                 contentColor = summary.contentColor,
-                shape = RoundedCornerShape(18.dp),
-                shadowElevation = if (animatingPoints && isPointsCard) 8.dp else 0.dp
+                shape = RoundedCornerShape(ShapeTokens.RadiusMdPlus),
+                shadowElevation = if (animatingPoints && isPointsCard) spacing.xs else 0.dp
             ) {
                 Column(
                     modifier = Modifier
@@ -1737,7 +1716,7 @@ private fun AnimatedWeeklyProgressCard(
                 )
             },
         color = DesignTokens.Surface,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
         tonalElevation = if (animatingProgress) 4.dp else 1.dp
     ) {
         Column(
@@ -1782,8 +1761,8 @@ private fun AnimatedWeeklyProgressCard(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .height(spacing.xs)
+                                .clip(RoundedCornerShape(ShapeTokens.RadiusMd))
                                 .background(DesignTokens.SurfaceContainerHigh)
                         ) {
                             Box(
@@ -1823,7 +1802,7 @@ private fun AnimatedSkillProgressCard(
             .fillMaxWidth()
             .scale(scale),
         color = skill.type.containerColor,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
         shadowElevation = if (isAnimating) 4.dp else 0.dp
     ) {
         Column(
@@ -1858,7 +1837,7 @@ private fun AnimatedSkillProgressCard(
                     )
                 }
                 Surface(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(ShapeTokens.RadiusLg),
                     color = skill.level.background,
                     contentColor = skill.level.foreground
                 ) {
@@ -1873,8 +1852,8 @@ private fun AnimatedSkillProgressCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .height(spacing.xs)
+                    .clip(RoundedCornerShape(ShapeTokens.RadiusMd))
                     .background(DesignTokens.Surface)
             ) {
                 Box(
@@ -1930,9 +1909,9 @@ private fun AnimatedAwardCard(
             .scale(scale)
             .clickable { onClick() },
         color = surfaceColor,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
         tonalElevation = if (award.isUnlocked) 2.dp else 0.dp,
-        shadowElevation = if (isAnimating) 8.dp else 0.dp
+        shadowElevation = if (isAnimating) spacing.xs else 0.dp
     ) {
         Row(
             modifier = Modifier.padding(spacing.md),
@@ -2002,8 +1981,8 @@ private fun AnimatedWeeklyStreakCard(
             .fillMaxWidth()
             .scale(scale),
         color = DesignTokens.SuccessContainer,
-        shape = RoundedCornerShape(20.dp),
-        shadowElevation = if (isAnimating) 8.dp else 0.dp
+        shape = RoundedCornerShape(ShapeTokens.RadiusLg),
+        shadowElevation = if (isAnimating) spacing.xs else 0.dp
     ) {
         Row(
             modifier = Modifier.padding(spacing.md),
@@ -2051,6 +2030,10 @@ private fun AnimatedWeeklyStreakCard(
         }
     }
 }
+
+
+
+
 
 
 
