@@ -221,7 +221,7 @@ class AchievementRepository @Inject constructor(
         val unlockedAchievements = mutableListOf<AchievementEntity>()
 
         // Check task-related achievements
-        val taskAchievements = getAchievementsByCategory(AchievementCategory.PROGRESS_PIONEER)
+        val taskAchievements = getAchievementsByCategory(AchievementCategory.TASKS)
         taskAchievements.collect { achievements ->
             achievements.filter { !it.isUnlocked }.forEach { achievement ->
                 if (achievement.currentProgress < tasksCompleted && tasksCompleted >= achievement.threshold) {
@@ -240,7 +240,7 @@ class AchievementRepository @Inject constructor(
         val unlockedAchievements = mutableListOf<AchievementEntity>()
 
         // Check time-related achievements
-        val timeAchievements = getAchievementsByCategory(AchievementCategory.SPEED_DEMON)
+        val timeAchievements = getAchievementsByCategory(AchievementCategory.STUDY_TIME)
         timeAchievements.collect { achievements ->
             achievements.filter { !it.isUnlocked }.forEach { achievement ->
                 if (achievement.currentProgress < studyMinutes && studyMinutes >= achievement.threshold) {
@@ -259,7 +259,7 @@ class AchievementRepository @Inject constructor(
         val unlockedAchievements = mutableListOf<AchievementEntity>()
 
         // Check streak-related achievements
-        val streakAchievements = getAchievementsByCategory(AchievementCategory.CONSISTENCY_CHAMPION)
+        val streakAchievements = getAchievementsByCategory(AchievementCategory.STREAKS)
         streakAchievements.collect { achievements ->
             achievements.filter { !it.isUnlocked }.forEach { achievement ->
                 if (achievement.currentProgress < streakDays && streakDays >= achievement.threshold) {

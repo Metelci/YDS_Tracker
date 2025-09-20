@@ -95,21 +95,17 @@ class SettingsSystemManager(private val context: Context) {
      * Initialize search engine with current settings from repository state
      */
     private suspend fun initializeSearchEngine() {
-        // Use the actual repository state instead of non-existent sync methods
         val settingsState = repository.settingsState.value
         val categories = settingsState.categories
 
-        val allSettings = mutableListOf<Any>()
-        for (category in categories) {
-            // Collect all settings from each category
-            // Skip settings extraction - simplified approach
-            // allSettings.addAll(emptyList())
+        val allSettings: Map<String, List<SettingItem>> = categories.associate { category ->
+            val items = settingsState.getSectionsForCategory(category.id)
+                .flatMap { section -> section.items }
+            category.id to items
         }
 
-        // Note: This assumes searchEngine.indexSettings exists with these parameters
-        // If not, this method signature would need to be verified
         try {
-            // searchEngine.indexSettings(categories, allSettings) // Simplified - commented out
+            searchEngine.indexSettings(categories, allSettings)
         } catch (e: Exception) {
             feedbackManager.showError("Failed to initialize search: ${e.message}")
         }
@@ -482,9 +478,9 @@ class SettingsSystemViewModel(
     private val settingsManager: SettingsSystemManager
 ) : ViewModel() {
 
-    val systemState = settingsManager.systemState.asStateFlow()
-    val loadingStates = settingsManager.getFeedbackManager().loadingStates.asStateFlow()
-    val progressStates = settingsManager.getFeedbackManager().progressStates.asStateFlow()
+    val systemState = settingsManager.systemState
+    val loadingStates = settingsManager.getFeedbackManager().loadingStates
+    val progressStates = settingsManager.getFeedbackManager().progressStates
 
     fun updateSetting(key: String, value: Any) {
         viewModelScope.launch {
@@ -514,7 +510,7 @@ class SettingsSystemViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        // settingsManager.dispose() // Removed - no dispose method available
+        settingsManager.dispose()
     }
 
     class Factory(private val context: Context) : ViewModelProvider.Factory {
@@ -563,7 +559,7 @@ object SettingsSystemUsageExample {
         val resetSuccess = settingsManager.resetAllSettings()
 
         // Don't forget to dispose when done
-        // settingsManager.dispose() // Removed - no dispose method available
+        settingsManager.dispose()
     }
 }
 

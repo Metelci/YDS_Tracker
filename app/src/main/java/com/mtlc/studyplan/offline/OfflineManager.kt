@@ -242,6 +242,21 @@ class OfflineManager @Inject constructor(
         kotlinx.coroutines.delay(100)
     }
 
+    private suspend fun syncTaskUpdate(action: OfflineAction) {
+        // Simulate API call to sync task update
+        kotlinx.coroutines.delay(100)
+    }
+
+    private suspend fun syncTaskDeletion(action: OfflineAction) {
+        // Simulate API call to sync task deletion
+        kotlinx.coroutines.delay(100)
+    }
+
+    private suspend fun syncAchievementUnlock(action: OfflineAction) {
+        // Simulate API call to sync achievement unlock
+        kotlinx.coroutines.delay(100)
+    }
+
     private suspend fun syncProgressUpdate(action: OfflineAction) {
         // Simulate API call to sync progress update
         kotlinx.coroutines.delay(100)
@@ -326,7 +341,6 @@ class OfflineManager @Inject constructor(
     }
 }
 
-@Serializable
 data class OfflineAction(
     val id: String,
     val type: OfflineActionType,
