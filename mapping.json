@@ -1,27 +1,19 @@
 {
-  "TopAppBar": {
-    "replacement": "acme/u/AppBar",
-    "status": "pending-docs",
-    "notes": "Need acme app bar API; map title slot + navigation icon + action icon"
+  "imports": {
+    "androidx.compose.material": "androidx.compose.material3",
+    "com.google.accompanist.swiperefresh": "androidx.compose.material.pullrefresh"
   },
-  "FilterChip": {
-    "replacement": "acme/u/FilterPill",
-    "status": "pending-docs",
-    "notes": "Confirm chip variants and selected styling tokens"
+  "components": {
+    "BottomNavigation": "NavigationBar",
+    "BottomNavigationItem": "NavigationBarItem",
+    "TabRow": "TabRow (material3)",
+    "Tab": "Tab (material3)",
+    "Divider": "HorizontalDivider",
+    "TopAppBar (manual Surface/Row)": "TopAppBar (material3)"
   },
-  "Card": {
-    "replacement": "acme/u/SurfaceCard",
-    "status": "pending-docs",
-    "notes": "Map elevation and padding tokens (surface-container vs card)"
-  },
-  "IconButton": {
-    "replacement": "acme/u/IconButton",
-    "status": "pending-docs",
-    "notes": "Match ripple + focus ring tokens"
-  },
-  "ElevatedButton": {
-    "replacement": "acme/u/Button",
-    "status": "pending-docs",
-    "notes": "Need to map variant=primary -> intent=solid per design"
+  "theme": {
+    "MaterialTheme.colors.*": "MaterialTheme.colorScheme.*",
+    "Color(...)": "MaterialTheme.colorScheme token",
+    "magic dp spacing": "central spacing constants (e.g., Spacing.M, Spacing.L)"
   }
 }

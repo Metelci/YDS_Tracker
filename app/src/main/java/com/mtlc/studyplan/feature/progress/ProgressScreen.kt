@@ -42,8 +42,11 @@ import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Whatshot
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -514,6 +517,7 @@ private fun ProgressHeader(uiState: ProgressUiState) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProgressTabRow(
     selectedTab: ProgressTab,

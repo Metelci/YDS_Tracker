@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.theme.ShapeTokens
+import com.mtlc.studyplan.ui.theme.primaryColor
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions
 import com.mtlc.studyplan.ui.animations.StudyPlanMotion
 
@@ -39,6 +42,8 @@ fun AchievementCategoryCard(
 ) {
     val haptics = LocalHapticFeedback.current
     val category = categoryProgress.category
+    val spacing = LocalSpacing.current
+    val categoryColor = category.primaryColor
 
     Card(
         onClick = {
@@ -49,18 +54,18 @@ fun AchievementCategoryCard(
             .fillMaxWidth()
             .animateContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(category.color).copy(alpha = 0.1f)
+            containerColor = categoryColor.copy(alpha = 0.1f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.sm)
         ) {
             // Category header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
                 // Category icon with tier indicator
                 Box(
@@ -72,12 +77,12 @@ fun AchievementCategoryCard(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
-                                color = Color(category.color).copy(alpha = 0.2f),
+                                color = categoryColor.copy(alpha = 0.2f),
                                 shape = CircleShape
                             )
                             .border(
                                 width = 2.dp,
-                                color = Color(category.color),
+                                color = categoryColor,
                                 shape = CircleShape
                             )
                     )
@@ -94,7 +99,7 @@ fun AchievementCategoryCard(
                                 .size(16.dp)
                                 .align(Alignment.BottomEnd)
                                 .background(
-                                    color = Color(tier.color),
+                                    color = tier.primaryColor,
                                     shape = CircleShape
                                 )
                                 .border(
@@ -111,7 +116,7 @@ fun AchievementCategoryCard(
                         text = category.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(category.color)
+                        color = categoryColor
                     )
                     Text(
                         text = category.description,
@@ -128,7 +133,7 @@ fun AchievementCategoryCard(
                         text = "${categoryProgress.unlockedCount}/${categoryProgress.totalCount}",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color(category.color)
+                        color = categoryColor
                     )
                     Text(
                         text = "achievements",
@@ -143,15 +148,15 @@ fun AchievementCategoryCard(
                 progress = { categoryProgress.completionPercentage },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
+                    .height(spacing.xs)
                     .clip(RoundedCornerShape(4.dp)),
-                color = Color(category.color),
-                trackColor = Color(category.color).copy(alpha = 0.3f)
+                color = categoryColor,
+                trackColor = categoryColor.copy(alpha = 0.3f)
             )
 
             // Tier badges row
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
                 items(AchievementTier.values()) { tier ->
                     TierBadge(
@@ -180,7 +185,7 @@ fun AchievementCategoryCard(
                     Text(
                         text = "Next: ${next.tier.title} ${next.title}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(category.color),
+                        color = categoryColor,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -201,6 +206,8 @@ fun AchievementCard(
 ) {
     val haptics = LocalHapticFeedback.current
 
+    val spacing = LocalSpacing.current
+
     // Unlock animation
     val scale by animateFloatAsState(
         targetValue = if (achievement.isUnlocked) 1.05f else 1f,
@@ -219,7 +226,7 @@ fun AchievementCard(
             .animateContentSize(),
         colors = CardDefaults.cardColors(
             containerColor = if (achievement.isUnlocked) {
-                Color(achievement.tier.color).copy(alpha = 0.1f)
+                achievement.tier.primaryColor.copy(alpha = 0.1f)
             } else {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             }
@@ -229,13 +236,13 @@ fun AchievementCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.xs)
         ) {
             // Achievement header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
                 // Tier badge
                 TierBadge(
@@ -250,7 +257,7 @@ fun AchievementCard(
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (achievement.isUnlocked) {
-                            Color(achievement.tier.color)
+                            achievement.tier.primaryColor
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         }
@@ -265,12 +272,12 @@ fun AchievementCard(
                 // Points reward
                 if (achievement.isUnlocked) {
                     Surface(
-                        color = Color(achievement.tier.color),
-                        shape = RoundedCornerShape(8.dp)
+                        color = achievement.tier.primaryColor,
+                        shape = RoundedCornerShape(ShapeTokens.RadiusSm)
                     ) {
                         Text(
                             text = "+${achievement.pointsReward}",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = spacing.xs, vertical = spacing.xxs),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -297,7 +304,7 @@ fun AchievementCard(
                             text = "${(currentProgress * 100).toInt()}%",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(achievement.category.color)
+                            color = achievement.category.primaryColor
                         )
                     }
 
@@ -307,8 +314,8 @@ fun AchievementCard(
                             .fillMaxWidth()
                             .height(6.dp)
                             .clip(RoundedCornerShape(3.dp)),
-                        color = Color(achievement.category.color),
-                        trackColor = Color(achievement.category.color).copy(alpha = 0.3f)
+                        color = achievement.category.primaryColor,
+                        trackColor = achievement.category.primaryColor.copy(alpha = 0.3f)
                     )
                 }
             }
@@ -354,12 +361,12 @@ fun TierBadge(
             .size(size)
             .scale(scale)
             .background(
-                color = if (isUnlocked) Color(tier.color) else Color.Gray.copy(alpha = 0.3f),
+                color = if (isUnlocked) tier.primaryColor else Color.Gray.copy(alpha = 0.3f),
                 shape = CircleShape
             )
             .border(
                 width = if (isCurrent) 2.dp else 1.dp,
-                color = if (isCurrent) Color(tier.color) else Color.Transparent,
+                color = if (isCurrent) tier.primaryColor else Color.Transparent,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
@@ -383,10 +390,12 @@ fun CategoryAchievementsList(
     achievementProgressMap: Map<String, Float>,
     modifier: Modifier = Modifier
 ) {
+    val spacing = LocalSpacing.current
+
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp)
+        verticalArrangement = Arrangement.spacedBy(spacing.xs),
+        contentPadding = PaddingValues(spacing.md)
     ) {
         // Category header
         item {
@@ -407,14 +416,17 @@ fun CategoryAchievementsList(
 
 @Composable
 private fun CategoryHeader(categoryProgress: CategoryProgress) {
+    val spacing = LocalSpacing.current
+    val categoryColor = categoryProgress.category.primaryColor
+
     val category = categoryProgress.category
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(spacing.md)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(spacing.md)
         ) {
             Text(
                 text = category.icon,
@@ -426,7 +438,7 @@ private fun CategoryHeader(categoryProgress: CategoryProgress) {
                     text = category.title,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(category.color)
+                    color = categoryColor
                 )
                 Text(
                     text = category.description,
@@ -468,6 +480,8 @@ private fun StatCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
+    val spacing = LocalSpacing.current
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -475,7 +489,7 @@ private fun StatCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(spacing.sm),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -502,6 +516,8 @@ fun AchievementUnlockCelebration(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val spacing = LocalSpacing.current
+
     if (unlock != null) {
         val haptics = LocalHapticFeedback.current
 
@@ -518,7 +534,7 @@ fun AchievementUnlockCelebration(
             title = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.xs)
                 ) {
                     Text("🏆")
                     Text("Achievement Unlocked!")
@@ -531,7 +547,7 @@ fun AchievementUnlockCelebration(
                         fontWeight = FontWeight.Bold
                     )
                     Text(unlock.achievement.description)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(spacing.xs))
                     Text(
                         text = "+${unlock.pointsEarned} points",
                         color = MaterialTheme.colorScheme.primary,
@@ -558,3 +574,12 @@ private fun formatUnlockDate(timestamp: Long): String {
         else -> "${days / 7} weeks ago"
     }
 }
+
+
+
+
+
+
+
+
+

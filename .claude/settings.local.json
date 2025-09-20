@@ -23,7 +23,11 @@
       "Bash(.gradlew.bat build)",
       "Bash(dir)",
       "Bash(.gradlew.bat clean)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(git switch:*)",
+      "Bash(findstr:*)",
+      "Bash(cmd /c:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
