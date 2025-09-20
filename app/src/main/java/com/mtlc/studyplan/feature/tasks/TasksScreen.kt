@@ -596,49 +596,25 @@ private fun FilterButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) DesignTokens.Primary else DesignTokens.Surface,
-        animationSpec = tween(200),
-        label = "filter_background"
-    )
-    val contentColor by animateColorAsState(
-        targetValue = if (isSelected) DesignTokens.PrimaryForeground else DesignTokens.Foreground,
-        animationSpec = tween(200),
-        label = "filter_content"
-    )
-
-    Surface(
-        color = backgroundColor,
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .clickable { onClick() }
-            .border(
-                width = if (isSelected) 0.dp else 1.dp,
-                color = DesignTokens.Border,
-                shape = RoundedCornerShape(12.dp)
-            )
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            filter.icon?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-            }
+    FilterChip(
+        selected = isSelected,
+        onClick = onClick,
+        label = {
             Text(
                 text = filter.displayName,
-                color = contentColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.labelMedium
             )
+        },
+        leadingIcon = filter.icon?.let { icon ->
+            {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "${filter.displayName} filter",
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable
