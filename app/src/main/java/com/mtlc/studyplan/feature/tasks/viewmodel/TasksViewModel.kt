@@ -475,6 +475,7 @@ class TasksViewModel(
             com.mtlc.studyplan.feature.tasks.TaskCategory.GRAMMAR -> com.mtlc.studyplan.data.TaskCategory.GRAMMAR
             com.mtlc.studyplan.feature.tasks.TaskCategory.READING -> com.mtlc.studyplan.data.TaskCategory.READING
             com.mtlc.studyplan.feature.tasks.TaskCategory.LISTENING -> com.mtlc.studyplan.data.TaskCategory.LISTENING
+            com.mtlc.studyplan.feature.tasks.TaskCategory.PRACTICE_EXAM -> com.mtlc.studyplan.data.TaskCategory.PRACTICE_EXAM
             com.mtlc.studyplan.feature.tasks.TaskCategory.OTHER -> com.mtlc.studyplan.data.TaskCategory.OTHER
         }
     }

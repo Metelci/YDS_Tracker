@@ -179,47 +179,35 @@ object DataFormatters {
     // Category formatting
     fun formatTaskCategory(category: TaskCategory): TaskCategoryInfo {
         return when (category) {
-            TaskCategory.MATHEMATICS -> TaskCategoryInfo(
-                name = "Mathematics",
+            TaskCategory.VOCABULARY -> TaskCategoryInfo(
+                name = "Vocabulary",
                 icon = R.drawable.ic_task,
                 color = Color.parseColor("#3F51B5"), // Indigo
-                description = "Solve numerical challenges"
+                description = "Learn new words and meanings"
             )
-            TaskCategory.SCIENCE -> TaskCategoryInfo(
-                name = "Science",
+            TaskCategory.GRAMMAR -> TaskCategoryInfo(
+                name = "Grammar",
                 icon = R.drawable.ic_shield,
                 color = Color.parseColor("#009688"), // Teal
-                description = "Experiment and explore"
+                description = "Master language structure"
             )
-            TaskCategory.LANGUAGE -> TaskCategoryInfo(
-                name = "Language",
+            TaskCategory.READING -> TaskCategoryInfo(
+                name = "Reading",
                 icon = R.drawable.ic_people,
                 color = Color.parseColor("#9C27B0"), // Purple
-                description = "Build communication skills"
+                description = "Improve comprehension skills"
             )
-            TaskCategory.HISTORY -> TaskCategoryInfo(
-                name = "History",
+            TaskCategory.LISTENING -> TaskCategoryInfo(
+                name = "Listening",
                 icon = R.drawable.ic_history,
                 color = Color.parseColor("#795548"), // Brown
-                description = "Learn from the past"
+                description = "Develop listening skills"
             )
-            TaskCategory.ENGLISH_LITERATURE -> TaskCategoryInfo(
-                name = "English Literature",
+            TaskCategory.PRACTICE_EXAM -> TaskCategoryInfo(
+                name = "Practice Exam",
                 icon = R.drawable.ic_list,
                 color = Color.parseColor("#FF7043"), // Deep Orange
-                description = "Analyze classic works"
-            )
-            TaskCategory.COMPUTER_SCIENCE -> TaskCategoryInfo(
-                name = "Computer Science",
-                icon = R.drawable.ic_storage,
-                color = Color.parseColor("#607D8B"), // Blue Gray
-                description = "Code and compute"
-            )
-            TaskCategory.GENERAL -> TaskCategoryInfo(
-                name = "General Study",
-                icon = R.drawable.ic_task,
-                color = Color.parseColor("#4CAF50"), // Green
-                description = "Keep learning every day"
+                description = "Simulate exam conditions"
             )
             TaskCategory.OTHER -> TaskCategoryInfo(
                 name = "Other",

@@ -61,6 +61,7 @@ enum class TaskCategory(val displayName: String, val icon: ImageVector, val colo
     GRAMMAR("Grammar", Icons.Filled.School, DesignTokens.Primary),
     READING("Reading", Icons.AutoMirrored.Filled.Article, DesignTokens.Tertiary),
     LISTENING("Listening", Icons.Filled.Headphones, DesignTokens.Warning),
+    PRACTICE_EXAM("Practice Exam", Icons.Filled.Assignment, DesignTokens.Error),
     OTHER("Other", Icons.Filled.Assignment, DesignTokens.Secondary)
 }
 
@@ -1271,13 +1272,11 @@ private fun convertSharedTaskCategory(
     sharedCategory: com.mtlc.studyplan.shared.TaskCategory
 ): TaskCategory {
     return when (sharedCategory) {
-        com.mtlc.studyplan.shared.TaskCategory.MATHEMATICS -> TaskCategory.GRAMMAR
-        com.mtlc.studyplan.shared.TaskCategory.SCIENCE -> TaskCategory.GRAMMAR
-        com.mtlc.studyplan.shared.TaskCategory.LANGUAGE -> TaskCategory.VOCABULARY
-        com.mtlc.studyplan.shared.TaskCategory.HISTORY -> TaskCategory.READING
-        com.mtlc.studyplan.shared.TaskCategory.ENGLISH_LITERATURE -> TaskCategory.READING
-        com.mtlc.studyplan.shared.TaskCategory.COMPUTER_SCIENCE -> TaskCategory.OTHER
-        com.mtlc.studyplan.shared.TaskCategory.GENERAL -> TaskCategory.OTHER
+        com.mtlc.studyplan.shared.TaskCategory.VOCABULARY -> TaskCategory.VOCABULARY
+        com.mtlc.studyplan.shared.TaskCategory.GRAMMAR -> TaskCategory.GRAMMAR
+        com.mtlc.studyplan.shared.TaskCategory.READING -> TaskCategory.READING
+        com.mtlc.studyplan.shared.TaskCategory.LISTENING -> TaskCategory.LISTENING
+        com.mtlc.studyplan.shared.TaskCategory.PRACTICE_EXAM -> TaskCategory.PRACTICE_EXAM
         com.mtlc.studyplan.shared.TaskCategory.OTHER -> TaskCategory.OTHER
     }
 }
