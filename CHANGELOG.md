@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.1] - 2025-09-20
+
+### Fixed
+- Resolved compilation errors in UI migration process
+- Added experimental annotation for PrimaryTabRow and missing imports
+- Adjusted material dependency for pull-refresh support
+
+### Changed
+- Migrated custom tabs to M3 PrimaryTabRow for progress UI components
+- Replaced custom filter buttons with M3 FilterChip in tasks UI
+- Migrated custom tabs to M3 TabRow in tasks UI
+- Remapped M2 widgets to M3 components for improved consistency
+
+### Improved
+- Aligned Compose M3 + pullRefresh dependencies for better compatibility
+- Tuned gradle setup for enhanced build performance
+- Enhanced UI consistency throughout Material 3 migration
+
+### Documentation
+- Added Phase 4 screen migration checklist for development tracking
+- Added MIGRATION.md for comprehensive UI migration progress
+
+### Infrastructure
+- Forbid legacy imports in CI to enforce M3 migration standards
+- Continued major infrastructure upgrade from v2.6.0
+
+---
+
 ## [2.6.0] - 2025-01-20
 
 ### 🚀 Major Infrastructure Upgrade
