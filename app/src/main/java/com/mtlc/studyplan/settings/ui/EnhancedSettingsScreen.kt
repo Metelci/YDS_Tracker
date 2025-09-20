@@ -117,7 +117,7 @@ fun EnhancedSettingsScreen(
                 }
             }
 
-            Divider(
+            VerticalDivider(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp)
