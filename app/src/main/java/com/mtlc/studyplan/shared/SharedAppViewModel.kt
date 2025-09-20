@@ -10,7 +10,10 @@ import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.gamification.GamificationManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Centralized SharedViewModel for app-wide state management
@@ -78,6 +81,16 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
     // UI state
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+
+    private var cachedPlan: List<WeekPlan> = emptyList()
+
+    init {
+        viewModelScope.launch {
+            planFlow.collect { plan ->
+                cachedPlan = plan
+            }
+        }
+    }
 
     // ============ INITIALIZATION ============
 
@@ -254,7 +267,7 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
                 id = task.id,
                 title = task.desc,
                 description = task.details ?: "",
-                category = TaskCategory.GENERAL,
+                category = TaskCategory.OTHER,
                 difficulty = TaskDifficulty.MEDIUM,
                 estimatedMinutes = 15,
                 isCompleted = progress.completedTasks.contains(task.id),
@@ -273,7 +286,7 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
                         id = task.id,
                         title = task.desc,
                         description = task.details ?: "",
-                        category = TaskCategory.GENERAL,
+                        category = TaskCategory.OTHER,
                         difficulty = TaskDifficulty.MEDIUM,
                         estimatedMinutes = 15,
                         isCompleted = completedTaskIds.contains(task.id),
@@ -291,6 +304,44 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         // Check for achievement unlocks would go here
+    }
+
+    private fun calculateStudyStats(progress: UserProgress, logs: List<TaskLog>): StudyStats {
+        val totalTasksCompleted = progress.completedTasks.size
+        val totalStudyTime = logs.sumOf { it.minutesSpent }
+        val zoneId = ZoneId.systemDefault()
+        val startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY)
+        val thisWeekLogs = logs.filter { log ->
+            val logDate = Instant.ofEpochMilli(log.timestampMillis).atZone(zoneId).toLocalDate()
+            !logDate.isBefore(startOfWeek)
+        }
+        val thisWeekStudyTime = thisWeekLogs.sumOf { it.minutesSpent }
+        val averageSessionTime = if (logs.isNotEmpty()) totalStudyTime / logs.size else 0
+        val totalXp = if (progress.totalXp > 0) progress.totalXp else logs.sumOf { it.pointsEarned }
+
+        return StudyStats(
+            totalTasksCompleted = totalTasksCompleted,
+            currentStreak = progress.streakCount,
+            totalStudyTime = totalStudyTime,
+            thisWeekTasks = thisWeekLogs.size,
+            thisWeekStudyTime = thisWeekStudyTime,
+            averageSessionTime = averageSessionTime,
+            totalXP = totalXp
+        )
+    }
+
+    private fun findTaskDetails(taskId: String): TaskDetails? {
+        val matchingTask = cachedPlan
+            .flatMap { it.days }
+            .flatMap { it.tasks }
+            .firstOrNull { it.id == taskId }
+            ?: return null
+
+        return TaskDetails(
+            description = matchingTask.desc,
+            details = matchingTask.details,
+            estimatedMinutes = 15
+        )
     }
 
     // ============ FEEDBACK METHODS ============
