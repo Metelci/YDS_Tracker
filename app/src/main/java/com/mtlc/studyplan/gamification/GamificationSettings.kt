@@ -32,14 +32,15 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 // CelebrationIntensity import removed with celebrations module
-
-enum class CelebrationIntensity { SUBTLE, MODERATE, HIGH, EPIC }
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+
+// Replacement enum for removed CelebrationIntensity
+enum class CelebrationIntensity { SUBTLE, MODERATE, HIGH, EPIC }
 
 /**
  * Gamification Settings and User Preferences
