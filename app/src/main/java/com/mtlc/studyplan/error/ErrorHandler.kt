@@ -117,8 +117,15 @@ class ErrorHandler @Inject constructor(
 
     private fun isNetworkAvailable(): Boolean {
         return try {
-            val activeNetwork = connectivityManager.activeNetworkInfo
-            activeNetwork?.isConnectedOrConnecting == true
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                val network = connectivityManager.activeNetwork
+                val capabilities = connectivityManager.getNetworkCapabilities(network)
+                capabilities?.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+            } else {
+                @Suppress("DEPRECATION")
+                val activeNetwork = connectivityManager.activeNetworkInfo
+                activeNetwork?.isConnectedOrConnecting == true
+            }
         } catch (e: Exception) {
             false
         }

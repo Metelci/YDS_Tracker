@@ -371,7 +371,7 @@ fun AchievementToast(
         }
 
         AnimatedVisibility(
-            visible = unlock != null,
+            visible = true,
             enter = slideInVertically { -it } + fadeIn(),
             exit = slideOutVertically { -it } + fadeOut(),
             modifier = modifier

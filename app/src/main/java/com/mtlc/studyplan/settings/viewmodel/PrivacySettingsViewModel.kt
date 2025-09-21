@@ -162,8 +162,9 @@ class PrivacySettingsViewModel(
                 id = "data_export",
                 title = "Export Personal Data",
                 description = "Download a copy of all your personal data",
+                action = com.mtlc.studyplan.settings.data.SettingAction.ExportPersonalData,
                 buttonText = "Export",
-                actionType = ActionSetting.ActionType.SECONDARY,
+                actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 5
@@ -174,8 +175,9 @@ class PrivacySettingsViewModel(
                 id = "clear_personal_data",
                 title = "Clear Personal Data",
                 description = "Permanently delete all your personal data",
+                action = com.mtlc.studyplan.settings.data.SettingAction.ClearPersonalData,
                 buttonText = "Clear",
-                actionType = ActionSetting.ActionType.DESTRUCTIVE,
+                actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 6
@@ -316,4 +318,5 @@ class PrivacySettingsViewModel(
 /**
  * Data classes for privacy settings
  */
+
 

@@ -117,24 +117,6 @@ class SettingsRepository(
         return settingsState.value.getSectionsForCategory(categoryId)
     }
 
-    suspend fun searchCategorySettings(categoryId: String, query: String): List<SettingsSection> {
-        val normalizedQuery = query.trim().lowercase()
-        val sections = getCategorySections(categoryId)
-        if (normalizedQuery.isEmpty()) {
-            return sections
-        }
-        return sections.mapNotNull { section ->
-            val filteredItems = section.items.filter { item ->
-                item.title.contains(normalizedQuery, ignoreCase = true) ||
-                    item.description.contains(normalizedQuery, ignoreCase = true)
-            }
-            if (filteredItems.isNotEmpty()) {
-                section.copy(items = filteredItems)
-            } else {
-                null
-            }
-        }
-    }
 
     fun getLastBackupDate(): String? = null
 

@@ -293,10 +293,16 @@ class SecurityAndErrorCoordinator(
             val result = try {
                 block()
             } catch (e: Exception) {
-                val errorResult = errorHandler.handleError(operation, e)
+                val errorResult = errorHandler.handleError<T>(operation, e)
                 when (errorResult) {
                     is SettingsErrorHandler.ErrorHandlingResult.Success -> errorResult.value
-                    is SettingsErrorHandler.ErrorHandlingResult.Recovered -> errorResult.value
+                    is SettingsErrorHandler.ErrorHandlingResult.Recovered -> {
+                        return if (errorResult.value != null) {
+                            SecureOperationResult.Success(errorResult.value)
+                        } else {
+                            SecureOperationResult.Error(Exception("Recovery failed: ${errorResult.message}"))
+                        }
+                    }
                     is SettingsErrorHandler.ErrorHandlingResult.Failed -> throw errorResult.error
                     is SettingsErrorHandler.ErrorHandlingResult.RequiresUserAction -> {
                         return SecureOperationResult.UserActionRequired(

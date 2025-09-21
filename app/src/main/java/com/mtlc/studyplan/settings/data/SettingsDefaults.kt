@@ -107,7 +107,7 @@ object SettingsDefaults {
             title = "Privacy Controls",
             description = "Control what information is shared",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "profile_visibility_enabled",
                     title = "Profile Visibility",
                     description = "Make your profile visible to other users",
@@ -116,7 +116,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "progress_sharing",
                     title = "Progress Sharing",
                     description = "Allow sharing of study progress",
@@ -125,7 +125,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "anonymous_analytics",
                     title = "Anonymous Analytics",
                     description = "Help improve the app by sharing anonymous usage data",
@@ -142,7 +142,7 @@ object SettingsDefaults {
             title = "Data Collection",
             description = "Control what data is collected",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "crash_reporting",
                     title = "Crash Reporting",
                     description = "Send crash reports to help improve stability",
@@ -151,7 +151,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "performance_analytics",
                     title = "Performance Analytics",
                     description = "Collect performance data to optimize the app",
@@ -170,7 +170,7 @@ object SettingsDefaults {
             id = "notifications_general",
             title = "General Notifications",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "push_notifications",
                     title = "Push Notifications",
                     description = "Receive notifications from the app",
@@ -179,7 +179,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "vibration_enabled",
                     title = "Vibration",
                     description = "Vibrate for notifications",
@@ -195,7 +195,7 @@ object SettingsDefaults {
             id = "notifications_study",
             title = "Study Reminders",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "study_reminders",
                     title = "Study Reminders",
                     description = "Get reminded to study at regular intervals",
@@ -204,7 +204,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "daily_goal_reminders",
                     title = "Daily Goal Reminders",
                     description = "Remind me about my daily study goals",
@@ -213,7 +213,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "streak_warnings",
                     title = "Streak Warnings",
                     description = "Warn when my study streak is at risk",
@@ -229,7 +229,7 @@ object SettingsDefaults {
             id = "notifications_achievements",
             title = "Achievement Alerts",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "achievement_alerts",
                     title = "Achievement Alerts",
                     description = "Get notified when you earn achievements",
@@ -238,7 +238,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "email_summaries",
                     title = "Email Summaries",
                     description = "Receive weekly progress summaries via email",
@@ -257,7 +257,7 @@ object SettingsDefaults {
             id = "gamification_core",
             title = "Core Features",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "streak_tracking",
                     title = "Streak Tracking",
                     description = "Track consecutive days of study",
@@ -266,7 +266,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "points_rewards",
                     title = "Points & Rewards",
                     description = "Earn XP points for completing tasks",
@@ -275,7 +275,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "achievement_badges",
                     title = "Achievement Badges",
                     description = "Earn badges for reaching milestones",
@@ -291,7 +291,7 @@ object SettingsDefaults {
             id = "gamification_visual",
             title = "Visual Effects",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "celebration_effects",
                     title = "Celebration Effects",
                     description = "Show animations when completing tasks",
@@ -300,7 +300,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "reward_animations",
                     title = "Reward Animations",
                     description = "Play animations for rewards and achievements",
@@ -316,7 +316,7 @@ object SettingsDefaults {
             id = "gamification_advanced",
             title = "Advanced Features",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "streak_risk_warnings",
                     title = "Streak Risk Warnings",
                     description = "Get warned when your streak is about to break",
@@ -325,7 +325,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "xp_multipliers",
                     title = "XP Multipliers",
                     description = "Earn bonus XP during streak periods",
@@ -344,7 +344,7 @@ object SettingsDefaults {
             id = "tasks_scheduling",
             title = "Smart Scheduling",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "smart_scheduling",
                     title = "Smart Scheduling",
                     description = "Automatically optimize task scheduling",
@@ -353,7 +353,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "adaptive_learning",
                     title = "Adaptive Learning",
                     description = "Adjust content difficulty based on performance",
@@ -362,7 +362,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "weekend_mode",
                     title = "Weekend Mode",
                     description = "Different scheduling for weekends",
@@ -378,7 +378,7 @@ object SettingsDefaults {
             id = "tasks_difficulty",
             title = "Difficulty Management",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "auto_difficulty",
                     title = "Auto Difficulty",
                     description = "Automatically adjust task difficulty",
@@ -387,7 +387,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "spaced_repetition",
                     title = "Spaced Repetition",
                     description = "Use spaced repetition algorithm for reviews",
@@ -406,7 +406,7 @@ object SettingsDefaults {
             id = "navigation_interface",
             title = "Interface",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "bottom_navigation",
                     title = "Bottom Navigation",
                     description = "Show navigation bar at the bottom",
@@ -415,7 +415,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "haptic_feedback",
                     title = "Haptic Feedback",
                     description = "Vibrate when interacting with the app",
@@ -424,7 +424,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "swipe_actions",
                     title = "Swipe Actions",
                     description = "Enable swipe gestures for quick actions",
@@ -443,7 +443,7 @@ object SettingsDefaults {
             id = "social_community",
             title = "Community",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "study_buddy_matching",
                     title = "Study Buddy Matching",
                     description = "Find study partners with similar goals",
@@ -452,7 +452,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "study_groups",
                     title = "Study Groups",
                     description = "Join or create study groups",
@@ -461,7 +461,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "leaderboard_participation",
                     title = "Leaderboard Participation",
                     description = "Participate in community leaderboards",
@@ -477,7 +477,7 @@ object SettingsDefaults {
             id = "social_sharing",
             title = "Sharing",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "share_activity",
                     title = "Share Activity",
                     description = "Share your study activity with friends",
@@ -486,7 +486,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "achievement_sharing",
                     title = "Achievement Sharing",
                     description = "Automatically share achievements",
@@ -495,7 +495,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "group_notifications",
                     title = "Group Notifications",
                     description = "Receive notifications from study groups",
@@ -514,7 +514,7 @@ object SettingsDefaults {
             id = "accessibility_visual",
             title = "Visual Accessibility",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "high_contrast",
                     title = "High Contrast Mode",
                     description = "Increase contrast for better visibility",
@@ -523,7 +523,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 1
                 ),
-                SettingItem.RangeSetting(
+                RangeSetting(
                     id = "font_size",
                     title = "Font Size",
                     description = "Adjust text size throughout the app",
@@ -537,7 +537,7 @@ object SettingsDefaults {
                     formatPattern = "%.1f",
                     sortOrder = 2
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "reduced_motion",
                     title = "Reduced Motion",
                     description = "Minimize animations and transitions",
@@ -553,7 +553,7 @@ object SettingsDefaults {
             id = "accessibility_audio",
             title = "Audio Accessibility",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "screen_reader_support",
                     title = "Screen Reader Support",
                     description = "Enhanced support for screen readers",
@@ -562,7 +562,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "audio_descriptions",
                     title = "Audio Descriptions",
                     description = "Provide audio descriptions for visual content",
@@ -581,7 +581,7 @@ object SettingsDefaults {
             id = "data_sync",
             title = "Synchronization",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "auto_sync",
                     title = "Auto Sync",
                     description = "Automatically sync data across devices",
@@ -590,7 +590,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "wifi_only_sync",
                     title = "WiFi Only Sync",
                     description = "Only sync when connected to WiFi",
@@ -599,7 +599,7 @@ object SettingsDefaults {
                     defaultValue = false,
                     sortOrder = 2
                 ),
-                SettingItem.SelectionSetting(
+                SelectionSetting(
                     id = "sync_frequency",
                     title = "Sync Frequency",
                     description = "How often to sync data",
@@ -622,7 +622,7 @@ object SettingsDefaults {
             id = "data_storage",
             title = "Storage Management",
             items = listOf(
-                SettingItem.ToggleSetting(
+                ToggleSetting(
                     id = "backup_enabled",
                     title = "Cloud Backup",
                     description = "Back up your data to the cloud",
@@ -631,7 +631,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                SettingItem.ActionSetting(
+                ActionSetting(
                     id = "clear_cache",
                     title = "Clear Cache",
                     description = "Free up space by clearing temporary files",
@@ -641,7 +641,7 @@ object SettingsDefaults {
                     confirmationMessage = "This will clear all cached data. Are you sure?",
                     sortOrder = 2
                 ),
-                SettingItem.ActionSetting(
+                ActionSetting(
                     id = "export_data",
                     title = "Export Data",
                     description = "Export your study data to a file",

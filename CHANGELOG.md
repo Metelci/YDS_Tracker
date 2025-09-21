@@ -2,7 +2,107 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [2.7.0] - 2024-12-28
+
+### 🚀 Major Improvements
+
+#### Material Design 3 Migration Complete
+- **Complete Material 3 Migration**: Fully migrated from Material 2 to Material 3 design system
+- **Enhanced UI Components**: Updated all Compose components to use Material 3 theming and styling
+- **Improved Settings Integration**: Real ViewModels now properly integrated with settings composables
+- **Better Navigation**: Enhanced navigation with proper Material 3 components
+
+#### Architecture & Performance
+- **Android Gradle Plugin Upgrade**: Updated to AGP 8.7.0 for better build performance
+- **Dependency Modernization**: Updated all dependencies to latest stable versions
+- **Code Quality**: Eliminated deprecated API usage and compilation warnings
+- **Build System**: Optimized Gradle configuration and removed legacy blocks
+
+### 🔧 Technical Fixes
+
+#### API Modernization
+- **Network API**: Replaced deprecated `ConnectivityManager.activeNetworkInfo` with `NetworkCapabilities`
+- **Vibration API**: Updated to modern `VibrationEffect` API for Android 8.0+
+- **Context Services**: Modernized context service access patterns
+
+#### Build & Dependencies
+- **SwipeRefreshLayout**: Added missing dependency for legacy XML layouts
+- **Hilt Integration**: Fixed dependency injection configuration
+- **Room Database**: Updated to latest version with improved performance
+- **KSP Support**: Enhanced Kotlin Symbol Processing integration
+
+#### Code Quality
+- **Icon Deprecations**: Updated to AutoMirrored icons for RTL language support
+- **Logic Improvements**: Fixed "always true" conditions with meaningful value checks
+- **Type Safety**: Resolved type inference issues and casting problems
+- **Import Cleanup**: Fixed broken imports and missing dependencies
+
+### 🛠️ Settings System Overhaul
+
+#### ViewModel Architecture
+- **MainSettingsViewModel**: Fixed compilation errors and simplified deep link handling
+- **SettingsDetailViewModel**: Updated to use correct repository methods and modern APIs
+- **SettingsViewModel**: Fixed cache clearing functionality
+- **Factory Pattern**: Properly implemented ViewModelFactory classes
+
+#### UI Components
+- **BaseSettingsAdapter**: Fixed access modifiers and method visibility
+- **EnhancedSettingsScreen**: Integrated real ViewModels with reactive data flows
+- **Settings Fragments**: Updated all fragments to use modern binding and navigation
+
+#### Data Layer
+- **Repository Pattern**: Standardized repository method signatures
+- **Error Handling**: Improved error handling with proper result types
+- **Validation**: Enhanced settings validation and update mechanisms
+
+### 🗑️ Cleanup & Removal
+
+#### Removed Legacy Components
+- **Search System**: Removed incomplete voice search and settings search components
+- **Deprecated ViewModels**: Cleaned up unused EnhancedSettingsViewModel
+- **Legacy Files**: Removed outdated backup files and documentation
+- **Unused Dependencies**: Eliminated unused imports and dependencies
+
+### 🔒 Security & Stability
+
+#### Network Security
+- **Certificate Validation**: Enhanced certificate pinning and validation
+- **Security Manager**: Improved network security configuration
+- **Error Coordination**: Better security error handling and reporting
+
+#### Stability Improvements
+- **Null Safety**: Enhanced null safety checks throughout codebase
+- **Exception Handling**: Improved exception handling and recovery
+- **Resource Management**: Better resource cleanup and lifecycle management
+
+### 📱 User Experience
+
+#### Interface Improvements
+- **Material 3 Design**: Modern Material 3 visual design language
+- **Better Navigation**: Smoother navigation between settings screens
+- **Improved Feedback**: Enhanced user feedback mechanisms
+- **Accessibility**: Better accessibility support with modern APIs
+
+### 🐛 Bug Fixes
+
+- Fixed compilation errors in ViewModel classes
+- Resolved unresolved references throughout codebase
+- Fixed deprecated API usage warnings
+- Corrected logical conditions that were always true
+- Fixed access modifier issues in adapter classes
+- Resolved type inference problems
+- Fixed missing import statements
+
+### 📦 Dependencies Updated
+
+- Android Gradle Plugin: 8.13.0 → 8.7.0
+- Kotlin: 2.0.21
+- Hilt: 2.48 → 2.46
+- Room: 2.6.1 → 2.7.0
+- Compose BOM: 2024.12.01
+- Added: androidx.swiperefreshlayout:swiperefreshlayout:1.1.0
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.6.1] - 2025-09-20

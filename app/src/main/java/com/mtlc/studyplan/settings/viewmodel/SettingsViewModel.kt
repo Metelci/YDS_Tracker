@@ -7,6 +7,8 @@ import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.SettingsCategory
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
+import com.mtlc.studyplan.settings.data.SettingAction
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -209,7 +211,7 @@ class SettingsViewModel(
     fun clearAppCache() {
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.clearAppCache()
+                repository.updateSetting(SettingsUpdateRequest.PerformAction(SettingAction.ClearCache))
             } catch (exception: Exception) {
                 handleError(exception)
             }

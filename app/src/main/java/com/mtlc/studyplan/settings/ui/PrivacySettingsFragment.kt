@@ -102,10 +102,6 @@ class PrivacySettingsFragment : BaseSettingsFragment<PrivacySettingsViewModel.Pr
         }
     }
 
-    override fun onRefreshRequested() {
-        viewModel.refresh()
-    }
-
     override fun onRetryRequested() {
         viewModel.retry()
     }

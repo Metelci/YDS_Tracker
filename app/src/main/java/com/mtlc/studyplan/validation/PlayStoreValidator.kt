@@ -3,6 +3,7 @@ package com.mtlc.studyplan.validation
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import androidx.core.content.pm.PackageInfoCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -412,7 +413,7 @@ class PlayStoreValidator @Inject constructor(
     // Helper methods
     private fun getVersionCode(): Int = try {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        packageInfo.versionCode
+        PackageInfoCompat.getLongVersionCode(packageInfo).toInt()
     } catch (e: Exception) { 0 }
 
     private fun getVersionName(): String = try {

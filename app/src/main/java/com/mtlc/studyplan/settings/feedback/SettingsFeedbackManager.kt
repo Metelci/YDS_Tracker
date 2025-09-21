@@ -315,17 +315,31 @@ class SettingsFeedbackManager(private val context: Context) {
     private fun performHapticFeedback(type: HapticType) {
         if (vibrator?.hasVibrator() != true) return
 
-        val pattern = when (type) {
-            HapticType.SUCCESS -> longArrayOf(0, 50, 50, 50)
-            HapticType.ERROR -> longArrayOf(0, 100, 50, 100, 50, 100)
-            HapticType.WARNING -> longArrayOf(0, 75)
-            HapticType.INFO -> longArrayOf(0, 25)
-            HapticType.CLICK -> longArrayOf(0, 10)
-        }
-
         try {
-            @Suppress("DEPRECATION")
-            vibrator?.vibrate(pattern, -1)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                val effect = when (type) {
+                    HapticType.SUCCESS -> android.os.VibrationEffect.createWaveform(
+                        longArrayOf(0, 50, 50, 50), -1
+                    )
+                    HapticType.ERROR -> android.os.VibrationEffect.createWaveform(
+                        longArrayOf(0, 100, 50, 100, 50, 100), -1
+                    )
+                    HapticType.WARNING -> android.os.VibrationEffect.createOneShot(75, 150)
+                    HapticType.INFO -> android.os.VibrationEffect.createOneShot(25, 100)
+                    HapticType.CLICK -> android.os.VibrationEffect.createOneShot(10, 50)
+                }
+                vibrator?.vibrate(effect)
+            } else {
+                val pattern = when (type) {
+                    HapticType.SUCCESS -> longArrayOf(0, 50, 50, 50)
+                    HapticType.ERROR -> longArrayOf(0, 100, 50, 100, 50, 100)
+                    HapticType.WARNING -> longArrayOf(0, 75)
+                    HapticType.INFO -> longArrayOf(0, 25)
+                    HapticType.CLICK -> longArrayOf(0, 10)
+                }
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(pattern, -1)
+            }
         } catch (e: Exception) {
             // Ignore vibration errors
         }

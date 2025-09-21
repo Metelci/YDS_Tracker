@@ -57,7 +57,7 @@
             android:layout_height="24dp"
             android:layout_marginTop="4dp"
             android:src="@drawable/ic_expand_more"
-            android:contentDescription="@string/expand_selection"
+            android:contentDescription="@string/settings_expand_selection"
             android:alpha="0.6" />
 
     </LinearLayout>

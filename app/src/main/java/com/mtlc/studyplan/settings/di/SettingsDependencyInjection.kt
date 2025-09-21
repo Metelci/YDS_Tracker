@@ -7,9 +7,6 @@ import com.mtlc.studyplan.accessibility.FontScalingManager
 import com.mtlc.studyplan.accessibility.FocusIndicatorManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.data.SettingsRepository
-import com.mtlc.studyplan.settings.search.SettingsSearchEngine
-import com.mtlc.studyplan.settings.search.SearchResultHighlighter
-import com.mtlc.studyplan.settings.search.VoiceSearchManager
 import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.security.SettingsEncryption
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
@@ -42,18 +39,7 @@ class SettingsDependencyInjection private constructor(
         FocusIndicatorManager(context)
     }
 
-    // Search dependencies
-    private val searchResultHighlighter: SearchResultHighlighter by lazy {
-        SearchResultHighlighter(context)
-    }
-
-    private val voiceSearchManager: VoiceSearchManager by lazy {
-        VoiceSearchManager(context)
-    }
-
-    private val settingsSearchEngine: SettingsSearchEngine by lazy {
-        SettingsSearchEngine(context)
-    }
+    // Search removed from settings page
 
     // Backup dependencies
     private val settingsBackupManager: SettingsBackupManager by lazy {
@@ -80,7 +66,6 @@ class SettingsDependencyInjection private constructor(
     fun createCompositeSettingsViewModelFactory(activity: androidx.fragment.app.FragmentActivity): CompositeSettingsViewModelFactory {
         return CompositeSettingsViewModelFactory(
             settingsRepository = settingsRepository,
-            searchEngine = settingsSearchEngine,
             backupManager = settingsBackupManager,
             deepLinkHandler = createDeepLinkHandler(activity),
             accessibilityManager = accessibilityManager,
@@ -89,40 +74,12 @@ class SettingsDependencyInjection private constructor(
         )
     }
 
-    // Public accessors
-    fun getSettingsRepository(): SettingsRepository = settingsRepository
-
-    fun getSettingsEncryption(): SettingsEncryption = settingsEncryption
-
-    fun getAccessibilityManager(): AccessibilityManager = accessibilityManager
-
-    fun getFontScalingManager(): FontScalingManager = fontScalingManager
-
-    fun getFocusIndicatorManager(): FocusIndicatorManager = focusIndicatorManager
-
-    fun getSearchEngine(): SettingsSearchEngine = settingsSearchEngine
-
-    fun getSearchResultHighlighter(): SearchResultHighlighter = searchResultHighlighter
-
-    fun getVoiceSearchManager(): VoiceSearchManager = voiceSearchManager
-
-    fun getBackupManager(): SettingsBackupManager = settingsBackupManager
-
-    fun getDeepLinkHandler(activity: androidx.fragment.app.FragmentActivity): SettingsDeepLinkHandler = createDeepLinkHandler(activity)
-
-    fun getPerformanceMonitor(): SettingsPerformanceMonitor = settingsPerformanceMonitor
-
-    fun getAnimationCoordinator(): SettingsAnimationCoordinator = settingsAnimationCoordinator
+    // Public accessors - removed duplicate getters to avoid JVM signature clashes
+    // Use properties directly instead
 
     fun getViewModelFactory(activity: androidx.fragment.app.FragmentActivity): ViewModelProvider.Factory = createCompositeSettingsViewModelFactory(activity)
 
-    fun getSearchViewModelFactory(): CompositeSettingsSearchViewModelFactory {
-        return CompositeSettingsSearchViewModelFactory(
-            context = context,
-            repository = settingsRepository,
-            searchEngine = settingsSearchEngine
-        )
-    }
+    // Search ViewModel factory removed
 
     fun getBackupViewModelFactory(): CompositeSettingsBackupViewModelFactory {
         return CompositeSettingsBackupViewModelFactory(

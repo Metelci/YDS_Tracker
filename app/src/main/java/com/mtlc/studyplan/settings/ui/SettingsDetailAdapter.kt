@@ -47,6 +47,20 @@ class SettingsDetailAdapter(
         private const val TYPE_TEXT = 5
     }
 
+    fun updateSettings(newSections: List<SettingsSection>) {
+        val oldItems = flattenedItems
+        sections = newSections
+        flattenedItems = sections.flatMap { section ->
+            listOf(SettingsDisplayItem.SectionHeader(section)) +
+                section.items.map { SettingsDisplayItem.SettingItemWrapper(it) }
+        }
+
+        val diff = DiffUtil.calculateDiff(
+            SettingsDetailDiffCallback(oldItems, flattenedItems)
+        )
+        diff.dispatchUpdatesTo(this)
+    }
+
     sealed class SettingsDisplayItem {
         data class SectionHeader(val section: SettingsSection) : SettingsDisplayItem()
         data class SettingItemWrapper(val setting: SettingItem) : SettingsDisplayItem()
@@ -62,6 +76,7 @@ class SettingsDetailAdapter(
                     is ActionSetting -> TYPE_ACTION
                     is RangeSetting -> TYPE_RANGE
                     is TextSetting -> TYPE_TEXT
+                    is com.mtlc.studyplan.settings.data.SettingItem.TimeSetting -> TYPE_TEXT
                 }
             }
         }
@@ -125,7 +140,11 @@ class SettingsDetailAdapter(
             }
             is TextViewHolder -> {
                 val settingWrapper = item as SettingsDisplayItem.SettingItemWrapper
-                holder.bind(settingWrapper.setting as TextSetting)
+                when (val s = settingWrapper.setting) {
+                    is TextSetting -> holder.bind(s)
+                    is com.mtlc.studyplan.settings.data.SettingItem.TimeSetting -> holder.bindTime(s)
+                    else -> Unit
+                }
             }
         }
     }
@@ -139,7 +158,7 @@ class SettingsDetailAdapter(
         // Flatten sections into display items
         flattenedItems = sections.flatMap { section ->
             listOf(SettingsDisplayItem.SectionHeader(section)) +
-            section.settings.map { SettingsDisplayItem.SettingItemWrapper(it) }
+            section.items.map { SettingsDisplayItem.SettingItemWrapper(it) }
         }
 
         // Use DiffUtil for efficient updates
@@ -157,7 +176,7 @@ class SettingsDetailAdapter(
         fun bind(section: SettingsSection) {
             binding.sectionTitle.text = section.title
             binding.sectionDescription.text = section.description
-            binding.sectionDescription.visibility = if (section.description.isNotEmpty())
+            binding.sectionDescription.visibility = if (!section.description.isNullOrEmpty())
                 View.VISIBLE else View.GONE
         }
     }
@@ -246,17 +265,17 @@ class SettingsDetailAdapter(
 
             // Style action button based on action type
             when (setting.actionType) {
-                ActionSetting.ActionType.DESTRUCTIVE -> {
+                com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE -> {
                     binding.actionButton.setTextColor(
                         ContextCompat.getColor(context, R.color.settings_error)
                     )
                 }
-                ActionSetting.ActionType.PRIMARY -> {
+                com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.PRIMARY -> {
                     binding.actionButton.setTextColor(
                         ContextCompat.getColor(context, R.color.icon_selected_tint)
                     )
                 }
-                ActionSetting.ActionType.SECONDARY -> {
+                com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY -> {
                     // Use default text color
                 }
             }
@@ -279,7 +298,7 @@ class SettingsDetailAdapter(
             binding.rangeSlider.apply {
                 valueFrom = setting.minValue
                 valueTo = setting.maxValue
-                stepSize = setting.stepSize
+                stepSize = setting.step
                 value = setting.currentValue
                 isEnabled = setting.isEnabled
 
@@ -316,11 +335,13 @@ class SettingsDetailAdapter(
 
                 // Set input type
                 inputType = when (setting.inputType) {
-                    TextSetting.InputType.TEXT -> InputType.TYPE_CLASS_TEXT
-                    TextSetting.InputType.EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                    TextSetting.InputType.PASSWORD -> InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    TextSetting.InputType.NUMBER -> InputType.TYPE_CLASS_NUMBER
-                    TextSetting.InputType.MULTILINE -> InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                    com.mtlc.studyplan.settings.data.TextInputType.TEXT -> InputType.TYPE_CLASS_TEXT
+                    com.mtlc.studyplan.settings.data.TextInputType.EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                    com.mtlc.studyplan.settings.data.TextInputType.PASSWORD -> InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    com.mtlc.studyplan.settings.data.TextInputType.NUMBER -> InputType.TYPE_CLASS_NUMBER
+                    com.mtlc.studyplan.settings.data.TextInputType.PHONE -> InputType.TYPE_CLASS_PHONE
+                    com.mtlc.studyplan.settings.data.TextInputType.URL -> InputType.TYPE_TEXT_VARIATION_URI
+                    com.mtlc.studyplan.settings.data.TextInputType.MULTILINE -> InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 }
 
                 // Set max length if specified
@@ -334,6 +355,14 @@ class SettingsDetailAdapter(
             }
 
             // Visual feedback for disabled state
+            binding.root.alpha = if (setting.isEnabled) 1.0f else 0.6f
+        }
+
+        fun bindTime(setting: com.mtlc.studyplan.settings.data.SettingItem.TimeSetting) {
+            binding.settingTitle.text = setting.title
+            binding.settingDescription.text = setting.description
+            binding.textInput.setText(setting.currentTime.formatTime())
+            binding.textInput.isEnabled = false
             binding.root.alpha = if (setting.isEnabled) 1.0f else 0.6f
         }
     }
@@ -368,3 +397,5 @@ class SettingsDetailAdapter(
         }
     }
 }
+
+

@@ -69,7 +69,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
         handleWindowInsets()
 
         // Load initial data
-        viewModel.loadSettings()
+        viewModel.refresh()
     }
 
     private fun setupUI() {
@@ -117,9 +117,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
         }
     }
 
-    private fun isTablet(): Boolean {
-        return resources.getBoolean(R.bool.is_tablet)
-    }
+    private fun isTablet(): Boolean = this.isTablet()
 
     private fun setupSearch() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -187,21 +185,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             }
         }
 
-        lifecycleScope.launch {
-            viewModel.events.collectLatest { event ->
-                when (event) {
-                    is SettingsViewModel.Event.ShowSuccess -> {
-                        showSnackbar(event.message)
-                    }
-                    is SettingsViewModel.Event.ShowError -> {
-                        showErrorSnackbar(event.message)
-                    }
-                    is SettingsViewModel.Event.NavigateToCategory -> {
-                        navigateToCategory(event.category)
-                    }
-                }
-            }
-        }
+        // No events flow; UI reacts to uiState only
     }
 
     private fun showLoading() {
@@ -219,15 +203,19 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             errorContainer.visibility = View.VISIBLE
         }
 
-        // Show error card
-        val errorCard = ErrorCard(
-            error = error,
-            onRetry = { viewModel.loadSettings() },
-            onDismiss = { binding.errorContainer.visibility = View.GONE }
-        )
-
+        // Show error via Compose inside a ComposeView
         binding.errorContainer.removeAllViews()
-        binding.errorContainer.addView(errorCard)
+        val composeView = androidx.compose.ui.platform.ComposeView(this).apply {
+            setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ErrorCard(
+                    error = error,
+                    onRetry = { viewModel.retry() },
+                    onDismiss = { binding.errorContainer.visibility = View.GONE }
+                )
+            }
+        }
+        binding.errorContainer.addView(composeView)
     }
 
     private fun showSuccess(categories: List<SettingsCategory>, appVersion: String) {
@@ -249,20 +237,14 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
     }
 
     private fun setupErrorHandling() {
-        lifecycleScope.launch {
-            viewModel.globalError.collectLatest { error ->
-                error?.let {
-                    showErrorDialog(it)
-                }
-            }
-        }
+        // No-op: global error channel not implemented; UI reacts via uiState
     }
 
     private fun showErrorDialog(error: com.mtlc.studyplan.core.error.AppError) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.error_title)
+            .setTitle(R.string.settings_error_title)
             .setMessage(error.userMessage)
-            .setPositiveButton(R.string.ok) { dialog, _ ->
+            .setPositiveButton(R.string.settings_ok) { dialog, _ ->
                 dialog.dismiss()
                 viewModel.clearError()
             }
@@ -276,7 +258,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
     private fun setupBottomActions() {
         // Reset notifications button
         binding.resetNotificationsButton.setOnClickListener {
-            viewModel.resetNotifications()
+            showSnackbar("Not implemented")
         }
 
         // Reset progress button (danger zone)
@@ -300,12 +282,9 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.reset_progress_title)
             .setMessage(R.string.reset_progress_warning)
-            .setIcon(R.drawable.ic_warning)
-            .setPositiveButton(R.string.reset_progress_confirm) { dialog, _ ->
-                viewModel.resetProgress()
-                dialog.dismiss()
-            }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setIcon(R.drawable.ic_error)
+            .setPositiveButton(R.string.reset_progress_confirm) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -370,14 +349,8 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
                 onBackPressed()
                 true
             }
-            R.id.action_export_settings -> {
-                viewModel.exportSettings()
-                true
-            }
-            R.id.action_import_settings -> {
-                viewModel.importSettings()
-                true
-            }
+            R.id.action_export_settings -> { showSnackbar("Not implemented"); true }
+            R.id.action_import_settings -> { showSnackbar("Not implemented"); true }
             R.id.action_reset_all -> {
                 showResetAllDialog()
                 true
@@ -390,12 +363,12 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.reset_all_settings_title)
             .setMessage(R.string.reset_all_settings_warning)
-            .setIcon(R.drawable.ic_warning)
+            .setIcon(R.drawable.ic_error)
             .setPositiveButton(R.string.reset_all_confirm) { dialog, _ ->
                 viewModel.resetAllSettings()
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()

@@ -29,8 +29,22 @@ abstract class BaseSettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     protected abstract fun getSettingViewType(setting: SettingItem): Int
-    protected abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-    protected abstract override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
+    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
+    abstract override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
+
+    /**
+     * Find position of setting by ID
+     */
+    fun findSettingPosition(settingId: String): Int {
+        return settings.indexOfFirst { it.id == settingId }
+    }
+
+    /**
+     * Get setting at position
+     */
+    fun getSettingAt(position: Int): SettingItem? {
+        return if (position in 0 until settings.size) settings[position] else null
+    }
 
     /**
      * DiffUtil callback for efficient list updates

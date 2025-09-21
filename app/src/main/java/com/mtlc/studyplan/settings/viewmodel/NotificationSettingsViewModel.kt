@@ -189,8 +189,9 @@ class NotificationSettingsViewModel(
                 id = "notification_test",
                 title = "Send Test Notification",
                 description = "Test your notification settings",
+                action = com.mtlc.studyplan.settings.data.SettingAction.SendTestNotification,
                 buttonText = "Send Test",
-                actionType = ActionSetting.ActionType.SECONDARY,
+                actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY,
                 isEnabled = notificationData.pushNotifications,
                 category = "notifications",
                 sortOrder = 7
@@ -340,4 +341,5 @@ class NotificationSettingsViewModel(
 /**
  * Data classes for notification settings
  */
+
 

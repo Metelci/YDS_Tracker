@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.0"
+agp = "8.7.0"
 core = "1.7.0"
 datastorePreferences = "1.1.7"
 kotlin = "2.0.21"
@@ -16,12 +16,15 @@ workRuntimeKtx = "2.10.2"
 desugarJdkLibs = "2.1.4"
 accessibilityTestFramework = "4.0.0"
 
+# Additional updates
+gson = "2.11.0"
+
 # Security dependencies - Updated to latest stable
 securityCrypto = "1.1.0-alpha06"
 okhttp = "4.12.0"
 biometric = "1.1.0"
-kotlinxSerialization = "1.6.3"
-mockito = "5.8.0"
+kotlinxSerialization = "1.7.1"
+mockito = "5.12.0"
 coroutinesTest = "1.8.1"
 
 [libraries]
@@ -61,7 +64,7 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 accessibilityTestFramework = { group = "com.google.android.apps.common.testing.accessibility.framework", name = "accessibility-test-framework", version.ref = "accessibilityTestFramework" }
 
 [plugins]
-android-application = { id = "com.android.application", version = "8.13.0" }
+android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

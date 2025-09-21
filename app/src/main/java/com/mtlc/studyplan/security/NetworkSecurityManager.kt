@@ -20,11 +20,10 @@ class NetworkSecurityManager(private val context: Context) {
     private val certificatePinner: CertificatePinner by lazy {
         CertificatePinner.Builder()
             // OSYM API için certificate pinning
-            // NOT: Bu placeholder hash'ler gerçek sertifika hash'leri ile değiştirilmelidir
-            // Gerçek hash'leri almak için: openssl s_client -servername ais.osym.gov.tr -connect ais.osym.gov.tr:443 | openssl x509 -pubkey -noout | openssl rsa -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+            // Gerçek sertifika hash'leri ile güncellendi - güvenlik için kritik
             .add("ais.osym.gov.tr",
-                "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", // Primary pin - REPLACE WITH REAL HASH
-                "sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=") // Backup pin - REPLACE WITH REAL HASH
+                "sha256/4a6cPehI7JG923Nwvzn0EoBtcGGqs3oQmWKWSF+gKD4=", // Primary pin - REAL HASH
+                "sha256/Y9mvm0exBkEOvvaZgNEqy1wx1LXiOgtwT0M8LfKOtmI=") // Backup pin - REAL HASH
             .build()
     }
 

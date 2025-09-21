@@ -77,7 +77,20 @@
     <string name="days_unit">%d days</string>
     <string name="percent_format">%d%%</string>
 
-    <string name="units">Units</string>
+  <string name="units">Units</string>
+  <!-- Settings screens resources -->
+  <string name="app_version_format">Version %1$s (%2$s)</string>
+  <string name="app_version_unknown">Version unknown</string>
+  <string name="settings_error_title">Error</string>
+  <string name="settings_ok">OK</string>
+  <string name="retry">Retry</string>
+  <string name="reset_progress_title">Reset Progress</string>
+  <string name="reset_progress_warning">This will reset all progress. This action cannot be undone.</string>
+  <string name="reset_progress_confirm">Reset</string>
+  <string name="reset_all_settings_title">Reset All Settings</string>
+  <string name="reset_all_settings_warning">This will reset all settings to their defaults. Continue?</string>
+  <string name="reset_all_confirm">Reset All</string>
+  <string name="settings_expand_selection">Expand selection</string>
     <string name="practice_description_1">Solve the exercises in the book for the topics you studied to reinforce them.</string>
     <string name="reading_description_1">Read at least 3 news articles from Newsinlevels.com (Level 1-2) and extract 15 new words.</string>
     <string name="listening_description_1">Listen to a podcast from ESL/British Council and review the words you learned.</string>

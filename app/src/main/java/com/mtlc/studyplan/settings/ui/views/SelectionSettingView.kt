@@ -166,8 +166,7 @@ class SelectionSettingView @JvmOverloads constructor(
     private fun setupAccessibility(setting: SelectionSetting<*>) {
         contentDescription = "${setting.title}: ${setting.description}"
 
-        // Add role information
-        roleDescription = "Selection button"
+        // Role description removed for compatibility
 
         // Add state description
         stateDescription = "Currently selected: ${binding.currentValue.text}"
@@ -237,7 +236,7 @@ class SelectionSettingView @JvmOverloads constructor(
                 card.alpha = if (isSelected) 1.0f else 0.8f
 
                 card.setOnClickListener {
-                    onSelection(option.value)
+                    onSelection(option.value as Any)
                 }
 
                 // Accessibility

@@ -8,12 +8,10 @@ import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
 import com.mtlc.studyplan.settings.data.SettingsRepository
-import com.mtlc.studyplan.settings.search.SettingsSearchEngine
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 
 class CompositeSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
-    private val searchEngine: SettingsSearchEngine,
     private val backupManager: SettingsBackupManager,
     private val deepLinkHandler: SettingsDeepLinkHandler,
     private val accessibilityManager: AccessibilityManager,
@@ -27,7 +25,6 @@ class CompositeSettingsViewModelFactory(
             modelClass.isAssignableFrom(MainSettingsViewModel::class.java) -> {
                 MainSettingsViewModel(
                     settingsRepository,
-                    searchEngine,
                     deepLinkHandler,
                     accessibilityManager,
                     animationCoordinator
@@ -65,20 +62,7 @@ class CompositeSettingsViewModelFactory(
     }
 }
 
-class CompositeSettingsSearchViewModelFactory(
-    private val context: Context,
-    private val repository: SettingsRepository,
-    private val searchEngine: SettingsSearchEngine
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsSearchViewModel::class.java)) {
-            return SettingsSearchViewModel(context, repository, searchEngine) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+// Search ViewModel factory removed (search feature not present)
 
 class CompositeSettingsBackupViewModelFactory(
     private val backupManager: SettingsBackupManager,
@@ -155,6 +139,48 @@ class PerformanceViewModelFactory(
                 settingsRepository,
                 accessibilityManager
             ) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+    }
+}
+
+class GamificationSettingsViewModelFactory(
+    private val settingsRepository: SettingsRepository,
+    private val context: Context
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GamificationSettingsViewModel::class.java)) {
+            return GamificationSettingsViewModel(settingsRepository, context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+    }
+}
+
+class NotificationSettingsViewModelFactory(
+    private val settingsRepository: SettingsRepository,
+    private val context: Context
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NotificationSettingsViewModel::class.java)) {
+            return NotificationSettingsViewModel(settingsRepository, context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+    }
+}
+
+class PrivacySettingsViewModelFactory(
+    private val settingsRepository: SettingsRepository,
+    private val context: Context
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(PrivacySettingsViewModel::class.java)) {
+            return PrivacySettingsViewModel(settingsRepository, context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }

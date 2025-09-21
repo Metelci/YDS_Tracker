@@ -13,12 +13,12 @@
         <domain includeSubdomains="true">fonts.googleapis.com</domain>
         <domain includeSubdomains="true">fonts.gstatic.com</domain>
 
-        <!-- Pin sertifika hash'leri (güncellenmiş tarih ve backup pin ile) -->
+        <!-- Pin sertifika hash'leri (güncellenmiş tarih ve gerçek pin ile) -->
         <pin-set expiration="2026-12-31">
-            <!-- OSYM sertifika pin'i - gerçek hash ile değiştirilmeli -->
-            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <!-- OSYM sertifika pin'i - gerçek hash ile güncellendi -->
+            <pin digest="SHA-256">sha256/4a6cPehI7JG923Nwvzn0EoBtcGGqs3oQmWKWSF+gKD4=</pin>
             <!-- Backup pin - sertifika rotasyonu için kritik -->
-            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+            <pin digest="SHA-256">sha256/Y9mvm0exBkEOvvaZgNEqy1wx1LXiOgtwT0M8LfKOtmI=</pin>
         </pin-set>
     </domain-config>
 

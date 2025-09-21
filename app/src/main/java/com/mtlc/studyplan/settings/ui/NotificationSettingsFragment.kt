@@ -116,10 +116,6 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
         }
     }
 
-    override fun onRefreshRequested() {
-        viewModel.refresh()
-    }
-
     override fun onRetryRequested() {
         viewModel.retry()
     }

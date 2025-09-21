@@ -11,7 +11,6 @@ import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.feedback.SettingsFeedbackManager
 import com.mtlc.studyplan.settings.migration.SettingsMigrationManager
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
-import com.mtlc.studyplan.settings.search.SettingsSearchEngine
 import com.mtlc.studyplan.settings.sync.CloudSyncManager
 import com.mtlc.studyplan.settings.validation.SettingsValidator
 import kotlinx.coroutines.flow.*
@@ -45,7 +44,6 @@ class SettingsSystemManager(private val context: Context) {
     private val feedbackManager = SettingsFeedbackManager(context)
 
     // Advanced features
-    private val searchEngine = SettingsSearchEngine(context)
     private val backupManager = SettingsBackupManager(context, repository)
     private val syncManager = CloudSyncManager(context, repository, backupManager)
     private val migrationManager = SettingsMigrationManager(context, repository)
@@ -80,8 +78,7 @@ class SettingsSystemManager(private val context: Context) {
                 else -> { /* No migration needed */ }
             }
 
-            // Initialize search engine after migrations
-            initializeSearchEngine()
+            // Search removed from settings page
         }
 
         // Setup accessibility monitoring
@@ -91,25 +88,7 @@ class SettingsSystemManager(private val context: Context) {
         updateSystemState()
     }
 
-    /**
-     * Initialize search engine with current settings from repository state
-     */
-    private suspend fun initializeSearchEngine() {
-        val settingsState = repository.settingsState.value
-        val categories = settingsState.categories
-
-        val allSettings: Map<String, List<SettingItem>> = categories.associate { category ->
-            val items = settingsState.getSectionsForCategory(category.id)
-                .flatMap { section -> section.items }
-            category.id to items
-        }
-
-        try {
-            searchEngine.indexSettings(categories, allSettings)
-        } catch (e: Exception) {
-            feedbackManager.showError("Failed to initialize search: ${e.message}")
-        }
-    }
+    // Search removed; no indexing
 
     /**
      * Comprehensive settings update with validation, feedback, and performance monitoring
@@ -190,16 +169,7 @@ class SettingsSystemManager(private val context: Context) {
         }
     }
 
-    /**
-     * Search settings with performance monitoring and feedback
-     */
-    fun searchSettings(query: String): Flow<List<com.mtlc.studyplan.settings.search.SettingsSearchEngine.SearchResult>> {
-        return searchEngine.search(query)
-            .catch { e ->
-                feedbackManager.showError("Search failed: ${e.message}")
-                emit(emptyList())
-            }
-    }
+    // Search removed
 
     /**
      * Backup settings with progress feedback
@@ -247,10 +217,7 @@ class SettingsSystemManager(private val context: Context) {
             // Note: Since there's no getAllSettingsSync, we skip this step or implement differently
             // The repository handles validation during import already
 
-            updateProgress(0.8f, "Updating search index...")
-
-            // Re-initialize search engine
-            initializeSearchEngine()
+            // Search removed – no re-indexing
 
             updateProgress(1.0f, "Restore completed")
 
@@ -286,8 +253,7 @@ class SettingsSystemManager(private val context: Context) {
 
             updateProgress(0.8f, "Updating local settings...")
 
-            // Re-initialize search engine with synced settings
-            initializeSearchEngine()
+            // Search removed – no re-indexing after sync
 
             updateProgress(1.0f, "Sync completed")
 
@@ -323,8 +289,7 @@ class SettingsSystemManager(private val context: Context) {
 
             when (result) {
                 is SettingsOperationResult.Success -> {
-                    // Re-initialize everything
-                    initializeSearchEngine()
+                    // Re-initialize accessibility and state
                     accessibilityManager.updateAccessibilityState()
                     updateSystemState()
 
@@ -423,7 +388,7 @@ class SettingsSystemManager(private val context: Context) {
     fun getPerformanceMonitor() = performanceMonitor
     fun getValidator() = validator
     fun getFeedbackManager() = feedbackManager
-    fun getSearchEngine() = searchEngine
+    // Search removed: no engine exposed
     fun getBackupManager() = backupManager
     fun getSyncManager() = syncManager
     fun getMigrationManager() = migrationManager
@@ -488,7 +453,7 @@ class SettingsSystemViewModel(
         }
     }
 
-    fun searchSettings(query: String) = settingsManager.searchSettings(query)
+    // Search removed
 
     fun backupSettings() {
         viewModelScope.launch {
@@ -538,12 +503,7 @@ object SettingsSystemUsageExample {
         // 1. Update a setting with full validation and feedback
         val success = settingsManager.updateSetting("notifications_enabled", true)
 
-        // 2. Search settings
-        settingsManager.searchSettings("notification").collect { results ->
-            results.forEach { result ->
-                println("Found: ${result.item.title} - ${result.relevanceScore}")
-            }
-        }
+        // 2. Search removed on settings page
 
         // 3. Backup settings with progress
         val backupSuccess = settingsManager.backupSettings()

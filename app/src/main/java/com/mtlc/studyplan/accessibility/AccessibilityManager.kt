@@ -305,6 +305,9 @@ class AccessibilityEnhancementManager(private val context: Context) {
         val error: Int,
         val success: Int
     )
+
+    // Expose application context for components needing it
+    fun getContext(): Context = context
 }
 
 typealias AccessibilityManager = AccessibilityEnhancementManager

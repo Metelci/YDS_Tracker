@@ -15,6 +15,7 @@ import com.mtlc.studyplan.ui.animations.SettingsAnimations
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
@@ -25,7 +26,7 @@ class OptimizedSettingsAdapter(
     private val onSettingChanged: (SettingItem, Any?) -> Unit
 ) : ListAdapter<SettingItem, OptimizedSettingsAdapter.BaseViewHolder>(SettingsDiffCallback()) {
 
-    private val performanceOptimizer = PerformanceOptimizer.getInstance(accessibilityManager.context)
+    private val performanceOptimizer = PerformanceOptimizer.getInstance(accessibilityManager.getContext())
     private val adapterScope = performanceOptimizer.createOptimizedScope()
     private val settingsCache = performanceOptimizer.getSettingsCache()
 
@@ -36,7 +37,7 @@ class OptimizedSettingsAdapter(
         private const val TYPE_ACTION = 3
         private const val TYPE_RANGE = 4
         private const val TYPE_TEXT = 5
-        private const val TYPE_TIME = 6
+        // Time setting handled by specialized adapters; omitted here
     }
 
     // Optimized DiffUtil callback
@@ -84,7 +85,8 @@ class OptimizedSettingsAdapter(
             is ActionSetting -> TYPE_ACTION
             is RangeSetting -> TYPE_RANGE
             is TextSetting -> TYPE_TEXT
-            is TimeSetting -> TYPE_TIME
+            // Time settings are not handled in this optimized adapter
+            is TimeSetting -> TYPE_SELECTION
         }
     }
 
@@ -106,9 +108,6 @@ class OptimizedSettingsAdapter(
             )
             TYPE_TEXT -> TextViewHolder(
                 ItemSettingTextBinding.inflate(inflater, parent, false)
-            )
-            TYPE_TIME -> TimeViewHolder(
-                ItemSettingTimeBinding.inflate(inflater, parent, false)
             )
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
         }
@@ -294,7 +293,7 @@ class OptimizedSettingsAdapter(
 
             binding.settingTitle.text = setting.title
             binding.settingDescription.text = setting.description
-            binding.settingValue.text = setting.selectedOption?.display ?: ""
+            binding.currentValue.text = setting.selectedOption?.display ?: ""
 
             setupOptimizedClickListener(binding.root) {
                 // Show selection dialog
@@ -339,8 +338,8 @@ class OptimizedSettingsAdapter(
 
             binding.settingTitle.text = setting.title
             binding.settingDescription.text = setting.description
-            binding.settingSlider.value = setting.currentValue
-            binding.settingValue.text = "${setting.currentValue}${setting.unit}"
+            binding.rangeSlider.value = setting.currentValue
+            binding.currentValue.text = "${setting.currentValue}${setting.unit}"
 
             // Throttled slider change to improve performance
             val throttledChange = performanceOptimizer.throttle<Float>(
@@ -350,9 +349,9 @@ class OptimizedSettingsAdapter(
                 onSettingChanged(setting, value)
             }
 
-            binding.settingSlider.addOnChangeListener { _, value, fromUser ->
+            binding.rangeSlider.addOnChangeListener { _, value, fromUser ->
                 if (fromUser) {
-                    binding.settingValue.text = "${value}${setting.unit}"
+                    binding.currentValue.text = "${value}${setting.unit}"
                     throttledChange(value)
                 }
             }
@@ -371,7 +370,7 @@ class OptimizedSettingsAdapter(
 
             binding.settingTitle.text = setting.title
             binding.settingDescription.text = setting.description
-            binding.settingInput.setText(setting.currentValue)
+            binding.textInput.setText(setting.currentValue)
 
             // Debounced text change to reduce update frequency
             val debouncedChange = performanceOptimizer.debounce<String>(
@@ -381,38 +380,13 @@ class OptimizedSettingsAdapter(
                 onSettingChanged(setting, text)
             }
 
-            binding.settingInput.addTextChangedListener(object : android.text.TextWatcher {
+            binding.textInput.addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: android.text.Editable?) {
                     debouncedChange(s?.toString() ?: "")
                 }
             })
-        }
-    }
-
-    /**
-     * Time ViewHolder with optimization
-     */
-    inner class TimeViewHolder(
-        private val binding: ItemSettingTimeBinding
-    ) : BaseViewHolder(binding.root) {
-
-        override fun bind(setting: SettingItem, cachedData: Any?) {
-            if (setting !is TimeSetting) return
-
-            binding.settingTitle.text = setting.title
-            binding.settingDescription.text = setting.description
-            binding.settingValue.text = setting.currentTime.formatTime()
-
-            setupOptimizedClickListener(binding.root) {
-                // Show time picker dialog
-                showTimePicker(setting)
-            }
-        }
-
-        private fun showTimePicker(setting: TimeSetting) {
-            // TODO: Implement optimized time picker
         }
     }
 
@@ -427,6 +401,6 @@ class OptimizedSettingsAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        adapterScope.coroutineContext[SupervisorJob()]?.cancel()
+        adapterScope.cancel()
     }
 }

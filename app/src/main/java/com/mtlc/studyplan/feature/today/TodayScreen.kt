@@ -19,10 +19,9 @@ import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.Elevations
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.navigation.NavController
 import com.mtlc.studyplan.ui.components.EmptyState
 import com.mtlc.studyplan.ui.components.ErrorState
@@ -95,7 +94,7 @@ fun TodayRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
     state: TodayUiState,
@@ -115,10 +114,7 @@ fun TodayScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     // Bind pull-to-refresh indicator to UI state
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = state.isLoading,
-        onRefresh = { onRefresh() }
-    )
+    val pullRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(state.snackbar) {
         state.snackbar?.let { msg ->
@@ -223,14 +219,15 @@ fun TodayScreen(
                                     .padding(horizontal = sTokens.md)
                             )
                         }
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = sTokens.md)
-                                .pullRefresh(pullRefreshState)
+                        PullToRefreshBox(
+                            state = pullRefreshState,
+                            isRefreshing = state.isLoading,
+                            onRefresh = { onRefresh() }
                         ) {
                             LazyColumn(
-                                modifier = modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = sTokens.md),
                                 verticalArrangement = Arrangement.spacedBy(sTokens.sm)
                             ) {
                                 items(state.sessions, key = { it.id }) { item ->
@@ -247,11 +244,6 @@ fun TodayScreen(
                                     Spacer(modifier = Modifier.height(80.dp))
                                 }
                             }
-                            PullRefreshIndicator(
-                                refreshing = state.isLoading,
-                                state = pullRefreshState,
-                                modifier = Modifier.align(Alignment.TopCenter)
-                            )
                         }
                     }
                 }
@@ -320,7 +312,6 @@ private fun SessionCard(
     }
 }
 
-@OptIn(androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
 private fun SwipeableSession(
     session: SessionUi,
@@ -329,54 +320,16 @@ private fun SwipeableSession(
     onReschedule: (java.time.LocalDateTime) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    val reducedMotion = LocalReducedMotion.current
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-    val notificationManager = remember { context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager }
-    val powerManager = remember { context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
-    val dismissState = androidx.compose.material.rememberDismissState(
-        confirmStateChange = { value ->
-            when (value) {
-                androidx.compose.material.DismissValue.DismissedToStart -> { // swipe left to complete
-                    if (!powerManager.isPowerSaveMode && notificationManager.currentInterruptionFilter == android.app.NotificationManager.INTERRUPTION_FILTER_ALL) {
-                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                    }
-                    onComplete(session.id)
-                    true
-                }
-                androidx.compose.material.DismissValue.DismissedToEnd -> { // swipe right to reschedule
-                    onReschedule(java.time.LocalDateTime.now().plusDays(1))
-                    true
-                }
-                else -> false
-            }
-        }
+    // TODO: Implement swipe-to-dismiss functionality for Material 3
+    // For now, using basic card without swipe gestures
+    SessionCard(
+        s = session,
+        onStart = onStart,
+        onComplete = onComplete,
+        onSkip = { /* swipe functionality removed */ },
+        onReschedule = onReschedule,
+        onNavigateToFocus = onNavigateToFocus
     )
-    if (reducedMotion) {
-        SessionCard(
-            s = session,
-            onStart = onStart,
-            onComplete = onComplete,
-            onSkip = { /* handled */ },
-            onReschedule = onReschedule,
-            onNavigateToFocus = onNavigateToFocus
-        )
-    } else {
-        androidx.compose.material.SwipeToDismiss(
-            state = dismissState,
-            background = {},
-            dismissContent = {
-                SessionCard(
-                    s = session,
-                    onStart = onStart,
-                    onComplete = onComplete,
-                    onSkip = { /* handled */ },
-                    onReschedule = onReschedule,
-                    onNavigateToFocus = onNavigateToFocus
-                )
-            }
-        )
-    }
 }
 
 @Composable

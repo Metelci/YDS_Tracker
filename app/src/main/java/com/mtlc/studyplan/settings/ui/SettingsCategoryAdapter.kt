@@ -107,7 +107,7 @@ class SettingsCategoryAdapter(
     }
 
     inner class CategoryViewHolder(
-        private val binding: ItemSettingsCategoryBinding,
+        val binding: ItemSettingsCategoryBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -132,13 +132,8 @@ class SettingsCategoryAdapter(
         }
 
         private fun loadCategoryIcon(category: SettingsCategory) {
-            try {
-                val drawable = ContextCompat.getDrawable(context, category.iconRes)
-                binding.categoryIcon.setImageDrawable(drawable)
-            } catch (e: Exception) {
-                // Fallback to default icon
-                binding.categoryIcon.setImageDrawable(getDefaultIcon(category.id))
-            }
+            // Map known categories to icons; ignore missing per-model icon
+            binding.categoryIcon.setImageDrawable(getDefaultIcon(category.id))
         }
 
         private fun getDefaultIcon(categoryId: String): Drawable? {
@@ -274,7 +269,6 @@ class SettingsCategoryAdapter(
 
             return oldItem.title == newItem.title &&
                    oldItem.description == newItem.description &&
-                   oldItem.iconRes == newItem.iconRes &&
                    oldItem.isActive == newItem.isActive &&
                    oldItem.sortOrder == newItem.sortOrder
         }

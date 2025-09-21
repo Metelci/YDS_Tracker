@@ -92,7 +92,7 @@ fun WorkingTasksScreen(
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back"
                     )
                 }
@@ -155,7 +155,7 @@ fun WorkingTasksScreen(
                     SectionHeader(
                         title = "Pending Tasks",
                         count = filteredIncompleteTasks.size,
-                        icon = Icons.Default.Assignment
+                        icon = Icons.AutoMirrored.Filled.Assignment
                     )
                 }
 
@@ -468,7 +468,7 @@ private fun TaskCard(
                     modifier = Modifier.padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (task.estimatedTime != null) {
+                    if (task.estimatedTime > 0) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.Schedule,
@@ -486,7 +486,7 @@ private fun TaskCard(
                     }
 
                     if (task.dueDate != null) {
-                        if (task.estimatedTime != null) {
+                        if (task.estimatedTime > 0) {
                             Text(
                                 text = " • ",
                                 fontSize = 12.sp,
@@ -563,7 +563,7 @@ private fun EmptyTasksState(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = if (hasCompletedTasks) Icons.Default.TaskAlt else Icons.Default.Assignment,
+                imageVector = if (hasCompletedTasks) Icons.Default.TaskAlt else Icons.AutoMirrored.Filled.Assignment,
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant

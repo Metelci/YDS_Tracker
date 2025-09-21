@@ -309,7 +309,7 @@ fun WorkingHomeScreen(
                 ) {
                     Text("View All")
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -493,7 +493,7 @@ fun TaskItemCard(
                     )
                 }
 
-                if (task.estimatedTime != null) {
+                if (task.estimatedTime > 0) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "⏱️ ${task.estimatedTime} min",

@@ -14,7 +14,8 @@ data class SettingsCategory(
     val icon: ImageVector,
     val route: String = "",
     val isActive: Boolean = true,
-    val sortOrder: Int = 0
+    val sortOrder: Int = 0,
+    val searchKeywords: List<String> = emptyList()
 ) {
     companion object {
         const val PRIVACY_ID = "privacy"
@@ -143,6 +144,9 @@ sealed class SettingAction {
     object ExportData : SettingAction()
     object ResetProgress : SettingAction()
     object SyncData : SettingAction()
+    object SendTestNotification : SettingAction()
+    object ExportPersonalData : SettingAction()
+    object ClearPersonalData : SettingAction()
 }
 
 /**

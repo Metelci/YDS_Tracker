@@ -109,7 +109,7 @@ class PrivacySettingsAdapter(
                     actionView.showLoading(false)
 
                     // Show appropriate feedback based on action type
-                    if (setting.actionType == ActionSetting.ActionType.DESTRUCTIVE) {
+                    if (setting.actionType == com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE) {
                         actionView.showSuccess("Completed")
                     } else {
                         actionView.showSuccess()
@@ -119,3 +119,5 @@ class PrivacySettingsAdapter(
         }
     }
 }
+
+

@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -531,19 +532,16 @@ fun AppNavHost(
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "settings_animation"
             ) { _ ->
-                if (appIntegrationManager != null) {
-                    com.mtlc.studyplan.settings.ui.EnhancedSettingsScreen(
-                        appIntegrationManager = appIntegrationManager,
-                        onNavigateBack = { navController.popBackStack() }
-                    )
-                } else {
-                    com.mtlc.studyplan.settings.ui.SettingsScreen(
-                        onNavigateToCategory = { route ->
-                            navController.navigate(route)
-                        },
-                        onBack = { navController.popBackStack() }
-                    )
+                // Create a real settings repository instance
+                val context = LocalContext.current
+                val settingsRepository = remember {
+                    com.mtlc.studyplan.settings.data.SettingsRepository(context)
                 }
+
+                com.mtlc.studyplan.settings.ui.EnhancedSettingsScreen(
+                    settingsRepository = settingsRepository,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
 

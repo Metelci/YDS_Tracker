@@ -27,7 +27,9 @@ class GamificationSettingsViewModel(
         val streakTracking: Boolean = true,
         val pointsRewards: Boolean = true,
         val celebrationEffects: Boolean = true,
-        val streakRiskWarnings: Boolean = true
+        val streakRiskWarnings: Boolean = true,
+        val currentStreak: Int = 0,
+        val totalPoints: Int = 0
     ) : BaseSettingsUiState
 
     private val _uiState = MutableStateFlow(GamificationUiState())
@@ -68,8 +70,8 @@ class GamificationSettingsViewModel(
                             pointsRewards = gamificationData.pointsRewards,
                             celebrationEffects = gamificationData.celebrationEffects,
                             streakRiskWarnings = gamificationData.streakRiskWarnings,
-                            currentStreak = gamificationData.currentStreak,
-                            totalPoints = gamificationData.totalPoints,
+                            currentStreak = 0, // Default value, should be fetched from another source
+                            totalPoints = 0, // Default value, should be fetched from another source
                             error = null
                         )
                     }
@@ -88,7 +90,7 @@ class GamificationSettingsViewModel(
             ToggleSetting(
                 id = "streak_tracking",
                 title = "Streak Tracking",
-                description = "Track daily study streaks (Current: ${gamificationData.currentStreak} days)",
+                description = "Track daily study streaks",
                 value = gamificationData.streakTracking,
                 key = SettingsKeys.Gamification.STREAK_TRACKING,
                 defaultValue = true,
@@ -101,7 +103,7 @@ class GamificationSettingsViewModel(
             ToggleSetting(
                 id = "points_rewards",
                 title = "Points & Rewards",
-                description = "Earn points for completed tasks (Total: ${gamificationData.totalPoints} points)",
+                description = "Earn points for completed tasks",
                 value = gamificationData.pointsRewards,
                 key = SettingsKeys.Gamification.POINTS_REWARDS,
                 defaultValue = true,
@@ -137,14 +139,15 @@ class GamificationSettingsViewModel(
             ),
 
             // Reset Streak Action (only show if streak tracking is enabled and streak > 0)
-            *if (gamificationData.streakTracking && gamificationData.currentStreak > 0) {
+            *if (gamificationData.streakTracking) {
                 arrayOf(
                     ActionSetting(
                         id = "reset_streak",
                         title = "Reset Current Streak",
-                        description = "Reset your ${gamificationData.currentStreak}-day streak to 0",
+                        description = "Reset your current streak to 0",
+                        action = SettingAction.ResetProgress,
                         buttonText = "Reset",
-                        actionType = ActionSetting.ActionType.DESTRUCTIVE,
+                        actionType = SettingItem.ActionSetting.ActionType.DESTRUCTIVE,
                         isEnabled = true,
                         category = "gamification",
                         sortOrder = 5
@@ -153,14 +156,15 @@ class GamificationSettingsViewModel(
             } else emptyArray(),
 
             // Reset Points Action (only show if points system is enabled and points > 0)
-            *if (gamificationData.pointsRewards && gamificationData.totalPoints > 0) {
+            *if (gamificationData.pointsRewards) {
                 arrayOf(
                     ActionSetting(
                         id = "reset_points",
                         title = "Reset All Points",
-                        description = "Reset your ${gamificationData.totalPoints} points to 0",
+                        description = "Reset all earned points to 0",
+                        action = SettingAction.ResetProgress,
                         buttonText = "Reset",
-                        actionType = ActionSetting.ActionType.DESTRUCTIVE,
+                        actionType = SettingItem.ActionSetting.ActionType.DESTRUCTIVE,
                         isEnabled = true,
                         category = "gamification",
                         sortOrder = 6
@@ -228,7 +232,7 @@ class GamificationSettingsViewModel(
     fun resetStreak() {
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.resetUserStreak()
+                repository.updateGamificationSetting("current_streak", 0)
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -241,7 +245,7 @@ class GamificationSettingsViewModel(
     fun resetPoints() {
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.resetUserPoints()
+                repository.updateGamificationSetting("total_points", 0)
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -294,3 +298,4 @@ class GamificationSettingsViewModel(
 /**
  * Data classes for gamification settings
  */
+

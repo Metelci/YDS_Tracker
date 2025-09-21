@@ -36,7 +36,7 @@ class AdvancedToggleComponent @JvmOverloads constructor(
     private val dependencies = mutableListOf<ToggleDependency>()
 
     // State properties
-    private var isEnabled: Boolean = true
+    private var isComponentEnabled: Boolean = true
         set(value) {
             field = value
             updateEnabledState()
@@ -157,13 +157,13 @@ class AdvancedToggleComponent @JvmOverloads constructor(
      * Enable or disable the toggle
      */
     fun setToggleEnabled(enabled: Boolean) {
-        isEnabled = enabled
+        isComponentEnabled = enabled
     }
 
     /**
      * Check if toggle is enabled
      */
-    fun isToggleEnabled(): Boolean = isEnabled
+    fun isToggleEnabled(): Boolean = isComponentEnabled
 
     /**
      * Setup component interactions
@@ -174,7 +174,7 @@ class AdvancedToggleComponent @JvmOverloads constructor(
         }
 
         binding.root.setOnClickListener {
-            if (isEnabled && validationState == ValidationState.VALID) {
+            if (isComponentEnabled && validationState == ValidationState.VALID) {
                 setToggleState(!isChecked, animate = true)
             }
         }
@@ -290,7 +290,7 @@ class AdvancedToggleComponent @JvmOverloads constructor(
         for (dependency in dependencies) {
             if (!dependency.isConditionMet()) {
                 shouldEnable = false
-                failedDependencies.add(dependency.getDescription())
+                failedDependencies.add(dependency.getDependencyDescription())
             }
         }
 
@@ -332,9 +332,9 @@ class AdvancedToggleComponent @JvmOverloads constructor(
      * Update enabled state visually
      */
     private fun updateEnabledState() {
-        binding.toggleSwitch.isEnabled = isEnabled
-        binding.toggleTitle.alpha = if (isEnabled) 1.0f else 0.5f
-        binding.toggleDescription.alpha = if (isEnabled) 1.0f else 0.5f
+        binding.toggleSwitch.isEnabled = isComponentEnabled
+        binding.toggleTitle.alpha = if (isComponentEnabled) 1.0f else 0.5f
+        binding.toggleDescription.alpha = if (isComponentEnabled) 1.0f else 0.5f
 
         // Update accessibility
         updateAccessibilityDescriptions()
@@ -388,7 +388,7 @@ class AdvancedToggleComponent @JvmOverloads constructor(
         )
 
         // Set content description for the entire component
-        contentDescription = if (isEnabled) {
+        contentDescription = if (isComponentEnabled) {
             "$title, $description, $state"
         } else {
             "$title, $description, $state, disabled due to dependencies"
@@ -431,7 +431,7 @@ class AdvancedToggleComponent @JvmOverloads constructor(
         val description: String
     ) {
         fun isConditionMet(): Boolean = condition.isMet(parentToggle)
-        fun getDescription(): String = description
+        fun getDependencyDescription(): String = description
     }
 
     /**

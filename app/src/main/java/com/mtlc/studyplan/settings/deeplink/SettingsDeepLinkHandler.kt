@@ -26,12 +26,12 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
 
         // Deep link paths
         const val PATH_SETTINGS = "settings"
-        const val PATH_SEARCH = "search"
+        // Search path removed
 
         // Query parameters
         const val PARAM_CATEGORY = "category"
         const val PARAM_SETTING = "setting"
-        const val PARAM_QUERY = "q"
+        // Search query removed
         const val PARAM_HIGHLIGHT = "highlight"
 
         // Supported URLs:
@@ -62,10 +62,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
                 handleSettingsDeepLink(uri)
                 true
             }
-            isSearchDeepLink(uri) -> {
-                handleSearchDeepLink(uri)
-                true
-            }
+            // Search deep links not supported
             else -> false
         }
     }
@@ -84,13 +81,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
     /**
      * Check if URI is a search deep link
      */
-    private fun isSearchDeepLink(uri: Uri): Boolean {
-        return when (uri.scheme) {
-            SCHEME_STUDYPLAN -> uri.host == HOST_SETTINGS && uri.pathSegments?.contains(PATH_SEARCH) == true
-            SCHEME_HTTPS -> uri.host == HOST_APP && uri.pathSegments?.contains(PATH_SEARCH) == true
-            else -> false
-        }
-    }
+    // Search deep links removed
 
     /**
      * Handle settings deep link
@@ -122,10 +113,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
     /**
      * Handle search deep link
      */
-    private fun handleSearchDeepLink(uri: Uri) {
-        val query = uri.getQueryParameter(PARAM_QUERY) ?: ""
-        navigateToSearch(query)
-    }
+    // Search handler removed
 
     /**
      * Navigate to main settings
@@ -172,14 +160,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
     /**
      * Navigate to search with optional query
      */
-    fun navigateToSearch(query: String = "") {
-        val fragment = SettingsSearchFragment.newInstance(query)
-
-        fragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack("settings_search")
-            .commit()
-    }
+    // Navigate to search removed
 
     /**
      * Highlight specific setting in current fragment
@@ -243,15 +224,7 @@ class SettingsDeepLinkHandler(private val activity: FragmentActivity) {
     /**
      * Generate search deep link URL
      */
-    fun generateSearchDeepLink(query: String, useHttps: Boolean = false): String {
-        val baseUrl = if (useHttps) {
-            "https://$HOST_APP/$PATH_SETTINGS/$PATH_SEARCH"
-        } else {
-            "$SCHEME_STUDYPLAN://$HOST_SETTINGS/$PATH_SEARCH"
-        }
-
-        return "$baseUrl?$PARAM_QUERY=${Uri.encode(query)}"
-    }
+    // Generate search link removed
 
     /**
      * Share setting as deep link

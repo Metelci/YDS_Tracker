@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mtlc.studyplan.settings.integration.*
+import com.mtlc.studyplan.settings.viewmodel.*
+import com.mtlc.studyplan.settings.data.*
 
 /**
  * Enhanced settings screen with polished UI and micro-interactions
@@ -24,33 +25,28 @@ import com.mtlc.studyplan.settings.integration.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnhancedSettingsScreen(
-    appIntegrationManager: AppIntegrationManager,
+    settingsRepository: SettingsRepository,
     onNavigateBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
-    // ViewModels for different integrations
-    val themeViewModel: ThemeViewModel = viewModel {
-        ThemeViewModel(appIntegrationManager.themeIntegration)
+    // Real ViewModels from our settings system
+    val notificationViewModel: NotificationSettingsViewModel = viewModel {
+        NotificationSettingsViewModel(settingsRepository, context)
     }
 
-    val notificationViewModel: NotificationViewModel = viewModel {
-        NotificationViewModel(appIntegrationManager.notificationIntegration)
+    val gamificationViewModel: GamificationSettingsViewModel = viewModel {
+        GamificationSettingsViewModel(settingsRepository, context)
     }
 
-    val gamificationViewModel: GamificationViewModel = viewModel {
-        GamificationViewModel(appIntegrationManager.gamificationIntegration)
-    }
-
-    val migrationViewModel: MigrationViewModel = viewModel {
-        MigrationViewModel(appIntegrationManager.migrationIntegration)
+    val settingsViewModel: SettingsViewModel = viewModel {
+        SettingsViewModel(settingsRepository, context)
     }
 
     // Collect states
-    val themeState by themeViewModel.themeState.collectAsState()
-    val notificationState by notificationViewModel.notificationState.collectAsState()
-    val gamificationState by gamificationViewModel.gamificationState.collectAsState()
-    val migrationState by migrationViewModel.migrationState.collectAsState()
+    val notificationState by notificationViewModel.uiState.collectAsState()
+    val gamificationState by gamificationViewModel.uiState.collectAsState()
+    val mainSettingsState by settingsViewModel.uiState.collectAsState()
 
     // UI state
     var selectedCategory by remember { mutableStateOf(SettingsCategory.APPEARANCE) }
@@ -74,7 +70,7 @@ fun EnhancedSettingsScreen(
                 }
             },
             actions = {
-                if (migrationState.isRunning) {
+                if (mainSettingsState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp
@@ -93,11 +89,12 @@ fun EnhancedSettingsScreen(
             )
         }
 
-        // Loading indicator for migrations
-        LoadingIndicator(
-            isLoading = migrationState.isRunning,
-            message = migrationState.currentMigration ?: "Running migration..."
-        )
+        // Loading indicator for settings operations
+        if (mainSettingsState.isLoading || notificationState.isLoading || gamificationState.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Row(modifier = Modifier.fillMaxSize()) {
             // Categories sidebar
@@ -136,8 +133,6 @@ fun EnhancedSettingsScreen(
                     SettingsCategory.APPEARANCE -> {
                         item {
                             AppearanceSettings(
-                                themeState = themeState,
-                                themeViewModel = themeViewModel,
                                 onFeedback = ::showFeedback
                             )
                         }
@@ -163,8 +158,8 @@ fun EnhancedSettingsScreen(
                     SettingsCategory.SYSTEM -> {
                         item {
                             SystemSettings(
-                                migrationState = migrationState,
-                                migrationViewModel = migrationViewModel,
+                                settingsState = mainSettingsState,
+                                settingsViewModel = settingsViewModel,
                                 onFeedback = ::showFeedback
                             )
                         }
@@ -190,10 +185,14 @@ private fun CategoryButton(
 
 @Composable
 private fun AppearanceSettings(
-    themeState: ThemeIntegration.ThemeState,
-    themeViewModel: ThemeViewModel,
     onFeedback: (String, Boolean) -> Unit
 ) {
+    // Theme state would be managed by a proper theme manager
+    var isDarkTheme by remember { mutableStateOf(false) }
+    var fontSize by remember { mutableStateOf(1.0f) }
+    var animationSpeed by remember { mutableStateOf(1.0f) }
+    var reducedMotion by remember { mutableStateOf(false) }
+    var highContrast by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = "Appearance",
@@ -210,9 +209,9 @@ private fun AppearanceSettings(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("Light", "Dark", "System").forEach { theme ->
                     val isSelected = when (theme.lowercase()) {
-                        "light" -> !themeState.darkTheme
-                        "dark" -> themeState.darkTheme
-                        "system" -> true // Would need system preference detection
+                        "light" -> !isDarkTheme
+                        "dark" -> isDarkTheme
+                        "system" -> false // System detection would be handled separately
                         else -> false
                     }
 
@@ -220,7 +219,11 @@ private fun AppearanceSettings(
                         text = theme,
                         isSelected = isSelected,
                         onClick = {
-                            themeViewModel.updateThemeMode(theme.lowercase())
+                            when (theme.lowercase()) {
+                                "light" -> isDarkTheme = false
+                                "dark" -> isDarkTheme = true
+                                "system" -> { /* Handle system theme */ }
+                            }
                             onFeedback("Theme changed to $theme", false)
                         }
                     )
@@ -235,15 +238,10 @@ private fun AppearanceSettings(
             icon = Icons.Filled.TextFields
         ) {
             EnhancedSlider(
-                value = themeState.fontSize,
+                value = fontSize,
                 onValueChange = { newSize ->
-                    val sizeString = when {
-                        newSize < 0.9f -> "small"
-                        newSize > 1.1f -> "large"
-                        newSize > 1.25f -> "xl"
-                        else -> "normal"
-                    }
-                    themeViewModel.updateFontSize(sizeString)
+                    fontSize = newSize
+                    onFeedback("Font size updated", false)
                 },
                 valueRange = 0.8f..1.4f,
                 label = "Font Scale",
@@ -258,15 +256,10 @@ private fun AppearanceSettings(
             icon = Icons.Filled.Speed
         ) {
             EnhancedSlider(
-                value = themeState.animationSpeed,
+                value = animationSpeed,
                 onValueChange = { newSpeed ->
-                    val speedString = when {
-                        newSpeed == 0f -> "disabled"
-                        newSpeed < 0.7f -> "slow"
-                        newSpeed > 1.3f -> "fast"
-                        else -> "normal"
-                    }
-                    themeViewModel.updateAnimationSpeed(speedString)
+                    animationSpeed = newSpeed
+                    onFeedback("Animation speed updated", false)
                 },
                 valueRange = 0f..2f,
                 label = "Animation Speed",
@@ -289,18 +282,18 @@ private fun AppearanceSettings(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EnhancedToggleSwitch(
-                    checked = themeState.reducedMotion,
+                    checked = reducedMotion,
                     onCheckedChange = {
-                        themeViewModel.toggleReducedMotion()
+                        reducedMotion = it
                         onFeedback("Reduced motion ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Reduce Motion"
                 )
 
                 EnhancedToggleSwitch(
-                    checked = themeState.highContrast,
+                    checked = highContrast,
                     onCheckedChange = {
-                        themeViewModel.toggleHighContrast()
+                        highContrast = it
                         onFeedback("High contrast ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "High Contrast"
@@ -312,8 +305,8 @@ private fun AppearanceSettings(
 
 @Composable
 private fun NotificationSettings(
-    notificationState: NotificationIntegration.NotificationState,
-    notificationViewModel: NotificationViewModel,
+    notificationState: NotificationSettingsViewModel.NotificationUiState,
+    notificationViewModel: NotificationSettingsViewModel,
     onFeedback: (String, Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -330,9 +323,9 @@ private fun NotificationSettings(
             icon = Icons.Filled.Notifications
         ) {
             EnhancedToggleSwitch(
-                checked = notificationState.pushNotificationsEnabled,
+                checked = notificationState.pushNotifications,
                 onCheckedChange = {
-                    notificationViewModel.togglePushNotifications()
+                    notificationViewModel.updatePushNotifications(it)
                     onFeedback("Notifications ${if (it) "enabled" else "disabled"}", false)
                 },
                 label = "Enable Notifications"
@@ -344,22 +337,22 @@ private fun NotificationSettings(
             title = "Study Reminders",
             description = "Get reminded to study daily",
             icon = Icons.Filled.Schedule,
-            isEnabled = notificationState.pushNotificationsEnabled
+            isEnabled = notificationState.pushNotifications
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EnhancedToggleSwitch(
-                    checked = notificationState.studyRemindersEnabled,
+                    checked = notificationState.studyReminders,
                     onCheckedChange = {
-                        notificationViewModel.toggleStudyReminders()
+                        notificationViewModel.updateStudyReminders(it)
                         onFeedback("Study reminders ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Daily Reminders",
-                    enabled = notificationState.pushNotificationsEnabled
+                    enabled = notificationState.pushNotifications
                 )
 
-                if (notificationState.studyRemindersEnabled) {
+                if (notificationState.studyReminders) {
                     Text(
-                        text = "Reminder Time: ${notificationState.studyReminderTime}",
+                        text = "Reminder Time: ${notificationState.studyReminderTime.formatTime()}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -372,40 +365,40 @@ private fun NotificationSettings(
             title = "Achievement Alerts",
             description = "Get notified when you unlock achievements",
             icon = Icons.Filled.EmojiEvents,
-            isEnabled = notificationState.pushNotificationsEnabled
+            isEnabled = notificationState.pushNotifications
         ) {
             EnhancedToggleSwitch(
-                checked = notificationState.achievementAlertsEnabled,
+                checked = notificationState.achievementAlerts,
                 onCheckedChange = {
-                    notificationViewModel.toggleAchievementAlerts()
+                    notificationViewModel.updateAchievementAlerts(it)
                     onFeedback("Achievement alerts ${if (it) "enabled" else "disabled"}", false)
                 },
                 label = "Achievement Notifications",
-                enabled = notificationState.pushNotificationsEnabled
+                enabled = notificationState.pushNotifications
             )
         }
 
         // Quiet hours
         EnhancedSettingsCard(
-            title = "Quiet Hours",
-            description = "Set times when notifications are silenced",
-            icon = Icons.Filled.DoNotDisturb,
-            isEnabled = notificationState.pushNotificationsEnabled
+            title = "Email Summaries",
+            description = "Weekly progress summaries via email",
+            icon = Icons.Filled.Email,
+            isEnabled = notificationState.pushNotifications
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EnhancedToggleSwitch(
-                    checked = notificationState.quietHoursEnabled,
+                    checked = notificationState.emailSummaries,
                     onCheckedChange = {
-                        notificationViewModel.toggleQuietHours()
-                        onFeedback("Quiet hours ${if (it) "enabled" else "disabled"}", false)
+                        notificationViewModel.updateEmailSummaries(it)
+                        onFeedback("Email summaries ${if (it) "enabled" else "disabled"}", false)
                     },
-                    label = "Enable Quiet Hours",
-                    enabled = notificationState.pushNotificationsEnabled
+                    label = "Enable Email Summaries",
+                    enabled = notificationState.pushNotifications
                 )
 
-                if (notificationState.quietHoursEnabled) {
+                if (notificationState.emailSummaries) {
                     Text(
-                        text = "Quiet: ${notificationState.quietHoursStart} - ${notificationState.quietHoursEnd}",
+                        text = "Frequency: ${notificationState.emailFrequency}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -417,8 +410,8 @@ private fun NotificationSettings(
 
 @Composable
 private fun GamificationSettings(
-    gamificationState: GamificationIntegration.GamificationState,
-    gamificationViewModel: GamificationViewModel,
+    gamificationState: GamificationSettingsViewModel.GamificationUiState,
+    gamificationViewModel: GamificationSettingsViewModel,
     onFeedback: (String, Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -436,22 +429,30 @@ private fun GamificationSettings(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EnhancedToggleSwitch(
-                    checked = gamificationState.pointsRewardsEnabled,
+                    checked = gamificationState.pointsRewards,
                     onCheckedChange = {
-                        gamificationViewModel.togglePointsRewards()
+                        gamificationViewModel.updatePointsRewards(it)
                         onFeedback("Points system ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Enable Points"
                 )
 
                 EnhancedToggleSwitch(
-                    checked = gamificationState.streakTrackingEnabled,
+                    checked = gamificationState.streakTracking,
                     onCheckedChange = {
-                        gamificationViewModel.toggleStreakTracking()
+                        gamificationViewModel.updateStreakTracking(it)
                         onFeedback("Streak tracking ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Track Streaks"
                 )
+
+                if (gamificationState.streakTracking) {
+                    Text(
+                        text = "Current Streak: ${gamificationState.currentStreak} days",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 
@@ -462,23 +463,19 @@ private fun GamificationSettings(
             icon = Icons.Filled.EmojiEvents
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                EnhancedToggleSwitch(
-                    checked = gamificationState.achievementBadgesEnabled,
-                    onCheckedChange = {
-                        gamificationViewModel.toggleAchievementBadges()
-                        onFeedback("Achievement badges ${if (it) "enabled" else "disabled"}", false)
-                    },
-                    label = "Show Badges"
+                Text(
+                    text = "Achievement system coming soon!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
 
-                EnhancedToggleSwitch(
-                    checked = gamificationState.levelProgressionEnabled,
-                    onCheckedChange = {
-                        gamificationViewModel.toggleLevelProgression()
-                        onFeedback("Level progression ${if (it) "enabled" else "disabled"}", false)
-                    },
-                    label = "Level System"
-                )
+                if (gamificationState.pointsRewards) {
+                    Text(
+                        text = "Total Points: ${gamificationState.totalPoints}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 
@@ -490,21 +487,21 @@ private fun GamificationSettings(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EnhancedToggleSwitch(
-                    checked = gamificationState.celebrationEffectsEnabled,
+                    checked = gamificationState.celebrationEffects,
                     onCheckedChange = {
-                        gamificationViewModel.toggleCelebrationEffects()
+                        gamificationViewModel.updateCelebrationEffects(it)
                         onFeedback("Celebration effects ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Celebration Effects"
                 )
 
                 EnhancedToggleSwitch(
-                    checked = gamificationState.rewardAnimationsEnabled,
+                    checked = gamificationState.streakRiskWarnings,
                     onCheckedChange = {
-                        gamificationViewModel.toggleRewardAnimations()
-                        onFeedback("Reward animations ${if (it) "enabled" else "disabled"}", false)
+                        gamificationViewModel.updateStreakRiskWarnings(it)
+                        onFeedback("Streak warnings ${if (it) "enabled" else "disabled"}", false)
                     },
-                    label = "Reward Animations"
+                    label = "Streak Risk Warnings"
                 )
             }
         }
@@ -513,8 +510,8 @@ private fun GamificationSettings(
 
 @Composable
 private fun SystemSettings(
-    migrationState: MigrationIntegration.MigrationState,
-    migrationViewModel: MigrationViewModel,
+    settingsState: SettingsViewModel.SettingsUiState,
+    settingsViewModel: SettingsViewModel,
     onFeedback: (String, Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -524,53 +521,58 @@ private fun SystemSettings(
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Version info
+        // App Info
         EnhancedSettingsCard(
             title = "App Version",
-            description = "Current version: ${migrationState.currentVersion} / Latest: ${migrationState.targetVersion}",
+            description = "Version: ${settingsState.appVersion}",
             icon = Icons.Filled.Info
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                LinearProgressIndicator(
-                    progress = migrationState.currentVersion.toFloat() / migrationState.targetVersion.toFloat(),
-                    modifier = Modifier.fillMaxWidth()
+                Text(
+                    text = "✓ App is running",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
 
-                if (migrationState.isUpToDate) {
+                if (settingsState.lastBackupDate != null) {
                     Text(
-                        text = "✓ App is up to date",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        text = "Last backup: ${settingsState.lastBackupDate}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
-                } else {
-                    Button(
-                        onClick = {
-                            migrationViewModel.forceMigration()
-                            onFeedback("Running migration...", false)
-                        },
-                        enabled = !migrationState.isRunning
-                    ) {
-                        Text("Update Now")
-                    }
                 }
             }
         }
 
-        // Migration history
-        if (migrationState.migrationHistory.isNotEmpty()) {
-            EnhancedSettingsCard(
-                title = "Update History",
-                description = "Recent app updates",
-                icon = Icons.Filled.History
-            ) {
-                Column {
-                    migrationState.migrationHistory.take(3).forEach { record ->
-                        Text(
-                            text = record,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
+        // Settings Actions
+        EnhancedSettingsCard(
+            title = "Settings Management",
+            description = "Backup and restore your settings",
+            icon = Icons.Filled.Settings
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = {
+                        settingsViewModel.exportAllSettings()
+                        onFeedback("Exporting settings...", false)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.FileDownload, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Export Settings")
+                }
+
+                Button(
+                    onClick = {
+                        settingsViewModel.clearAppCache()
+                        onFeedback("Cache cleared", false)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.Clear, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Clear Cache")
                 }
             }
         }

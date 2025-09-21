@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.mtlc.studyplan.R
@@ -22,9 +23,12 @@ import com.mtlc.studyplan.ui.components.ErrorCard
 import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
 import com.mtlc.studyplan.accessibility.AccessibilityUtils
 import kotlinx.coroutines.delay
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+// Swipe-to-refresh removed
 
 /**
  * Base fragment providing common functionality for all settings fragments
@@ -78,7 +82,6 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
         accessibilityManager = AccessibilityEnhancementManager(requireContext())
 
         setupRecyclerView()
-        setupSwipeRefresh()
         setupAccessibility()
         observeUiState()
 
@@ -110,14 +113,7 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
         }
     }
 
-    /**
-     * Setup swipe refresh functionality
-     */
-    private fun setupSwipeRefresh() {
-        binding.swipeRefresh.setOnRefreshListener {
-            refreshSettings()
-        }
-    }
+    // Swipe-to-refresh functionality removed
 
     /**
      * Setup accessibility enhancements
@@ -181,7 +177,6 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
      */
     protected fun showLoading() {
         binding.apply {
-            swipeRefresh.isRefreshing = false
             errorContainer.isVisible = false
             emptyStateContainer.isVisible = false
             settingsRecyclerView.isVisible = false
@@ -214,20 +209,23 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
             settingsRecyclerView.isVisible = false
             emptyStateContainer.isVisible = false
             errorContainer.isVisible = true
-            swipeRefresh.isRefreshing = false
         }
 
         loadingAnimator?.cancel()
 
-        // Show error card
-        val errorCard = ErrorCard(
-            error = error,
-            onRetry = { retryLoading() },
-            onDismiss = { binding.errorContainer.isVisible = false }
-        )
-
+        // Show error via Compose inside a ComposeView
         binding.errorContainer.removeAllViews()
-        binding.errorContainer.addView(errorCard)
+        val composeView = ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ErrorCard(
+                    error = error,
+                    onRetry = { retryLoading() },
+                    onDismiss = { binding.errorContainer.isVisible = false }
+                )
+            }
+        }
+        binding.errorContainer.addView(composeView)
     }
 
     /**
@@ -237,7 +235,6 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
         binding.apply {
             loadingContainer.isVisible = false
             errorContainer.isVisible = false
-            swipeRefresh.isRefreshing = false
         }
 
         loadingAnimator?.cancel()
@@ -349,13 +346,6 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
     }
 
     /**
-     * Refresh settings data
-     */
-    private fun refreshSettings() {
-        onRefreshRequested()
-    }
-
-    /**
      * Retry loading after error
      */
     private fun retryLoading() {
@@ -375,7 +365,6 @@ abstract class BaseSettingsFragment<UiState : BaseSettingsUiState> : Fragment() 
     protected abstract fun getCurrentSettingValue(setting: SettingItem): Any?
     protected abstract fun applySettingChange(setting: SettingItem, newValue: Any?)
     protected abstract fun persistSettingChange(setting: SettingItem, newValue: Any?)
-    protected abstract fun onRefreshRequested()
     protected abstract fun onRetryRequested()
 
     // Optional overrides

@@ -11,8 +11,8 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.mtlc.studyplan.databinding.ViewTimePickerSettingBinding
-import com.mtlc.studyplan.settings.ui.TimeSetting
-import com.mtlc.studyplan.settings.ui.TimeValue
+import com.mtlc.studyplan.settings.data.TimeSetting
+import com.mtlc.studyplan.settings.data.TimeValue
 
 /**
  * Custom view for time picker settings
@@ -146,8 +146,7 @@ class TimePickerSettingView @JvmOverloads constructor(
     private fun setupAccessibility(setting: TimeSetting) {
         contentDescription = "${setting.title}: ${setting.description}"
 
-        // Add role information
-        roleDescription = "Time picker"
+        // Role description removed for compatibility
 
         // Add state description
         stateDescription = "Currently set to: ${setting.currentTime.formatTime()}"

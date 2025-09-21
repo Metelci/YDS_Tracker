@@ -80,9 +80,12 @@ class SettingsDetailFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        settingsAdapter = SettingsDetailAdapter { settingItem ->
-            // Handle setting item click
-            viewModel.handleSettingClick(settingItem)
+        settingsAdapter = SettingsDetailAdapter { settingItem, newValue ->
+            when (settingItem) {
+                is com.mtlc.studyplan.settings.data.SettingItem.ActionSetting ->
+                    viewModel.handleSettingClick(settingItem)
+                else -> viewModel.validateAndUpdateSetting(settingItem, newValue)
+            }
         }
 
         binding.settingsRecyclerView.apply {
@@ -118,15 +121,21 @@ class SettingsDetailFragment : Fragment() {
             errorContainer.visibility = View.VISIBLE
         }
 
-        // Show error card
-        val errorCard = ErrorCard(
-            error = error,
-            onRetry = { viewModel.retry() },
-            onDismiss = { binding.errorContainer.visibility = View.GONE }
-        )
-
+        // Show error via Compose inside a ComposeView
         binding.errorContainer.removeAllViews()
-        binding.errorContainer.addView(errorCard)
+        val composeView = androidx.compose.ui.platform.ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                ErrorCard(
+                    error = error,
+                    onRetry = { viewModel.retry() },
+                    onDismiss = { binding.errorContainer.visibility = View.GONE }
+                )
+            }
+        }
+        binding.errorContainer.addView(composeView)
     }
 
     private fun showSuccess(uiState: SettingsDetailViewModel.SettingsDetailUiState) {

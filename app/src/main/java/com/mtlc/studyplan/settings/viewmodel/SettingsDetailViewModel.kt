@@ -8,6 +8,9 @@ import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.SettingItem
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.data.SettingsSection
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
+import com.mtlc.studyplan.settings.data.SettingAction
+import com.mtlc.studyplan.settings.data.SettingsOperationResult
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,22 +56,18 @@ class SettingsDetailViewModel(
 
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.getCategorySettings(categoryId)
-                    .catch { exception ->
-                        handleError(exception)
-                    }
-                    .collectLatest { sections ->
-                        val categoryTitle = repository.getCategoryTitle(categoryId)
+                val sections = repository.getCategorySections(categoryId)
+                val category = repository.getAllCategoriesSync().find { it.id == categoryId }
+                val categoryTitle = category?.title ?: "Settings"
 
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            isError = false,
-                            isSuccess = true,
-                            sections = sections,
-                            categoryTitle = categoryTitle,
-                            error = null
-                        )
-                    }
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isError = false,
+                    isSuccess = true,
+                    sections = sections,
+                    categoryTitle = categoryTitle,
+                    error = null
+                )
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -83,8 +82,16 @@ class SettingsDetailViewModel(
             try {
                 when (settingItem) {
                     is com.mtlc.studyplan.settings.data.ActionSetting -> {
-                        // Handle action settings (e.g., clear cache, export data)
-                        repository.executeAction(settingItem.id)
+                        // Handle action settings by converting to appropriate action
+                        val action = when (settingItem.id) {
+                            "clear_cache" -> SettingAction.ClearCache
+                            "reset_settings" -> SettingAction.ResetSettings
+                            "export_data" -> SettingAction.ExportData
+                            "reset_progress" -> SettingAction.ResetProgress
+                            "sync_data" -> SettingAction.SyncData
+                            else -> return@launch
+                        }
+                        repository.updateSetting(SettingsUpdateRequest.PerformAction(action))
                     }
                     else -> {
                         // Other setting types are handled by the adapter directly
@@ -103,7 +110,14 @@ class SettingsDetailViewModel(
     fun updateSetting(settingId: String, newValue: Any?) {
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.updateSetting(settingId, newValue)
+                val request = when (newValue) {
+                    is Boolean -> SettingsUpdateRequest.UpdateBoolean(settingId, newValue)
+                    is Int -> SettingsUpdateRequest.UpdateInt(settingId, newValue)
+                    is Float -> SettingsUpdateRequest.UpdateFloat(settingId, newValue)
+                    is String -> SettingsUpdateRequest.UpdateString(settingId, newValue)
+                    else -> return@launch
+                }
+                repository.updateSetting(request)
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -116,19 +130,28 @@ class SettingsDetailViewModel(
     fun validateAndUpdateSetting(settingItem: SettingItem, newValue: Any?) {
         viewModelScope.launch(exceptionHandler) {
             try {
-                val isValid = repository.validateSetting(settingItem, newValue)
-                if (isValid) {
-                    repository.updateSetting(settingItem.id, newValue)
-                } else {
-                    val error = AppError(
-                        type = ErrorType.VALIDATION,
-                        message = "Invalid value for ${settingItem.title}",
-                        cause = null
-                    )
-                    _uiState.value = _uiState.value.copy(
-                        isError = true,
-                        error = error
-                    )
+                val request = when (newValue) {
+                    is Boolean -> SettingsUpdateRequest.UpdateBoolean(settingItem.id, newValue)
+                    is Int -> SettingsUpdateRequest.UpdateInt(settingItem.id, newValue)
+                    is Float -> SettingsUpdateRequest.UpdateFloat(settingItem.id, newValue)
+                    is String -> SettingsUpdateRequest.UpdateString(settingItem.id, newValue)
+                    else -> return@launch
+                }
+                val result = repository.updateSetting(request)
+                when (result) {
+                    is SettingsOperationResult.ValidationError -> {
+                        val error = AppError(
+                            type = ErrorType.VALIDATION,
+                            message = result.errors.firstOrNull()?.message ?: "Invalid value for ${settingItem.title}",
+                            cause = null
+                        )
+                        _uiState.value = _uiState.value.copy(
+                            isError = true,
+                            error = error
+                        )
+                    }
+                    is SettingsOperationResult.Error -> throw Exception(result.message)
+                    else -> { /* Success - do nothing */ }
                 }
             } catch (exception: Exception) {
                 handleError(exception)
@@ -146,7 +169,8 @@ class SettingsDetailViewModel(
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
-                repository.resetCategoryToDefaults(categoryId)
+                // Reset all settings to defaults (no category-specific reset available)
+                repository.resetAllToDefaults()
 
                 // Reload the category settings to reflect changes
                 loadCategorySettings(categoryId)
@@ -164,7 +188,8 @@ class SettingsDetailViewModel(
 
         viewModelScope.launch(exceptionHandler) {
             try {
-                repository.exportCategorySettings(categoryId)
+                // Export all settings (no category-specific export available)
+                repository.exportAllSettings()
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -191,28 +216,6 @@ class SettingsDetailViewModel(
         )
     }
 
-    /**
-     * Search within category settings
-     */
-    fun searchSettings(query: String) {
-        val categoryId = _uiState.value.categoryId ?: return
-
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                val filteredSections = if (query.isBlank()) {
-                    repository.getCategorySections(categoryId)
-                } else {
-                    repository.searchCategorySettings(categoryId, query)
-                }
-
-                _uiState.value = _uiState.value.copy(
-                    sections = filteredSections
-                )
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
-        }
-    }
 
     private fun handleError(exception: Throwable) {
         val appError = when (exception) {

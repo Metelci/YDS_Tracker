@@ -85,21 +85,21 @@ class ActionSettingView @JvmOverloads constructor(
      */
     private fun styleActionButton(setting: ActionSetting) {
         when (setting.actionType) {
-            ActionSetting.ActionType.DESTRUCTIVE -> {
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE -> {
                 binding.actionButton.setTextColor(
                     ContextCompat.getColor(context, R.color.settings_error)
                 )
                 binding.actionButton.strokeColor =
                     ContextCompat.getColorStateList(context, R.color.settings_error)
             }
-            ActionSetting.ActionType.PRIMARY -> {
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.PRIMARY -> {
                 binding.actionButton.setTextColor(
                     ContextCompat.getColor(context, R.color.icon_selected_tint)
                 )
                 binding.actionButton.strokeColor =
                     ContextCompat.getColorStateList(context, R.color.icon_selected_tint)
             }
-            ActionSetting.ActionType.SECONDARY -> {
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY -> {
                 // Use default styling
                 binding.actionButton.setTextColor(
                     ContextCompat.getColor(context, android.R.color.system_neutral1_600)
@@ -237,14 +237,13 @@ class ActionSettingView @JvmOverloads constructor(
 
         binding.actionButton.contentDescription = setting.buttonText
 
-        // Add role information
-        roleDescription = "Action button"
+        // Role description removed for compatibility
 
         // Add state description based on action type
         stateDescription = when (setting.actionType) {
-            ActionSetting.ActionType.DESTRUCTIVE -> "Warning: This action cannot be undone"
-            ActionSetting.ActionType.PRIMARY -> "Primary action"
-            ActionSetting.ActionType.SECONDARY -> "Secondary action"
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE -> "Warning: This action cannot be undone"
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.PRIMARY -> "Primary action"
+            com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY -> "Secondary action"
         }
     }
 
@@ -254,3 +253,5 @@ class ActionSettingView @JvmOverloads constructor(
         clickAnimator?.cancel()
     }
 }
+
+

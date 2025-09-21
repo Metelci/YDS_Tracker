@@ -134,7 +134,7 @@ class CloudSyncManager(
 
             } catch (exception: Exception) {
                 val error = AppError(
-                    type = ErrorType.CONFIGURATION,
+                    type = ErrorType.VALIDATION,
                     message = "Failed to enable auto sync: ${exception.message}",
                     cause = exception
                 )

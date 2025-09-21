@@ -2,7 +2,9 @@ package com.mtlc.studyplan.settings.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.settings.data.ActionSetting
+import com.mtlc.studyplan.settings.data.SettingItem
+import com.mtlc.studyplan.settings.data.ToggleSetting
 import com.mtlc.studyplan.settings.ui.views.ActionSettingView
 import com.mtlc.studyplan.settings.ui.views.ToggleSettingView
 
@@ -116,8 +118,8 @@ class GamificationSettingsAdapter(
                 onSettingChanged(setting, Unit)
 
                 // Show appropriate feedback based on action type
-                when (setting.actionType) {
-                    ActionSetting.ActionType.DESTRUCTIVE -> {
+                when (setting.actionType.name) {
+                    "DESTRUCTIVE" -> {
                         // Show loading briefly for destructive actions
                         actionView.showLoading(true)
                         actionView.postDelayed({
@@ -133,3 +135,5 @@ class GamificationSettingsAdapter(
         }
     }
 }
+
+
