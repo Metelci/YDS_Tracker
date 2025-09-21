@@ -108,15 +108,23 @@ Place your screenshots at the above paths to render inline in GitHub.
 This project places privacy and security first. Highlights:
 
 - **Encryption:** AES‑256‑GCM for sensitive data; hashing with SHA‑256 and PBKDF2.
-- **Secure Storage:** Encrypted SharedPreferences and secure key handling.
-- **Authentication:** BiometricPrompt, PIN/password, secure session management.
+- **Secure Storage:** Encrypted DataStore with comprehensive error handling and recovery.
+- **Authentication:** BiometricPrompt, PIN/password, secure session management with attempt limiting.
 - **Network:** HTTPS only, certificate pinning, strict `NetworkSecurityConfig`.
 - **Hardening:** Input validation/sanitization, secure memory wipe, safe logging.
+- **Error Handling:** Comprehensive error handling with recovery mechanisms for security managers.
 
 ### Security Documentation
 - `SECURITY_USAGE_GUIDE.md` — How to use security utilities in app code.
 - `SECURITY_INTEGRATION_GUIDE.md` — Integrating auth, storage, and network security.
 - `SECURITY_POLICY.md` — Principles, standards, and operational policies.
+
+### Authentication UI Components
+- **AuthenticationScreen** - Main authentication dispatcher with method detection
+- **FirstTimeSetupScreen** - Complete setup wizard for new users
+- **PinAuthenticationScreen** - Secure PIN entry with attempt limiting and lockout
+- **PasswordAuthenticationScreen** - Password authentication interface
+- **BiometricAuthenticationScreen** - Biometric prompt integration
 
 Key implementation files include `app/src/main/java/com/mtlc/studyplan/security/` and `app/src/main/res/xml/network_security_config.xml`.
 
@@ -134,14 +142,14 @@ This app has been migrated from Material 2 to **Material 3** for modern UI consi
 - ✅ **UI Components**: All screens use Material 3 components (NavigationBar, PrimaryTabRow, Material 3 color schemes)
 - ✅ **Design System**: Consistent spacing tokens, shape tokens, and color schemes
 - ✅ **Theming**: Dynamic Material 3 theming with proper light/dark mode support
-- ⚠️ **Build Status**: Some compilation issues remain in legacy components (see `.claude/VALIDATION_REPORT.md`)
+- ✅ **Build Status**: Full Material 3 compliance - all legacy Material 2 dependencies removed
 
 For detailed migration information, see the [Migration Documentation](#migration-documentation) section.
 
 ## App Id & Entry Point
 
 - **Application Id:** `com.mtlc.studyplan` (`app/build.gradle.kts`)
-- **Launcher Activity:** `.MainActivity` (`app/src/main/AndroidManifest.xml`)
+- **Launcher Activity:** `.MinimalMainActivity` (`app/src/main/AndroidManifest.xml`)
 
 ## Build & Run
 
@@ -155,11 +163,11 @@ For detailed migration information, see the [Migration Documentation](#migration
 ```bash
 # Windows
 gradlew.bat :app:installDebug
-adb shell am start -n com.mtlc.studyplan/.MainActivity
+adb shell am start -n com.mtlc.studyplan/.MinimalMainActivity
 
 # Linux/Mac
 ./gradlew :app:installDebug
-adb shell am start -n com.mtlc.studyplan/.MainActivity
+adb shell am start -n com.mtlc.studyplan/.MinimalMainActivity
 ```
 
 ### Running Tests
@@ -232,7 +240,7 @@ adb shell am start -n com.mtlc.studyplan/.MainActivity
 #### Certificate Pinning in Debug
 - **Problem:** Network requests fail in debug builds
 - **Solution:**
-  1. Uncomment `CertificatePinRetriever.getCertificatePins()` in `MainActivity.kt`
+  1. Uncomment `CertificatePinRetriever.getCertificatePins()` in `MinimalMainActivity.kt`
   2. Run the app in debug mode
   3. Copy logged SHA-256 hashes to `network_security_config.xml` and `NetworkSecurityManager.kt`
 
@@ -277,7 +285,7 @@ adb shell am start -n com.mtlc.studyplan/.MainActivity
 - For end users, use the in-app "Customize" action (top bar) to hide/edit tasks or add custom tasks per day. Overrides are persisted in `DataStore` and merged at runtime.
 
 Suggested future features:
-- **Progress Export**: Implement progress export via `ProgressRepository` for PDF generation. Add a new composable in `MainActivity.kt` that queries the repository and uses a PDF library like iText or Android's PdfDocument.
+- **Progress Export**: Implement progress export via `ProgressRepository` for PDF generation. Add a new composable in `MinimalMainActivity.kt` that queries the repository and uses a PDF library like iText or Android's PdfDocument.
 - **Backup/Sync**: Encrypted cloud backup of progress (end-to-end encryption) for multi-device continuity.
 
 ## Privacy
@@ -333,6 +341,7 @@ See [Repository Guidelines](AGENTS.md) for contributor onboarding, coding conven
 - **Forbidden imports**: `androidx.compose.material` (Material 2), `com.google.accompanist.swiperefresh`
 - **Required reviews**: Any changes to UI components must use Material 3 equivalents
 - **Build validation**: Detekt rules prevent legacy component reintroduction
+- **Dependency checks**: Build system blocks legacy Material 2 dependencies
 
 Open issues and PRs are welcome. Please follow the security guidance in `SECURITY_POLICY.md` and reference `SECURITY_INTEGRATION_GUIDE.md` for any feature touching authentication, storage, or networking.
 

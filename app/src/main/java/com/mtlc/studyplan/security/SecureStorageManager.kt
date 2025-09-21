@@ -32,10 +32,18 @@ class SecureStorageManager(private val context: Context) {
     }
 
     /**
-     * Stores encrypted data securely
+     * Stores encrypted data securely with comprehensive error handling
      */
-    suspend fun storeSecureData(key: String, value: String) {
-        try {
+    suspend fun storeSecureData(key: String, value: String): Result<Unit> {
+        return try {
+            // Input validation
+            if (key.isBlank()) {
+                return Result.failure(IllegalArgumentException("Key cannot be blank"))
+            }
+            if (value.isBlank()) {
+                return Result.failure(IllegalArgumentException("Value cannot be blank"))
+            }
+
             val encryptedValue = SecurityUtils.encryptString(value)
 
             context.secureDataStore.edit { preferences ->
@@ -43,12 +51,13 @@ class SecureStorageManager(private val context: Context) {
             }
 
             SecurityUtils.SecurityLogger.logSecurityEvent("Secure data stored for key: ${key.take(10)}...")
+            Result.success(Unit)
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
-                "Secure data storage failed: ${e.message}",
+                "Secure data storage failed for key: ${key.take(10)}...: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
-            throw SecurityException("Failed to store secure data", e)
+            Result.failure(SecurityException("Failed to store secure data", e))
         }
     }
 
@@ -296,6 +305,82 @@ class SecureStorageManager(private val context: Context) {
             hasEncryptedData = hasUserToken || hasApiKey || hasUserData,
             dataCount = listOf(hasUserToken, hasApiKey, hasUserData).count { it }
         )
+    }
+
+    /**
+     * Comprehensive initialization check with recovery mechanisms
+     */
+    suspend fun initializeSecurely(): Result<Unit> {
+        return try {
+            // Test basic DataStore functionality
+            val testKey = "init_test"
+            val testValue = "test_value"
+
+            val storeResult = storeSecureData(testKey, testValue)
+            if (storeResult.isFailure) {
+                return Result.failure(storeResult.exceptionOrNull() ?: SecurityException("Storage initialization failed"))
+            }
+
+            val retrievedValue = getSecureData(testKey)
+            if (retrievedValue != testValue) {
+                return Result.failure(SecurityException("Data integrity check failed"))
+            }
+
+            // Clean up test data
+            removeSecureData(testKey)
+
+            SecurityUtils.SecurityLogger.logSecurityEvent("Secure storage initialization successful")
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Secure storage initialization error: ${e.message}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+            )
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Attempts to recover from storage corruption
+     */
+    suspend fun recoverFromCorruption(): Result<Unit> {
+        return try {
+            SecurityUtils.SecurityLogger.logSecurityEvent("Attempting storage recovery")
+
+            // Create backup of current data
+            val backupData = exportEncryptedData()
+
+            // Clear all data
+            clearAllSecureData()
+
+            // Reinitialize with clean state
+            val initResult = initializeSecurely()
+            if (initResult.isFailure) {
+                return initResult
+            }
+
+            // Restore data if backup was successful
+            if (backupData.isNotBlank()) {
+                try {
+                    importEncryptedData(backupData)
+                    SecurityUtils.SecurityLogger.logSecurityEvent("Storage recovery successful")
+                } catch (e: Exception) {
+                    SecurityUtils.SecurityLogger.logSecurityEvent(
+                        "Failed to restore data during recovery: ${e.message}",
+                        SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+                    )
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Storage recovery failed: ${e.message}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+            )
+            Result.failure(e)
+        }
     }
 
     data class SecurityStatus(

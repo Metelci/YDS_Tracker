@@ -22,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 45
-        versionName = "2.6.1"
+        versionCode = 46
+        versionName = "2.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -69,6 +69,42 @@ android {
     }
 }
 
+// Legacy dependency validation - runs on all configurations
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        // Block legacy Material 2 dependencies
+        if (details.requested.group == "androidx.compose.material" &&
+            details.requested.name != "material3" &&
+            details.requested.name != "material3-window-size-class") {
+            throw GradleException(
+                "❌ Legacy Material 2 dependency detected: ${details.requested.group}:${details.requested.name}:${details.requested.version}\n" +
+                "🚫 This project uses Material 3 exclusively. Please use androidx.compose.material3.* instead.\n" +
+                "📖 See README.md for Material 3 migration guidelines."
+            )
+        }
+
+        // Block other deprecated dependencies
+        if (details.requested.group == "com.google.accompanist" &&
+            details.requested.name == "swiperefresh") {
+            throw GradleException(
+                "❌ Deprecated Accompanist SwipeRefresh dependency detected: ${details.requested.group}:${details.requested.name}\n" +
+                "🔄 Please use androidx.compose.material3.pulltorefresh instead.\n" +
+                "📖 See README.md for Material 3 migration guidelines."
+            )
+        }
+
+        // Block other legacy Material dependencies
+        if (details.requested.group == "com.google.android.material" &&
+            details.requested.name == "material") {
+            throw GradleException(
+                "❌ Legacy Material Design Components dependency detected: ${details.requested.group}:${details.requested.name}\n" +
+                "🔄 This project uses Material 3. Please use androidx.compose.material3.* instead.\n" +
+                "📖 See README.md for Material 3 migration guidelines."
+            )
+        }
+    }
+}
+
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -87,8 +123,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.compose.material:material")
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation(libs.androidx.navigation.compose)
     implementation("androidx.compose.animation:animation")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 

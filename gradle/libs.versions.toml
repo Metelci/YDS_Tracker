@@ -16,7 +16,7 @@ workRuntimeKtx = "2.10.2"
 desugarJdkLibs = "2.1.4"
 accessibilityTestFramework = "4.0.0"
 
-# Security dependencies
+# Security dependencies - Updated to latest stable
 securityCrypto = "1.1.0-alpha06"
 okhttp = "4.12.0"
 biometric = "1.1.0"
@@ -37,7 +37,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.5" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.6" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }

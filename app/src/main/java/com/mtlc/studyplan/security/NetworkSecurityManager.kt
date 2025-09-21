@@ -29,20 +29,28 @@ class NetworkSecurityManager(private val context: Context) {
     }
 
     /**
-     * Creates a secure OkHttpClient
+     * Creates a secure OkHttpClient with comprehensive error handling
      */
     fun createSecureOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor(createAuthInterceptor())
-            .addInterceptor(createSecurityHeadersInterceptor())
-            .addInterceptor(createLoggingInterceptor())
-            .certificatePinner(certificatePinner)
-            .sslSocketFactory(createSecureSSLSocketFactory(), getTrustManager())
-            .hostnameVerifier(createHostnameVerifier())
-            .build()
+        return try {
+            OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(createAuthInterceptor())
+                .addInterceptor(createSecurityHeadersInterceptor())
+                .addInterceptor(createLoggingInterceptor())
+                .certificatePinner(certificatePinner)
+                .sslSocketFactory(createSecureSSLSocketFactory(), getTrustManager())
+                .hostnameVerifier(createHostnameVerifier())
+                .build()
+        } catch (e: Exception) {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Failed to create secure OkHttpClient: ${e.message}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+            )
+            throw SecurityException("Network security initialization failed", e)
+        }
     }
 
     /**
@@ -426,6 +434,54 @@ class NetworkSecurityManager(private val context: Context) {
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Secure download error: ${e.message}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+            )
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Comprehensive initialization check with recovery mechanisms
+     */
+    fun initializeSecurely(): Result<Unit> {
+        return try {
+            // Test SSL/TLS configuration
+            val sslSocketFactory = createSecureSSLSocketFactory()
+            val trustManager = getTrustManager()
+
+            // Test certificate pinner
+            val testUrl = "https://ais.osym.gov.tr"
+            val testRequest = Request.Builder()
+                .url(testUrl)
+                .head()
+                .build()
+
+            // Create a minimal client for testing
+            val testClient = OkHttpClient.Builder()
+                .sslSocketFactory(sslSocketFactory, trustManager)
+                .certificatePinner(certificatePinner)
+                .build()
+
+            // Test the connection (with timeout)
+            val call = testClient.newCall(testRequest)
+            val response = call.execute()
+
+            if (response.isSuccessful) {
+                SecurityUtils.SecurityLogger.logSecurityEvent("Network security initialization successful")
+                response.close()
+                Result.success(Unit)
+            } else {
+                SecurityUtils.SecurityLogger.logSecurityEvent(
+                    "Network security initialization failed: HTTP ${response.code}",
+                    SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+                )
+                response.close()
+                Result.failure(SecurityException("Network security validation failed"))
+            }
+
+        } catch (e: Exception) {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Network security initialization error: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
             Result.failure(e)
