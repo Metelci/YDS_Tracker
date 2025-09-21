@@ -2,7 +2,6 @@
 <resources>
     <!-- Settings Search -->
     <string name="search_hint">Search for settings…</string>
-    <string name="search_voice_hint">Tap to search by voice</string>
     <string name="search_clear">Clear search</string>
     <string name="search_results_count">%d results found</string>
     <string name="search_no_results">No results found</string>
@@ -57,7 +56,6 @@
     <string name="choose_sync_provider">Choose Cloud Provider</string>
     <string name="google_drive">Google Drive</string>
     <string name="dropbox">Dropbox</string>
-    <string name="icloud">iCloud</string>
     <string name="provider_configuration_in_progress">Configuring cloud provider…</string>
 
     <!-- Backup History -->
@@ -174,16 +172,7 @@
     <string name="feature_sync_description">Keep your settings synchronized on all your devices</string>
 
     <!-- Voice Search -->
-    <string name="voice_search_prompt">Say something to search for settings</string>
-    <string name="voice_search_permission_required">Microphone permission required for voice search</string>
-    <string name="voice_search_not_available">Voice search is not available on this device</string>
-    <string name="voice_search_network_error">Network error during voice recognition</string>
-    <string name="voice_search_audio_error">Audio error during voice recognition</string>
-    <string name="voice_search_recognition_error">Could not recognize speech</string>
-    <string name="voice_search_timeout">Voice search timed out</string>
-    <string name="voice_search_unknown_error">Unknown voice search error</string>
     <string name="voice_search_listening">Listening…</string>
-    <string name="voice_search_processing">Processing speech…</string>
 
     <!-- Conflict Resolution -->
     <string name="conflict_resolution_title">Resolve Setting Conflicts</string>

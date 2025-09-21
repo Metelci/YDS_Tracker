@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +53,8 @@ fun AwardsTab(
 @Composable
 private fun AwardsTabPreview() {
     val repo = FakeSocialRepository()
+    val awards = repo.awards.collectAsState()
     StudyPlanTheme {
-        AwardsTab(awards = repo.awards.value)
+        AwardsTab(awards = awards.value)
     }
 }

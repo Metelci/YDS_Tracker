@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -135,7 +136,8 @@ private fun statusLabel(status: FriendStatus): String = when (status) {
 @Composable
 private fun FriendRowPreview() {
     val repo = FakeSocialRepository()
+    val friends = repo.friends.collectAsState()
     StudyPlanTheme {
-        FriendRow(friend = repo.friends.value.first(), onClick = {})
+        FriendRow(friend = friends.value.first(), onClick = {})
     }
 }

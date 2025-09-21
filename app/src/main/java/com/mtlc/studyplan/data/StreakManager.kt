@@ -177,7 +177,7 @@ object StreakIntegration {
             preview = streakManager.calculatePointsForTask(taskDescription, taskDetails)
         }
 
-        return derivedStateOf { preview }
+        return remember { derivedStateOf { preview } }
     }
 }
 

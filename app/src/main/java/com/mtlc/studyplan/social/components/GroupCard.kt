@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -223,9 +224,10 @@ private fun tagColor(tag: String): Pair<Color, Color> {
 @Composable
 private fun GroupCardPreview() {
     val repo = FakeSocialRepository()
+    val groups = repo.groups.collectAsState()
     StudyPlanTheme {
         GroupCard(
-            group = repo.groups.value.first(),
+            group = groups.value.first(),
             onToggleJoin = {},
             onShare = {}
         )

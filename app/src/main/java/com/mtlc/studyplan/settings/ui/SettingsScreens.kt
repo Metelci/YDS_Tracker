@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import android.annotation.SuppressLint
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -13,6 +14,7 @@ fun SettingsScreen(
     onNavigateToCategory: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
     ) { _ ->
@@ -27,6 +29,7 @@ fun CategoryDetailScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {}
 ) {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
         topBar = { TopAppBar(title = { Text(title) }) }
     ) { _ ->

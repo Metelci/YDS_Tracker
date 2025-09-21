@@ -225,7 +225,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             categoriesRecyclerView.visibility = View.VISIBLE
 
             // Update app version
-            appVersionText.text = getString(R.string.app_version_format, appVersion)
+            appVersionText.text = getString(R.string.app_version_format, appVersion, "1")
         }
 
         originalCategories = categories
@@ -271,7 +271,8 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
             binding.appVersionText.text = getString(
                 R.string.app_version_format,
-                "${packageInfo.versionName} (${packageInfo.longVersionCode})"
+                packageInfo.versionName,
+                packageInfo.longVersionCode.toString()
             )
         } catch (e: PackageManager.NameNotFoundException) {
             binding.appVersionText.text = getString(R.string.app_version_unknown)

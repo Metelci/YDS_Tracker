@@ -199,7 +199,7 @@ class PerformanceOptimizer private constructor(
 
         memorySnapshots.add(memoryInfo)
         if (memorySnapshots.size > 100) {
-            memorySnapshots.removeFirst()
+            memorySnapshots.removeAt(0)
         }
 
         // Calculate average frame time
@@ -350,7 +350,7 @@ class PerformanceOptimizer private constructor(
 
         frameMetrics.add(frameTime)
         if (frameMetrics.size > 60) { // Keep last 60 frames
-            frameMetrics.removeFirst()
+            frameMetrics.removeAt(0)
         }
     }
 

@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Study Plan</string>
+    <string name="app_title">YDS Yolculuğu</string>
+    <string name="email_subject">YDS Yolculuğu Uygulama Geri Bildirimi</string>
+    <string name="email_chooser_title">E-posta gönder...</string>
+    <string name="upcoming_exam">Yaklaşan Sınav:</string>
+    <string name="application_deadline">Başvuru Son Tarihi</string>
+    <string name="time_until_exam">Sınava Kalan Süre</string>
+    <string name="osym_button">Resmi Sınav Kurulu Web Sitesine Git</string>
+    <string name="time_expired">Süre Doldu</string>
+    <string name="achievements_title">Başarılar</string>
+    <string name="first_task_title">İlk Adım</string>
+    <string name="first_task_desc">İlk görevinizi tamamladınız!</string>
+    <string name="hundred_tasks_title">Yolda</string>
+    <string name="hundred_tasks_desc">100 görevi tamamladınız!</string>
+    <string name="prep_complete_title">Hazırlık Dönemi Tamamlandı!</string>
+    <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladınız. Artık deneme sınavı zamanı!</string>
+    <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
+    <string name="first_exam_week_desc">Deneme sınavı kampının son ayına başladınız!</string>
     <!-- Onboarding (Turkish) -->
     <string name="onboarding_title">Planınızı Kişiselleştirin</string>
     <string name="exam_date_title">Sınav Tarihini Seçin</string>

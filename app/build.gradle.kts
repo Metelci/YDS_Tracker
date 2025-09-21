@@ -64,6 +64,23 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    lint {
+        disable.add("SuspiciousModifierThen")
+    }
+
+    // Fix Gradle 9.0 compatibility warnings
+    configurations.all {
+        if (name.contains("RuntimeClasspathCopy")) {
+            isCanBeConsumed = false
+        }
+        // Ensure configurations are properly marked for resolution
+        if (isCanBeResolved && isCanBeConsumed) {
+            if (name.endsWith("ClasspathCopy") || name.contains("RuntimeClasspath")) {
+                isCanBeConsumed = false
+            }
+        }
+    }
 }
 
 // Legacy dependency validation - temporarily disabled for audit

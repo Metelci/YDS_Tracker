@@ -56,8 +56,9 @@ class SettingsCategoryAdapter(
 
         // Set click listener
         holder.itemView.setOnClickListener {
+            val currentPosition = holder.getAdapterPosition()
             val previousSelected = selectedPosition
-            selectedPosition = position
+            selectedPosition = currentPosition
 
             // Animate deselection of previous item
             if (previousSelected != -1 && previousSelected < filteredCategories.size) {
@@ -65,7 +66,7 @@ class SettingsCategoryAdapter(
             }
 
             // Animate selection of current item
-            notifyItemChanged(position)
+            notifyItemChanged(currentPosition)
 
             // Trigger click callback with shared element
             clickListener.onCategoryClick(category, holder.itemView)

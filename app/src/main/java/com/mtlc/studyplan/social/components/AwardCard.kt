@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -171,7 +172,8 @@ private data class RarityPalette(
 @Composable
 private fun AwardCardPreview() {
     val repo = FakeSocialRepository()
+    val awards = repo.awards.collectAsState()
     StudyPlanTheme {
-        AwardCard(award = repo.awards.value.first())
+        AwardCard(award = awards.value.first())
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apply">Uygula</string>
+    <string name="current_value">Anlık değer</string>
+    <string name="backup_value">Yedek değer</string>
+    <string name="recommended">Önerilen</string>
+    <string name="error_title">Hata</string>
+    <string name="conflict_resolution_error">Karışıklık çözülemedi. Lütfen tekrar deneyin.</string>
+    <string name="apply_selected">Seçineni Uygula</string>
+    <string name="keep_current_value">Varolanı Sakla</string>
+    <string name="use_backup_value">Yedeği kullan</string>
+    <string name="smart_merge_title">Akıllı Birleştirme</string>
+    <string name="apply_backup_values_title">Tüm Yedek Değerlerini Uygula</string>
+    <string name="voice_search_listening">Dinliyor...</string>
+    <string name="search_clear">Aramayı temizle</string>
+    <string name="search_recent">Son aramalar</string>
+    <string name="search_suggestions">Öneriler</string>
+    <string name="search_loading">Arıyor...</string>
+    <string name="local_backup_title">Yerel Yedek</string>
+    <string name="setup_cloud_sync">Bulut Eşitlemesini Kur</string>
+    <string name="sync_now">Şimdi Eşitle</string>
+    <string name="no_backup_yet">Henüz yedek oluşturulmadı</string>
+    <string name="clear_history">Geçmişi Temizle</string>
+    <string name="advanced_options_title">Gelişmiş Seçenekler</string>
+    <string name="google_drive">Google Drive</string>
+    <string name="dropbox">Dropbox</string>
+    <string name="clear_backup_history_title">Yedek Geçmişini Temizle</string>
+    <string name="clear">Temizle</string>
+    <string name="accessibility_settings">Erişilebilirlik</string>
+    <string name="high_contrast_mode">Yüksek Karşıtlık Modu</string>
+</resources>

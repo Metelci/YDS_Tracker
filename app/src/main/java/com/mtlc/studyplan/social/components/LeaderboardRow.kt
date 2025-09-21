@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -119,6 +120,7 @@ private fun fallbackInitial(name: String): String = name
 private fun LeaderboardRowPreview() {
     val repo = FakeSocialRepository()
     StudyPlanTheme {
-        LeaderboardRow(rank = 1, entry = repo.ranks.value.first())
+        val ranks = repo.ranks.collectAsState()
+        LeaderboardRow(rank = 1, entry = ranks.value.first())
     }
 }

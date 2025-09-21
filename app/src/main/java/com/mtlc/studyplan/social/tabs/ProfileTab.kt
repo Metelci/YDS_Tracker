@@ -28,6 +28,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -378,8 +379,9 @@ private fun hoursPerMonth(hours: Int): Int = hours * 4
 private fun ProfileTabPreview() {
     val repo = FakeSocialRepository()
     StudyPlanTheme {
+        val profile = repo.profile.collectAsState()
         ProfileTab(
-            profile = repo.profile.value,
+            profile = profile.value,
             onAvatarSelected = {},
             onSaveGoal = {}
         )
