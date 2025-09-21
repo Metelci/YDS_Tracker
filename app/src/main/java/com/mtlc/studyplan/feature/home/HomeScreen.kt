@@ -24,11 +24,13 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+// DataStore extension for HomeScreen
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
     val appContext = context.applicationContext
-    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
     val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.dataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
