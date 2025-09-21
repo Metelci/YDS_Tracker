@@ -3,9 +3,6 @@ package com.mtlc.studyplan.settings.ui
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.databinding.ItemSettingsCategoryBinding
 import com.mtlc.studyplan.settings.data.SettingsCategory
-import java.util.*
 
 /**
  * RecyclerView adapter for settings categories with Material Design 3 styling and animations
@@ -31,8 +27,6 @@ class SettingsCategoryAdapter(
     }
 
     private var categories: List<SettingsCategory> = emptyList()
-    private var filteredCategories: List<SettingsCategory> = emptyList()
-    private var searchQuery: String = ""
     private var selectedPosition: Int = -1
 
     companion object {
@@ -51,8 +45,8 @@ class SettingsCategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val category = filteredCategories[position]
-        holder.bind(category, searchQuery, position == selectedPosition)
+        val category = categories[position]
+        holder.bind(category, position == selectedPosition)
 
         // Set click listener
         holder.itemView.setOnClickListener {
@@ -61,7 +55,7 @@ class SettingsCategoryAdapter(
             selectedPosition = currentPosition
 
             // Animate deselection of previous item
-            if (previousSelected != -1 && previousSelected < filteredCategories.size) {
+            if (previousSelected != -1 && previousSelected < categories.size) {
                 notifyItemChanged(previousSelected)
             }
 
@@ -76,21 +70,11 @@ class SettingsCategoryAdapter(
         holder.itemView.transitionName = "settings_category_${category.id}"
     }
 
-    override fun getItemCount(): Int = filteredCategories.size
+    override fun getItemCount(): Int = categories.size
 
-    fun updateCategories(newCategories: List<SettingsCategory>, query: String = "") {
+    fun updateCategories(newCategories: List<SettingsCategory>) {
         val oldCategories = categories
         categories = newCategories
-        searchQuery = query
-
-        filteredCategories = if (query.isBlank()) {
-            categories
-        } else {
-            categories.filter { category ->
-                category.title.contains(query, ignoreCase = true) ||
-                category.description.contains(query, ignoreCase = true)
-            }
-        }
 
         // Use DiffUtil for efficient updates
         val diffResult = DiffUtil.calculateDiff(
@@ -114,10 +98,10 @@ class SettingsCategoryAdapter(
 
         private var currentAnimator: ValueAnimator? = null
 
-        fun bind(category: SettingsCategory, searchQuery: String, isSelected: Boolean) {
+        fun bind(category: SettingsCategory, isSelected: Boolean) {
             // Set category data
-            binding.categoryTitle.text = highlightSearchText(category.title, searchQuery)
-            binding.categoryDescription.text = highlightSearchText(category.description, searchQuery)
+            binding.categoryTitle.text = category.title
+            binding.categoryDescription.text = category.description
 
             // Set category icon
             loadCategoryIcon(category)
@@ -204,31 +188,6 @@ class SettingsCategoryAdapter(
             }
         }
 
-        private fun highlightSearchText(text: String, query: String): CharSequence {
-            if (query.isBlank()) return text
-
-            val spannable = SpannableString(text)
-            val queryLower = query.lowercase(Locale.getDefault())
-            val textLower = text.lowercase(Locale.getDefault())
-
-            var startIndex = 0
-            while (startIndex < textLower.length) {
-                val index = textLower.indexOf(queryLower, startIndex)
-                if (index == -1) break
-
-                val highlightColor = ContextCompat.getColor(context, R.color.search_highlight_color)
-                spannable.setSpan(
-                    BackgroundColorSpan(highlightColor),
-                    index,
-                    index + query.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                startIndex = index + query.length
-            }
-
-            return spannable
-        }
 
         private fun setupAccessibility(category: SettingsCategory) {
             itemView.contentDescription = context.getString(
@@ -301,15 +260,15 @@ class SettingsCategoryAdapter(
             super.onBindViewHolder(holder, position, payloads)
         } else {
             // Handle partial updates
-            val category = filteredCategories[position]
+            val category = categories[position]
             val changes = payloads[0] as Map<String, Any>
 
             changes["title"]?.let {
-                holder.binding.categoryTitle.text = highlightSearchText(it as String, searchQuery)
+                holder.binding.categoryTitle.text = it as String
             }
 
             changes["description"]?.let {
-                holder.binding.categoryDescription.text = highlightSearchText(it as String, searchQuery)
+                holder.binding.categoryDescription.text = it as String
             }
 
             changes["active"]?.let {
@@ -318,30 +277,4 @@ class SettingsCategoryAdapter(
         }
     }
 
-    private fun highlightSearchText(text: String, query: String): CharSequence {
-        if (query.isBlank()) return text
-
-        val spannable = SpannableString(text)
-        val queryLower = query.lowercase(Locale.getDefault())
-        val textLower = text.lowercase(Locale.getDefault())
-
-        var startIndex = 0
-        while (startIndex < textLower.length) {
-            val index = textLower.indexOf(queryLower, startIndex)
-            if (index == -1) break
-
-            // Use a placeholder color - this should be defined in colors.xml
-            val highlightColor = android.graphics.Color.YELLOW // Placeholder
-            spannable.setSpan(
-                BackgroundColorSpan(highlightColor),
-                index,
-                index + query.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            startIndex = index + query.length
-        }
-
-        return spannable
-    }
 }

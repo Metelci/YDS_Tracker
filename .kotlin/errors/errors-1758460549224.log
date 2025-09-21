@@ -1,0 +1,698 @@
+kotlin version: 2.0.21
+error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+File being compiled: C:/Users/Metelci/StudioProjects/StudyPlan/app/src/main/java/com/mtlc/studyplan/questions/QuestionGenerator.kt
+The root cause org.jetbrains.kotlin.backend.common.CompilationException was thrown at: java.base/java.util.ArrayList.iterator(ArrayList.java:947)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException(CodegenUtil.kt:253)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException$default(CodegenUtil.kt:236)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:65)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:52)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:38)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:27)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:14)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeLowerings(JvmIrCodegenFactory.kt:358)
+	at org.jetbrains.kotlin.codegen.CodegenFactory.generateModule(CodegenFactory.kt:46)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateModuleInFrontendIRMode(JvmIrCodegenFactory.kt:433)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.generateCodeFromIr(jvmCompilerPipeline.kt:246)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.compileModulesUsingFrontendIrAndLightTree(jvmCompilerPipeline.kt:142)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:148)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:43)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:103)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:49)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:464)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:73)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+	at jdk.internal.reflect.GeneratedMethodAccessor92.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.jetbrains.kotlin.backend.common.CompilationException: Back-end: Please report this problem https://kotl.in/issue
+C:/Users/Metelci/StudioProjects/StudyPlan/app/src/main/java/com/mtlc/studyplan/questions/QuestionGenerator.kt:11:1
+Problem with `@StabilityInferred(parameters = 0)
+class QuestionGenerator {
+  constructor(context: Context, analyticsEngine: AnalyticsEngine, vocabularyManager: VocabularyManager, dataProvider: QuestionDataProvider, performanceTracker: RoomQuestionPerformanceTracker, difficultyManager: DifficultyManager = DifficultyManager(analyticsEngine = analyticsEngine), templates: List<QuestionTemplate> = #INSTANCE.load(context = context)) /* primary */ {
+    super/*Any*/()
+    /* <init>() */
+
+  }
+
+  private /* final field */ val context: Context = context
+  private /* final field */ val analyticsEngine: AnalyticsEngine = analyticsEngine
+  private /* final field */ val vocabularyManager: VocabularyManager = vocabularyManager
+  private /* final field */ val dataProvider: QuestionDataProvider = dataProvider
+  private /* final field */ val performanceTracker: RoomQuestionPerformanceTracker = performanceTracker
+  private /* final field */ val difficultyManager: DifficultyManager = difficultyManager
+  private /* final field */ val templates: List<QuestionTemplate> = templates
+  private fun <get-rng>(): Random {
+    return Random(seed = currentTimeMillis())
+  }
+
+  suspend fun generatePersonalizedQuestions(count: Int, currentWeek: Int? = null): List<GeneratedQuestion> {
+    return withContext<List<GeneratedQuestion>>(context = <get-Default>(), block = { // BLOCK
+      package class <no name provided> : SuspendLambda, Function2<CoroutineScope, Continuation<List<GeneratedQuestion>>?, Any?> {
+        package var label: Int
+        package constructor(this$0: QuestionGenerator, $count: Int, $currentWeek: Int?, $completion: Continuation<<no name provided>>?) /* primary */ {
+          <this>.#this$0 = this$0
+          <this>.#$count = $count
+          <this>.#$currentWeek = $currentWeek
+          super/*SuspendLambda*/(arity = 2, $completion = $completion)
+          /* <init>() */
+
+        }
+
+        override fun invokeSuspend($result: Result<Any?>): Any? {
+          val logs: List<TaskLog> = <this>.#this$0.#dataProvider.getTaskLogs()
+          val vocabCache: List<VocabularyItem> = <this>.#this$0.#vocabularyManager.getAll()
+          val templateStats: Map<String, TemplateStats> = <this>.#this$0.#performanceTracker.getTemplateStats()
+          val weakCategories: List<SkillCategory> = <this>.#this$0.getWeakCategories(logs = logs)
+          val weakTargetCount: Int = <this>.#$count.times(other = 0.6).toInt().coerceAtLeast(minimumValue = 1)
+          val generalTargetCount: Int = <this>.#$count.minus(other = weakTargetCount).coerceAtLeast(minimumValue = 0)
+          val selected: MutableList<GeneratedQuestion> = mutableListOf<GeneratedQuestion>()
+          when {
+            weakCategories.isNotEmpty<SkillCategory>() -> { // BLOCK
+              val perCat: Int = weakTargetCount.toFloat().div(other = weakCategories.<get-size>()).coerceAtLeast(minimumValue = 1.0F).toInt()
+              weakCategories.forEach<SkillCategory>(action = { // BLOCK
+                // COMPOSITE {
+                // }
+                <no name provided>::invokeSuspend$lambda$0/*($selected = selected, this$0 = <this>.#this$0, $perCat = perCat, $currentWeek = <this>.#$currentWeek, $vocabCache = vocabCache, $templateStats = templateStats)*/
+              })
+            }
+          }
+          when {
+            less(arg0 = selected.<get-size>(), arg1 = <this>.#$count) -> { // BLOCK
+              val recent: List<TaskLog> = logs.takeLast<TaskLog>(n = 30)
+              val mix: List<SkillCategory> = values().toList<SkillCategory>().shuffled<SkillCategory>(random = <this>.#this$0.<get-rng>())
+              val need: Int = <this>.#$count.minus(other = selected.<get-size>())
+              val steps: List<Int> = <this>.#this$0.#difficultyManager.buildProgression(startDifficulty = 3, targetCount = need)
+              val general: List<GeneratedQuestion> = steps.mapIndexedNotNull<Int, GeneratedQuestion>(transform = { // BLOCK
+                // COMPOSITE {
+                // }
+                <no name provided>::invokeSuspend$lambda$1/*($mix = mix, this$0 = <this>.#this$0, $currentWeek = <this>.#$currentWeek, $vocabCache = vocabCache, $templateStats = templateStats)*/
+              })
+              selected.plusAssign<GeneratedQuestion>(elements = general)
+            }
+          }
+          return selected.distinctBy<GeneratedQuestion, String>(selector = { // BLOCK
+            // COMPOSITE {
+            // }
+            <no name provided>::invokeSuspend$lambda$2
+          }).shuffled<GeneratedQuestion>(random = <this>.#this$0.<get-rng>()).take<GeneratedQuestion>(n = <this>.#$count)
+        }
+
+        override fun create(value: Any?, $completion: Continuation<Nothing>): Continuation<Unit> {
+          return <no name provided>(this$0 = <this>.#this$0, $count = <this>.#$count, $currentWeek = <this>.#$currentWeek, $completion = $completion)
+        }
+
+        override fun invoke(p1: CoroutineScope, p2: Continuation<List<GeneratedQuestion>>?): Any? {
+          return <this>.create(value = p1, $completion = p2) /*as <no name provided> */.invokeSuspend($result = <unsafe-coerce><Any?, Result<Any?>>(v = #INSTANCE))
+        }
+
+        package /* final field */ val this$0: QuestionGenerator
+        package /* final field */ val $count: Int
+        package /* final field */ val $currentWeek: Int?
+        private fun invokeSuspend$lambda$0($selected: MutableList<GeneratedQuestion>, this$0: QuestionGenerator, $perCat: Int, $currentWeek: Int?, $vocabCache: List<VocabularyItem>, $templateStats: Map<String, TemplateStats>, cat: SkillCategory) {
+          $selected.plusAssign<GeneratedQuestion>(elements = this$0.getWeakAreaQuestions(category = cat, count = $perCat, currentWeek = $currentWeek, vocabCache = $vocabCache, templateStats = $templateStats))
+        }
+
+        private fun invokeSuspend$lambda$1($mix: List<SkillCategory>, this$0: QuestionGenerator, $currentWeek: Int?, $vocabCache: List<VocabularyItem>, $templateStats: Map<String, TemplateStats>, idx: Int, diff: Int): GeneratedQuestion? {
+          val cat: SkillCategory = $mix.get(index = idx.rem(other = $mix.<get-size>()))
+          return this$0.pickTemplateAndGenerate(category = cat, difficulty = diff, currentWeek = $currentWeek, vocabCache = $vocabCache, templateStats = $templateStats)
+        }
+
+        private fun invokeSuspend$lambda$2(it: GeneratedQuestion): String {
+          return it.<get-id>()
+        }
+
+      }
+
+      <no name provided>(this$0 = <this>, $count = count, $currentWeek = currentWeek, $completion = null)
+    })
+  }
+
+  suspend fun getWeakAreaQuestions(category: SkillCategory): List<GeneratedQuestion> {
+    return withContext<List<GeneratedQuestion>>(context = <get-Default>(), block = { // BLOCK
+      package class <no name provided> : SuspendLambda, Function2<CoroutineScope, Continuation<List<GeneratedQuestion>>?, Any?> {
+        package var label: Int
+        package constructor(this$0: QuestionGenerator, $category: SkillCategory, $completion: Continuation<<no name provided>>?) /* primary */ {
+          <this>.#this$0 = this$0
+          <this>.#$category = $category
+          super/*SuspendLambda*/(arity = 2, $completion = $completion)
+          /* <init>() */
+
+        }
+
+        override fun invokeSuspend($result: Result<Any?>): Any? {
+          val vocabCache: List<VocabularyItem> = <this>.#this$0.#vocabularyManager.getAll()
+          val templateStats: Map<String, TemplateStats> = <this>.#this$0.#performanceTracker.getTemplateStats()
+          return <this>.#this$0.getWeakAreaQuestions(category = <this>.#$category, count = 5, currentWeek = null, vocabCache = vocabCache, templateStats = templateStats)
+        }
+
+        override fun create(value: Any?, $completion: Continuation<Nothing>): Continuation<Unit> {
+          return <no name provided>(this$0 = <this>.#this$0, $category = <this>.#$category, $completion = $completion)
+        }
+
+        override fun invoke(p1: CoroutineScope, p2: Continuation<List<GeneratedQuestion>>?): Any? {
+          return <this>.create(value = p1, $completion = p2) /*as <no name provided> */.invokeSuspend($result = <unsafe-coerce><Any?, Result<Any?>>(v = #INSTANCE))
+        }
+
+        package /* final field */ val this$0: QuestionGenerator
+        package /* final field */ val $category: SkillCategory
+      }
+
+      <no name provided>(this$0 = <this>, $category = category, $completion = null)
+    })
+  }
+
+  private suspend fun getWeakAreaQuestions(category: SkillCategory, count: Int, currentWeek: Int?, vocabCache: List<VocabularyItem>, templateStats: Map<String, TemplateStats>): List<GeneratedQuestion> {
+    val logs: List<TaskLog> = <this>.#dataProvider.getTaskLogs()
+    val recent: List<TaskLog> = logs.takeLast<TaskLog>(n = 30)
+    val userLevel: Int = <this>.#difficultyManager.calculateOptimalDifficulty(category = category, recentPerformance = recent)
+    val diffs: List<Int> = <this>.#difficultyManager.buildProgression(startDifficulty = userLevel, targetCount = count)
+    return diffs.mapNotNull<Int, GeneratedQuestion>(transform = { // BLOCK
+      // COMPOSITE {
+      // }
+      QuestionGenerator::getWeakAreaQuestions$lambda$0/*(this$0 = <this>, $category = category, $currentWeek = currentWeek, $vocabCache = vocabCache, $templateStats = templateStats)*/
+    })
+  }
+
+  suspend fun createVocabularyQuestions(targetWords: List<VocabularyItem>): List<GeneratedQuestion> {
+    return targetWords.mapNotNull<VocabularyItem, GeneratedQuestion>(transform = { // BLOCK
+      // COMPOSITE {
+      // }
+      QuestionGenerator::createVocabularyQuestions$lambda$1/*(this$0 = <this>)*/
+    })
+  }
+
+  suspend fun generateForCategory(category: SkillCategory, count: Int, currentWeek: Int? = null): List<GeneratedQuestion> {
+    return withContext<List<GeneratedQuestion>>(context = <get-Default>(), block = { // BLOCK
+      package class <no name provided> : SuspendLambda, Function2<CoroutineScope, Continuation<List<GeneratedQuestion>>?, Any?> {
+        package var label: Int
+        package constructor(this$0: QuestionGenerator, $category: SkillCategory, $count: Int, $currentWeek: Int?, $completion: Continuation<<no name provided>>?) /* primary */ {
+          <this>.#this$0 = this$0
+          <this>.#$category = $category
+          <this>.#$count = $count
+          <this>.#$currentWeek = $currentWeek
+          super/*SuspendLambda*/(arity = 2, $completion = $completion)
+          /* <init>() */
+
+        }
+
+        override fun invokeSuspend($result: Result<Any?>): Any? {
+          val logs: List<TaskLog> = <this>.#this$0.#dataProvider.getTaskLogs()
+          val recent: List<TaskLog> = logs.takeLast<TaskLog>(n = 30)
+          val userLevel: Int = <this>.#this$0.#difficultyManager.calculateOptimalDifficulty(category = <this>.#$category, recentPerformance = recent)
+          val diffs: List<Int> = <this>.#this$0.#difficultyManager.buildProgression(startDifficulty = userLevel, targetCount = <this>.#$count)
+          val vocabCache: List<VocabularyItem> = <this>.#this$0.#vocabularyManager.getAll()
+          val templateStats: Map<String, TemplateStats> = <this>.#this$0.#performanceTracker.getTemplateStats()
+          return diffs.mapNotNull<Int, GeneratedQuestion>(transform = { // BLOCK
+            // COMPOSITE {
+            // }
+            <no name provided>::invokeSuspend$lambda$0/*(this$0 = <this>.#this$0, $category = <this>.#$category, $currentWeek = <this>.#$currentWeek, $vocabCache = vocabCache, $templateStats = templateStats)*/
+          })
+        }
+
+        override fun create(value: Any?, $completion: Continuation<Nothing>): Continuation<Unit> {
+          return <no name provided>(this$0 = <this>.#this$0, $category = <this>.#$category, $count = <this>.#$count, $currentWeek = <this>.#$currentWeek, $completion = $completion)
+        }
+
+        override fun invoke(p1: CoroutineScope, p2: Continuation<List<GeneratedQuestion>>?): Any? {
+          return <this>.create(value = p1, $completion = p2) /*as <no name provided> */.invokeSuspend($result = <unsafe-coerce><Any?, Result<Any?>>(v = #INSTANCE))
+        }
+
+        package /* final field */ val this$0: QuestionGenerator
+        package /* final field */ val $category: SkillCategory
+        package /* final field */ val $count: Int
+        package /* final field */ val $currentWeek: Int?
+        private fun invokeSuspend$lambda$0(this$0: QuestionGenerator, $category: SkillCategory, $currentWeek: Int?, $vocabCache: List<VocabularyItem>, $templateStats: Map<String, TemplateStats>, d: Int): GeneratedQuestion? {
+          return this$0.pickTemplateAndGenerate(category = $category, difficulty = d, currentWeek = $currentWeek, vocabCache = $vocabCache, templateStats = $templateStats)
+        }
+
+      }
+
+      <no name provided>(this$0 = <this>, $category = category, $count = count, $currentWeek = currentWeek, $completion = null)
+    })
+  }
+
+  private fun pickTemplateAndGenerate(category: SkillCategory, difficulty: Int, currentWeek: Int?, vocabCache: List<VocabularyItem>, templateStats: Map<String, TemplateStats>): GeneratedQuestion? {
+    val pool: List<QuestionTemplate> = <this>.#templates.filter<QuestionTemplate>(predicate = { // BLOCK
+      local fun <anonymous>(t: QuestionTemplate): Boolean {
+        return when {
+          when {
+            EQEQ(arg0 = t.<get-category>(), arg1 = category) -> EQEQ(arg0 = t.<get-difficulty>(), arg1 = difficulty)
+            else -> false
+          } -> when {
+            EQEQ(arg0 = currentWeek, arg1 = null) -> true
+            else -> t.<get-weekAppropriate>().contains(value = currentWeek)
+          }
+          else -> false
+        }
+      }
+
+      QuestionGenerator::<anonymous>
+    })
+    val template: QuestionTemplate? = when {
+      pool.isNotEmpty<QuestionTemplate>() -> { // BLOCK
+        pool.maxByOrNull<QuestionTemplate, Double>(selector = { // BLOCK
+          local fun <anonymous>(t: QuestionTemplate): Double {
+            val s: TemplateStats? = templateStats.get(key = t.<get-id>())
+            val acc: Float = { // BLOCK
+              val tmp1_elvis_lhs: Float? = { // BLOCK
+                val tmp0_safe_receiver: TemplateStats? = s
+                when {
+                  EQEQ(arg0 = tmp0_safe_receiver, arg1 = null) -> null
+                  else -> tmp0_safe_receiver.<get-accuracy>()
+                }
+              }
+              when {
+                EQEQ(arg0 = tmp1_elvis_lhs, arg1 = null) -> 0.6F
+                else -> tmp1_elvis_lhs
+              }
+            }
+            return 1.0.minus(other = abs(x = acc.minus(other = 0.6)))
+          }
+
+          QuestionGenerator::<anonymous>
+        })
+      }
+      else -> { // BLOCK
+        <this>.#templates.filter<QuestionTemplate>(predicate = { // BLOCK
+          local fun <anonymous>(it: QuestionTemplate): Boolean {
+            return EQEQ(arg0 = it.<get-category>(), arg1 = category)
+          }
+
+          QuestionGenerator::<anonymous>
+        }).minByOrNull<QuestionTemplate, Int>(selector = { // BLOCK
+          local fun <anonymous>(it: QuestionTemplate): Int {
+            return abs(n = it.<get-difficulty>().minus(other = difficulty))
+          }
+
+          QuestionGenerator::<anonymous>
+        })
+      }
+    }
+    return { // BLOCK
+      val tmp0_safe_receiver: QuestionTemplate? = template
+      when {
+        EQEQ(arg0 = tmp0_safe_receiver, arg1 = null) -> null
+        else -> tmp0_safe_receiver.let<QuestionTemplate, GeneratedQuestion?>(block = { // BLOCK
+          local fun <anonymous>(it: QuestionTemplate): GeneratedQuestion? {
+            return <this>.fillTemplate(t = it, vocabCache = vocabCache)
+          }
+
+          QuestionGenerator::<anonymous>
+        })
+      }
+    }
+  }
+
+  private fun fillTemplate(t: QuestionTemplate, vocabCache: List<VocabularyItem>): GeneratedQuestion? {
+    return { // BLOCK
+      val tmp0_subject: SkillCategory = t.<get-category>()
+      val tmp0: Int = #$EnumSwitchMapping$0.get(index = tmp0_subject.<get-ordinal>())
+      when {
+        EQEQ(arg0 = tmp0, arg1 = 1) -> <this>.fillVocabTemplate(t = t, vocabCache = vocabCache)
+        EQEQ(arg0 = tmp0, arg1 = 2) -> <this>.fillGrammarTemplate(t = t)
+        when {
+          EQEQ(arg0 = tmp0, arg1 = 3) -> true
+          else -> EQEQ(arg0 = tmp0, arg1 = 4)
+        } -> <this>.fillComprehensionTemplate(t = t)
+        else -> noWhenBranchMatchedException()
+      }
+    }
+  }
+
+  private fun fillGrammarTemplate(t: QuestionTemplate): GeneratedQuestion? {
+    val rawOptions: List<String> = t.<get-distractorPatterns>()
+    when {
+      rawOptions.isEmpty() -> return null
+    }
+    val shuffled: List<String> = rawOptions.shuffled<String>(random = <this>.<get-rng>())
+    val correct: String = { // BLOCK
+      val tmp0_subject: Int = t.<get-correctAnswerSlot>()
+      when {
+        when {
+          lessOrEqual(arg0 = 0, arg1 = tmp0_subject) -> less(arg0 = tmp0_subject, arg1 = rawOptions.<get-size>())
+          else -> false
+        } -> rawOptions.get(index = t.<get-correctAnswerSlot>())
+        else -> rawOptions.first<String>()
+      }
+    }
+    val correctIdx: Int = shuffled.indexOf(element = correct).coerceAtLeast(minimumValue = 0)
+    return GeneratedQuestion(id = t.<get-id>() + "-" + nanoTime(), category = t.<get-category>(), prompt = t.<get-pattern>(), options = shuffled, correctIndex = correctIdx, difficulty = t.<get-difficulty>(), explanation = t.<get-explanation>(), grammarFocus = t.<get-grammarFocus>(), vocabularyFocus = t.<get-vocabularyFocus>(), sourceTemplateId = t.<get-id>())
+  }
+
+  private fun fillComprehensionTemplate(t: QuestionTemplate): GeneratedQuestion? {
+    val rawOptions: List<String> = t.<get-distractorPatterns>()
+    when {
+      rawOptions.isEmpty() -> return null
+    }
+    val shuffled: List<String> = rawOptions.shuffled<String>(random = <this>.<get-rng>())
+    val correct: String = { // BLOCK
+      val tmp0_subject: Int = t.<get-correctAnswerSlot>()
+      when {
+        when {
+          lessOrEqual(arg0 = 0, arg1 = tmp0_subject) -> less(arg0 = tmp0_subject, arg1 = rawOptions.<get-size>())
+          else -> false
+        } -> rawOptions.get(index = t.<get-correctAnswerSlot>())
+        else -> rawOptions.first<String>()
+      }
+    }
+    val correctIdx: Int = shuffled.indexOf(element = correct).coerceAtLeast(minimumValue = 0)
+    return GeneratedQuestion(id = t.<get-id>() + "-" + nanoTime(), category = t.<get-category>(), prompt = t.<get-pattern>(), options = shuffled, correctIndex = correctIdx, difficulty = t.<get-difficulty>(), explanation = t.<get-explanation>(), grammarFocus = t.<get-grammarFocus>(), vocabularyFocus = t.<get-vocabularyFocus>(), sourceTemplateId = t.<get-id>())
+  }
+
+  private fun fillVocabTemplate(t: QuestionTemplate, vocabCache: List<VocabularyItem>): GeneratedQuestion? {
+    val focusWord: String? = t.<get-vocabularyFocus>().firstOrNull<String>()
+    val target: VocabularyItem? = when {
+      EQEQ(arg0 = focusWord, arg1 = null).not() -> vocabCache.firstOrNull<VocabularyItem>(predicate = { // BLOCK
+        local fun <anonymous>(it: VocabularyItem): Boolean {
+          return it.<get-word>().equals(other = focusWord, ignoreCase = true)
+        }
+
+        QuestionGenerator::<anonymous>
+      })
+      else -> vocabCache.filter<VocabularyItem>(predicate = { // BLOCK
+        local fun <anonymous>(it: VocabularyItem): Boolean {
+          return { // BLOCK
+            val containsArg: Int = it.<get-difficulty>()
+            when {
+              lessOrEqual(arg0 = 2, arg1 = containsArg) -> less(arg0 = containsArg, arg1 = 5)
+              else -> false
+            }
+          }
+        }
+
+        QuestionGenerator::<anonymous>
+      }).randomOrNull<VocabularyItem>()
+    }
+    val options: MutableList<String> = mutableListOf<String>()
+    val correct: String = when {
+      EQEQ(arg0 = target, arg1 = null).not() -> { // BLOCK
+        target.<get-word>()
+      }
+      else -> { // BLOCK
+        { // BLOCK
+          val tmp1_elvis_lhs: String? = { // BLOCK
+            val tmp0_elvis_lhs: String? = t.<get-distractorPatterns>().getOrNull<String>(index = t.<get-correctAnswerSlot>())
+            when {
+              EQEQ(arg0 = tmp0_elvis_lhs, arg1 = null) -> t.<get-distractorPatterns>().firstOrNull<String>()
+              else -> tmp0_elvis_lhs
+            }
+          }
+          when {
+            EQEQ(arg0 = tmp1_elvis_lhs, arg1 = null) -> return null
+            else -> tmp1_elvis_lhs
+          }
+        }
+      }
+    }
+    options.add(element = correct) /*~> Unit */
+    val distractors: List<String> = when {
+      EQEQ(arg0 = target, arg1 = null).not() -> <this>.suggestDistractorsFromCache(target = target, cache = vocabCache, max = 3)
+      else -> emptyList<String>()
+    }
+    options.addAll(elements = distractors) /*~> Unit */
+    when {
+      less(arg0 = options.<get-size>(), arg1 = 4) -> { // BLOCK
+        t.<get-distractorPatterns>().filter<String>(predicate = { // BLOCK
+          local fun <anonymous>(it: String): Boolean {
+            return EQEQ(arg0 = it, arg1 = correct).not()
+          }
+
+          QuestionGenerator::<anonymous>
+        }).take<String>(n = 4.minus(other = options.<get-size>())).forEach<String>(action = { // BLOCK
+          local fun <anonymous>(it: String) {
+            options.add(element = it) /*~> Unit */
+          }
+
+          QuestionGenerator::<anonymous>
+        })
+      }
+    }
+    val shuffled: List<String> = options.distinct<String>().take<String>(n = 4).shuffled<String>(random = <this>.<get-rng>())
+    val correctIdx: Int = shuffled.indexOf(element = correct).coerceAtLeast(minimumValue = 0)
+    val prompt: String = when {
+      t.<get-pattern>().contains(other = "____") -> t.<get-pattern>()
+      else -> t.<get-pattern>().replace(oldValue = "__", newValue = "____")
+    }
+    return GeneratedQuestion(id = t.<get-id>() + "-" + nanoTime(), category = t.<get-category>(), prompt = prompt, options = shuffled, correctIndex = correctIdx, difficulty = t.<get-difficulty>(), explanation = when {
+      when {
+        EQEQ(arg0 = target, arg1 = null).not() -> t.<get-explanation>().isBlank()
+        else -> false
+      } -> target.<get-definition>()
+      else -> t.<get-explanation>()
+    }, grammarFocus = t.<get-grammarFocus>(), vocabularyFocus = when {
+      EQEQ(arg0 = target, arg1 = null).not() -> listOf<String>(element = target.<get-word>())
+      else -> t.<get-vocabularyFocus>()
+    }, sourceTemplateId = t.<get-id>())
+  }
+
+  private fun suggestDistractorsFromCache(target: VocabularyItem, cache: List<VocabularyItem>, max: Int): List<String> {
+    val sameDiff: List<VocabularyItem> = cache.filter<VocabularyItem>(predicate = { // BLOCK
+      local fun <anonymous>(it: VocabularyItem): Boolean {
+        return when {
+          EQEQ(arg0 = it.<get-difficulty>(), arg1 = target.<get-difficulty>()) -> it.<get-word>().equals(other = target.<get-word>(), ignoreCase = true).not()
+          else -> false
+        }
+      }
+
+      QuestionGenerator::<anonymous>
+    })
+    val relatedTokens: Set<String> = target.<get-relatedWords>().plus<String>(elements = target.<get-contexts>()).flatMap<String, String>(transform = { // BLOCK
+      local fun <anonymous>(it: String): Iterable<String> {
+        return it.split(delimiters = { // BLOCK
+          val tmp0: CharArray = CharArray(size = 1)
+          tmp0.set(index = 0, value = ' ')
+          tmp0
+        })
+      }
+
+      QuestionGenerator::<anonymous>
+    }).map<String, String>(transform = { // BLOCK
+      local fun <anonymous>(it: String): String {
+        return it.lowercase()
+      }
+
+      QuestionGenerator::<anonymous>
+    }).toSet<String>()
+    val related: List<VocabularyItem> = cache.filter<VocabularyItem>(predicate = { // BLOCK
+      local fun <anonymous>(p: VocabularyItem): Boolean {
+        return when {
+          p.<get-word>().equals(other = target.<get-word>(), ignoreCase = true).not() -> when {
+            p.<get-relatedWords>().any<String>(predicate = { // BLOCK
+              local fun <anonymous>(it: String): Boolean {
+                return relatedTokens.contains(element = it.lowercase())
+              }
+
+              QuestionGenerator::<anonymous>
+            }) -> true
+            else -> relatedTokens.any<String>(predicate = { // BLOCK
+              local fun <anonymous>(tok: String): Boolean {
+                return p.<get-definition>().lowercase().contains(other = tok)
+              }
+
+              QuestionGenerator::<anonymous>
+            })
+          }
+          else -> false
+        }
+      }
+
+      QuestionGenerator::<anonymous>
+    })
+    return related.plus<VocabularyItem>(elements = sameDiff).distinctBy<VocabularyItem, String>(selector = { // BLOCK
+      local fun <anonymous>(it: VocabularyItem): String {
+        return it.<get-word>()
+      }
+
+      QuestionGenerator::<anonymous>
+    }).map<VocabularyItem, String>(transform = { // BLOCK
+      local fun <anonymous>(it: VocabularyItem): String {
+        return it.<get-word>()
+      }
+
+      QuestionGenerator::<anonymous>
+    }).take<String>(n = max)
+  }
+
+  private suspend fun makeVocabQuestion(item: VocabularyItem): GeneratedQuestion? {
+    val correct: String = item.<get-definition>()
+    val distractorWords: List<String> = <this>.#vocabularyManager.suggestDistractors(target = item, max = 6)
+    val distractorDefs: List<String> = <this>.#vocabularyManager.findByWords(words = distractorWords).map<VocabularyItem, String>(transform = { // BLOCK
+      local fun <anonymous>(it: VocabularyItem): String {
+        return it.<get-definition>()
+      }
+
+      QuestionGenerator::<anonymous>
+    })
+    val pool: List<String> = listOf<String>(element = correct).plus<String>(elements = distractorDefs).distinct<String>().take<String>(n = 4)
+    when {
+      less(arg0 = pool.<get-size>(), arg1 = 2) -> return null
+    }
+    val options: List<String> = pool.shuffled<String>(random = <this>.<get-rng>())
+    val correctIdx: Int = options.indexOf(element = correct).coerceAtLeast(minimumValue = 0)
+    val prompt: String = "The word '" + item.<get-word>() + "' most nearly means _____."
+    return GeneratedQuestion(id = "vocab-" + item.<get-word>() + "-" + nanoTime(), category = #VOCAB, prompt = prompt, options = options, correctIndex = correctIdx, difficulty = item.<get-difficulty>().coerceIn(minimumValue = 1, maximumValue = 5), explanation = item.<get-definition>(), grammarFocus = null, vocabularyFocus = listOf<String>(element = item.<get-word>()), sourceTemplateId = null)
+  }
+
+  private fun getWeakCategories(logs: List<TaskLog>): List<SkillCategory> {
+    when {
+      logs.isEmpty() -> return emptyList<SkillCategory>()
+    }
+    val accByCat: Map<String, Float> = logs.groupBy<TaskLog, String>(keySelector = { // BLOCK
+      local fun <anonymous>(it: TaskLog): String {
+        return it.<get-category>().lowercase()
+      }
+
+      QuestionGenerator::<anonymous>
+    }).mapValues<String, List<TaskLog>, Float>(transform = { // BLOCK
+      local fun <anonymous>(<destruct>: Entry<String, List<TaskLog>>): Float {
+        val cls: List<TaskLog> = <destruct>.component2<String, List<TaskLog>>()
+        return cls.map<TaskLog, Float>(transform = { // BLOCK
+          local fun <anonymous>(it: TaskLog): Float {
+            return when {
+              it.<get-correct>() -> 1.0F
+              else -> 0.0F
+            }
+          }
+
+          QuestionGenerator::<anonymous>
+        }).average().toFloat()
+      }
+
+      QuestionGenerator::<anonymous>
+    })
+    val mapping: Map<String, SkillCategory> = mapOf<String, SkillCategory>(pairs = { // BLOCK
+      val tmp0: Array<out Pair<String, SkillCategory>> = arrayOfNulls<Pair<String, SkillCategory>>(size = 6)
+      tmp0.set(index = 0, value = "grammar".to<String, SkillCategory>(that = #GRAMMAR))
+      tmp0.set(index = 1, value = "reading".to<String, SkillCategory>(that = #READING))
+      tmp0.set(index = 2, value = "listening".to<String, SkillCategory>(that = #LISTENING))
+      tmp0.set(index = 3, value = "vocab".to<String, SkillCategory>(that = #VOCAB))
+      tmp0.set(index = 4, value = "vocabulary".to<String, SkillCategory>(that = #VOCAB))
+      tmp0.set(index = 5, value = "kelime".to<String, SkillCategory>(that = #VOCAB))
+      tmp0
+    })
+    return accByCat.filter<String, Float>(predicate = { // BLOCK
+      local fun <anonymous>(it: Entry<String, Float>): Boolean {
+        return less(arg0 = it.<get-value>(), arg1 = 0.7F)
+      }
+
+      QuestionGenerator::<anonymous>
+    }).<get-keys>().mapNotNull<String, SkillCategory>(transform = { // BLOCK
+      local fun <anonymous>(k: String): SkillCategory? {
+        return { // BLOCK
+          val tmp0_safe_receiver: Entry<String, SkillCategory>? = mapping.<get-entries>().firstOrNull<Entry<String, SkillCategory>>(predicate = { // BLOCK
+            local fun <anonymous>(it: Entry<String, SkillCategory>): Boolean {
+              return k.contains(other = it.<get-key>(), ignoreCase = true)
+            }
+
+            QuestionGenerator::<anonymous>
+          })
+          when {
+            EQEQ(arg0 = tmp0_safe_receiver, arg1 = null) -> null
+            else -> tmp0_safe_receiver.<get-value>()
+          }
+        }
+      }
+
+      QuestionGenerator::<anonymous>
+    }).distinct<SkillCategory>()
+  }
+
+  /* fake */ override operator fun equals(other: Any?): Boolean
+
+  /* fake */ override fun hashCode(): Int
+
+  /* fake */ override fun toString(): String
+
+  /* static final field */ val $stable: Int = 8
+  class WhenMappings {
+    /* static final field */ val $EnumSwitchMapping$0: IntArray = { // BLOCK
+      val tmp0: IntArray = IntArray(size = values().<get-size>())
+      try tmp0.set(index = #VOCAB.<get-ordinal>(), value = 1)
+      catch (tmp1: NoSuchFieldError)#INSTANCE
+
+      try tmp0.set(index = #GRAMMAR.<get-ordinal>(), value = 2)
+      catch (tmp2: NoSuchFieldError)#INSTANCE
+
+      try tmp0.set(index = #READING.<get-ordinal>(), value = 3)
+      catch (tmp3: NoSuchFieldError)#INSTANCE
+
+      try tmp0.set(index = #LISTENING.<get-ordinal>(), value = 4)
+      catch (tmp4: NoSuchFieldError)#INSTANCE
+
+      tmp0
+    }
+  }
+
+  private fun getWeakAreaQuestions$lambda$0(this$0: QuestionGenerator, $category: SkillCategory, $currentWeek: Int?, $vocabCache: List<VocabularyItem>, $templateStats: Map<String, TemplateStats>, d: Int): GeneratedQuestion? {
+    return this$0.pickTemplateAndGenerate(category = $category, difficulty = d, currentWeek = $currentWeek, vocabCache = $vocabCache, templateStats = $templateStats)
+  }
+
+  private fun createVocabularyQuestions$lambda$1(this$0: QuestionGenerator, it: VocabularyItem): GeneratedQuestion? {
+    return this$0.makeVocabQuestion(item = it)
+  }
+
+}
+
+`
+Details: Internal error in body lowering: java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at java.base/java.util.ArrayList.iterator(ArrayList.java:947)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureBuilder.seeType(ClosureAnnotator.kt:347)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitExpression(ClosureAnnotator.kt:311)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitExpression(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitDeclarationReference(IrElementVisitor.kt:95)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitDeclarationReference(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitDeclarationReference(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitMemberAccess(IrElementVisitor.kt:98)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitMemberAccess(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitMemberAccess(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitFunctionAccess(IrElementVisitor.kt:101)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitFunctionAccess(ClosureAnnotator.kt:285)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitFunctionAccess(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitCall(IrElementVisitor.kt:146)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitCall(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitCall(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.ir.expressions.IrBranch.acceptChildren(IrBranch.kt:31)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitElement(ClosureAnnotator.kt:253)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitElement(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBranch(IrElementVisitor.kt:269)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitBranch(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitBranch(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.expressions.IrBranch.accept(IrBranch.kt:25)
+	at org.jetbrains.kotlin.ir.expressions.IrWhen.acceptChildren(IrWhen.kt:27)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitElement(ClosureAnnotator.kt:253)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitElement(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitExpression(IrElementVisitor.kt:83)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitExpression(ClosureAnnotator.kt:307)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitExpression(ClosureAnnotator.kt:250)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitWhen(IrElementVisitor.kt:266)
+	at org.jetbrains.kotlin.backend.common.lower.ClosureAnnotator$ClosureCollectorVisitor.visitWhen(ClosureAnnotator.kt:250)
+Caused by: java.lang.OutOfMemoryError: GC overhead limit exceeded
+	... 32 more
+
+

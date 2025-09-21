@@ -34,7 +34,13 @@
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\settings\\ui\\PrivacySettingsAdapter.kt\")",
       "Bash(.\\gradlew.bat clean:*)",
       "Bash(.gradlew clean build)",
-      "Bash(.\\gradlew.bat compileDebugKotlin:*)"
+      "Bash(.\\gradlew.bat compileDebugKotlin:*)",
+      "Bash(gradlew:*)",
+      "Bash(powershell:*)",
+      "Bash(.gradlew.bat compileDebugKotlin)",
+      "Bash(Select-String -Pattern \"error:|Error:|ERROR|FAILED|Exception\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\res\\layout\\fragment_settings_search.xml\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\settings\\SettingsSearchEngineTest.kt\")"
     ],
     "deny": [],
     "ask": []

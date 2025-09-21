@@ -1,9 +1,7 @@
 package com.mtlc.studyplan
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
 class StudyPlanApplication : Application() {
 
     override fun onCreate() {

@@ -16,7 +16,9 @@ import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.data.Task as DataTask
 import com.mtlc.studyplan.data.DayPlan as DataDayPlan
 import com.mtlc.studyplan.data.WeekPlan as DataWeekPlan
-import com.mtlc.studyplan.data.dataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -26,13 +28,15 @@ import java.time.temporal.ChronoUnit
 fun HomeScreen() {
     val context = LocalContext.current
     val appContext = context.applicationContext
+    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
     val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.dataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
-    val progressRepo = remember { ProgressRepository(appContext.dataStore) }
+    // Progress repository removed
 
     val plan by planRepo.planFlow.collectAsState(initial = emptyList())
-    val progress by progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
+    // Progress tracking removed - using empty state
+    val progress = UserProgress()
 
     val today = remember { LocalDate.now() }
     val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
@@ -83,13 +87,22 @@ fun HomeScreen() {
                 val ratio = remember(plannedMinutes, completedMinutes) {
                     if (plannedMinutes > 0) (completedMinutes.toFloat() / plannedMinutes).coerceIn(0f, 1f) else 0f
                 }
-                Box(Modifier.fillMaxWidth()) {
-                    com.mtlc.studyplan.ui.components.ProgressRing(
-                        progress = ratio,
-                        label = "Today ${(ratio * 100).toInt()}%",
-                        onConfettiPlayed = { /* could show a toast/snackbar if desired */ },
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                // Progress ring removed with progress functionality
+                Card(Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Today's Progress",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${tasks.size} tasks planned",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
             item {
@@ -143,11 +156,7 @@ fun HomeScreen() {
                         supportingContent = { if (t.details != null) Text(t.details!!) },
                         leadingContent = {
                             Checkbox(checked = isDone, onCheckedChange = {
-                                coroutineScope.launch {
-                                    val cur = progress.completedTasks.toMutableSet()
-                                    if (isDone) cur.remove(t.id) else cur.add(t.id)
-                                    progressRepo.saveProgress(progress.copy(completedTasks = cur))
-                                }
+                                // Task completion tracking removed with progress functionality
                             })
                         }
                     )

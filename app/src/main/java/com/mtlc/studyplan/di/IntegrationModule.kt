@@ -19,7 +19,6 @@ object IntegrationModule {
     @Singleton
     fun provideEnhancedAppIntegrationManager(
         taskRepository: TaskRepository,
-        progressRepository: ProgressRepository,
         achievementRepository: AchievementRepository,
         streakRepository: StreakRepository,
         userSettingsRepository: UserSettingsRepository,
@@ -29,7 +28,6 @@ object IntegrationModule {
     ): EnhancedAppIntegrationManager {
         return EnhancedAppIntegrationManager(
             taskRepository = taskRepository,
-            progressRepository = progressRepository,
             achievementRepository = achievementRepository,
             streakRepository = streakRepository,
             userSettingsRepository = userSettingsRepository,

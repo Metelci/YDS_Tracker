@@ -16,7 +16,6 @@ import javax.inject.Singleton
 class EventHandler @Inject constructor(
     private val eventBus: EventBus,
     private val taskRepository: TaskRepository,
-    private val progressRepository: ProgressRepository,
     private val achievementRepository: AchievementRepository,
     private val streakRepository: StreakRepository,
     private val socialRepository: SocialRepository,

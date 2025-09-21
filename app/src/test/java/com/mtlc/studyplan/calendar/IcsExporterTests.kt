@@ -1,7 +1,7 @@
 package com.mtlc.studyplan.calendar
 
 import com.mtlc.studyplan.data.DayPlan
-import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.PlanTask
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.Assert.*
@@ -46,15 +46,15 @@ class IcsExporterTests {
             DayPlan(
                 day = LocalDate.now().plusDays(1).toString(),
                 tasks = listOf(
-                    Task(id = "task1", desc = "Grammar Review", details = "Focus on verb tenses"),
-                    Task(id = "task2", desc = "Vocabulary Practice", details = "Learn 20 new words")
+                    PlanTask(id = "task1", desc = "Grammar Review", details = "Focus on verb tenses"),
+                    PlanTask(id = "task2", desc = "Vocabulary Practice", details = "Learn 20 new words")
                 )
             ),
             DayPlan(
                 day = LocalDate.now().plusDays(2).toString(),
                 tasks = listOf(
-                    Task(id = "task3", desc = "Reading Practice", details = "Read 3 articles"),
-                    Task(id = "task4", desc = "Listening Exercise", details = "Listen to podcast")
+                    PlanTask(id = "task3", desc = "Reading Practice", details = "Read 3 articles"),
+                    PlanTask(id = "task4", desc = "Listening Exercise", details = "Listen to podcast")
                 )
             )
         )
@@ -404,8 +404,8 @@ class CalendarSyncWithFakeTests {
             DayPlan(
                 day = LocalDate.now().plusDays(1).toString(),
                 tasks = listOf(
-                    Task(id = "task1", desc = "Grammar Review"),
-                    Task(id = "task2", desc = "Vocabulary Practice")
+                    PlanTask(id = "task1", desc = "Grammar Review"),
+                    PlanTask(id = "task2", desc = "Vocabulary Practice")
                 )
             )
         )

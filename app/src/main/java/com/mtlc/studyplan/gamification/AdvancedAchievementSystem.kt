@@ -3,7 +3,7 @@ package com.mtlc.studyplan.gamification
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.mtlc.studyplan.data.*
-import com.mtlc.studyplan.ui.celebrations.CelebrationIntensity
+// CelebrationIntensity removed with celebrations module
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlin.math.*
@@ -131,8 +131,7 @@ data class AchievementPrediction(
 
 data class MilestoneAlert(
     val atProgress: Int,
-    val message: String,
-    val celebrationIntensity: CelebrationIntensity
+    val message: String
 )
 
 /**
@@ -484,154 +483,33 @@ object AdvancedAchievementDataSource {
  */
 object AdvancedAchievementConditions {
 
-    fun getCondition(achievementId: String): (AchievementProgress) -> Boolean {
-        return when (achievementId) {
-            // Grammar Master conditions
-            "grammar_apprentice" -> { progress -> progress.grammarTasksCompleted >= 25 }
-            "grammar_scholar" -> { progress -> progress.grammarTasksCompleted >= 50 }
-            "grammar_expert" -> { progress ->
-                progress.grammarTasksCompleted >= 150 &&
-                calculateGrammarAccuracy(progress) >= 0.9f
-            }
-            "grammar_perfectionist" -> { progress -> progress.grammarPerfectSessions >= 10 }
-            "grammar_virtuoso" -> { progress -> progress.grammarStreakDays >= 30 }
-            "grammar_lightning" -> { progress ->
-                calculateFastGrammarTasks(progress) >= 100
-            }
-
-            // Speed Demon conditions
-            "speed_novice" -> { progress -> progress.fastCompletions >= 5 }
-            "speed_racer" -> { progress -> progress.fastCompletions >= 25 }
-            "swift_solver" -> { progress ->
-                progress.fastCompletions >= 50 &&
-                progress.averageSpeedRatio <= 0.75f
-            }
-            "lightning_finisher" -> { progress -> progress.fastExamCompletions >= 1 }
-            "speed_legend" -> { progress -> progress.fastCompletionStreakDays >= 30 }
-            "speed_demon_ultimate" -> { progress ->
-                calculateWeeklyTasksInDay(progress) >= 35
-            }
-
-            // Consistency Champion conditions
-            "consistency_starter" -> { progress -> progress.currentStreakDays >= 3 }
-            "week_warrior" -> { progress -> progress.currentStreakDays >= 7 }
-            "month_master" -> { progress -> progress.currentStreakDays >= 30 }
-            "century_scholar" -> { progress -> progress.currentStreakDays >= 100 }
-            "dedication_deity" -> { progress -> progress.currentStreakDays >= 365 }
-            "comeback_king" -> { progress ->
-                checkComebackCondition(progress)
-            }
-
-            // Progress Pioneer conditions
-            "progress_starter" -> { progress -> progress.overallProgressPercent >= 10f }
-            "quarter_climber" -> { progress -> progress.overallProgressPercent >= 25f }
-            "halfway_hero" -> { progress -> progress.overallProgressPercent >= 50f }
-            "three_quarter_titan" -> { progress -> progress.overallProgressPercent >= 75f }
-            "program_perfectionist" -> { progress -> progress.programCompletionPercent >= 100f }
-
-            // Hidden cross-category conditions
-            "grand_slam" -> { progress -> calculateBronzeAchievements(progress) >= 8 }
-            "perfectionist_supreme" -> { progress -> calculateAllAchievements(progress) >= 25 }
-
-            // Default
-            else -> { _ -> false }
-        }
+    fun getCondition(achievementId: String): () -> Boolean {
+        // Simplified conditions without progress tracking
+        return { false }
     }
 
-    // Helper functions for complex conditions
-    private fun calculateGrammarAccuracy(progress: AchievementProgress): Float {
-        val grammarLogs = progress.taskLogs.filter { isGrammarTask(it.category) }
-        if (grammarLogs.isEmpty()) return 0f
-        val correctCount = grammarLogs.count { it.correct }
-        return correctCount.toFloat() / grammarLogs.size
-    }
-
-    private fun calculateFastGrammarTasks(progress: AchievementProgress): Int {
-        return progress.taskLogs.count {
-            isGrammarTask(it.category) && it.minutesSpent < 5
-        }
-    }
-
-    private fun calculateWeeklyTasksInDay(progress: AchievementProgress): Int {
-        val todayStart = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
-        return progress.taskLogs.count { it.timestampMillis >= todayStart }
-    }
-
-    private fun checkComebackCondition(progress: AchievementProgress): Boolean {
-        // This would need streak history data to check for the comeback pattern
-        // Simplified implementation
-        return progress.currentStreakDays >= 50 && progress.maxConsecutiveDays >= 100
-    }
-
-    private fun calculateBronzeAchievements(progress: AchievementProgress): Int {
-        return progress.userProgress.unlockedAchievements.count { achievementId ->
-            AdvancedAchievementDataSource.getAchievementById(achievementId)?.tier == AchievementTier.BRONZE
-        }
-    }
-
-    private fun calculateAllAchievements(progress: AchievementProgress): Int {
-        return progress.userProgress.unlockedAchievements.size
-    }
-
-    private fun isGrammarTask(category: String): Boolean {
-        return category.lowercase().contains("grammar") || category.lowercase().contains("gramer")
-    }
+    // Helper functions removed with progress tracking
 }
 
 /**
  * Achievement Progress Tracker with predictions
  */
 class AdvancedAchievementTracker(
-    private val dataStore: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences>,
-    private val progressRepository: ProgressRepository
+    private val dataStore: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences>
 ) {
 
     private val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
 
-    val advancedAchievementFlow: Flow<List<AdvancedAchievement>> = combine(
-        progressRepository.userProgressFlow,
-        progressRepository.taskLogsFlow
-    ) { userProgress, taskLogs ->
-        calculateAdvancedAchievementProgress(userProgress, taskLogs)
+    val advancedAchievementFlow: Flow<List<AdvancedAchievement>> = flow {
+        emit(AdvancedAchievementDataSource.allAdvancedAchievements)
     }
 
-    private fun calculateAdvancedAchievementProgress(
-        userProgress: UserProgress,
-        taskLogs: List<TaskLog>
-    ): List<AdvancedAchievement> {
-        val achievementProgress = AchievementProgress(
-            userProgress = userProgress,
-            taskLogs = taskLogs,
-            streakState = StreakState(userProgress.streakCount, StreakMultiplier.getMultiplierForStreak(userProgress.streakCount))
-            // ... other progress calculations
-        )
-
-        return AdvancedAchievementDataSource.allAdvancedAchievements.map { achievement ->
-            val currentProgress = calculateSpecificProgress(achievement, achievementProgress)
-            val isUnlocked = userProgress.unlockedAchievements.contains(achievement.id) ||
-                             AdvancedAchievementConditions.getCondition(achievement.id)(achievementProgress)
-
-            achievement.copy(
-                currentProgress = currentProgress,
-                isUnlocked = isUnlocked,
-                unlockedDate = if (isUnlocked && achievement.unlockedDate == null) System.currentTimeMillis() else achievement.unlockedDate
-            )
-        }
+    // Simplified achievement tracking without progress system
+    private fun getSimplifiedAchievements(): List<AdvancedAchievement> {
+        return AdvancedAchievementDataSource.allAdvancedAchievements
     }
 
-    private fun calculateSpecificProgress(achievement: AdvancedAchievement, progress: AchievementProgress): Int {
-        return when (achievement.id) {
-            "grammar_apprentice", "grammar_scholar", "grammar_expert" -> progress.grammarTasksCompleted
-            "grammar_perfectionist" -> progress.grammarPerfectSessions
-            "grammar_virtuoso" -> progress.grammarStreakDays
-            "speed_novice", "speed_racer" -> progress.fastCompletions
-            "lightning_finisher" -> progress.fastExamCompletions
-            "consistency_starter", "week_warrior", "month_master", "century_scholar", "dedication_deity" -> progress.currentStreakDays
-            "progress_starter", "quarter_climber", "halfway_hero", "three_quarter_titan" -> progress.overallProgressPercent.toInt()
-            "program_perfectionist" -> progress.programCompletionPercent.toInt()
-            else -> 0
-        }
-    }
+    // Progress calculation removed with progress system
 
     /**
      * Generate achievement predictions
@@ -699,9 +577,9 @@ class AdvancedAchievementTracker(
         val threeQuarterMark = (achievement.targetValue * 0.75).toInt()
 
         return listOf(
-            MilestoneAlert(quarterMark, "Quarter way to ${achievement.title}!", CelebrationIntensity.SUBTLE),
-            MilestoneAlert(halfMark, "Halfway to ${achievement.title}!", CelebrationIntensity.MODERATE),
-            MilestoneAlert(threeQuarterMark, "Almost there! ${achievement.title} within reach!", CelebrationIntensity.HIGH)
+            MilestoneAlert(quarterMark, "Quarter way to ${achievement.title}!"),
+            MilestoneAlert(halfMark, "Halfway to ${achievement.title}!"),
+            MilestoneAlert(threeQuarterMark, "Almost there! ${achievement.title} within reach!")
         )
     }
 }

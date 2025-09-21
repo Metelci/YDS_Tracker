@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -44,7 +43,6 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
         SettingsViewModelFactory(repository, this)
     }
 
-    private var searchView: SearchView? = null
     private var originalCategories: List<SettingsCategory> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,8 +78,6 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             title = getString(R.string.settings_title)
         }
 
-        // Set up search functionality
-        setupSearch()
 
         // Set up error handling
         setupErrorHandling()
@@ -119,60 +115,9 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
 
     private fun isTablet(): Boolean = this.isTablet()
 
-    private fun setupSearch() {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                performSearch(query)
-                return true
-            }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                performSearch(newText)
-                return true
-            }
-        })
 
-        binding.searchView.setOnCloseListener {
-            resetSearch()
-            false
-        }
-    }
 
-    private fun performSearch(query: String?) {
-        if (query.isNullOrBlank()) {
-            resetSearch()
-            return
-        }
-
-        val filteredCategories = originalCategories.filter { category ->
-            category.title.contains(query, ignoreCase = true) ||
-            category.description.contains(query, ignoreCase = true)
-        }
-
-        categoryAdapter.updateCategories(filteredCategories, query)
-
-        // Show/hide empty state
-        if (filteredCategories.isEmpty()) {
-            showEmptySearchState()
-        } else {
-            hideEmptySearchState()
-        }
-    }
-
-    private fun resetSearch() {
-        categoryAdapter.updateCategories(originalCategories)
-        hideEmptySearchState()
-    }
-
-    private fun showEmptySearchState() {
-        binding.emptySearchState.visibility = View.VISIBLE
-        binding.categoriesRecyclerView.visibility = View.GONE
-    }
-
-    private fun hideEmptySearchState() {
-        binding.emptySearchState.visibility = View.GONE
-        binding.categoriesRecyclerView.visibility = View.VISIBLE
-    }
 
     private fun observeViewModel() {
         lifecycleScope.launch {
@@ -320,27 +265,6 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        searchView = searchItem.actionView as SearchView
-
-        searchView?.apply {
-            queryHint = getString(R.string.search_settings_hint)
-            maxWidth = Integer.MAX_VALUE
-
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    performSearch(query)
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    performSearch(newText)
-                    return true
-                }
-            })
-        }
-
         return true
     }
 
@@ -377,10 +301,6 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
 
     override fun onBackPressed() {
         when {
-            searchView?.isIconified == false -> {
-                searchView?.isIconified = true
-                resetSearch()
-            }
             supportFragmentManager.backStackEntryCount > 0 -> {
                 supportFragmentManager.popBackStack()
 

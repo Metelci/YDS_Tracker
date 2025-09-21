@@ -1,37 +1,39 @@
 package com.mtlc.studyplan.core
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Quiz
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mtlc.studyplan.data.Task
-import com.mtlc.studyplan.data.TaskPriority
+import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
+import com.mtlc.studyplan.ui.theme.DesignTokens
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,589 +42,259 @@ fun WorkingTasksScreen(
     onNavigateBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val plan = remember { PlanDataSource.planData }
 
-    // Collect data from AppIntegrationManager
-    val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
+    var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan, 3: Custom
 
-    // Filter and categorize tasks
-    val incompleteTasks = remember(allTasks) {
-        allTasks.filter { !it.isCompleted }.sortedWith(
-            compareBy<Task> { it.priority.ordinal }.thenBy { it.dueDate ?: Long.MAX_VALUE }
-        )
-    }
-
-    val completedTasks = remember(allTasks) {
-        allTasks.filter { it.isCompleted }.sortedByDescending { it.completedAt }
-    }
-
-    // Task filter state
-    var showCompleted by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf("All") }
-
-    // Get unique categories
-    val categories = remember(allTasks) {
-        listOf("All") + allTasks.map { it.category }.distinct().sorted()
-    }
-
-    // Filter tasks by category
-    val filteredIncompleteTasks = remember(incompleteTasks, selectedCategory) {
-        if (selectedCategory == "All") incompleteTasks
-        else incompleteTasks.filter { it.category == selectedCategory }
-    }
-
-    val filteredCompletedTasks = remember(completedTasks, selectedCategory) {
-        if (selectedCategory == "All") completedTasks
-        else completedTasks.filter { it.category == selectedCategory }
-    }
+    val thisWeek = plan.firstOrNull()
+    val weeklyIds = remember(thisWeek) { thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet() }
+    val weeklyCompleted = 0
+    val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
+    val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) { (weeklyCompleted.toFloat() / weeklyTotal) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DesignTokens.Background)
+            .padding(horizontal = 16.dp)
     ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "My Tasks",
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            },
-            actions = {
-                IconButton(
-                    onClick = { showCompleted = !showCompleted }
-                ) {
-                    Icon(
-                        imageVector = if (showCompleted) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = if (showCompleted) "Hide completed" else "Show completed",
-                        tint = if (showCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
+        Spacer(Modifier.height(12.dp))
+        HeaderWithXp(xp = 0)
+        Spacer(Modifier.height(8.dp))
+        SegmentedControl(
+            segments = listOf("Daily", "Weekly", "Plan", "Custom"),
+            selectedIndex = selectedTab,
+            onSelect = { selectedTab = it }
         )
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Category Filter Chips
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        FilterChip(
-                            onClick = { selectedCategory = category },
-                            label = { Text(category) },
-                            selected = selectedCategory == category,
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        )
-                    }
-                }
-            }
-
-            // Task Statistics Card
-            item {
-                TaskStatsCard(
-                    totalTasks = allTasks.size,
-                    completedTasks = completedTasks.size,
-                    pendingTasks = incompleteTasks.size,
-                    filteredPending = filteredIncompleteTasks.size
-                )
-            }
-
-            // Incomplete Tasks Section
-            if (filteredIncompleteTasks.isNotEmpty()) {
-                item {
-                    SectionHeader(
-                        title = "Pending Tasks",
-                        count = filteredIncompleteTasks.size,
-                        icon = Icons.AutoMirrored.Filled.Assignment
-                    )
-                }
-
-                items(filteredIncompleteTasks) { task ->
-                    TaskCard(
-                        task = task,
-                        onToggleComplete = {
-                            coroutineScope.launch {
-                                if (task.isCompleted) {
-                                    appIntegrationManager.updateTask(
-                                        task.copy(isCompleted = false, completedAt = null)
-                                    )
-                                } else {
-                                    appIntegrationManager.completeTask(task.id)
-                                }
-                            }
-                        },
-                        onTaskClick = { /* TODO: Navigate to task details */ }
-                    )
-                }
-            }
-
-            // Completed Tasks Section
-            item {
-                AnimatedVisibility(
-                    visible = showCompleted && filteredCompletedTasks.isNotEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Column {
-                        SectionHeader(
-                            title = "Completed Tasks",
-                            count = filteredCompletedTasks.size,
-                            icon = Icons.Default.CheckCircle
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        filteredCompletedTasks.forEach { task ->
-                            TaskCard(
-                                task = task,
-                                onToggleComplete = {
-                                    coroutineScope.launch {
-                                        appIntegrationManager.updateTask(
-                                            task.copy(isCompleted = false, completedAt = null)
-                                        )
-                                    }
-                                },
-                                onTaskClick = { /* TODO: Navigate to task details */ }
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-                }
-            }
-
-            // Empty State
-            if (filteredIncompleteTasks.isEmpty() && (!showCompleted || filteredCompletedTasks.isEmpty())) {
-                item {
-                    EmptyTasksState(
-                        category = selectedCategory,
-                        hasCompletedTasks = completedTasks.isNotEmpty()
-                    )
-                }
-            }
-
-            // Bottom spacing
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
-            }
+        Spacer(Modifier.height(8.dp))
+        when (selectedTab) {
+            2 -> PlanTab(thisWeek, weeklyProgressPct)
+            else -> PlaceholderTab()
         }
     }
 }
 
 @Composable
-private fun TaskStatsCard(
-    totalTasks: Int,
-    completedTasks: Int,
-    pendingTasks: Int,
-    filteredPending: Int
-) {
-    val completionRate = if (totalTasks > 0) completedTasks.toFloat() / totalTasks.toFloat() else 0f
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "${(completionRate * 100).toInt()}%",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = "Completion Rate",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
-                }
-
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "$filteredPending",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = "Pending",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LinearProgressIndicator(
-                progress = { completionRate },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "$completedTasks of $totalTasks tasks completed",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun SectionHeader(
-    title: String,
-    count: Int,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Surface(
-            color = MaterialTheme.colorScheme.primary,
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = count.toString(),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-    }
-}
-
-@Composable
-private fun TaskCard(
-    task: Task,
-    onToggleComplete: () -> Unit,
-    onTaskClick: () -> Unit,
+private fun SegmentedControl(
+    segments: List<String>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val completionScale by animateFloatAsState(
-        targetValue = if (task.isCompleted) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "completion_animation"
-    )
-
-    val priorityColor = when (task.priority) {
-        TaskPriority.CRITICAL -> Color(0xFFB71C1C)
-        TaskPriority.HIGH -> Color(0xFFE53E3E)
-        TaskPriority.MEDIUM -> Color(0xFFFF9800)
-        TaskPriority.LOW -> Color(0xFF4CAF50)
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onTaskClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = if (task.isCompleted)
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-            else
-                MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (task.isCompleted) 1.dp else 4.dp
-        )
+    // Rail
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = DesignTokens.SegmentedRail,
+        border = BorderStroke(1.dp, DesignTokens.SegmentedBorder)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Completion checkbox
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = { onToggleComplete() },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.primary,
-                    uncheckedColor = MaterialTheme.colorScheme.outline
-                )
+        // Sliding indicator layout
+        BoxWithConstraints(Modifier.padding(4.dp)) {
+            val segmentCount = segments.size.coerceAtLeast(1)
+            val segWidth: Dp = maxWidth / segmentCount
+            val targetOffset = segWidth * selectedIndex
+            val animatedOffset by animateDpAsState(
+                targetValue = targetOffset,
+                animationSpec = androidx.compose.animation.core.tween(250, easing = FastOutSlowInEasing),
+                label = "seg_offset"
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            // Indicator behind text
+            Surface(
+                modifier = Modifier
+                    .offset(x = animatedOffset)
+                    .width(segWidth)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(20.dp)),
+                color = DesignTokens.SegmentedPill,
+                contentColor = DesignTokens.Foreground,
+            ) {}
 
-            // Task content
-            Column(modifier = Modifier.weight(1f)) {
-                // Category and priority row
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        color = priorityColor.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(6.dp)
+            // Hit targets and labels
+            Row(Modifier.height(36.dp)) {
+                segments.forEachIndexed { index, label ->
+                    val selected = index == selectedIndex
+                    val textColor by animateColorAsState(
+                        targetValue = if (selected) DesignTokens.Foreground else DesignTokens.MutedForeground,
+                        label = "seg_text_$index"
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(segWidth)
+                            .clip(RoundedCornerShape(20.dp))
+                            .selectable(selected = selected, onClick = { onSelect(index) }, role = Role.Tab),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = task.category,
-                            fontSize = 10.sp,
-                            color = priorityColor,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = task.priority.displayName,
-                            fontSize = 10.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            text = label,
+                            color = textColor,
+                            fontSize = 14.sp,
+                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Task title
-                Text(
-                    text = task.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (task.isCompleted)
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    else
-                        MaterialTheme.colorScheme.onSurface,
-                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null
-                )
-
-                if (task.description.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = task.description,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2
-                    )
-                }
-
-                // Task metadata
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (task.estimatedTime > 0) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Schedule,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "${task.estimatedTime} min",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    if (task.dueDate != null) {
-                        if (task.estimatedTime > 0) {
-                            Text(
-                                text = " • ",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Event,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = formatDueDate(task.dueDate),
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-
-                if (task.isCompleted && task.completedAt != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Completed ${formatCompletedTime(task.completedAt)}",
-                        fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            // Priority indicator or completion status
-            if (!task.isCompleted) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = priorityColor,
-                            shape = CircleShape
-                        )
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
             }
         }
     }
 }
 
 @Composable
-private fun EmptyTasksState(
-    category: String,
-    hasCompletedTasks: Boolean
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(16.dp)
+private fun HeaderWithXp(xp: Int) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        Text("Tasks", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
+        Surface(color = DesignTokens.SecondaryContainer, contentColor = DesignTokens.SecondaryContainerForeground, shape = RoundedCornerShape(24.dp)) {
+            Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.Star, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(6.dp))
+                Text("${xp} XP", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlaceholderTab() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Coming soon", color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun PlanTab(thisWeek: WeekPlan?, weeklyProgressPct: Float) {
+    val cardShape = RoundedCornerShape(16.dp)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 28.dp)
     ) {
-        Column(
+        // This Week's Study Plan
+        item {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface)) {
+                Column(Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = DesignTokens.Primary)
+                        Spacer(Modifier.width(8.dp))
+                        Text("This Week's Study Plan", fontWeight = FontWeight.SemiBold)
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Text("Reading Comprehension Focus", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                    Spacer(Modifier.height(12.dp))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text("Week Progress", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("${(weeklyProgressPct * 100).toInt()}%", color = DesignTokens.Success, fontWeight = FontWeight.SemiBold)
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    LinearProgressIndicator(
+                        progress = { weeklyProgressPct.coerceIn(0f, 1f) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        color = DesignTokens.Success,
+                        trackColor = DesignTokens.PrimaryContainer
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text("Daily Schedule", fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(8.dp))
+                    DayScheduleList(thisWeek)
+                }
+            }
+        }
+
+        // Upcoming Days
+        item {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.SecondaryContainer.copy(alpha = 0.35f))) {
+                Column(Modifier.padding(16.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Upcoming Days", fontWeight = FontWeight.SemiBold)
+                        Surface(shape = RoundedCornerShape(16.dp), color = DesignTokens.SurfaceVariant) {
+                            Text("Planned", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text("Thu: Grammar deep dive + Vocabulary expansion", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Fri: Mixed practice + Mock test preparation", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Weekend: Review week + Prep next week's plan", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+
+        // Plan Management
+        item {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.PrimaryContainer.copy(alpha = 0.35f))) {
+                Column(Modifier.padding(16.dp)) {
+                    Text("Plan Management", fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                        ManagementTile(title = "Modify\nThis Week", icon = Icons.Filled.EditCalendar, modifier = Modifier.weight(1f))
+                        ManagementTile(title = "Generate\nNext Week", icon = Icons.Filled.Quiz, modifier = Modifier.weight(1f))
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { }) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = DesignTokens.Primary)
+                        Spacer(Modifier.width(6.dp))
+                        Text("View Planning Analytics", color = DesignTokens.Primary)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ManagementTile(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 0.dp,
+        color = DesignTokens.Surface,
+        modifier = modifier.clickable { }
+    ) {
+        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.height(8.dp))
+            Text(title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 14.sp)
+        }
+    }
+}
+
+@Composable
+private fun DayScheduleList(week: WeekPlan?) {
+    if (week == null) {
+        Text("No plan available", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        return
+    }
+    val fmt = DateTimeFormatter.ofPattern("EEE, MMM d").withLocale(Locale.getDefault())
+    val monday = LocalDate.now().with(java.time.DayOfWeek.MONDAY)
+    week.days.forEachIndexed { idx, day ->
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = DesignTokens.SecondaryContainer.copy(alpha = 0.25f),
+            tonalElevation = 0.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(vertical = 6.dp)
         ) {
-            Icon(
-                imageVector = if (hasCompletedTasks) Icons.Default.TaskAlt else Icons.AutoMirrored.Filled.Assignment,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = if (category == "All") "No pending tasks" else "No tasks in $category",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Text(
-                text = if (hasCompletedTasks)
-                    "Great job! You're all caught up."
-                else
-                    "Add some tasks to get started!",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
-    }
-}
-
-private fun formatDueDate(dueDate: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = dueDate - now
-    val days = diff / (24 * 60 * 60 * 1000)
-
-    return when {
-        days < 0 -> "Overdue"
-        days == 0L -> "Today"
-        days == 1L -> "Tomorrow"
-        days < 7 -> "In ${days} days"
-        else -> {
-            val sdf = SimpleDateFormat("MMM dd", Locale.getDefault())
-            sdf.format(Date(dueDate))
-        }
-    }
-}
-
-private fun formatCompletedTime(completedAt: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = now - completedAt
-    val minutes = diff / (60 * 1000)
-    val hours = diff / (60 * 60 * 1000)
-    val days = diff / (24 * 60 * 60 * 1000)
-
-    return when {
-        minutes < 60 -> "${minutes}m ago"
-        hours < 24 -> "${hours}h ago"
-        days == 1L -> "yesterday"
-        days < 7 -> "${days} days ago"
-        else -> {
-            val sdf = SimpleDateFormat("MMM dd", Locale.getDefault())
-            sdf.format(Date(completedAt))
+            Column(Modifier.padding(12.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    val dateLabel = monday.plusDays(idx.toLong()).format(fmt)
+                    val isToday = LocalDate.now() == monday.plusDays(idx.toLong())
+                    Text(if (isToday) "${day.day}, $dateLabel (Today)" else "${day.day}, $dateLabel", fontWeight = FontWeight.SemiBold)
+                    Surface(shape = RoundedCornerShape(16.dp), color = DesignTokens.SurfaceVariant) {
+                        Text(if (isToday) "In Progress" else "Completed", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
+                day.tasks.forEach { t ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(t.desc, color = MaterialTheme.colorScheme.onSurface)
+                        Spacer(Modifier.weight(1f))
+                        Text("09:00-09:30", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    }
+                    Spacer(Modifier.height(4.dp))
+                }
+            }
         }
     }
 }

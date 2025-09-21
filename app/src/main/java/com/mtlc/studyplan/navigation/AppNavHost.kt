@@ -19,8 +19,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -51,20 +53,23 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.res.stringResource
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.OnboardingRepository
-import com.mtlc.studyplan.data.dataStore
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
 import com.mtlc.studyplan.feature.mock.MockExamRoute
-import com.mtlc.studyplan.feature.progress.ProgressScreen
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.review.MockResultUi
@@ -83,6 +88,9 @@ fun AppNavHost(
 ) {
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
+    val settingsIntegration = com.mtlc.studyplan.settings.rememberSettingsIntegration()
+    val hapticsEnabled by settingsIntegration.isHapticFeedbackEnabled().collectAsState(initial = true)
+    val bottomBarEnabled by settingsIntegration.isBottomNavigationEnabled().collectAsState(initial = true)
 
     // Create main AppIntegrationManager for core functionality
     val mainAppIntegrationManager = remember {
@@ -107,11 +115,6 @@ fun AppNavHost(
                             launchSingleTop = true
                         }
                     }
-                    is com.mtlc.studyplan.shared.NavigationEvent.GoToProgress -> {
-                        navController.navigate("progress") {
-                            launchSingleTop = true
-                        }
-                    }
                     is com.mtlc.studyplan.shared.NavigationEvent.GoToSocial -> {
                         navController.navigate("social") {
                             launchSingleTop = true
@@ -130,28 +133,29 @@ fun AppNavHost(
     // Schedule background prefetch once per app start
     val appCtx = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(Unit) {
-        try { com.mtlc.studyplan.smartcontent.SmartContentPrefetchWorker.schedule(appCtx) } catch (_: Throwable) {}
+        // Smart content prefetch worker removed with progress functionality
     }
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, stringResource(R.string.nav_home)),
         Triple("tasks", Icons.Filled.CheckCircle, stringResource(R.string.nav_tasks)),
-        Triple("progress", Icons.AutoMirrored.Filled.TrendingUp, stringResource(R.string.nav_progress)),
         Triple("social", Icons.Filled.People, stringResource(R.string.nav_social)),
         Triple("settings", Icons.Filled.Settings, stringResource(R.string.nav_settings)),
     )
     Scaffold(
         bottomBar = {
-            com.mtlc.studyplan.ui.components.StudyBottomNav(
-                currentRoute = navController.currentBackStackEntry?.destination?.route ?: "home",
-                tabs = tabs,
-                onTabSelected = { route ->
-                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    navController.navigate(route) {
-                        popUpTo("home")
-                        launchSingleTop = true
+            if (bottomBarEnabled) {
+                com.mtlc.studyplan.ui.components.StudyBottomNav(
+                    currentRoute = navController.currentBackStackEntry?.destination?.route ?: "home",
+                    tabs = tabs,
+                    onTabSelected = { route ->
+                        if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate(route) {
+                            popUpTo("home")
+                            launchSingleTop = true
+                        }
                     }
-                }
-            )
+                )
+            }
         },
         floatingActionButton = {
             var showActions by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
@@ -163,7 +167,7 @@ fun AppNavHost(
                         modifier = Modifier
                             .clickable {
                                 showActions = false
-                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 navController.navigate(TODAY_ROUTE)
                             }
                     )
@@ -173,28 +177,8 @@ fun AppNavHost(
                         modifier = Modifier
                             .clickable {
                                 showActions = false
-                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 navController.navigate("quickNote")
-                            }
-                    )
-                    androidx.compose.material3.ListItem(
-                        headlineContent = { Text("Practice Questions") },
-                        supportingContent = { Text("AI-generated personalized set") },
-                        modifier = Modifier
-                            .clickable {
-                                showActions = false
-                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                navController.navigate("questions")
-                            }
-                    )
-                    androidx.compose.material3.ListItem(
-                        headlineContent = { Text("Reading Practice") },
-                        supportingContent = { Text("Personalized reading materials") },
-                        modifier = Modifier
-                            .clickable {
-                                showActions = false
-                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                navController.navigate("reading")
                             }
                     )
                 }
@@ -232,6 +216,7 @@ fun AppNavHost(
         ) {
             composable(WELCOME_ROUTE) {
                 val context = androidx.compose.ui.platform.LocalContext.current
+                val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
                 val repo = remember { OnboardingRepository(context.dataStore) }
                 val isComplete by repo.isOnboardingCompleted.collectAsState(initial = false)
                 LaunchedEffect(isComplete) {
@@ -283,9 +268,17 @@ fun AppNavHost(
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("tasks")
                     },
-                    onNavigateToProgress = {
+                    onNavigateToWeeklyPlan = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        navController.navigate("progress")
+                        navController.navigate("weekly-plan")
+                    },
+                    onNavigateToDaily = { day ->
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("daily/$day")
+                    },
+                    onNavigateToExamDetails = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("exam-details")
                     }
                 )
             }
@@ -322,115 +315,13 @@ fun AppNavHost(
             }
         }
 
-        // Questions practice route
-        composable(
-            "questions",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeOut(animationSpec = tween(300))
-            }
-        ) {
-            AnimatedContent(
-                targetState = "questions",
-                transitionSpec = NavigationTransitions.slideTransition(),
-                label = "questions_animation"
-            ) { _ ->
-                com.mtlc.studyplan.feature.questions.QuestionsScreen()
-            }
-        }
+        // Questions route removed with progress functionality
 
-        // Reading system routes
-        composable(
-            "reading",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeOut(animationSpec = tween(300))
-            }
-        ) {
-            AnimatedContent(
-                targetState = "reading",
-                transitionSpec = NavigationTransitions.slideTransition(),
-                label = "reading_animation"
-            ) { _ ->
-                com.mtlc.studyplan.reading.ReadingScreen(
-                    onNavigateToSession = { contentId ->
-                        navController.navigate("reading/session/$contentId")
-                    },
-                    onNavigateToProgress = {
-                        navController.navigate("reading/progress")
-                    },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-        }
+        // Reading routes removed with progress functionality
 
-        // Reading session route
-        composable("reading/session/{contentId}") { backStackEntry ->
-            val contentId = backStackEntry.arguments?.getString("contentId") ?: ""
-            // Placeholder for reading session screen
-            Scaffold(
-                topBar = {
-                    androidx.compose.material3.TopAppBar(
-                        title = { Text("Reading Session") },
-                        navigationIcon = {
-                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        }
-                    )
-                }
-            ) { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Reading Session for Content: $contentId")
-                }
-            }
-        }
+        // Reading session route removed
 
-        // Reading progress route
-        composable("reading/progress") {
-            Scaffold(
-                topBar = {
-                    androidx.compose.material3.TopAppBar(
-                        title = { Text("Reading Progress") },
-                        navigationIcon = {
-                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        }
-                    )
-                }
-            ) { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Reading Progress Analytics")
-                }
-            }
-        }
+        // Reading progress route removed
 
         // Add route for the regular study plan screen
         composable(PLAN_ROUTE) {
@@ -457,32 +348,6 @@ fun AppNavHost(
             )
         }
 
-        // Large-screen two-pane demos
-        composable(
-            "progress",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeOut(animationSpec = tween(300))
-            }
-        ) {
-            AnimatedContent(
-                targetState = "progress",
-                transitionSpec = NavigationTransitions.slideTransition(),
-                label = "progress_animation"
-            ) { _ ->
-                ProgressScreen(
-                    sharedViewModel = sharedViewModel
-                )
-            }
-        }
 
         // Social features
         composable(
@@ -641,6 +506,77 @@ fun AppNavHost(
         }
         // Quick note route (simple sheet)
         composable("quickNote") { com.mtlc.studyplan.ui.QuickNoteRoute(onClose = { navController.popBackStack() }) }
+
+        // Weekly Plan route
+        composable("weekly-plan") {
+            com.mtlc.studyplan.core.WeeklyPlanScreen(
+                onNavigateBack = {
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.popBackStack()
+                },
+                onNavigateToDaily = { day ->
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.navigate("daily/$day")
+                }
+            )
+        }
+
+        // Daily view route
+        composable("daily/{day}") { backStackEntry ->
+            val day = backStackEntry.arguments?.getString("day") ?: ""
+            Scaffold(
+                topBar = {
+                    androidx.compose.material3.TopAppBar(
+                        title = { Text("$day Study Plan") },
+                        navigationIcon = {
+                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    )
+                }
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("$day Study Details")
+                }
+            }
+        }
+
+        // Exam details route
+        composable("exam-details") {
+            Scaffold(
+                topBar = {
+                    androidx.compose.material3.TopAppBar(
+                        title = { Text("YDS Exam 2024") },
+                        navigationIcon = {
+                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    )
+                }
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("YDS Exam Details", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("December 15, 2024")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Preparation Progress: 10%")
+                    }
+                }
+            }
+        }
         }
     }
 }

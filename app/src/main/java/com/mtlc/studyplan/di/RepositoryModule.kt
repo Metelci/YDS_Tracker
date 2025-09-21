@@ -20,13 +20,6 @@ object RepositoryModule {
         return TaskRepository(taskDao)
     }
 
-    @Provides
-    @Singleton
-    fun provideProgressRepository(
-        progressDao: ProgressDao
-    ): ProgressRepository {
-        return ProgressRepository(progressDao)
-    }
 
     @Provides
     @Singleton

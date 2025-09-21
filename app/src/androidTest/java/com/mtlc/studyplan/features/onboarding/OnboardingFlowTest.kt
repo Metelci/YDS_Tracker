@@ -16,6 +16,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
+import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 
 class OnboardingFlowTest {
 

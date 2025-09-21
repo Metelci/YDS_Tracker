@@ -3,96 +3,100 @@ package com.mtlc.studyplan.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * HSL-based design tokens matching the target design
- * Following the Lovable design system specifications
+ * Design tokens tuned to exact HEX values from DESIGN_SYSTEM.md
  */
-
-// HSL Helper Function
-fun hsl(h: Int, s: Int, l: Int): Color =
-    Color.hsl(h.toFloat(), s / 100f, l / 100f)
-
 object DesignTokens {
 
-    // EXACT Primary Colors from CODE_SPECIFICATIONS.MD
-    val Primary = hsl(199, 92, 73)  // #81D4FA - Light Blue (Main Brand)
-    val PrimaryContainer = hsl(199, 70, 85)  // #B3E5FC - Light Blue Container
-    val PrimaryContainerForeground = hsl(199, 100, 20)
-    val PrimaryForeground = hsl(0, 0, 100)  // White text on primary
+    // Primary Brand Colors
+    val Primary = Color(0xFF1976D2)
+    val PrimaryContainer = Color(0xFFE3F2FD)
+    val PrimaryForeground = Color(0xFFFFFFFF)
+    val PrimaryContainerForeground = Color(0xFF0D47A1)
 
-    // EXACT Secondary Colors from specifications
-    val Secondary = hsl(122, 39, 69)  // #A5D6A7 - Light Green
-    val SecondaryContainer = hsl(122, 39, 82)  // #C8E6C9 - Light Green Container
-    val SecondaryContainerForeground = hsl(122, 100, 15)
-    val SecondaryForeground = hsl(0, 0, 100)
+    // Secondary Colors
+    val Secondary = Color(0xFF388E3C)
+    val SecondaryContainer = Color(0xFFE8F5E8)
+    val SecondaryForeground = Color(0xFFFFFFFF)
+    val SecondaryContainerForeground = Color(0xFF1B5E20)
 
-    // EXACT Tertiary Colors from specifications
-    val Tertiary = hsl(14, 100, 78)  // #FFAB91 - Soft Coral
-    val TertiaryContainer = hsl(14, 100, 88)
-    val TertiaryContainerForeground = hsl(14, 100, 25)
+    // Tertiary Colors
+    val Tertiary = Color(0xFFE65100)
+    val TertiaryContainer = Color(0xFFFFF3E0)
+    val TertiaryContainerForeground = Color(0xFFBF360C)
 
-    // EXACT Surface System from specifications
-    val Background = hsl(0, 0, 98)  // #FAFAFA
-    val Foreground = hsl(0, 0, 13)  // #212121
-    val Card = hsl(0, 0, 100)
-    val CardForeground = hsl(0, 0, 13)
-    val Popover = hsl(0, 0, 100)
-    val PopoverForeground = hsl(0, 0, 13)
-    val Surface = hsl(0, 0, 100)
-    val SurfaceVariant = hsl(0, 0, 96)
-    val SurfaceContainer = hsl(0, 0, 94)
-    val SurfaceContainerHigh = hsl(0, 0, 92)
+    // Status Colors
+    val Success = Color(0xFF4CAF50)
+    val SuccessContainer = Color(0xFFE8F5E8)
+    val Warning = Color(0xFFFF9800)
+    val Error = Color(0xFFF44336)
+    val Destructive = Error
+    val DestructiveForeground = Color(0xFFFFFFFF)
 
-    // EXACT Borders & Outlines from specifications
-    val Border = hsl(0, 0, 89)
-    val Input = hsl(0, 0, 89)
-    val Ring = hsl(199, 92, 73)
+    // Surface & Content Colors
+    val Background = Color(0xFFFFFBFF)
+    val Foreground = Color(0xFF1C1B1F)
+    val Card = Color(0xFFFFFFFF)
+    val CardForeground = Color(0xFF1C1B1F)
+    val Popover = Color(0xFFFFFFFF)
+    val PopoverForeground = Color(0xFF1C1B1F)
+    val Surface = Color(0xFFFFFBFF)
+    val SurfaceVariant = Color(0xFFE7E0EC)
+    val SurfaceContainer = Color(0xFFF7F2FA)
+    val SurfaceContainerHigh = Color(0xFFF1ECF4)
 
-    // EXACT Text Colors from specifications
-    val Muted = hsl(0, 0, 96)
-    val MutedForeground = hsl(0, 0, 46)
-    val Accent = hsl(0, 0, 96)
-    val AccentForeground = hsl(0, 0, 13)
+    // Borders & Outlines
+    val Border = Color(0xFFE0E0E0)
+    val Input = Color(0xFFE0E0E0)
+    val Ring = Primary
 
-    // EXACT Semantic Colors from specifications
-    val Destructive = hsl(0, 65, 51)  // Error Red
-    val DestructiveForeground = hsl(0, 0, 100)
-    val Success = hsl(122, 39, 49)  // Success Green
-    val SuccessContainer = hsl(122, 39, 82)
-    val Warning = hsl(45, 100, 51)  // Warning Orange
+    // Text & Accents
+    val Muted = Color(0xFFF5F5F5)
+    val MutedForeground = Color(0xFF757575)
+    val Accent = Muted
+    val AccentForeground = Foreground
 
-    // Gamification Colors (using design tokens)
-    val StreakFire = TertiaryContainer  // Use tertiary container for streak
-    val PointsGreen = SecondaryContainer  // Use secondary container for points
-    val TasksDone = TertiaryContainer  // Use tertiary container for tasks done
-    val ExamBlue = PrimaryContainer  // Use primary container for exam card
+    // Gamification Colors (mapped to containers)
+    val StreakFire = TertiaryContainer
+    val PointsGreen = SecondaryContainer
+    val TasksDone = TertiaryContainer
+    val ExamBlue = PrimaryContainer
 
-    // Task category colors (using design tokens)
-    val TaskGrammar = PrimaryContainer  // Light blue for grammar
-    val TaskReading = SecondaryContainer  // Light green for reading
-    val TaskVocabulary = SecondaryContainer  // Light green for vocabulary
+    // Task category colors (mapped)
+    val TaskGrammar = PrimaryContainer
+    val TaskReading = SecondaryContainer
+    val TaskVocabulary = SecondaryContainer
 
-    // Achievement Colors
-    val AchievementBronze = hsl(30, 67, 47)
-    val AchievementSilver = hsl(0, 0, 75)
-    val AchievementGold = hsl(51, 100, 50)
-    val AchievementPlatinum = hsl(240, 12, 85)
+    // Achievement Colors (compatibility)
+    val AchievementBronze = Color(0xFFCD7F32)
+    val AchievementSilver = Color(0xFFC0C0C0)
+    val AchievementGold = Color(0xFFFFD700)
+    val AchievementPlatinum = Color(0xFFE5E4E2)
 
-    // Dark mode variants
+    // Segmented control specific tokens (rail/pill/border)
+    val SegmentedRail = Color(0xFFF2F6FB)
+    val SegmentedBorder = Color(0xFFE2E8F0)
+    val SegmentedPill = Color(0xFFFFFFFF)
+
+    // Bottom navigation highlight tokens
+    val BottomNavItemSelected = PrimaryContainer // tile background
+    val BottomNavIconHighlight = Color(0xFFB3E5FC) // circle behind selected icon
+
+    // Dark mode variants (approximate mapping)
     object Dark {
-        val Background = hsl(0, 0, 7)
-        val Foreground = hsl(0, 0, 98)
-        val Card = hsl(0, 0, 10)
-        val CardForeground = hsl(0, 0, 98)
-        val Primary = hsl(199, 92, 73)
-        val PrimaryForeground = hsl(0, 0, 7)
-        val Secondary = hsl(0, 0, 15)
-        val SecondaryForeground = hsl(0, 0, 98)
-        val Muted = hsl(0, 0, 15)
-        val MutedForeground = hsl(0, 0, 64)
-        val Border = hsl(0, 0, 15)
-        val SurfaceVariant = hsl(0, 0, 15)
+        val Background = Color(0xFF121212)
+        val Foreground = Color(0xFFEDEDED)
+        val Card = Color(0xFF1E1E1E)
+        val CardForeground = Color(0xFFEDEDED)
+        val Primary = Color(0xFF90CAF9)
+        val PrimaryForeground = Color(0xFF0D47A1)
+        val Secondary = Color(0xFFA5D6A7)
+        val SecondaryForeground = Color(0xFF1B5E20)
+        val Muted = Color(0xFF2A2A2A)
+        val MutedForeground = Color(0xFF9E9E9E)
+        val Border = Color(0xFF2A2A2A)
+        val SurfaceVariant = Color(0xFF2C2C2C)
     }
 }
 
-// Extension properties for easier access in composables
+// Extension (kept for compatibility)
 val Color.Companion.StudyPlan: DesignTokens get() = DesignTokens

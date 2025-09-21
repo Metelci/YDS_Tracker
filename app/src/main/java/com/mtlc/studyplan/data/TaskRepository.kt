@@ -110,108 +110,109 @@ class TaskRepositoryImpl @Inject constructor() : TaskRepository {
         val oneHour = 60 * 60 * 1000L
         val oneDay = 24 * oneHour
 
+        // YDS-focused English tasks only
         return listOf(
             Task(
-                id = "1",
-                title = "Complete Algebra homework Ch. 5",
-                description = "Solve problems 1-20 on quadratic equations",
-                category = "Mathematics",
+                id = "yds-1",
+                title = "YDS Vocabulary: Academic Words Set 1",
+                description = "Study 30 high-frequency YDS academic words",
+                category = "YDS Vocabulary",
                 priority = TaskPriority.HIGH,
                 dueDate = now + oneDay,
-                estimatedTime = 60,
-                tags = listOf("homework", "algebra")
+                estimatedTime = 40,
+                tags = listOf("yds", "english", "vocabulary")
             ),
             Task(
-                id = "2",
-                title = "Read Pride and Prejudice Ch. 1-3",
-                description = "Read and take notes for upcoming discussion",
-                category = "English Literature",
+                id = "yds-2",
+                title = "YDS Grammar: Tenses & Modals",
+                description = "Targeted practice on mixed tenses and modal verbs",
+                category = "YDS Grammar",
                 priority = TaskPriority.MEDIUM,
                 dueDate = now + 2 * oneDay,
-                estimatedTime = 90,
-                tags = listOf("reading", "literature")
+                estimatedTime = 60,
+                tags = listOf("yds", "english", "grammar")
             ),
             Task(
-                id = "3",
-                title = "Lab report: Chemical reactions",
-                description = "Write up findings from Wednesday's chemistry lab",
-                category = "Science",
-                priority = TaskPriority.HIGH,
-                dueDate = now + 3 * oneDay,
-                estimatedTime = 120,
-                tags = listOf("lab", "chemistry")
-            ),
-            Task(
-                id = "4",
-                title = "Study for Biology test on cells",
-                description = "Review chapters 4-6 and practice diagrams",
-                category = "Science",
+                id = "yds-3",
+                title = "YDS Reading: Inference Questions",
+                description = "Solve 10 inference questions from past papers",
+                category = "YDS Reading",
                 priority = TaskPriority.MEDIUM,
+                dueDate = now + 3 * oneDay,
+                estimatedTime = 45,
+                tags = listOf("yds", "english", "reading")
+            ),
+            Task(
+                id = "yds-4",
+                title = "YDS Cloze Test Practice",
+                description = "Complete 2 cloze tests focusing on connectors",
+                category = "YDS Grammar",
+                priority = TaskPriority.HIGH,
                 dueDate = now + 4 * oneDay,
-                estimatedTime = 150,
-                tags = listOf("study", "biology", "test")
+                estimatedTime = 50,
+                tags = listOf("yds", "english", "grammar", "cloze")
             ),
             Task(
-                id = "5",
-                title = "Research project: World War II",
-                description = "Gather sources and create outline",
-                category = "History",
+                id = "yds-5",
+                title = "YDS Listening: Short Talks",
+                description = "Practice 3 short talks and answer 15 questions",
+                category = "YDS Listening",
                 priority = TaskPriority.LOW,
-                dueDate = now + 7 * oneDay,
-                estimatedTime = 180,
-                tags = listOf("research", "history", "project")
+                dueDate = now + 5 * oneDay,
+                estimatedTime = 35,
+                tags = listOf("yds", "english", "listening")
             ),
             Task(
-                id = "6",
-                title = "Practice integration problems",
-                description = "Complete practice set from textbook",
-                category = "Mathematics",
+                id = "yds-6",
+                title = "YDS Sentence Completion",
+                description = "Solve 15 sentence completion items (B1-B2)",
+                category = "YDS Reading",
                 priority = TaskPriority.MEDIUM,
                 isCompleted = true,
                 completedAt = now - oneDay,
-                estimatedTime = 45,
-                tags = listOf("practice", "calculus")
+                estimatedTime = 40,
+                tags = listOf("yds", "english", "reading", "completion")
             ),
             Task(
-                id = "7",
-                title = "Review vocabulary for quiz",
-                description = "Spanish vocabulary list for Friday quiz",
-                category = "Language",
+                id = "yds-7",
+                title = "YDS Paraphrasing Practice",
+                description = "Paraphrase 20 sentences using target structures",
+                category = "YDS Grammar",
                 priority = TaskPriority.MEDIUM,
                 dueDate = now + oneDay,
                 estimatedTime = 30,
-                tags = listOf("vocabulary", "spanish", "quiz")
+                tags = listOf("yds", "english", "grammar", "paraphrase")
             ),
             Task(
-                id = "8",
-                title = "Code practice: Python loops",
-                description = "Complete HackerRank loop challenges",
-                category = "Computer Science",
+                id = "yds-8",
+                title = "YDS Vocabulary: Collocations Set 2",
+                description = "Memorize and test 25 key collocations",
+                category = "YDS Vocabulary",
                 priority = TaskPriority.LOW,
-                dueDate = now + 5 * oneDay,
-                estimatedTime = 75,
-                tags = listOf("coding", "python", "practice")
+                dueDate = now + 2 * oneDay,
+                estimatedTime = 30,
+                tags = listOf("yds", "english", "vocabulary", "collocation")
             ),
             Task(
-                id = "9",
-                title = "Write essay draft: Shakespeare analysis",
-                description = "First draft of Hamlet character analysis",
-                category = "English Literature",
+                id = "yds-9",
+                title = "YDS Reading: Paragraph Completion",
+                description = "Solve 8 paragraph completion questions",
+                category = "YDS Reading",
                 priority = TaskPriority.HIGH,
-                dueDate = now + 6 * oneDay,
-                estimatedTime = 180,
-                tags = listOf("essay", "shakespeare", "analysis")
+                dueDate = now + 3 * oneDay,
+                estimatedTime = 50,
+                tags = listOf("yds", "english", "reading", "paragraph")
             ),
             Task(
-                id = "10",
-                title = "Physics problem set #7",
-                description = "Momentum and energy conservation problems",
-                category = "Science",
+                id = "yds-10",
+                title = "YDS Full Practice Exam (1)",
+                description = "Complete a full mock exam and review mistakes",
+                category = "YDS Practice Exam",
                 priority = TaskPriority.MEDIUM,
                 isCompleted = true,
                 completedAt = now - 2 * oneDay,
-                estimatedTime = 90,
-                tags = listOf("physics", "problems", "homework")
+                estimatedTime = 120,
+                tags = listOf("yds", "english", "exam")
             )
         )
     }

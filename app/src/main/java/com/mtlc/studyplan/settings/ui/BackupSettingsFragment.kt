@@ -214,8 +214,7 @@ class BackupSettingsFragment : Fragment() {
     private fun showCloudSyncProviderDialog() {
         val providers = arrayOf(
             getString(R.string.google_drive),
-            getString(R.string.dropbox),
-            getString(R.string.icloud)
+            getString(R.string.dropbox)
         )
 
         MaterialAlertDialogBuilder(requireContext())

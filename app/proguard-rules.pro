@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Hilt ProGuard rules
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.HiltAndroidApp
+-keepclasseswithmembers class * {
+    @dagger.hilt.android.AndroidEntryPoint <methods>;
+}
+-keep @dagger.hilt.android.AndroidEntryPoint class * {
+    *;
+}
+-keep class **_HiltModules*
+-keep class **_Impl { *; }
+-keep class **_Factory { *; }
+-keep class **_ComponentTreeDeps { *; }

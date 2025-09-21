@@ -68,7 +68,7 @@ object EnhancedNavigation {
     }
 
     private fun isTabNavigation(from: String?, to: String): Boolean {
-        val mainTabs = listOf("home", "tasks", "progress", "social", "settings")
+        val mainTabs = listOf("home", "tasks", "progress", "settings")
         return from in mainTabs && to in mainTabs
     }
 

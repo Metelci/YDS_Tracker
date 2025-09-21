@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.data.*
-import com.mtlc.studyplan.ui.celebrations.*
+// Celebration imports removed with progress functionality
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -15,13 +15,12 @@ import kotlinx.serialization.Serializable
  * Centralized Gamification Manager - Coordinates all gamification systems
  */
 class GamificationManager(
-    private val dataStore: DataStore<Preferences>,
-    private val progressRepository: ProgressRepository
+    private val dataStore: DataStore<Preferences>
 ) {
 
     // Component managers
     private val pointEconomyManager = PointEconomyManager(dataStore)
-    private val advancedAchievementTracker = AdvancedAchievementTracker(dataStore, progressRepository)
+    private val advancedAchievementTracker = AdvancedAchievementTracker(dataStore)
 
     /**
      * Comprehensive gamification state
@@ -48,9 +47,8 @@ class GamificationManager(
     val gamificationStateFlow: StateFlow<GamificationState> = combine(
         pointEconomyManager.pointWalletFlow,
         advancedAchievementTracker.advancedAchievementFlow,
-        pointEconomyManager.transactionHistoryFlow,
-        progressRepository.userProgressFlow
-    ) { pointWallet, achievements, transactions, userProgress ->
+        pointEconomyManager.transactionHistoryFlow
+    ) { pointWallet, achievements, transactions ->
 
         val dailyChallenge = getCurrentDailyChallenge(userProgress, transactions)
         val comebackBonus = checkActiveComebackBonus(userProgress)
@@ -85,7 +83,7 @@ class GamificationManager(
         isCorrect: Boolean = true
     ): GamificationTaskResult {
 
-        val userProgress = progressRepository.userProgressFlow.first()
+        // User progress tracking removed
         val taskCategory = TaskCategory.fromString(taskDescription)
 
         // Calculate comprehensive points with all bonuses
@@ -121,7 +119,7 @@ class GamificationManager(
         )
 
         // Complete the task in the progress system
-        progressRepository.completeTaskWithPoints(taskId, taskDescription, taskDetails, minutesSpent)
+        // Task completion tracking removed
 
         // Check for new achievement unlocks
         val newAchievements = checkForNewAchievementUnlocks()
@@ -191,8 +189,8 @@ class GamificationManager(
      * Generate daily challenge
      */
     suspend fun generateNewDailyChallenge(): DailyChallenge {
-        val userProgress = progressRepository.userProgressFlow.first()
-        val taskLogs = progressRepository.taskLogsFlow.first()
+        // User progress tracking removed
+        // Task logs removed
 
         return ChallengeGenerator.generateDailyChallenge(userProgress, taskLogs)
     }
@@ -210,7 +208,7 @@ class GamificationManager(
      */
     suspend fun getMotivationalInsights(): MotivationalInsights {
         val state = gamificationStateFlow.first()
-        val userProgress = progressRepository.userProgressFlow.first()
+        // User progress tracking removed
 
         return MotivationalInsights(
             todayProgress = calculateTodayProgress(),
@@ -234,7 +232,7 @@ class GamificationManager(
         val existingChallenge = loadDailyChallengeFromStorage(today)
 
         return existingChallenge ?: run {
-            val taskLogs = progressRepository.taskLogsFlow.first()
+            // Task logs removed
             val newChallenge = ChallengeGenerator.generateDailyChallenge(userProgress, taskLogs)
             saveDailyChallengeToStorage(newChallenge)
             newChallenge
@@ -368,7 +366,7 @@ class GamificationManager(
     }
 
     private suspend fun calculateTodayProgress(): Float {
-        val taskLogs = progressRepository.taskLogsFlow.first()
+        // Task logs removed
         val todayStart = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
         val todayTasks = taskLogs.filter { it.timestampMillis >= todayStart }
 
@@ -376,7 +374,7 @@ class GamificationManager(
     }
 
     private suspend fun calculateWeekProgress(): Float {
-        val taskLogs = progressRepository.taskLogsFlow.first()
+        // Task logs removed
         val weekStart = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
         val weekTasks = taskLogs.filter { it.timestampMillis >= weekStart }
 

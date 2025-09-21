@@ -24,27 +24,6 @@
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:menu="@menu/settings_menu" />
 
-        <!-- Search Bar -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/search_view"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                app:queryHint="@string/search_settings_hint"
-                app:iconifiedByDefault="false"
-                app:closeIcon="@drawable/ic_close"
-                app:searchIcon="@drawable/ic_search"
-                android:background="@drawable/search_view_background"
-                app:queryBackground="@android:color/transparent"
-                app:submitBackground="@android:color/transparent" />
-
-        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -91,40 +70,6 @@
                 tools:spanCount="2"
                 tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
 
-            <!-- Empty Search State -->
-            <LinearLayout
-                android:id="@+id/empty_search_state"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_search_off"
-                    android:contentDescription="@string/no_results_found"
-                    app:tint="?attr/colorOnSurfaceVariant" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/no_settings_found"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/try_different_search"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-
-            </LinearLayout>
 
             <!-- Bottom Actions Section -->
             <LinearLayout

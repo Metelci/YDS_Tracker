@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,13 +18,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mtlc.studyplan.data.Task
-import com.mtlc.studyplan.data.TaskPriority
-import com.mtlc.studyplan.data.TaskStats
+import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import kotlinx.coroutines.launch
 
@@ -32,7 +33,9 @@ import kotlinx.coroutines.launch
 fun WorkingHomeScreen(
     appIntegrationManager: AppIntegrationManager,
     onNavigateToTasks: () -> Unit = {},
-    onNavigateToProgress: () -> Unit = {},
+    onNavigateToWeeklyPlan: () -> Unit = {},
+    onNavigateToDaily: (String) -> Unit = {},
+    onNavigateToExamDetails: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -45,18 +48,25 @@ fun WorkingHomeScreen(
     // Calculate stats
     var taskStats by remember { mutableStateOf(TaskStats()) }
 
-    LaunchedEffect(allTasks) {
-        taskStats = appIntegrationManager.getTaskStats()
+    // Create sample data for new design elements
+    val examTracker = remember { ExamTracker() }
+    val weeklyPlan = remember { WeeklyStudyPlan() }
+    val todayStats = remember(taskStats) {
+        TodayStats(
+            progressPercentage = taskStats.getProgressPercentage(),
+            pointsEarned = taskStats.completedTasks * 10,
+            completedTasks = taskStats.completedTasks,
+            totalTasks = maxOf(taskStats.totalTasks, 3)
+        )
+    }
+    val streakInfo = remember(studyStreak) {
+        StreakInfo(
+            currentStreak = studyStreak.currentStreak
+        )
     }
 
-    val todayTasks = remember(allTasks) {
-        allTasks.filter { task ->
-            val today = System.currentTimeMillis()
-            val oneDayMs = 24 * 60 * 60 * 1000
-            task.dueDate?.let { dueDate ->
-                kotlin.math.abs(dueDate - today) < oneDayMs
-            } ?: false
-        }.take(3) // Show only first 3 for home screen
+    LaunchedEffect(allTasks) {
+        taskStats = appIntegrationManager.getTaskStats()
     }
 
     LazyColumn(
@@ -66,7 +76,7 @@ fun WorkingHomeScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header
+        // Header Section
         item {
             Column(
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
@@ -78,7 +88,7 @@ fun WorkingHomeScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Ready to tackle your studies?",
+                    text = "Ready to ace your YDS exam?",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
@@ -86,73 +96,86 @@ fun WorkingHomeScreen(
             }
         }
 
-        // Progress Overview Card
+        // Top Progress Cards Row
         item {
-            Card(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                ),
-                shape = RoundedCornerShape(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
+                // Today Progress Card
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { /* Progress feature removed */ },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF26C6DA)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Column {
-                            Text(
-                                text = "${taskStats.getProgressPercentage()}%",
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Text(
-                                text = "Today's Progress",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.End,
-                            modifier = Modifier.clickable { onNavigateToProgress() }
-                        ) {
-                            Text(
-                                text = studyStreak.currentStreak.toString(),
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Text(
-                                text = "Day Streak",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    LinearProgressIndicator(
-                        progress = { taskStats.completionRate },
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${todayStats.progressPercentage}%",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Today",
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        CircularProgressIndicator(
+                            progress = { todayStats.progressPercentage / 100f },
+                            modifier = Modifier.size(40.dp),
+                            color = Color.White,
+                            trackColor = Color.White.copy(alpha = 0.3f),
+                            strokeWidth = 4.dp
+                        )
+                    }
+                }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "${taskStats.completedTasks} of ${taskStats.totalTasks} tasks completed",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
+                // Days to Exam Card
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { onNavigateToExamDetails() },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF4FC3F7)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${examTracker.daysToExam}",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Days to YDS",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.9f),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = examTracker.statusMessage,
+                            fontSize = 10.sp,
+                            color = Color.White.copy(alpha = 0.8f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
@@ -163,126 +186,147 @@ fun WorkingHomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Completed Tasks Card
+                // Points Today Card
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { onNavigateToTasks() },
+                        .clickable { /* Progress feature removed */ },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        containerColor = Color(0xFF66BB6A)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = taskStats.completedTasks.toString(),
+                            text = "${todayStats.pointsEarned}",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                            color = Color.White
                         )
                         Text(
-                            text = "Completed",
+                            text = "Points Today",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+                            color = Color.White.copy(alpha = 0.9f),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
 
-                // Pending Tasks Card
+                // Tasks Done Card
                 Card(
                     modifier = Modifier
                         .weight(1f)
                         .clickable { onNavigateToTasks() },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        containerColor = Color(0xFFFF8A65)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = taskStats.pendingTasks.toString(),
+                            text = todayStats.tasksProgressText,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = Color.White
                         )
                         Text(
-                            text = "Pending",
+                            text = "Tasks Done",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                            color = Color.White.copy(alpha = 0.9f),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
             }
         }
 
+
         // Streak Card
-        if (studyStreak.currentStreak > 0) {
+        if (streakInfo.currentStreak > 0) {
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onNavigateToProgress() },
+                        .clickable { /* Progress feature removed */ },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFF9800).copy(alpha = 0.1f)
+                        containerColor = Color.Transparent
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFFFF8A65),
+                                        Color(0xFFFFAB91)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            )
                     ) {
-                        Surface(
-                            color = Color(0xFFFF9800).copy(alpha = 0.2f),
-                            shape = CircleShape,
-                            modifier = Modifier.size(40.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize()
+                            Surface(
+                                color = Color.White.copy(alpha = 0.2f),
+                                shape = CircleShape,
+                                modifier = Modifier.size(40.dp)
                             ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Text(
+                                        text = "🔥",
+                                        fontSize = 20.sp
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "🔥",
-                                    fontSize = 20.sp
+                                    text = streakInfo.displayText,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = streakInfo.motivationText,
+                                    fontSize = 14.sp,
+                                    color = Color.White.copy(alpha = 0.9f)
                                 )
                             }
-                        }
 
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "${studyStreak.currentStreak} day streak",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (studyStreak.isActiveToday()) "Keep it going! 🔥" else "Don't break the streak!",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        if (studyStreak.currentStreak >= 7) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Text(
-                                    text = "2x",
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
+                            if (streakInfo.showMultiplierBadge) {
+                                Surface(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text(
+                                        text = streakInfo.multiplier,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFFF8A65)
+                                    )
+                                }
                             }
                         }
                     }
@@ -290,85 +334,193 @@ fun WorkingHomeScreen(
             }
         }
 
-        // Today's Tasks Section
+        // Weekly Study Plan Section
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToWeeklyPlan() },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF1F8E9)
+                ),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text(
-                    text = "Today's Tasks",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                TextButton(
-                    onClick = onNavigateToTasks
+                Column(
+                    modifier = Modifier.padding(20.dp)
                 ) {
-                    Text("View All")
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "📅 Weekly Study Plan",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF2E7D32)
+                        )
+                        Surface(
+                            color = Color(0xFF4CAF50),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "${(weeklyPlan.progressPercentage * 100).toInt()}%",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = weeklyPlan.title,
+                        fontSize = 14.sp,
+                        color = Color(0xFF1B5E20),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    LinearProgressIndicator(
+                        progress = { weeklyPlan.progressPercentage },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = Color(0xFF4CAF50),
+                        trackColor = Color(0xFF4CAF50).copy(alpha = 0.2f)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Week Progress • ${weeklyPlan.weekProgressText}",
+                        fontSize = 12.sp,
+                        color = Color(0xFF2E7D32).copy(alpha = 0.7f)
                     )
                 }
             }
         }
 
-        // Today's Task Items
-        if (todayTasks.isNotEmpty()) {
-            items(todayTasks) { task ->
-                TaskItemCard(
-                    task = task,
-                    onToggleComplete = {
-                        coroutineScope.launch {
-                            if (task.isCompleted) {
-                                // Mark as incomplete
-                                appIntegrationManager.updateTask(task.copy(isCompleted = false, completedAt = null))
-                            } else {
-                                // Complete the task
-                                appIntegrationManager.completeTask(task.id)
-                            }
-                        }
-                    },
-                    onTaskClick = { onNavigateToTasks() }
+        // This Week Section
+        item {
+            Column {
+                Text(
+                    text = "This Week",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
-            }
-        } else {
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(40.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.TaskAlt,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "No tasks for today",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = "Great job! You're all caught up.",
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    items(weeklyPlan.days) { day ->
+                        DayProgressCard(
+                            day = day,
+                            onClick = { onNavigateToDaily(day.dayName) }
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = onNavigateToWeeklyPlan
+                    ) {
+                        Text("View Full Week")
+                    }
+                    TextButton(
+                        onClick = onNavigateToWeeklyPlan
+                    ) {
+                        Text("▶ Modify Plan")
+                    }
+                }
+            }
+        }
+
+        // YDS Exam 2024 Section
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToExamDetails() },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFE3F2FD)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        color = Color(0xFF2196F3).copy(alpha = 0.2f),
+                        shape = CircleShape,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "📅",
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "YDS Exam 2024",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1976D2)
+                        )
+                        Text(
+                            text = examTracker.statusMessage,
+                            fontSize = 14.sp,
+                            color = Color(0xFF1976D2).copy(alpha = 0.8f)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        LinearProgressIndicator(
+                            progress = { examTracker.currentPreparationLevel },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .clip(RoundedCornerShape(2.dp)),
+                            color = Color(0xFF2196F3),
+                            trackColor = Color(0xFF2196F3).copy(alpha = 0.2f)
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "🕒 ${examTracker.examDateFormatted}",
+                            fontSize = 12.sp,
+                            color = Color(0xFF1976D2).copy(alpha = 0.7f)
+                        )
+                    }
+
+                    Text(
+                        text = "${examTracker.progressPercentage}%",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1976D2)
+                    )
                 }
             }
         }
@@ -381,146 +533,40 @@ fun WorkingHomeScreen(
 }
 
 @Composable
-fun TaskItemCard(
-    task: Task,
-    onToggleComplete: () -> Unit,
-    onTaskClick: () -> Unit,
+fun DayProgressCard(
+    day: WeekDay,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val completionScale by animateFloatAsState(
-        targetValue = if (task.isCompleted) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "completion_animation"
-    )
-
-    val priorityColor = when (task.priority) {
-        TaskPriority.CRITICAL -> Color(0xFFB71C1C)
-        TaskPriority.HIGH -> Color(0xFFE53E3E)
-        TaskPriority.MEDIUM -> Color(0xFFFF9800)
-        TaskPriority.LOW -> Color(0xFF4CAF50)
-    }
-
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable { onTaskClick() },
+            .width(80.dp)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = if (task.isCompleted)
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-            else
-                MaterialTheme.colorScheme.surface
+            containerColor = if (day.isCompleted) Color(0xFF4CAF50) else Color(0xFFE8F5E8)
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (task.isCompleted) 1.dp else 4.dp
-        )
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Completion checkbox
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = { onToggleComplete() },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.primary,
-                    uncheckedColor = MaterialTheme.colorScheme.outline
-                )
+            Text(
+                text = day.dayName,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (day.isCompleted) Color.White else Color(0xFF2E7D32)
             )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Task content
-            Column(modifier = Modifier.weight(1f)) {
-                // Category and priority
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        color = priorityColor.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = task.category,
-                            fontSize = 10.sp,
-                            color = priorityColor,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = task.priority.displayName,
-                            fontSize = 10.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Task title
-                Text(
-                    text = task.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (task.isCompleted)
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    else
-                        MaterialTheme.colorScheme.onSurface
-                )
-
-                if (task.description.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = task.description,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-
-                if (task.estimatedTime > 0) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "⏱️ ${task.estimatedTime} min",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            // Priority indicator
-            if (!task.isCompleted) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = priorityColor,
-                            shape = CircleShape
-                        )
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = day.displayText,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (day.isCompleted) Color.White else Color(0xFF1B5E20)
+            )
         }
     }
 }
+

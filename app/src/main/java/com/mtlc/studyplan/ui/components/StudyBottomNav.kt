@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,7 +61,7 @@ fun StudyBottomNav(
             tabs.forEach { (route, icon, label) ->
                 val isSelected = currentRoute.startsWith(route)
                 val background by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.PrimaryContainer else Color.Transparent,
+                    targetValue = if (isSelected) DesignTokens.BottomNavItemSelected else Color.Transparent,
                     animationSpec = tween(durationMillis = 200),
                     label = "bottom_nav_background"
                 )
@@ -87,12 +89,23 @@ fun StudyBottomNav(
                         .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = label,
-                        tint = iconTint,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    // Icon with highlight bubble when selected
+                    Box(contentAlignment = Alignment.Center) {
+                        if (isSelected) {
+                            Surface(
+                                shape = CircleShape,
+                                color = DesignTokens.BottomNavIconHighlight,
+                                tonalElevation = 0.dp,
+                                modifier = Modifier.size(28.dp)
+                            ) {}
+                        }
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = label,
+                            tint = iconTint,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = label,

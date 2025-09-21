@@ -24,7 +24,6 @@ import javax.inject.Singleton
 @Singleton
 class EnhancedAppIntegrationManager @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val progressRepository: ProgressRepository,
     private val achievementRepository: AchievementRepository,
     private val streakRepository: StreakRepository,
     private val userSettingsRepository: UserSettingsRepository,

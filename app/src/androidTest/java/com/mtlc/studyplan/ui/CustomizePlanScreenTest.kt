@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.mtlc.studyplan.data.DayPlan
-import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.PlanTask
 import com.mtlc.studyplan.data.UserPlanOverrides
 import com.mtlc.studyplan.data.WeekPlan
 import org.junit.Rule
@@ -20,7 +20,7 @@ class CustomizePlanScreenTest {
             week = 1,
             month = 1,
             title = "Week 1",
-            days = listOf(DayPlan("Monday", listOf(Task("t1", "Task A", null))))
+            days = listOf(DayPlan("Monday", listOf(PlanTask("t1", "Task A", null))))
         )
 
         composeTestRule.setContent {

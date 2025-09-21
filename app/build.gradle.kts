@@ -11,7 +11,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 
     // Dependency Injection with Hilt
-    id("com.google.dagger.hilt.android") version "2.46"
+    id("com.google.dagger.hilt.android") version "2.48"
 }
 
 android {
@@ -22,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 47
-        versionName = "2.7.0"
+        versionCode = 48
+        versionName = "2.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +35,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Disable APK splits for debug builds to prevent dex loading issues
+            enableAndroidTestCoverage = false
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -43,6 +47,26 @@ android {
             )
             // Use debug signing for local builds, release signing will be configured in CI/CD
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    // Disable APK splits to prevent dex loading issues
+    splits {
+        abi {
+            isEnable = false
+        }
+    }
+
+    // Disable bundle splits for debug builds
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = false
         }
     }
     kotlin {
@@ -116,7 +140,7 @@ android {
 // }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
@@ -162,8 +186,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.7.0")
 
     // Dependency Injection with Hilt
-    implementation("com.google.dagger:hilt-android:2.46")
-    ksp("com.google.dagger:hilt-compiler:2.46")
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.hilt:hilt-work:1.1.0")
     ksp("androidx.hilt:hilt-compiler:1.1.0")
@@ -180,7 +204,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation(libs.accessibilityTestFramework)
+    androidTestImplementation(libs.accessibility.test.framework)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

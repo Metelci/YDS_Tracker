@@ -1,9 +1,8 @@
 package com.mtlc.studyplan.social
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -20,31 +19,26 @@ class SocialScreenTest {
 
     @Test
     fun switchingTabsShowsExpectedContent() {
-        composeRule.setContent {
-            SocialScreen(repository = FakeSocialRepository())
-        }
+        composeRule.setContent { SocialScreen(repository = FakeSocialRepository()) }
 
         // Default profile tab
-        composeRule.onNodeWithText("Your Profile").assertExists()
+        composeRule.onNodeWithText("Your Profile").assertIsDisplayed()
 
         // Switch to awards
         composeRule.onNodeWithText("Awards").performClick()
-        composeRule.onNodeWithText("Community Achievements").assertExists()
+        composeRule.onNodeWithText("Community Achievements").assertIsDisplayed()
 
         // Switch to ranks
         composeRule.onNodeWithText("Ranks").performClick()
-        composeRule.onNodeWithText("Weekly Leaderboard").assertExists()
+        composeRule.onNodeWithText("Weekly Leaderboard").assertIsDisplayed()
     }
 
     @Test
     fun groupJoinToggleUpdatesLabel() {
-        composeRule.setContent {
-            SocialScreen(repository = FakeSocialRepository())
-        }
+        composeRule.setContent { SocialScreen(repository = FakeSocialRepository()) }
 
         composeRule.onNodeWithText("Groups").performClick()
-        val leaveButton = composeRule.onAllNodesWithText("Leave").onFirst()
-        leaveButton.performClick()
-        composeRule.onAllNodesWithText("Join").onFirst().assertExists()
+        composeRule.onNodeWithText("Leave").performClick()
+        composeRule.onNodeWithText("Join").assertIsDisplayed()
     }
 }
