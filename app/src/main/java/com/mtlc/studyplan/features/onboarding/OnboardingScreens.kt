@@ -24,9 +24,15 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
-import com.mtlc.studyplan.data.dataStore
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import android.content.Context
 import java.time.DayOfWeek
 import java.time.LocalDate
+
+// DataStore extension for OnboardingScreens
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 @Composable
 fun OnboardingRoute(onDone: () -> Unit) {
