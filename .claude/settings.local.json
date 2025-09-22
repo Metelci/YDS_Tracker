@@ -51,7 +51,8 @@
       "Bash(./gradlew.bat:*)",
       "Bash(.gradlew.bat compileDebugKotlin:*)",
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\reading\\IntRangeSerializerTest.kt\")",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\FixedTopBarResponsiveTest.kt\")"
     ],
     "deny": [],
     "ask": []

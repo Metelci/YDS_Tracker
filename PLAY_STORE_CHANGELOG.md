@@ -1,5 +1,34 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.9.2 (Build 52) - September 22, 2025
+
+### 🎨 Complete Material 3 Migration
+• Full migration to Material 3 design system across all screens
+• Enhanced visual consistency and modern interface elements
+• Improved accessibility features and better dark mode support
+
+### 📱 Responsive Design Enhancements
+• Comprehensive responsive design implementation for all screen sizes
+• Adaptive layouts that work seamlessly on phones and tablets
+• Better component scaling and spacing for different devices
+
+### ⚙️ Enhanced Settings Experience
+• Redesigned settings screens with improved navigation
+• Better organization of settings categories and options
+• Enhanced user interface for configuration options
+
+### 🧩 New UI Components
+• Added FixedTopBar component for consistent navigation
+• Improved component reusability and maintainability
+• Better separation of concerns in UI architecture
+
+### 🧪 Comprehensive Testing
+• Added extensive tests for responsive design functionality
+• Improved test coverage for UI components and layouts
+• Better quality assurance for cross-device compatibility
+
+---
+
 ## Version 2.8.1 (Build 49) - September 22, 2025
 
 ### 🎨 UI Improvements

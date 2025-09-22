@@ -38,10 +38,13 @@ import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.PrivacySettings
 import com.mtlc.studyplan.settings.data.ProfileVisibility
 import com.mtlc.studyplan.settings.data.TaskSettings
-import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
+import com.mtlc.studyplan.ui.components.LanguageSwitcher
+import com.mtlc.studyplan.ui.components.Language
+import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import java.util.Locale
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlin.math.roundToInt
 
 
@@ -58,6 +61,7 @@ fun OriginalSettingsScreen(
 ) {
     val context = LocalContext.current
     val settingsManager = remember { SettingsPreferencesManager(context) }
+    val languageManager = rememberLanguageManager(context)
     var selectedTab by remember { mutableStateOf("Tasks") }
 
     val appContext = remember(context) { context.applicationContext }
@@ -94,21 +98,38 @@ fun OriginalSettingsScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-        // Header
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        // Header with language switcher
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                text = "Settings",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Customize your study experience",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Settings",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Customize your study experience",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Language switcher in top right
+            LanguageSwitcher(
+                currentLanguage = languageManager.currentLanguage,
+                onLanguageChanged = { newLanguage ->
+                    coroutineScope.launch {
+                        languageManager.changeLanguage(newLanguage)
+                    }
+                }
             )
         }
 
@@ -271,10 +292,6 @@ fun OriginalSettingsScreen(
         }
         }
 
-        // Floating Language Switcher in top-right corner
-        FloatingLanguageSwitcher(
-            modifier = Modifier.align(Alignment.TopEnd)
-        )
     }
 }
 

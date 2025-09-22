@@ -52,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
 import androidx.compose.foundation.layout.Box
 import com.mtlc.studyplan.data.social.AvatarOption
 import com.mtlc.studyplan.data.social.FakeSocialRepository
@@ -76,13 +75,15 @@ import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import kotlinx.coroutines.launch
+import com.mtlc.studyplan.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
     repository: SocialRepository? = null,
     sharedViewModel: SharedAppViewModel? = null,
-    navigationManager: StudyPlanNavigationManager? = null
+    navigationManager: StudyPlanNavigationManager? = null,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
@@ -140,42 +141,49 @@ fun SocialScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        // Snackbar host for this screen
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
+    FixedTopBarLayout(
+        topBar = FixedTopBarDefaults.socialTopBar(
+            onMenuClick = { /* TODO: Implement menu click */ },
+            onSettingsClick = onNavigateToSettings
         )
-        // Username required dialog overlay
-        if (showUsernameDialog) {
-            UsernameRequiredDialog(
-                value = pendingUsername,
-                onValueChange = { input ->
-                    pendingUsername = input
-                    usernameError = validateUsername(input)
-                },
-                error = usernameError,
-                onConfirm = {
-                    val err = validateUsername(pendingUsername)
-                    usernameError = err
-                    if (err == null) {
-                        scope.launch {
-                            socialRepository.updateUsername(pendingUsername.trim())
-                            showUsernameDialog = false
-                            snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.social_username_set_success, pendingUsername.trim()),
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
-                },
-                onDismiss = { /* keep open until a valid username saved */ },
-                confirmEnabled = usernameError == null && pendingUsername.isNotBlank()
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Snackbar host for this screen
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
-        }
+
+            // Username required dialog overlay
+            if (showUsernameDialog) {
+                UsernameRequiredDialog(
+                    value = pendingUsername,
+                    onValueChange = { input ->
+                        pendingUsername = input
+                        usernameError = validateUsername(input)
+                    },
+                    error = usernameError,
+                    onConfirm = {
+                        val err = validateUsername(pendingUsername)
+                        usernameError = err
+                        if (err == null) {
+                            scope.launch {
+                                socialRepository.updateUsername(pendingUsername.trim())
+                                showUsernameDialog = false
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.social_username_set_success, pendingUsername.trim()),
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+                    },
+                    onDismiss = { /* keep open until a valid username saved */ },
+                    confirmEnabled = usernameError == null && pendingUsername.isNotBlank()
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -183,19 +191,7 @@ fun SocialScreen(
                     .padding(horizontal = spacing.md),
                 verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-            // Header with title and invite button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = spacing.sm),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.social_hub_title),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
+                // Invite friends button (moved from header to content area)
                 FilledTonalButton(
                     onClick = {
                         scope.launch {
@@ -207,7 +203,8 @@ fun SocialScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    )
+                    ),
+                    modifier = Modifier.align(Alignment.End)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.GroupAdd,
@@ -221,7 +218,6 @@ fun SocialScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-            }
 
             SocialSegmentedTabs(
                 selected = selectedTab,
@@ -279,6 +275,7 @@ fun SocialScreen(
             }
 
             // Section removed per product requirements
+            }
         }
     }
 }

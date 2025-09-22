@@ -69,7 +69,7 @@ fun StudyPlanOverviewScreen(
                 title = "Study Plan Overview",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = onNavigateBack,
-                showLanguageSwitcher = true
+                showLanguageSwitcher = false
             )
         }
     ) { padding ->

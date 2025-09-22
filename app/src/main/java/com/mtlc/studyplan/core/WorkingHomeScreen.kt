@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import androidx.compose.ui.platform.LocalContext
-import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
 import kotlinx.coroutines.launch
+import com.mtlc.studyplan.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +39,7 @@ fun WorkingHomeScreen(
     onNavigateToDaily: (String) -> Unit = {},
     onNavigateToExamDetails: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -99,10 +100,13 @@ fun WorkingHomeScreen(
         examCountdownManager.forceRefresh()
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+    // Fixed top bar layout
+    FixedTopBarLayout(
+        topBar = FixedTopBarDefaults.homeTopBar(
+            onMenuClick = { /* TODO: Implement navigation drawer */ },
+            onSearchClick = { /* TODO: Implement search functionality */ }
+        ),
+        modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -628,11 +632,6 @@ fun WorkingHomeScreen(
             Spacer(modifier = Modifier.height(100.dp))
         }
         }
-
-        // Floating Language Switcher in top-right corner
-        FloatingLanguageSwitcher(
-            modifier = Modifier.align(Alignment.TopEnd)
-        )
     }
 }
 

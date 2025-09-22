@@ -19,6 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.settings.viewmodel.*
 import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.ui.components.LanguageSwitcher
+import com.mtlc.studyplan.ui.components.Language
+import com.mtlc.studyplan.localization.rememberLanguageManager
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 /**
  * Enhanced settings screen with polished UI and micro-interactions
@@ -30,6 +35,8 @@ fun EnhancedSettingsScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val languageManager = rememberLanguageManager(context)
+    val coroutineScope = rememberCoroutineScope()
 
     // Real ViewModels from our settings system
     val notificationViewModel: NotificationSettingsViewModel = viewModel {
@@ -71,6 +78,20 @@ fun EnhancedSettingsScreen(
                 }
             },
             actions = {
+                // Language switcher in top right
+                Box(
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    LanguageSwitcher(
+                        currentLanguage = languageManager.currentLanguage,
+                        onLanguageChanged = { newLanguage ->
+                            coroutineScope.launch {
+                                languageManager.changeLanguage(newLanguage)
+                            }
+                        }
+                    )
+                }
+
                 if (mainSettingsState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),

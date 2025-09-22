@@ -76,7 +76,7 @@ fun ExamDetailsScreen(
                 title = "YDS Exam Information",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = onNavigateBack,
-                showLanguageSwitcher = true
+                showLanguageSwitcher = false
             )
         }
     ) { padding ->

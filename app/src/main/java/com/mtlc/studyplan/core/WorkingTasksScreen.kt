@@ -34,7 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.theme.DesignTokens
-import com.mtlc.studyplan.ui.components.CompactFloatingLanguageSwitcher
+import com.mtlc.studyplan.ui.responsive.responsiveHeights
+import com.mtlc.studyplan.ui.responsive.touchTargetSize
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -100,6 +101,8 @@ private fun SegmentedControl(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val heights = responsiveHeights()
+    val touchTarget = touchTargetSize()
     // Rail
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -123,14 +126,17 @@ private fun SegmentedControl(
                 modifier = Modifier
                     .offset(x = animatedOffset)
                     .width(segWidth)
-                    .height(36.dp)
+                    .height(heights.button)
                     .clip(RoundedCornerShape(20.dp)),
                 color = DesignTokens.SegmentedPill,
                 contentColor = DesignTokens.Foreground,
             ) {}
 
             // Hit targets and labels
-            Row(Modifier.height(36.dp)) {
+            Row(
+                modifier = Modifier.height(heights.button),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 segments.forEachIndexed { index, label ->
                     val selected = index == selectedIndex
                     val textColor by animateColorAsState(
@@ -140,6 +146,7 @@ private fun SegmentedControl(
                     Box(
                         modifier = Modifier
                             .width(segWidth)
+                            .fillMaxHeight()
                             .clip(RoundedCornerShape(20.dp))
                             .selectable(selected = selected, onClick = { onSelect(index) }, role = Role.Tab),
                         contentAlignment = Alignment.Center
@@ -170,8 +177,6 @@ private fun HeaderWithButtons() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             XpButton(xp = 0)
-            // Use the compact switcher here to match pill height and remove extra top padding
-            CompactFloatingLanguageSwitcher()
         }
     }
 }
