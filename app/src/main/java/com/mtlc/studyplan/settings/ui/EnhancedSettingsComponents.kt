@@ -307,7 +307,7 @@ fun EnhancedSelectionButton(
         targetValue = when {
             isSelected -> MaterialTheme.colorScheme.primary
             isPressed -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-            else -> MaterialTheme.colorScheme.surface
+            else -> Color(0xFFF0F0F0)
         },
         animationSpec = tween(200),
         label = "backgroundColor"

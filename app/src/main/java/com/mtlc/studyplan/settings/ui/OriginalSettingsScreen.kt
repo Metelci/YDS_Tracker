@@ -337,7 +337,7 @@ private fun TabButton(
     val backgroundColor = if (isSelected)
         pastelColors.first
     else
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+        Color(0xFFF0F0F0)
 
     val contentColor = if (isSelected)
         pastelColors.second
@@ -638,7 +638,7 @@ private fun VisibilityChip(label: String, selected: Boolean, onClick: () -> Unit
     val backgroundColor = if (selected)
         chipColors.first
     else
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+        Color(0xFFF0F0F0)
 
     val contentColor = if (selected)
         chipColors.second
@@ -951,7 +951,7 @@ private val WEEKLY_GOAL_ACTIVE_TRACK = Color(0xFF6FC3FF)
 private val WEEKLY_GOAL_INACTIVE_TRACK = Color(0xFF8FD58A)
 private val WEEKLY_GOAL_ICON_BACKGROUND = Color(0xFFFFE3D9)
 private val WEEKLY_GOAL_ICON_TINT = Color(0xFFFF8F6B)
-private val WEEKLY_GOAL_SAVED_BACKGROUND = Color(0xFFEFF9EE)
+private val WEEKLY_GOAL_SAVED_BACKGROUND = Color(0xFFF0F0F0)
 private val WEEKLY_GOAL_SAVED_BORDER = Color(0xFFBEE4C3)
 private val WEEKLY_GOAL_SAVED_TEXT = Color(0xFF4F9D63)
 
