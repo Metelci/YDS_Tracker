@@ -2,11 +2,8 @@ package com.mtlc.studyplan.social.tabs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,11 +35,10 @@ fun AwardsTab(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.fillMaxWidth()
         )
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(spacing.sm),
-            contentPadding = PaddingValues(bottom = spacing.lg)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacing.sm)
         ) {
-            items(awards, key = { it.id }) { award ->
+            awards.forEach { award ->
                 AwardCard(award = award)
             }
         }

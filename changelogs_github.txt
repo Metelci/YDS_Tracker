@@ -1,101 +1,9 @@
-# StudyPlan Changelog
+StudyPlan Changelog
+==================
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
-## [2.8.0] - 2025-09-22
-
-### 🚀 **MAJOR: Complete Notification System & UI Improvements**
-
-This release introduces a comprehensive, 100% reliable notification system for daily study reminders, along with significant UI improvements and changelog consolidation.
-
-#### 🔔 **Complete Daily Study Reminder System**
-- **100% Reliability**: Daily reminders at exactly 6:00 PM local time using WorkManager with robust constraints
-- **Personalized Content**: Motivational messages based on study streaks, completed tasks, and goals
-- **Smart Scheduling**: Time zone-aware scheduling with automatic DST adjustment
-- **Delivery Tracking**: Comprehensive analytics for monitoring notification success rates
-- **Offline Operation**: Works without internet connectivity or device restrictions
-- **Battery Optimization**: Designed to work with all battery optimization settings
-
-#### 🎯 **Advanced Notification Features**
-- **User Opt-in/Opt-out**: Granular controls for all notification types
-- **Calendar Integration**: Optional calendar event creation for study reminders
-- **Quiet Hours**: Configurable silent periods respecting user preferences
-- **Privacy Compliance**: GDPR/CCPA/COPPA compliant with transparent data handling
-- **Multi-language Support**: Localized notification content
-
-#### 📱 **UI/UX Improvements**
-- **Tasks Page Layout**: XP and localization buttons now aligned with title, preventing overlap
-- **Social Page Cleanup**: Removed overlapping floating localization button
-- **Onboarding Flow**: Fixed DatePicker state management and improved user experience
-- **Header Consistency**: Unified button positioning across screens
-
-#### 📋 **Project Organization**
-- **Consolidated Changelogs**: Single organized files for Play Store and GitHub releases
-- **Version Management**: Streamlined version tracking and release notes
-- **Documentation**: Comprehensive privacy policy for notification features
-
-#### 🔧 **Technical Enhancements**
-- **WorkManager Integration**: Hilt-enabled workers for dependency injection
-- **Notification Channels**: Proper Android notification channel management
-- **Analytics System**: Local delivery tracking with automatic cleanup
-- **Error Handling**: Comprehensive exception handling and retry logic
-- **Performance Optimization**: Efficient background processing with minimal resource usage
-
-#### 🛡️ **Privacy & Security**
-- **Data Minimization**: Only essential data collected for notification functionality
-- **Local Processing**: All personalization happens on-device
-- **Transparent Policies**: Clear privacy documentation for all features
-- **User Control**: Easy opt-out and data deletion options
-
-### ✅ Added
-- **DailyStudyReminderWorker**: Hilt-enabled WorkManager worker for 100% reliable reminders
-- **NotificationSchedulerService**: Centralized service for notification management
-- **Enhanced NotificationManager**: Advanced notification handling with delivery tracking
-- **Privacy Policy**: Comprehensive notification privacy documentation
-- **Consolidated Changelogs**: Organized release notes in single files
-- **Calendar Integration**: Optional calendar event creation for reminders
-
-### 🔧 Changed
-- **Tasks Screen Layout**: XP and localization buttons moved inline with title
-- **Social Screen**: Removed overlapping floating localization button
-- **Onboarding DatePicker**: Fixed state management and improved UX
-- **Notification System**: Complete rewrite with reliability and personalization
-
-### 📱 Improved
-- **User Experience**: Cleaner interfaces with better button positioning
-- **Notification Reliability**: 100% delivery guarantee with comprehensive error handling
-- **Personalization**: Context-aware motivational content
-- **Privacy Controls**: Enhanced user control over notification features
-
-### 🐛 Fixed
-- **Onboarding DatePicker**: Resolved unresolved reference error in state management
-- **Button Overlap**: Eliminated overlapping UI elements across screens
-- **Notification Timing**: Precise 6:00 PM local time delivery
-- **State Management**: Improved reactive state handling in UI components
-
-### 📦 Technical Details
-- **Version Code**: 47
-- **WorkManager**: Advanced scheduling with constraints and retry logic
-- **Hilt Integration**: Dependency injection for all notification components
-- **Time Zone Support**: Proper local time handling with DST awareness
-- **Analytics**: Local delivery tracking with 30-day retention
-- **Privacy Compliance**: Full GDPR/CCPA/COPPA compliance
-
-### 🔒 Security & Privacy
-- **No External Data**: All processing happens locally on device
-- **Minimal Data Collection**: Only delivery confirmation and user preferences
-- **User Consent**: Explicit opt-in required for all notification features
-- **Data Deletion**: Easy removal of all notification-related data
-
-### 🎯 User Impact
-- **Better Study Habits**: Reliable daily reminders help maintain consistency
-- **Personalized Experience**: Motivational content adapts to user progress
-- **Privacy Protection**: Transparent data handling with full user control
-- **Improved Interface**: Cleaner UI with better element positioning
-
----
 
 ## [2.7.0] - 2024-12-28
 
@@ -131,24 +39,6 @@ This release introduces a comprehensive, 100% reliable notification system for d
 - **Logic Improvements**: Fixed "always true" conditions with meaningful value checks
 - **Type Safety**: Resolved type inference issues and casting problems
 - **Import Cleanup**: Fixed broken imports and missing dependencies
-
-### 🛠️ Settings System Overhaul
-
-#### ViewModel Architecture
-- **MainSettingsViewModel**: Fixed compilation errors and simplified deep link handling
-- **SettingsDetailViewModel**: Updated to use correct repository methods and modern APIs
-- **SettingsViewModel**: Fixed cache clearing functionality
-- **Factory Pattern**: Properly implemented ViewModelFactory classes
-
-#### UI Components
-- **BaseSettingsAdapter**: Fixed access modifiers and method visibility
-- **EnhancedSettingsScreen**: Integrated real ViewModels with reactive data flows
-- **Settings Fragments**: Updated all fragments to use modern binding and navigation
-
-#### Data Layer
-- **Repository Pattern**: Standardized repository method signatures
-- **Error Handling**: Improved error handling with proper result types
-- **Validation**: Enhanced settings validation and update mechanisms
 
 ### 🗑️ Cleanup & Removal
 
@@ -196,7 +86,67 @@ This release introduces a comprehensive, 100% reliable notification system for d
 - Room: 2.6.1 → 2.7.0
 - Compose BOM: 2024.12.01
 - Added: androidx.swiperefreshlayout:swiperefreshlayout:1.1.0
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.6.2]
+
+### 🚀 Release Summary
+This release focuses on comprehensive codebase cleanup, security enhancements, and build stability improvements. All critical issues have been resolved, and the project now has robust error handling and validation mechanisms.
+
+### ✨ New Features
+- **Complete Authentication System**: Implemented full authentication UI components including PIN, password, and biometric authentication screens
+- **Enhanced Security Managers**: Added comprehensive error handling and recovery mechanisms for network and storage security
+- **Build Validation**: Automatic detection and blocking of legacy dependencies at build time
+
+### 🔧 Improvements
+#### Security & Stability
+- Added robust error handling for security manager initialization with recovery options
+- Implemented comprehensive input validation and attempt limiting for authentication
+- Enhanced certificate pinning and SSL/TLS configuration validation
+- Added secure data corruption recovery mechanisms
+
+#### Code Quality
+- Removed legacy Material 2 dependency (critical fix)
+- Updated all dependencies to latest stable versions
+- Cleaned up multiple MainActivity files, establishing single entry point
+- Added build-time validation to prevent legacy dependency reintroduction
+
+#### Documentation
+- Updated README.md with current implementation status
+- Fixed all activity references and setup instructions
+- Enhanced security documentation with new components
+
+### 🐛 Bug Fixes
+- **Critical**: Removed blocking legacy Material 2 dependency from build.gradle.kts
+- **Stability**: Fixed MainActivity cleanup and single entry point establishment
+- **Documentation**: Corrected all file references and version information
+- **Build**: Resolved dependency conflicts and version mismatches
+
+### 📱 Technical Details
+- **Version Code**: 46
+- **Version Name**: 2.6.2
+- **Target SDK**: 35 (Android 15)
+- **Min SDK**: 30 (Android 11)
+- **Dependencies**: Updated to latest stable versions
+
+### 🔒 Security Enhancements
+- **Authentication**: Complete PIN/password/biometric system with attempt limiting
+- **Error Handling**: Comprehensive security manager initialization with recovery
+- **Build Security**: Automatic blocking of deprecated/legacy dependencies
+- **Data Protection**: Enhanced encryption and secure storage validation
+
+### 🏗️ Build System
+- Added dependency validation to prevent legacy Material 2 reintroduction
+- Enhanced Gradle configuration with clear error messages
+- Improved build stability and dependency management
+
+### 📋 Migration Notes
+- No breaking changes for users
+- All existing functionality preserved
+- Enhanced security and stability
+- Improved build performance
+
+### 🤝 Acknowledgments
+This release addresses all critical issues identified in the comprehensive codebase audit, ensuring a stable and secure foundation for future development.
 
 ## [2.6.1] - 2025-09-20
 
@@ -223,8 +173,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Infrastructure
 - Forbid legacy imports in CI to enforce M3 migration standards
 - Continued major infrastructure upgrade from v2.6.0
-
----
 
 ## [2.6.0] - 2025-01-20
 
@@ -293,8 +241,6 @@ This release represents a complete overhaul of the application's core infrastruc
 - Advanced analytics and reporting features
 - Social features and collaboration tools
 
----
-
 ## [2.5.1] - 2025-01-19
 
 ### ✅ Fixed - Core Architecture & Compilation
@@ -336,8 +282,6 @@ This release represents a complete overhaul of the application's core infrastruc
 - **Code Generation**: Proper Room database and Hilt dependency generation
 - **Testing Infrastructure**: Foundation for unit and integration testing
 - **Modular Architecture**: Clean separation between UI, business logic, and data layers
-
----
 
 ## [2.5.0] - 2025-09-19
 
@@ -391,6 +335,7 @@ This release represents a complete overhaul of the application's core infrastruc
 - Database migrations covering new reading data structures
 - Navigation inconsistencies between the new Reading screens and existing routes
 - Recommendation performance for loading passages and calculating difficulty on-device
+
 ## [2.2.1] - 2024-09-16
 
 ### 🚀 **MAJOR: Build System Overhaul & Code Modernization**
@@ -438,8 +383,6 @@ This release focuses on comprehensive code quality improvements, eliminating all
 - **Code Standards**: Improved code readability and maintainability following Android best practices
 - **Documentation**: Enhanced inline code documentation and architectural clarity
 
----
-
 ## [2.2.0] - 2025-01-15
 
 ### 🎮 **MAJOR: Complete Gamification 2.0 System**
@@ -477,19 +420,6 @@ This release introduces a comprehensive gamification system that transforms stud
 - **Personalized Challenges**: Adaptive difficulty ensures appropriate challenge levels
 - **Social Motivation**: Peer comparisons and sharing encourage continued engagement
 
-## [2.0.1] - 2025-01-15
-
-### Fixed
-- **Tooltip System**: Fixed repeated tooltip popups during menu navigation
-- **Progress Tracking**: Extended Progress overview from 8 to 12 weeks for better long-term visibility
-- **Study Heatmap**: Adjusted heatmap timeline to display 12-week period (84 days) instead of 8 weeks
-- **Onboarding Flow**: Improved tooltip triggering logic to prevent interruptions during navigation
-
-### Improved
-- **User Experience**: Smoother navigation without disruptive tooltip re-appearances
-- **Progress Visualization**: Enhanced long-term progress tracking with extended timeline
-- **UI Stability**: More stable onboarding and tooltip system
-
 ## [2.1.0] - 2025-09-15
 
 ### Added
@@ -503,6 +433,19 @@ This release introduces a comprehensive gamification system that transforms stud
 
 ### Fixed
 - Stability: minor fixes across progress calculations and UI
+
+## [2.0.1] - 2025-01-15
+
+### Fixed
+- Tooltip System: Fixed repeated tooltip popups during menu navigation
+- Progress Tracking: Extended Progress overview from 8 to 12 weeks for better long-term visibility
+- Study Heatmap: Adjusted heatmap timeline to display 12-week period (84 days) instead of 8 weeks
+- Onboarding Flow: Improved tooltip triggering logic to prevent interruptions during navigation
+
+### Improved
+- User Experience: Smoother navigation without disruptive tooltip re-appearances
+- Progress Visualization: Enhanced long-term progress tracking with extended timeline
+- UI Stability: More stable onboarding and tooltip system
 
 ## [2.0.0] - 2024-12-15
 
@@ -536,13 +479,6 @@ This release introduces a revolutionary AI analytics engine that transforms the 
 - **Recommendation System**: 15+ AI analysis functions working together for personalized suggestions
 - **Performance Metrics**: Real-time calculation based on actual study data with advanced algorithms
 - **User Experience**: Intelligent insights adapt to individual study patterns and preferences
-
-### Technical Implementation
-- **AI Algorithm Integration**: 20+ sophisticated mathematical functions for pattern analysis
-- **SmartScheduler Fusion**: Seamless integration between analytics engine and scheduling AI
-- **Real-time Processing**: All analytics computed from live TaskLog data using advanced statistical methods
-- **Intelligent Prioritization**: AI-determined recommendation priority with confidence scoring
-- **Comprehensive Data Models**: Enhanced analytics data structures supporting complex AI insights
 
 ### Changed
 - **Version Jump to 2.0.0**: Reflects the major architectural shift from mock data to genuine AI
@@ -643,6 +579,16 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - Today screen FAB is now opt-in to avoid overlapping with global FAB
 - Plan is automatically trimmed to precise number of days until exam
 
+## [1.8.2]
+
+### Fixes
+- Fixed a crash when opening "View full plan" caused by multiple DataStore instances targeting the same file. DataStore usage is now centralized.
+- Consolidated the progress model to remove duplicate definitions and related errors.
+
+### Polish
+- Safer use of application context for preferences.
+- Minor stability and performance improvements.
+
 ## [1.8.1] - 2024-09-11
 
 ### Added
@@ -718,40 +664,39 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 ### Added
 - **Customizable Plans**: Hide/edit tasks and add your own per day
 - Plan customization accessible from top bar "Customize" action
-- Changes persist on device and apply across the app
 
 ### Improved
 - Enhanced plan flexibility and personalization options
 
 ---
 
-## Developer Notes
+### Developer Notes
 
-### Technical Implementation Details
+#### Technical Implementation Details
 
-#### v1.9.1 Technical Changes
+##### v1.9.1 Technical Changes
 - `TodayViewModel` toggles `isLoading` while loading to drive refresh indicator
 - Daily minutes read from `PlanSettingsStore.settingsFlow` based on current weekday
 
-#### v1.9.0 Technical Changes
+##### v1.9.0 Technical Changes
 - Added `PlanSettingsStore` (DataStore) with per-day minutes and custom date format fields
 - Plan pipeline: start weekday alignment → end date trimming → availability-based weekly packing → overrides merge
 - DataStore: lightweight task logs (time, correctness, category) with simple encoding
 - Weakness detection computes incorrect rates per category
 - Task IDs remapped to new week numbers; week titles recomputed with localized phase labels
 
-#### v1.8.0 Technical Changes
+##### v1.8.0 Technical Changes
 - `LocalReducedMotion` provider with disabled non-essential animations
 - `Analytics.track()` via `WorkManager`; logs only in debug builds; resilient to process death
 - Added `Spacing` tokens and `Elevations` for consistent Material 3 theming
 - Replaced ad-hoc paddings with 8-pt grid system
 
-#### v1.7.0 Technical Changes
+##### v1.7.0 Technical Changes
 - `PlanSettingsStore` (DataStore) integrated with `PlanRepository`
 - Base plan proportionally remapped to target length while preserving pacing
 - Lesson screen implemented as placeholder scaffold for future interactive content
 
-#### Migration Considerations
+##### Migration Considerations
 - **v1.7.0**: Changing total duration remaps week numbers/IDs. Existing per-task overrides remain, but dramatic duration changes may misalign overrides. Consider resetting overrides after large schedule changes.
 
 ### Development Guidelines
@@ -759,7 +704,3 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
-
-
-
-

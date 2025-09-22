@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import androidx.compose.ui.platform.LocalContext
+import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,9 +38,11 @@ fun WorkingHomeScreen(
     onNavigateToWeeklyPlan: () -> Unit = {},
     onNavigateToDaily: (String) -> Unit = {},
     onNavigateToExamDetails: () -> Unit = {},
+    onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // Collect data from AppIntegrationManager
     val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
@@ -48,8 +52,9 @@ fun WorkingHomeScreen(
     // Calculate stats
     var taskStats by remember { mutableStateOf(TaskStats()) }
 
-    // Create sample data for new design elements
-    val examTracker = remember { ExamTracker() }
+    // Use ExamCountdownManager for real-time exam data
+    val examCountdownManager = remember { ExamCountdownManager.getInstance(context) }
+    val examTracker by examCountdownManager.examData.collectAsState()
     val weeklyPlan = remember { WeeklyStudyPlan() }
     val todayStats = remember(taskStats) {
         TodayStats(
@@ -69,17 +74,26 @@ fun WorkingHomeScreen(
         taskStats = appIntegrationManager.getTaskStats()
     }
 
-    LazyColumn(
+    // Refresh exam data when screen loads
+    LaunchedEffect(Unit) {
+        examCountdownManager.forceRefresh()
+    }
+
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
         // Header Section
         item {
             Column(
-                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
             ) {
                 Text(
                     text = "Good morning! 👋",
@@ -96,17 +110,18 @@ fun WorkingHomeScreen(
             }
         }
 
-        // Top Progress Cards Row
+        // Top Progress Cards Row - Compact and aligned
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 // Today Progress Card
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { /* Progress feature removed */ },
+                        .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
+                        .clickable { onNavigateToStudyPlan() },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF26C6DA)
                     ),
@@ -114,28 +129,29 @@ fun WorkingHomeScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxSize()
+                            .padding(10.dp), // Slightly reduced padding
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "${todayStats.progressPercentage}%",
-                            fontSize = 32.sp,
+                            fontSize = 24.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = "Today",
-                            fontSize = 14.sp,
+                            fontSize = 12.sp, // Reduced font size
                             color = Color.White.copy(alpha = 0.9f)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(3.dp)) // Reduced spacing
                         CircularProgressIndicator(
                             progress = { todayStats.progressPercentage / 100f },
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(28.dp), // Reduced size
                             color = Color.White,
                             trackColor = Color.White.copy(alpha = 0.3f),
-                            strokeWidth = 4.dp
+                            strokeWidth = 2.5.dp // Reduced stroke width
                         )
                     }
                 }
@@ -144,6 +160,7 @@ fun WorkingHomeScreen(
                 Card(
                     modifier = Modifier
                         .weight(1f)
+                        .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToExamDetails() },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF4FC3F7)
@@ -152,44 +169,47 @@ fun WorkingHomeScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxSize()
+                            .padding(10.dp), // Slightly reduced padding
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "${examTracker.daysToExam}",
-                            fontSize = 32.sp,
+                            fontSize = 24.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = "Days to YDS",
-                            fontSize = 12.sp,
+                            fontSize = 12.sp, // Reduced font size
                             color = Color.White.copy(alpha = 0.9f),
                             textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(1.dp)) // Reduced spacing
                         Text(
                             text = examTracker.statusMessage,
-                            fontSize = 10.sp,
+                            fontSize = 9.sp, // Reduced font size
                             color = Color.White.copy(alpha = 0.8f),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            maxLines = 1
                         )
                     }
                 }
             }
         }
 
-        // Stats Row
+        // Stats Row - Compact and aligned
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 // Points Today Card
                 Card(
                     modifier = Modifier
                         .weight(1f)
+                        .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { /* Progress feature removed */ },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF66BB6A)
@@ -198,19 +218,20 @@ fun WorkingHomeScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxSize()
+                            .padding(10.dp), // Slightly reduced padding
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "${todayStats.pointsEarned}",
-                            fontSize = 28.sp,
+                            fontSize = 20.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = "Points Today",
-                            fontSize = 12.sp,
+                            fontSize = 11.sp, // Reduced font size
                             color = Color.White.copy(alpha = 0.9f),
                             textAlign = TextAlign.Center
                         )
@@ -221,6 +242,7 @@ fun WorkingHomeScreen(
                 Card(
                     modifier = Modifier
                         .weight(1f)
+                        .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { onNavigateToTasks() },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFFFF8A65)
@@ -229,19 +251,20 @@ fun WorkingHomeScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxSize()
+                            .padding(10.dp), // Slightly reduced padding
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = todayStats.tasksProgressText,
-                            fontSize = 28.sp,
+                            fontSize = 20.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = "Tasks Done",
-                            fontSize = 12.sp,
+                            fontSize = 11.sp, // Reduced font size
                             color = Color.White.copy(alpha = 0.9f),
                             textAlign = TextAlign.Center
                         )
@@ -279,7 +302,7 @@ fun WorkingHomeScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
+                                .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
@@ -346,7 +369,7 @@ fun WorkingHomeScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -380,7 +403,7 @@ fun WorkingHomeScreen(
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     LinearProgressIndicator(
                         progress = { weeklyPlan.progressPercentage },
@@ -392,7 +415,7 @@ fun WorkingHomeScreen(
                         trackColor = Color(0xFF4CAF50).copy(alpha = 0.2f)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = "Week Progress • ${weeklyPlan.weekProgressText}",
@@ -411,11 +434,11 @@ fun WorkingHomeScreen(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(weeklyPlan.days) { day ->
                         DayProgressCard(
@@ -425,7 +448,7 @@ fun WorkingHomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -460,7 +483,7 @@ fun WorkingHomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
@@ -494,7 +517,7 @@ fun WorkingHomeScreen(
                             color = Color(0xFF1976D2).copy(alpha = 0.8f)
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         LinearProgressIndicator(
                             progress = { examTracker.currentPreparationLevel },
@@ -529,6 +552,12 @@ fun WorkingHomeScreen(
         item {
             Spacer(modifier = Modifier.height(100.dp))
         }
+        }
+
+        // Floating Language Switcher in top-right corner
+        FloatingLanguageSwitcher(
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
     }
 }
 
@@ -550,7 +579,7 @@ fun DayProgressCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

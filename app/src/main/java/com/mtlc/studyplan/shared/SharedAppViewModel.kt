@@ -1,7 +1,11 @@
 package com.mtlc.studyplan.shared
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.AndroidViewModel
+import com.mtlc.studyplan.utils.settingsDataStore
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.settings.data.SettingsRepository
@@ -11,6 +15,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+
 /**
  * Centralized SharedViewModel for app-wide state management
  * Ensures all screens share data and updates propagate in real-time
@@ -18,12 +23,10 @@ import java.time.LocalDate
 class SharedAppViewModel(application: Application) : AndroidViewModel(application) {
 
     // Core repositories - single source of truth
-    // Create DataStore extension
-    private val Context.dataStore: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> by androidx.datastore.preferences.preferencesDataStore(name = "settings")
 
     private val planRepository = PlanRepository(
-        PlanOverridesStore(application.dataStore),
-        PlanSettingsStore(application.dataStore)
+        PlanOverridesStore(application.settingsDataStore),
+        PlanSettingsStore(application.settingsDataStore)
     )
     private val settingsRepository = SettingsRepository(application)
 

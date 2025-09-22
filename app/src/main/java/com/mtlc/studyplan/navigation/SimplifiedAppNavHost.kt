@@ -42,9 +42,6 @@ fun SimplifiedAppNavHost() {
                     appIntegrationManager = mainAppIntegrationManager,
                     onNavigateToTasks = {
                         navController.navigate("tasks")
-                    },
-                    onNavigateToProgress = {
-                        // Navigate to progress screen when implemented
                     }
                 )
             }

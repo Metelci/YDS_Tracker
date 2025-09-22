@@ -2,13 +2,10 @@ package com.mtlc.studyplan.social.tabs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.EmojiEvents
@@ -67,11 +64,10 @@ fun RanksTab(
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(spacing.xs),
-                    contentPadding = PaddingValues(bottom = spacing.sm)
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(spacing.xs)
                 ) {
-                    itemsIndexed(ranks, key = { index, item -> item.id }) { index, item ->
+                    ranks.forEachIndexed { index, item ->
                         LeaderboardRow(rank = index + 1, entry = item)
                     }
                 }

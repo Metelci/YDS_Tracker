@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,20 +60,26 @@ fun StudyBottomNav(
             verticalAlignment = Alignment.CenterVertically
         ) {
             tabs.forEach { (route, icon, label) ->
-                val isSelected = currentRoute.startsWith(route)
+                val isSelected = when {
+                    route == "home" -> currentRoute == "home" || currentRoute.isBlank()
+                    route == "tasks" -> currentRoute.startsWith("tasks")
+                    route == "social" -> currentRoute.startsWith("social")
+                    route == "settings" -> currentRoute.startsWith("settings")
+                    else -> currentRoute.startsWith(route)
+                }
                 val background by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.BottomNavItemSelected else Color.Transparent,
-                    animationSpec = tween(durationMillis = 200),
+                    targetValue = if (isSelected) Color(0xFFE3F2FD) else Color.Transparent, // Pastel light blue
+                    animationSpec = tween(durationMillis = 250),
                     label = "bottom_nav_background"
                 )
                 val iconTint by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.Primary else DesignTokens.MutedForeground,
-                    animationSpec = tween(durationMillis = 200),
+                    targetValue = if (isSelected) Color(0xFF1976D2) else DesignTokens.MutedForeground, // Blue for selected
+                    animationSpec = tween(durationMillis = 300),
                     label = "bottom_nav_icon"
                 )
                 val labelTint by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.PrimaryContainerForeground else DesignTokens.MutedForeground,
-                    animationSpec = tween(durationMillis = 200),
+                    targetValue = if (isSelected) Color(0xFF1976D2) else DesignTokens.MutedForeground, // Blue for selected
+                    animationSpec = tween(durationMillis = 300),
                     label = "bottom_nav_label"
                 )
 
@@ -86,6 +93,7 @@ fun StudyBottomNav(
                             onClick = { onTabSelected(route) },
                             role = Role.Tab
                         )
+                        .animateContentSize()
                         .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -94,7 +102,7 @@ fun StudyBottomNav(
                         if (isSelected) {
                             Surface(
                                 shape = CircleShape,
-                                color = DesignTokens.BottomNavIconHighlight,
+                                color = Color(0xFFBBDEFB), // Lighter pastel blue for icon background
                                 tonalElevation = 0.dp,
                                 modifier = Modifier.size(28.dp)
                             ) {}

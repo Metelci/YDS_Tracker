@@ -1,6 +1,0 @@
-What’s new in 1.8.0
-
-- Accessibility: better TalkBack, larger touch targets, reduced motion.
-- Metrics: lightweight, privacy-first events (debug-only logging).
-- UI polish: unified Material 3 spacing and card styles across screens.
-

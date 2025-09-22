@@ -1,18 +1,21 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.ui
 
+import android.content.Context
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.data.PlanDurationSettings
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import androidx.datastore.preferences.core.edit
-import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.utils.settingsDataStore
 
 @Composable
 fun QuickNoteRoute(onClose: () -> Unit) {
@@ -27,7 +30,7 @@ fun QuickNoteRoute(onClose: () -> Unit) {
                 Button(enabled = text.isNotBlank(), onClick = {
                     scope.launch {
                         val key = stringSetPreferencesKey("quick_notes")
-                        context.dataStore.edit { prefs ->
+                        context.settingsDataStore.edit { prefs ->
                             val cur = prefs[key] ?: emptySet()
                             prefs[key] = (cur + text).toList().takeLast(500).toSet()
                         }

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mtlc.studyplan.settings.data.ActionSetting
 import com.mtlc.studyplan.settings.data.SettingItem
 import com.mtlc.studyplan.settings.data.ToggleSetting
+import com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType
 import com.mtlc.studyplan.settings.ui.views.ActionSettingView
 import com.mtlc.studyplan.settings.ui.views.ToggleSettingView
 

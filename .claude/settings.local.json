@@ -40,7 +40,15 @@
       "Bash(.gradlew.bat compileDebugKotlin)",
       "Bash(Select-String -Pattern \"error:|Error:|ERROR|FAILED|Exception\")",
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\res\\layout\\fragment_settings_search.xml\")",
-      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\settings\\SettingsSearchEngineTest.kt\")"
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\settings\\SettingsSearchEngineTest.kt\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\gamification\\EnhancedProgressCelebrations.kt\")",
+      "Bash(rm:*)",
+      "WebFetch(domain:ais.osym.gov.tr)",
+      "WebSearch",
+      "WebFetch(domain:www.osym.gov.tr)",
+      "Bash(java:*)",
+      "Bash(del test_exam_countdown.kt)",
+      "Bash(./gradlew.bat:*)"
     ],
     "deny": [],
     "ask": []

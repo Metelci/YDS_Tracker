@@ -1,6 +1,0 @@
-What’s new in 1.8.1
-
-- New: First‑run Welcome screen with a clean intro.
-- Fix: Progress crash (DataStore conflict) resolved.
-- Polish: Consistent spacing in dialogs and improved copy.
-

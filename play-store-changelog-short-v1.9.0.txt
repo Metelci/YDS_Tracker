@@ -1,9 +1,0 @@
-1.9.0 — Time-aware scheduling, Home dashboard, and boosters
-
-- Time-aware plan: aligns to your exam date and start weekday
-- Flexible study slots: distribute tasks into your daily minutes
-- Home tab: exam countdown, today’s tasks, streak, progress
-- Persistent Quick Actions (FAB): Start Session, Add Quick Note
-- Auto-fill end date from next exam; date format presets
-- Smarter progress: counts tasks in the effective plan
-- Booster suggestions based on logged weak areas

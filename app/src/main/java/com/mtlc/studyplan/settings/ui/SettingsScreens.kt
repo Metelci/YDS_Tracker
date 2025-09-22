@@ -17,7 +17,7 @@ import androidx.compose.material.icons.outlined.Celebration
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Send
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.Card
@@ -79,7 +79,7 @@ fun SettingsScreen(
             // Category grid (2 rows x 3)
             var selected by remember { mutableStateOf("Navigation") }
             FlowRow(maxItemsInEachRow = 3, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                CategoryPill(label = "Navigation", icon = Icons.Outlined.Send, selected = selected=="Navigation") { selected = it; onNavigateToCategory(it) }
+                CategoryPill(label = "Navigation", icon = Icons.AutoMirrored.Outlined.Send, selected = selected=="Navigation") { selected = it; onNavigateToCategory(it) }
                 CategoryPill(label = "Notifications", icon = Icons.Outlined.Notifications, selected = selected=="Notifications") { selected = it; onNavigateToCategory(it) }
                 CategoryPill(label = "Gamification", icon = Icons.Outlined.Celebration, selected = selected=="Gamification") { selected = it; onNavigateToCategory(it) }
                 CategoryPill(label = "Social", icon = Icons.Outlined.Image, selected = selected=="Social") { selected = it; onNavigateToCategory(it) }
@@ -100,7 +100,7 @@ fun SettingsScreen(
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Send, contentDescription = null, tint = DesignTokens.Primary)
+                        Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = null, tint = DesignTokens.Primary)
                         Spacer(Modifier.width(8.dp))
                         Text("Navigation", fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
                     }

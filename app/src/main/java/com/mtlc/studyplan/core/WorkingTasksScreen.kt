@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.theme.DesignTokens
+import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -52,14 +54,18 @@ fun WorkingTasksScreen(
     val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
     val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) { (weeklyCompleted.toFloat() / weeklyTotal) }
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(DesignTokens.Background)
-            .padding(horizontal = 16.dp)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
         Spacer(Modifier.height(12.dp))
-        HeaderWithXp(xp = 0)
+        HeaderWithButtons()
         Spacer(Modifier.height(8.dp))
         SegmentedControl(
             segments = listOf("Daily", "Weekly", "Plan", "Custom"),
@@ -71,6 +77,8 @@ fun WorkingTasksScreen(
             2 -> PlanTab(thisWeek, weeklyProgressPct)
             else -> PlaceholderTab()
         }
+        }
+
     }
 }
 
@@ -139,15 +147,30 @@ private fun SegmentedControl(
 }
 
 @Composable
-private fun HeaderWithXp(xp: Int) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+private fun HeaderWithButtons() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text("Tasks", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
-        Surface(color = DesignTokens.SecondaryContainer, contentColor = DesignTokens.SecondaryContainerForeground, shape = RoundedCornerShape(24.dp)) {
-            Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.Star, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("${xp} XP", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-            }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            XpButton(xp = 0)
+            FloatingLanguageSwitcher()
+        }
+    }
+}
+
+@Composable
+private fun XpButton(xp: Int) {
+    Surface(color = DesignTokens.SecondaryContainer, contentColor = DesignTokens.SecondaryContainerForeground, shape = RoundedCornerShape(24.dp)) {
+        Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.Star, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("${xp} XP", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }

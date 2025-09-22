@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.settings.data.ActionSetting
 import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*

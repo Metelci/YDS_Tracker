@@ -193,6 +193,25 @@ class AppIntegrationManager @Inject constructor(
         )
     }
 
+    fun getTaskStatsFlow(): Flow<TaskStats> {
+        return taskRepository.getAllTasks().map { allTasks ->
+            val completed = allTasks.count { it.isCompleted }
+            val total = allTasks.size
+            val pending = total - completed
+            val overdue = allTasks.count { task ->
+                !task.isCompleted && task.dueDate != null && task.dueDate < System.currentTimeMillis()
+            }
+
+            TaskStats(
+                totalTasks = total,
+                completedTasks = completed,
+                pendingTasks = pending,
+                overdueTasks = overdue,
+                completionRate = if (total > 0) completed.toFloat() / total.toFloat() else 0f
+            )
+        }
+    }
+
     suspend fun getTodaysTasks(): List<Task> {
         return taskRepository.getTodaysTasks()
     }
@@ -298,6 +317,60 @@ class AppIntegrationManager @Inject constructor(
     fun simulateSettingsUpdate() {
         _settingsUpdateCount.value = _settingsUpdateCount.value + 1
     }
+
+    // Notification configuration for workers
+    fun getNotificationConfig(): NotificationConfig {
+        // This would integrate with actual settings system
+        // For now, return default enabled config
+        return NotificationConfig(
+            areNotificationsEnabled = true,
+            allowStudyReminders = true,
+            allowAchievementAlerts = true,
+            allowStreakWarnings = true,
+            allowGoalReminders = true,
+            useQuietHours = false,
+            quietHoursStart = "22:00",
+            quietHoursEnd = "08:00",
+            useVibration = true,
+            calendarIntegrationEnabled = true
+        )
+    }
+
+    // Study statistics for personalized notifications
+    fun getStudyStats(): StudyStats {
+        // This would integrate with actual statistics
+        // For now, return mock data
+        return StudyStats(
+            totalTasksCompleted = 15,
+            currentStreak = 3,
+            weeklyGoalHours = 10
+        )
+    }
 }
+
+/**
+ * Notification configuration for workers
+ */
+data class NotificationConfig(
+    val areNotificationsEnabled: Boolean,
+    val allowStudyReminders: Boolean,
+    val allowAchievementAlerts: Boolean,
+    val allowStreakWarnings: Boolean,
+    val allowGoalReminders: Boolean,
+    val useQuietHours: Boolean,
+    val quietHoursStart: String,
+    val quietHoursEnd: String,
+    val useVibration: Boolean,
+    val calendarIntegrationEnabled: Boolean = true
+)
+
+/**
+ * Study statistics for personalized notifications
+ */
+data class StudyStats(
+    val totalTasksCompleted: Int,
+    val currentStreak: Int,
+    val weeklyGoalHours: Int
+)
 
 

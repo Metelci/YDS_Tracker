@@ -1,2 +1,0 @@
-Customize your study plan: hide/edit tasks and add your own. New “Customize” button in the top bar. Changes persist on device and apply across the app.
-

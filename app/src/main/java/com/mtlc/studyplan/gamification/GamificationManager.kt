@@ -1,15 +1,18 @@
 package com.mtlc.studyplan.gamification
 
-import androidx.compose.runtime.*
+// Celebration imports removed with progress functionality
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mtlc.studyplan.data.*
-// Celebration imports removed with progress functionality
-import kotlinx.coroutines.flow.*
+import com.mtlc.studyplan.data.TaskCategory
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 /**
  * Centralized Gamification Manager - Coordinates all gamification systems
@@ -37,7 +40,6 @@ class GamificationManager(
         val ownedCosmetics: List<CosmeticReward> = emptyList(),
         val equippedCosmetics: Map<CosmeticType, CosmeticReward> = emptyMap(),
         val transactionHistory: List<PointTransaction> = emptyList(),
-        val celebrationPreferences: CelebrationPreferences = CelebrationPreferences(),
         val lastUpdated: Long = System.currentTimeMillis()
     )
 
@@ -50,9 +52,9 @@ class GamificationManager(
         pointEconomyManager.transactionHistoryFlow
     ) { pointWallet, achievements, transactions ->
 
-        val dailyChallenge = getCurrentDailyChallenge(userProgress, transactions)
-        val comebackBonus = checkActiveComebackBonus(userProgress)
-        val studyBuddyComparison = StudyBuddySystem.generateComparison(userProgress)
+        val dailyChallenge = getCurrentDailyChallenge(transactions)
+        val comebackBonus = checkActiveComebackBonus()
+        val studyBuddyComparison = null // Progress tracking removed
         val levelSystem = LevelSystemCalculator.calculateLevel(pointWallet.totalLifetimePoints)
         val availableCosmetics = pointEconomyManager.getAvailableCosmetics()
 
@@ -90,13 +92,13 @@ class GamificationManager(
         val pointCalculation = pointEconomyManager.calculateTaskPoints(
             taskCategory = taskCategory,
             basePoints = taskCategory.basePoints,
-            streakDays = userProgress.streakCount,
+            streakDays = 0, // Progress tracking removed
             isCorrect = isCorrect,
             timeBonus = calculateTimeBonus(minutesSpent, taskCategory)
         )
 
         // Check for active comeback bonus
-        val activeComebackBonus = checkActiveComebackBonus(userProgress)
+        val activeComebackBonus = checkActiveComebackBonus()
         val finalPoints = if (activeComebackBonus != null) {
             (pointCalculation.finalPoints * activeComebackBonus.multiplier).toLong()
         } else {
@@ -161,12 +163,10 @@ class GamificationManager(
         return when (purchaseResult) {
             is PurchaseResult.Success -> {
                 val celebrationEvent = CelebrationEvent(
-                    type = CelebrationType.MilestoneReward(
-                        milestoneType = MilestoneType.WEEK_COMPLETION, // Using as cosmetic unlock
-                        value = cosmetic.cost.toInt(),
-                        reward = "Unlocked ${cosmetic.name}!",
-                        points = 0
-                    )
+                    type = "cosmetic_unlock",
+                    title = "Unlocked ${cosmetic.name}!",
+                    description = "You've unlocked a new cosmetic item!",
+                    intensity = "MODERATE"
                 )
 
                 GamificationPurchaseResult.Success(
@@ -188,11 +188,11 @@ class GamificationManager(
     /**
      * Generate daily challenge
      */
-    suspend fun generateNewDailyChallenge(): DailyChallenge {
+    suspend fun generateNewDailyChallenge(): DailyChallenge? {
         // User progress tracking removed
         // Task logs removed
 
-        return ChallengeGenerator.generateDailyChallenge(userProgress, taskLogs)
+        return null // Progress tracking removed
     }
 
     /**
@@ -213,9 +213,9 @@ class GamificationManager(
         return MotivationalInsights(
             todayProgress = calculateTodayProgress(),
             weekProgress = calculateWeekProgress(),
-            streakAnalysis = analyzeStreak(userProgress),
+            streakAnalysis = analyzeStreak(),
             nextMilestone = findNextMilestone(state.achievements),
-            encouragementMessage = generateEncouragementMessage(userProgress, state),
+            encouragementMessage = generateEncouragementMessage(state),
             recommendedActions = generateRecommendedActions(state)
         )
     }
@@ -223,7 +223,6 @@ class GamificationManager(
     // Private helper methods
 
     private suspend fun getCurrentDailyChallenge(
-        userProgress: UserProgress,
         transactions: List<PointTransaction>
     ): DailyChallenge? {
         val today = java.time.LocalDate.now().toString()
@@ -231,23 +230,12 @@ class GamificationManager(
         // Check if we have a challenge for today
         val existingChallenge = loadDailyChallengeFromStorage(today)
 
-        return existingChallenge ?: run {
-            // Task logs removed
-            val newChallenge = ChallengeGenerator.generateDailyChallenge(userProgress, taskLogs)
-            saveDailyChallengeToStorage(newChallenge)
-            newChallenge
-        }
+        return existingChallenge // Progress tracking removed
     }
 
-    private suspend fun checkActiveComebackBonus(userProgress: UserProgress): ComebackBonus? {
-        val daysSinceLastActivity = calculateDaysSinceLastActivity(userProgress)
-        if (daysSinceLastActivity <= 0) return null
-
-        return ComebackSystem.checkForComebackBonus(
-            currentStreak = userProgress.streakCount,
-            previousBestStreak = calculatePreviousBestStreak(userProgress),
-            daysSinceLastActivity = daysSinceLastActivity
-        )
+    private suspend fun checkActiveComebackBonus(): ComebackBonus? {
+        // Progress tracking removed - no comeback bonus functionality
+        return null
     }
 
     private suspend fun checkForNewAchievementUnlocks(): List<AdvancedAchievement> {
@@ -297,11 +285,10 @@ class GamificationManager(
         // Task completion celebration
         events.add(
             CelebrationEvent(
-                type = CelebrationType.TaskCompletion(
-                    taskId = "task_${System.currentTimeMillis()}",
-                    points = pointsEarned.toInt(),
-                    taskCategory = taskCategory
-                )
+                type = "task_completion",
+                title = "Task Completed!",
+                description = "You earned ${pointsEarned} points",
+                intensity = "MODERATE"
             )
         )
 
@@ -309,19 +296,10 @@ class GamificationManager(
         newAchievements.forEach { achievement ->
             events.add(
                 CelebrationEvent(
-                    type = CelebrationType.LevelUp(
-                        achievement = CategorizedAchievement(
-                            id = achievement.id,
-                            category = achievement.category,
-                            tier = achievement.tier,
-                            title = achievement.title,
-                            description = achievement.description,
-                            targetValue = achievement.targetValue,
-                            pointsReward = achievement.pointsReward
-                        ),
-                        newLevel = achievement.tier,
-                        totalPoints = pointsEarned.toInt()
-                    )
+                    type = "achievement_unlock",
+                    title = achievement.title,
+                    description = achievement.description,
+                    intensity = "HIGH"
                 )
             )
         }
@@ -330,12 +308,10 @@ class GamificationManager(
         levelUp?.let { level ->
             events.add(
                 CelebrationEvent(
-                    type = CelebrationType.MilestoneReward(
-                        milestoneType = MilestoneType.WEEK_COMPLETION,
-                        value = level.currentLevel,
-                        reward = "Level ${level.currentLevel}: ${level.levelTitle}",
-                        points = (level.currentLevel * 100)
-                    )
+                    type = "level_up",
+                    title = "Level Up!",
+                    description = "Level ${level.currentLevel}: ${level.levelTitle}",
+                    intensity = "HIGH"
                 )
             )
         }
@@ -353,55 +329,33 @@ class GamificationManager(
         // Implementation would save to DataStore
     }
 
-    private fun calculateDaysSinceLastActivity(userProgress: UserProgress): Int {
-        if (userProgress.lastCompletionDate == 0L) return 0
-
-        val daysSince = (System.currentTimeMillis() - userProgress.lastCompletionDate) / (24 * 60 * 60 * 1000)
-        return daysSince.toInt()
-    }
-
-    private fun calculatePreviousBestStreak(userProgress: UserProgress): Int {
-        // This would need historical data - simplified
-        return userProgress.streakCount + 10
-    }
+    // Progress tracking methods removed
 
     private suspend fun calculateTodayProgress(): Float {
         // Task logs removed
         val todayStart = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
-        val todayTasks = taskLogs.filter { it.timestampMillis >= todayStart }
+        // Task logs removed - return default progress
 
-        return minOf(todayTasks.size / 5f, 1f) // Assume 5 tasks per day goal
+        return 0f
     }
 
     private suspend fun calculateWeekProgress(): Float {
         // Task logs removed
         val weekStart = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
-        val weekTasks = taskLogs.filter { it.timestampMillis >= weekStart }
+        // Task logs removed - return default progress
 
-        return minOf(weekTasks.size / 35f, 1f) // Assume 35 tasks per week goal
+        return 0f
     }
 
-    private fun analyzeStreak(userProgress: UserProgress): StreakAnalysis {
-        val tier = StreakMultiplierTier.getMultiplierForStreak(userProgress.streakCount)
+    private fun analyzeStreak(): StreakAnalysis {
+        // Progress tracking removed - return default streak analysis
+        val streakCount = 0
+        val tier = StreakMultiplierTier.getMultiplierForStreak(streakCount)
         return StreakAnalysis(
-            currentStreak = userProgress.streakCount,
+            currentStreak = streakCount,
             tier = tier,
-            nextMilestone = when {
-                userProgress.streakCount < 7 -> 7
-                userProgress.streakCount < 14 -> 14
-                userProgress.streakCount < 30 -> 30
-                userProgress.streakCount < 50 -> 50
-                userProgress.streakCount < 100 -> 100
-                else -> ((userProgress.streakCount / 50) + 1) * 50
-            },
-            progressToNext = userProgress.streakCount.toFloat() / when {
-                userProgress.streakCount < 7 -> 7f
-                userProgress.streakCount < 14 -> 14f
-                userProgress.streakCount < 30 -> 30f
-                userProgress.streakCount < 50 -> 50f
-                userProgress.streakCount < 100 -> 100f
-                else -> (((userProgress.streakCount / 50) + 1) * 50).toFloat()
-            }
+            nextMilestone = 7,
+            progressToNext = 0f
         )
     }
 
@@ -412,35 +366,18 @@ class GamificationManager(
 
         return nextAchievement?.let { achievement ->
             NextMilestone(
-                type = MilestoneType.WEEK_COMPLETION,
+                type = "achievement",
                 title = achievement.title,
                 progress = achievement.progressPercentage,
-                estimatedDays = when (val est = achievement.estimatedTimeToUnlock) {
-                    is EstimatedTime.DAYS -> est.days
-                    is EstimatedTime.WEEKS -> est.weeks * 7
-                    is EstimatedTime.MONTHS -> est.months * 30
-                    EstimatedTime.READY_TO_UNLOCK -> 0
-                    null -> -1
-                }
+                estimatedDays = 0 // Simplified without EstimatedTime
             )
         }
     }
 
     private fun generateEncouragementMessage(
-        userProgress: UserProgress,
         state: GamificationState
     ): String {
-        return when {
-            userProgress.streakCount >= 100 -> "🔥 You're absolutely legendary! ${userProgress.streakCount} days of pure dedication!"
-            userProgress.streakCount >= 50 -> "🏆 Incredible commitment! You're in the elite tier of learners!"
-            userProgress.streakCount >= 30 -> "⭐ Outstanding consistency! You're building something truly special!"
-            userProgress.streakCount >= 14 -> "🚀 Great momentum! You're developing excellent study habits!"
-            userProgress.streakCount >= 7 -> "💪 Solid week! Keep this energy going!"
-            state.activeComebackBonus != null -> ComebackSystem.getComebackEncouragement(
-                calculateDaysSinceLastActivity(userProgress)
-            )
-            else -> "🌱 Every journey begins with a single step. You're building something amazing!"
-        }
+        return "🌱 Every journey begins with a single step. You're building something amazing!"
     }
 
     private fun generateRecommendedActions(state: GamificationState): List<String> {
@@ -480,6 +417,14 @@ class GamificationManager(
 /**
  * Supporting data classes for gamification results
  */
+
+// Simplified CelebrationEvent to replace deleted celebration system
+data class CelebrationEvent(
+    val type: String = "achievement",
+    val title: String = "",
+    val description: String = "",
+    val intensity: String = "MODERATE"
+)
 data class GamificationTaskResult(
     val pointsEarned: Long,
     val pointBreakdown: PointBreakdown,
@@ -518,7 +463,7 @@ data class StreakAnalysis(
 )
 
 data class NextMilestone(
-    val type: MilestoneType,
+    val type: String,
     val title: String,
     val progress: Float,
     val estimatedDays: Int

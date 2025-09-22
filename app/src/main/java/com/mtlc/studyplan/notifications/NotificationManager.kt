@@ -272,6 +272,68 @@ class NotificationManager @Inject constructor(
         notificationManager.notify(REQUEST_CODE_DAILY_GOAL + 100, notification)
     }
 
+    /**
+     * Show personalized daily study reminder with motivational content
+     */
+    fun showDailyStudyReminder(
+        context: Context,
+        title: String,
+        message: String,
+        notificationId: Int
+    ) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_STUDY_REMINDERS)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(createOpenAppPendingIntent())
+            .addAction(
+                R.drawable.ic_notifications,
+                "Start Studying",
+                createOpenTasksPendingIntent()
+            )
+            .build()
+
+        notificationManager.notify(notificationId, notification)
+
+        // Track delivery for analytics
+        scope.launch {
+            trackNotificationDelivery(notificationId, CHANNEL_STUDY_REMINDERS, true)
+        }
+    }
+
+    /**
+     * Track notification delivery for analytics and reliability monitoring
+     */
+    private suspend fun trackNotificationDelivery(
+        notificationId: Int,
+        channelId: String,
+        delivered: Boolean,
+        errorMessage: String? = null
+    ) {
+        // Store delivery tracking data
+        val trackingData = mapOf(
+            "notification_id" to notificationId,
+            "channel_id" to channelId,
+            "delivered" to delivered,
+            "timestamp" to System.currentTimeMillis(),
+            "timezone" to java.time.ZoneId.systemDefault().id,
+            "error_message" to (errorMessage ?: "")
+        )
+
+        // Store in shared preferences for analytics
+        val prefs = context.getSharedPreferences("notification_analytics", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putLong("last_delivery_${channelId}", System.currentTimeMillis())
+            .putBoolean("last_success_${channelId}", delivered)
+            .putString("last_error_${channelId}", errorMessage)
+            .apply()
+
+        // Could also send to analytics service here
+    }
+
     private fun scheduleRepeatingNotification(
         requestCode: Int,
         title: String,

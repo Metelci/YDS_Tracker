@@ -10,42 +10,17 @@ import java.time.temporal.ChronoUnit
 
 @Serializable
 data class ExamTracker(
-    val examName: String = "YDS Exam 2024",
-    val examDate: String = "2024-12-15", // ISO date format
     val targetScore: Int = 80,
     val currentPreparationLevel: Float = 0.1f // 0.0 to 1.0
 ) {
-    val daysToExam: Int = -280 // Fixed value to match screenshot exactly
+    // Dynamic properties using YdsExamService
+    val examName: String = YdsExamService.getNextExam()?.name ?: "YDS Exam"
+    val daysToExam: Int = YdsExamService.getDaysToNextExam()
     val isExamDay: Boolean = daysToExam == 0
-
-    companion object {
-        fun calculateDaysToExam(examDateString: String): Int {
-            return try {
-                val examDate = LocalDate.parse(examDateString)
-                val today = LocalDate.now()
-                ChronoUnit.DAYS.between(today, examDate).toInt()
-            } catch (e: Exception) {
-                0
-            }
-        }
-    }
-
-    val examDateFormatted: String = try {
-        val date = LocalDate.parse(examDate)
-        "${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${date.dayOfMonth}, ${date.year}"
-    } catch (e: Exception) {
-        examDate
-    }
+    val examDateFormatted: String = YdsExamService.getFormattedExamDate()
+    val statusMessage: String = YdsExamService.getStatusMessage()
 
     val progressPercentage: Int = (currentPreparationLevel * 100).toInt()
-
-    val statusMessage: String = when {
-        isExamDay -> "Exam day!"
-        daysToExam < 0 -> "Exam completed"
-        daysToExam <= 7 -> "Final week!"
-        daysToExam <= 30 -> "Almost there!"
-        else -> "Exam Preparation"
-    }
 }
 
 @Serializable

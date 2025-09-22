@@ -9,7 +9,7 @@ import com.mtlc.studyplan.repository.*
 import com.mtlc.studyplan.eventbus.*
 import com.mtlc.studyplan.gamification.PointBreakdown
 import com.mtlc.studyplan.gamification.GamificationTaskResult
-import com.mtlc.studyplan.ui.celebrations.CelebrationEvent
+// CelebrationEvent import removed with progress functionality
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.database.entities.UserSettingsEntity
 import com.mtlc.studyplan.database.entities.TaskEntity
@@ -604,7 +604,7 @@ class EnhancedAppIntegrationManager @Inject constructor(
             challengeProgress = null,
             levelUp = null,
             comebackBonusApplied = null,
-            celebrationEvents = emptyList<CelebrationEvent>()
+            celebrationEvents = emptyList()
         )
     }
 

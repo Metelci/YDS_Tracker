@@ -18,21 +18,20 @@ import com.mtlc.studyplan.data.DayPlan as DataDayPlan
 import com.mtlc.studyplan.data.WeekPlan as DataWeekPlan
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-// DataStore extension for HomeScreen
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
     val appContext = context.applicationContext
-    val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
-    val overridesStore = remember { PlanOverridesStore(appContext.dataStore) }
+    val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
+    val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
     // Progress repository removed
 

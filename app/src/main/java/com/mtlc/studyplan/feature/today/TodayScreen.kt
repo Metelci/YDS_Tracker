@@ -1,40 +1,77 @@
 package com.mtlc.studyplan.feature.today
 
-import androidx.compose.foundation.layout.*
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.outlined.EventNote
 import androidx.compose.material.icons.filled.CenterFocusWeak
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mtlc.studyplan.ui.theme.LocalSpacing
-import com.mtlc.studyplan.ui.theme.Elevations
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.navigation.NavController
-import com.mtlc.studyplan.ui.components.EmptyState
-import com.mtlc.studyplan.ui.components.ErrorState
-import androidx.compose.material.icons.automirrored.outlined.EventNote
-import kotlinx.coroutines.launch
-import com.mtlc.studyplan.ui.a11y.largeTouchTarget
-import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
-import androidx.compose.ui.platform.LocalContext
+import com.mtlc.studyplan.utils.settingsDataStore
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.data.PlanDurationSettings
 import com.mtlc.studyplan.data.PlanSettingsStore
-import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.ui.a11y.largeTouchTarget
+import com.mtlc.studyplan.ui.components.EmptyState
+import com.mtlc.studyplan.ui.components.ErrorState
+import com.mtlc.studyplan.ui.theme.Elevations
+import com.mtlc.studyplan.ui.theme.LocalSpacing
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+
 
 @Composable
 fun TodayRoute(
@@ -45,11 +82,11 @@ fun TodayRoute(
     onNavigateToFocus: (String) -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     // Read daily study budget from PlanSettings
-    val appContext = LocalContext.current.applicationContext as android.content.Context
-    val settingsStore = remember { PlanSettingsStore(appContext.dataStore) }
+    val appContext = LocalContext.current.applicationContext as Context
+    val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
     val today = remember { LocalDate.now().dayOfWeek }
     val dailyBudgetMinutes = remember(settings, today) {
@@ -77,14 +114,6 @@ fun TodayRoute(
             vm.dispatch(TodayIntent.StartSession(it))
             onNavigateToLesson(it)
         },
-        onComplete = {
-            com.mtlc.studyplan.metrics.Analytics.track(context, "session_complete", mapOf("id" to it))
-            vm.dispatch(TodayIntent.Complete(it))
-        },
-        onSkip = {
-            com.mtlc.studyplan.metrics.Analytics.track(context, "session_skip", mapOf("id" to it))
-            vm.dispatch(TodayIntent.Skip(it))
-        },
         onSnackbarShown = { vm.consumeSnackbar() },
         onViewPlan = onNavigateToPlan,
         onNavigateToMock = onNavigateToMock,
@@ -98,11 +127,8 @@ fun TodayRoute(
 @Composable
 fun TodayScreen(
     state: TodayUiState,
-    modifier: Modifier = Modifier,
     dailyBudgetMinutes: Int? = null,
     onStart: (String) -> Unit,
-    onComplete: (String) -> Unit,
-    onSkip: (String) -> Unit,
     onSnackbarShown: () -> Unit,
     onViewPlan: () -> Unit = {},
     onNavigateToMock: () -> Unit = {},
@@ -157,11 +183,11 @@ fun TodayScreen(
                         CircularProgressIndicator()
                     }
                 }
-                state.snackbar?.let { it.contains("error", ignoreCase = true) } == true -> {
+                state.snackbar?.contains("error", ignoreCase = true) == true -> {
                     ErrorState(
                         modifier = Modifier.fillMaxSize(),
                         title = "Couldn't load today",
-                        message = state.snackbar ?: "",
+                        message = state.snackbar,
                         onRetry = onRefresh,
                         onDiagnostics = { }
                     )
@@ -196,11 +222,11 @@ fun TodayScreen(
                             Text(
                                 if (budget != null) {
                                     // Planned vs. budget summary
-                                    val deltaText = if (delta!! >= 0) "+${delta} min" else "${delta} min"
-                                    "Planned: ${timePlanned} min • Budget: ${budget} min • ${deltaText}"
+                                    val deltaText = if (delta!! >= 0) "+${delta} min" else "$delta min"
+                                    "Planned: $timePlanned min • Budget: $budget min • $deltaText"
                                 } else {
                                     // Fallback
-                                    "Planned today: ${timePlanned} min"
+                                    "Planned today: $timePlanned min"
                                 },
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -221,7 +247,7 @@ fun TodayScreen(
                         }
                         PullToRefreshBox(
                             state = pullRefreshState,
-                            isRefreshing = state.isLoading,
+                            isRefreshing = false,
                             onRefresh = { onRefresh() }
                         ) {
                             LazyColumn(
@@ -234,7 +260,6 @@ fun TodayScreen(
                                     SwipeableSession(
                                         session = item,
                                         onStart = onStart,
-                                        onComplete = onComplete,
                                         onReschedule = { at -> onReschedule(item.id, at) },
                                         onNavigateToFocus = onNavigateToFocus
                                     )
@@ -256,7 +281,6 @@ fun TodayScreen(
 private fun SessionCard(
     s: SessionUi,
     onStart: (String) -> Unit,
-    onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
     onReschedule: (java.time.LocalDateTime) -> Unit = {},
     onNavigateToFocus: (String) -> Unit = {}
@@ -316,7 +340,6 @@ private fun SessionCard(
 private fun SwipeableSession(
     session: SessionUi,
     onStart: (String) -> Unit,
-    onComplete: (String) -> Unit,
     onReschedule: (java.time.LocalDateTime) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
@@ -325,18 +348,10 @@ private fun SwipeableSession(
     SessionCard(
         s = session,
         onStart = onStart,
-        onComplete = onComplete,
         onSkip = { /* swipe functionality removed */ },
         onReschedule = onReschedule,
         onNavigateToFocus = onNavigateToFocus
     )
-}
-
-@Composable
-private fun EmptyState(modifier: Modifier = Modifier) {
-    Box(modifier, contentAlignment = Alignment.Center) {
-        Text("No sessions today. Create a plan to get started.")
-    }
 }
 
 @Preview(showBackground = true)
@@ -346,7 +361,7 @@ private fun TodayScreenPreview() {
     TodayScreen(
         state = previewState,
         dailyBudgetMinutes = 60,
-        onStart = {}, onComplete = {}, onSkip = {}, onSnackbarShown = {}
+        onStart = {}, onSnackbarShown = {}
     )
 }
 

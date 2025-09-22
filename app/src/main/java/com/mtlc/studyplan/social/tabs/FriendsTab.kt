@@ -2,12 +2,9 @@ package com.mtlc.studyplan.social.tabs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -65,11 +62,10 @@ fun FriendsTab(
                 )
             }
         }
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(spacing.sm),
-            contentPadding = PaddingValues(bottom = spacing.lg)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacing.sm)
         ) {
-            items(friends, key = { it.id }) { friend ->
+            friends.forEach { friend ->
                 FriendRow(friend = friend, onClick = onFriendSelected)
             }
         }

@@ -1,4 +1,4 @@
-package com.mtlc.studyplan.settings.ui
+ppackage com.mtlc.studyplan.settings.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -50,7 +50,7 @@ class SettingsCategoryAdapter(
 
         // Set click listener
         holder.itemView.setOnClickListener {
-            val currentPosition = holder.getAdapterPosition()
+            val currentPosition = holder.bindingAdapterPosition
             val previousSelected = selectedPosition
             selectedPosition = currentPosition
 
@@ -261,7 +261,7 @@ class SettingsCategoryAdapter(
         } else {
             // Handle partial updates
             val category = categories[position]
-            val changes = payloads[0] as Map<String, Any>
+            val changes = payloads[0] as? Map<String, Any> ?: return
 
             changes["title"]?.let {
                 holder.binding.categoryTitle.text = it as String

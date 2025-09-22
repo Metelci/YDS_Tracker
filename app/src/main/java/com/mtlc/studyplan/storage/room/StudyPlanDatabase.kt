@@ -36,7 +36,7 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 context.applicationContext,
                 StudyPlanDatabase::class.java,
                 "studyplan.db"
-            ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
+            ).fallbackToDestructiveMigration(true).build().also { INSTANCE = it }
         }
     }
 }

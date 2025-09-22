@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GroupAdd
@@ -38,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
+import androidx.compose.foundation.layout.Box
 import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.Group
@@ -105,50 +110,58 @@ fun SocialScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = spacing.md),
-            verticalArrangement = Arrangement.spacedBy(spacing.lg)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = spacing.md),
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
             PrivacyBanner()
 
             Surface(
                 color = DesignTokens.Surface,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = spacing.md, vertical = spacing.sm),
-                    verticalArrangement = Arrangement.spacedBy(spacing.xs)
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.social_hub_title),
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = stringResource(id = R.string.social_hub_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(spacing.md)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         HighlightChip(
                             label = stringResource(id = R.string.social_stat_completed),
-                            value = studyStats.totalTasksCompleted.toString()
+                            value = studyStats.totalTasksCompleted.toString(),
+                            modifier = Modifier.weight(1f)
                         )
                         HighlightChip(
                             label = stringResource(id = R.string.social_stat_streak),
-                            value = if (currentStreak > 0) stringResource(id = R.string.social_stat_streak_value, currentStreak) else stringResource(id = R.string.social_stat_streak_placeholder)
+                            value = if (currentStreak > 0) stringResource(id = R.string.social_stat_streak_value, currentStreak) else stringResource(id = R.string.social_stat_streak_placeholder),
+                            modifier = Modifier.weight(1f)
                         )
                         HighlightChip(
                             label = stringResource(id = R.string.social_stat_goal_hours),
-                            value = stringResource(id = R.string.social_stat_goal_hours_value, profile.weeklyGoalHours)
+                            value = stringResource(id = R.string.social_stat_goal_hours_value, profile.weeklyGoalHours),
+                            modifier = Modifier.weight(1f)
                         )
                     }
                     FilledTonalButton(
@@ -158,14 +171,16 @@ fun SocialScreen(
                                 snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
                             }
                         },
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = spacing.md, vertical = spacing.xs),
-                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = DesignTokens.Surface)
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = DesignTokens.Surface),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(imageVector = Icons.Outlined.GroupAdd, contentDescription = null)
                         Text(
                             text = stringResource(id = R.string.social_invite_friends),
-                            modifier = Modifier.padding(start = spacing.xs)
+                            modifier = Modifier.padding(start = 6.dp),
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -225,6 +240,8 @@ fun SocialScreen(
                 )
                 SocialTab.Awards -> AwardsTab(awards = awards)
             }
+            }
+
         }
     }
 }
@@ -242,22 +259,23 @@ private fun showFriendProfileSnackbar(
 }
 
 @Composable
-private fun HighlightChip(label: String, value: String) {
+private fun HighlightChip(label: String, value: String, modifier: Modifier = Modifier) {
     Surface(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         color = DesignTokens.SurfaceContainer,
-        tonalElevation = 1.dp
+        tonalElevation = 1.dp,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(text = value, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
@@ -274,26 +292,25 @@ private fun SocialScreenPreview() {
 
 @Composable
 private fun PrivacyBanner() {
-    val spacing = LocalSpacing.current
     Surface(
         color = DesignTokens.SurfaceContainer,
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(12.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacing.md),
-            verticalArrangement = Arrangement.spacedBy(spacing.xs)
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.social_privacy_banner_title),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = DesignTokens.Primary
             )
             Text(
                 text = stringResource(id = R.string.social_privacy_banner_body),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
             )
         }

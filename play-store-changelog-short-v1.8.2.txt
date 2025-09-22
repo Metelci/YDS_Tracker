@@ -1,6 +1,0 @@
-What's new in 1.8.2
-
-- Fix: Crash when opening "View full plan".
-- Fix: Centralized DataStore to prevent conflicts.
-- Polish: Minor stability improvements.
-
