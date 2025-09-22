@@ -284,6 +284,7 @@ fun SocialScreen(
             }
 
             // Section removed per product requirements
+            }
         }
     }
 }
