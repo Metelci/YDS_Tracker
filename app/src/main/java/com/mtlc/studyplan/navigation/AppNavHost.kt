@@ -28,8 +28,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
@@ -53,18 +51,16 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.ui.res.stringResource
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.OnboardingRepository
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
@@ -79,6 +75,8 @@ import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
 import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions.pressAnimation
 import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
+import com.mtlc.studyplan.utils.settingsDataStore
+
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
@@ -131,7 +129,7 @@ fun AppNavHost(
     }
 
     // Schedule background prefetch once per app start
-    val appCtx = androidx.compose.ui.platform.LocalContext.current
+    LocalContext.current
     LaunchedEffect(Unit) {
         // Smart content prefetch worker removed with progress functionality
     }
@@ -144,8 +142,11 @@ fun AppNavHost(
     Scaffold(
         bottomBar = {
             if (bottomBarEnabled) {
+                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = currentBackStackEntry?.destination?.route ?: "home"
+
                 com.mtlc.studyplan.ui.components.StudyBottomNav(
-                    currentRoute = navController.currentBackStackEntry?.destination?.route ?: "home",
+                    currentRoute = currentRoute,
                     tabs = tabs,
                     onTabSelected = { route ->
                         if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -216,19 +217,34 @@ fun AppNavHost(
         ) {
             composable(WELCOME_ROUTE) {
                 val context = androidx.compose.ui.platform.LocalContext.current
-                val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-                val repo = remember { OnboardingRepository(context.dataStore) }
+                val repo = remember { OnboardingRepository(context.settingsDataStore) }
                 val isComplete by repo.isOnboardingCompleted.collectAsState(initial = false)
+
+                // For returning users, redirect directly to home
                 LaunchedEffect(isComplete) {
-                    val target = if (isComplete) "home" else ONBOARDING_ROUTE
-                    navController.navigate(target) {
-                        popUpTo(WELCOME_ROUTE) { inclusive = true }
-                        launchSingleTop = true
+                    if (isComplete) {
+                        navController.navigate("home") {
+                            popUpTo(WELCOME_ROUTE) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 }
-                // Simple placeholder while deciding
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    androidx.compose.material3.CircularProgressIndicator()
+
+                // Show landing page for new users
+                if (!isComplete) {
+                    com.mtlc.studyplan.feature.welcome.YdsWelcomeScreen(
+                        onStartStudyPlan = {
+                            if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            navController.navigate(ONBOARDING_ROUTE) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                } else {
+                    // Show loading while redirecting
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
                 }
             }
             composable(ONBOARDING_ROUTE) {
@@ -279,6 +295,10 @@ fun AppNavHost(
                     onNavigateToExamDetails = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("exam-details")
+                    },
+                    onNavigateToStudyPlan = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("study-plan-overview")
                     }
                 )
             }
@@ -403,8 +423,7 @@ fun AppNavHost(
                     com.mtlc.studyplan.settings.data.SettingsRepository(context)
                 }
 
-                com.mtlc.studyplan.settings.ui.EnhancedSettingsScreen(
-                    settingsRepository = settingsRepository,
+                com.mtlc.studyplan.settings.ui.OriginalSettingsScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
@@ -547,35 +566,25 @@ fun AppNavHost(
             }
         }
 
-        // Exam details route
+        // Exam details route - Real YDS exam information
         composable("exam-details") {
-            Scaffold(
-                topBar = {
-                    androidx.compose.material3.TopAppBar(
-                        title = { Text("YDS Exam 2024") },
-                        navigationIcon = {
-                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        }
-                    )
+            com.mtlc.studyplan.exam.ExamDetailsScreen(
+                onNavigateBack = {
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.popBackStack()
                 }
-            ) { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("YDS Exam Details", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("December 15, 2024")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Preparation Progress: 10%")
-                    }
+            )
+        }
+
+        // Study Plan Overview route
+        composable("study-plan-overview") {
+            com.mtlc.studyplan.studyplan.StudyPlanOverviewScreen(
+                appIntegrationManager = mainAppIntegrationManager,
+                onNavigateBack = {
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.popBackStack()
                 }
-            }
+            )
         }
         }
     }

@@ -22,6 +22,9 @@ class OnboardingViewModel(
     private val onboardingRepo: OnboardingRepository,
     private val planSettings: PlanSettingsStore,
 ) : ViewModel() {
+    private val _startDate = MutableStateFlow(LocalDate.now())
+    val startDate: StateFlow<LocalDate> = _startDate
+
     private val _examDate = MutableStateFlow(LocalDate.now().plusWeeks(4))
     val examDate: StateFlow<LocalDate> = _examDate
 
@@ -41,6 +44,7 @@ class OnboardingViewModel(
     private val _isGeneratingPlan = MutableStateFlow(false)
     val isGeneratingPlan: StateFlow<Boolean> = _isGeneratingPlan
 
+    fun setStartDate(date: LocalDate) { _startDate.value = date }
     fun setExamDate(date: LocalDate) { _examDate.value = date }
     fun setAvailability(day: DayOfWeek, minutes: Int) {
         _availability.value = _availability.value.toMutableMap().apply { this[day] = minutes.coerceIn(0, 180) }
@@ -59,7 +63,7 @@ class OnboardingViewModel(
                 val avail = _availability.value
                 planSettings.update { cur ->
                     cur.copy(
-                        startEpochDay = LocalDate.now().toEpochDay(),
+                        startEpochDay = _startDate.value.toEpochDay(),
                         endEpochDay = _examDate.value.toEpochDay(),
                         totalWeeks = 30,
                         monMinutes = avail[DayOfWeek.MONDAY] ?: 60,

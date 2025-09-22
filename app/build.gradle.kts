@@ -107,38 +107,6 @@ android {
     }
 }
 
-// Legacy dependency validation - temporarily disabled for audit
-// TODO: Re-enable with more sophisticated transitive dependency detection
-// configurations.all {
-//     resolutionStrategy.eachDependency {
-//         // Block legacy Material 2 UI components (but allow icons and ripple which are shared)
-//         if (requested.group == "androidx.compose.material" &&
-//             requested.name != "material3" &&
-//             requested.name != "material3-window-size-class" &&
-//             !requested.name.contains("icons") &&
-//             !requested.name.contains("ripple")) {
-//             throw GradleException(
-//                 "❌ Legacy Material 2 UI dependency detected: ${requested.group}:${requested.name}:${requested.version}\n" +
-//                 "🚫 This project uses Material 3 exclusively. Please use androidx.compose.material3.* instead.\n" +
-//                 "📖 See README.md for Material 3 migration guidelines."
-//             )
-//         }
-//
-//         // Block deprecated Accompanist dependencies
-//         if (requested.group == "com.google.accompanist" &&
-//             requested.name == "swiperefresh") {
-//             throw GradleException(
-//                 "❌ Deprecated Accompanist SwipeRefresh dependency detected: ${requested.group}:${requested.name}\n" +
-//                 "🔄 Please use androidx.compose.material3.pulltorefresh instead.\n" +
-//                 "📖 See README.md for Material 3 migration guidelines."
-//             )
-//         }
-//
-//         // Allow legacy Material Design Components for XML views (needed for SettingsActivity)
-//         // No blocking here as it's required for XML-based settings UI
-//     }
-// }
-
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
