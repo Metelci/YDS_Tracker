@@ -63,7 +63,6 @@ fun ProfileTab(
     ) {
         ProfileCard(profile = profile, onAvatarSelected = onAvatarSelected)
         WeeklyGoalCard(profile = profile, onSaveGoal = onSaveGoal)
-        PrivacySettingsCard()
     }
 }
 
@@ -329,32 +328,6 @@ private fun WeeklyGoalCard(
     }
 }
 
-@Composable
-private fun PrivacySettingsCard() {
-    val spacing = LocalSpacing.current
-    Surface(
-        color = DesignTokens.Surface,
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing.md),
-            verticalArrangement = Arrangement.spacedBy(spacing.xs)
-        ) {
-            Text(
-                text = stringResource(id = R.string.social_privacy_settings_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(id = R.string.social_privacy_settings_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-            )
-        }
-    }
-}
 
 private fun avatarEmoji(id: String): String = when (id) {
     "target" -> "🎯"

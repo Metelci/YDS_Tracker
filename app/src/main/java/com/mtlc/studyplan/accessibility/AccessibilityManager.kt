@@ -273,7 +273,7 @@ class AccessibilityEnhancementManager(private val context: Context) {
             // Return default Material Design colors
             HighContrastColors(
                 background = ContextCompat.getColor(context, android.R.color.background_light),
-                onBackground = ContextCompat.getColor(context, android.R.color.primary_text_light),
+                onBackground = 0xFF000000.toInt(), // Black text color
                 primary = ContextCompat.getColor(context, android.R.color.holo_blue_dark),
                 onPrimary = ContextCompat.getColor(context, android.R.color.white),
                 error = ContextCompat.getColor(context, android.R.color.holo_red_dark),

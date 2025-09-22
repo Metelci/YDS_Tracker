@@ -3,6 +3,10 @@ package com.mtlc.studyplan.settings.security
 import android.content.Context
 import com.mtlc.studyplan.settings.error.SettingsErrorHandler
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -15,6 +19,7 @@ class SecurityAndErrorCoordinator(
 ) {
 
     private val coordinationMutex = Mutex()
+    private val coordinatorScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val _systemStatus = MutableStateFlow(SystemStatus())
     val systemStatus: StateFlow<SystemStatus> = _systemStatus.asStateFlow()
@@ -76,7 +81,7 @@ class SecurityAndErrorCoordinator(
                     }
                 }
             }
-            .launchIn(kotlinx.coroutines.GlobalScope)
+            .launchIn(coordinatorScope)
     }
 
     private fun observeErrorState() {
@@ -91,7 +96,7 @@ class SecurityAndErrorCoordinator(
                     }
                 }
             }
-            .launchIn(kotlinx.coroutines.GlobalScope)
+            .launchIn(coordinatorScope)
     }
 
     private suspend fun updateSystemStatus(
@@ -132,6 +137,10 @@ class SecurityAndErrorCoordinator(
 
             else -> SystemHealth.HEALTHY
         }
+    }
+
+    fun clear() {
+        coordinatorScope.cancel()
     }
 
     private fun generateMitigationActions(

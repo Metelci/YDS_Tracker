@@ -26,7 +26,7 @@ object DatabaseModule {
             "study_plan_database"
         )
         .addMigrations(/* add migrations as needed */)
-        .fallbackToDestructiveMigration() // Only for development
+        .fallbackToDestructiveMigration(true) // Only for development
         .build()
     }
 

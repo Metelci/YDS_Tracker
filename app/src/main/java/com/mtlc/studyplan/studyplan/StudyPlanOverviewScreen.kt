@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -422,8 +424,8 @@ private fun DailyScheduleCard(
 // Data classes and helper functions
 enum class StudyPlanTab(val title: String, val icon: ImageVector) {
     WEEKLY("Weekly", Icons.Filled.CalendarToday),
-    PROGRESS("Progress", Icons.Filled.TrendingUp),
-    UPCOMING("Upcoming", Icons.Filled.Assignment)
+    PROGRESS("Progress", Icons.AutoMirrored.Filled.TrendingUp),
+    UPCOMING("Upcoming", Icons.AutoMirrored.Filled.Assignment)
 }
 
 data class StudyScheduleData(

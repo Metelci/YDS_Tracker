@@ -115,7 +115,7 @@ class ThemeIntegration(
      */
     fun shouldUseSystemTheme(): Boolean {
         val themeMode = settingsRepository.getString(SettingsKeys.Appearance.THEME_MODE, "system")
-        return themeMode == "system" || themeMode == null
+        return themeMode == "system"
     }
 }
 

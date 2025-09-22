@@ -1,4 +1,4 @@
-ppackage com.mtlc.studyplan.settings.ui
+package com.mtlc.studyplan.settings.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -261,6 +261,7 @@ class SettingsCategoryAdapter(
         } else {
             // Handle partial updates
             val category = categories[position]
+            @Suppress("UNCHECKED_CAST")
             val changes = payloads[0] as? Map<String, Any> ?: return
 
             changes["title"]?.let {

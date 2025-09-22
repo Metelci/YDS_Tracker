@@ -3,6 +3,7 @@ package com.mtlc.studyplan.services
 import android.content.Context
 import androidx.work.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.workers.DailyStudyReminderWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -91,7 +92,7 @@ class NotificationSchedulerService @Inject constructor(
         }
     }
 
-    private fun generateTestMessage(studyStats: AppIntegrationManager.StudyStats): String {
+    private fun generateTestMessage(studyStats: StudyStats): String {
         return "Test notification! Your current streak: ${studyStats.currentStreak} days. Keep up the great work! 📚"
     }
 

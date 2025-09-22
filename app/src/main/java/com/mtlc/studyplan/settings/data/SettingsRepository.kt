@@ -190,6 +190,7 @@ class SettingsRepository(
      * Get a string set setting value with default fallback
      */
     fun getStringSet(key: String, defaultValue: Set<String> = defaultValues.getStringSetOrDefault(key)): Set<String> {
+        @Suppress("UNCHECKED_CAST")
         return getCachedValue(key) as? Set<String> ?: run {
             val value = preferences.getStringSet(key, defaultValue) ?: defaultValue
             valueCache[key] = value
@@ -350,11 +351,12 @@ class SettingsRepository(
     /**
      * Get reactive flow for a specific setting
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T> getSettingFlow(key: String, defaultValue: T): Flow<T> {
         return changeEvents
             .filter { it.key == key }
-            .map { getValueForKey(key) as? T ?: defaultValue }
-            .onStart { emit(getValueForKey(key) as? T ?: defaultValue) }
+            .map { safeCastToType<T>(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToType<T>(getValueForKey(key), defaultValue)) }
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
@@ -424,6 +426,7 @@ class SettingsRepository(
             }
             is String -> updateSetting(SettingsUpdateRequest.UpdateString(key, value))
             is Collection<*> -> {
+                @Suppress("UNCHECKED_CAST")
                 val stringSet = value.filterIsInstance<String>().toSet()
                 preferences.edit { putStringSet(key, stringSet) }
                 valueCache[key] = stringSet
@@ -459,6 +462,36 @@ class SettingsRepository(
             Float::class -> getFloat(key)
             String::class -> getString(key)
             else -> preferences.all[key]
+        }
+    }
+
+    /**
+     * Safely cast a value to the expected type with proper error handling
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> safeCastToType(value: Any?, defaultValue: T): T {
+        return try {
+            when (defaultValue) {
+                is Boolean -> (value as? Boolean ?: defaultValue) as T
+                is Int -> (value as? Int ?: defaultValue) as T
+                is Float -> (value as? Float ?: defaultValue) as T
+                is String -> (value as? String ?: defaultValue) as T
+                is Set<*> -> (value as? Set<String> ?: defaultValue as Set<String>) as T
+                else -> {
+                    // For complex types, try safe cast or return default
+                    (value as? T) ?: defaultValue
+                }
+            }
+        } catch (e: ClassCastException) {
+            // Log the error and return default value
+            errorHandler.logger.logError(
+                AppError(
+                    type = ErrorType.DATA,
+                    message = "Type casting failed for value: $value, expected type: ${defaultValue!!::class.simpleName}",
+                    cause = e
+                )
+            )
+            defaultValue
         }
     }
 
@@ -533,7 +566,16 @@ class SettingsRepository(
                     is Int -> editor.putInt(key, defaultValue)
                     is Float -> editor.putFloat(key, defaultValue)
                     is String -> editor.putString(key, defaultValue)
-                    is Set<*> -> editor.putStringSet(key, defaultValue as Set<String>)
+                    is Set<*> -> {
+                        val stringSet = defaultValue.mapNotNull { element ->
+                            when (element) {
+                                null -> null
+                                is String -> element
+                                else -> element.toString()
+                            }
+                        }.toSet()
+                        editor.putStringSet(key, stringSet)
+                    }
                 }
                 hasChanges = true
             }
@@ -1026,15 +1068,37 @@ private object defaultValues {
 
     fun getAllDefaults(): Map<String, Any> = defaults
 
-    fun getBooleanOrDefault(key: String): Boolean = defaults[key] as? Boolean ?: false
-    fun getIntOrDefault(key: String): Int = defaults[key] as? Int ?: 0
-    fun getFloatOrDefault(key: String): Float = defaults[key] as? Float ?: 0f
-    fun getStringOrDefault(key: String): String = defaults[key] as? String ?: ""
-    fun getStringSetOrDefault(key: String): Set<String> = defaults[key] as? Set<String> ?: emptySet()
+    fun getBooleanOrDefault(key: String): Boolean = safeCastValue(defaults[key], false)
+    fun getIntOrDefault(key: String): Int = safeCastValue(defaults[key], 0)
+    fun getFloatOrDefault(key: String): Float = safeCastValue(defaults[key], 0f)
+    fun getStringOrDefault(key: String): String = safeCastValue(defaults[key], "")
+    @Suppress("UNCHECKED_CAST")
+    fun getStringSetOrDefault(key: String): Set<String> = safeCastValue(defaults[key], emptySet<String>())
 
     fun getValueForKey(key: String): Any? = defaults[key]
 
     fun getTypeForKey(key: String): kotlin.reflect.KClass<*>? = defaults[key]?.let { it::class }
+
+    /**
+     * Safely cast default values with proper error handling
+     */
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified T> safeCastValue(value: Any?, defaultValue: T): T {
+        return try {
+            when (T::class) {
+                Boolean::class -> (value as? Boolean ?: defaultValue) as T
+                Int::class -> (value as? Int ?: defaultValue) as T
+                Float::class -> (value as? Float ?: defaultValue) as T
+                String::class -> (value as? String ?: defaultValue) as T
+                Set::class -> (value as? Set<String> ?: defaultValue as Set<String>) as T
+                else -> defaultValue
+            }
+        } catch (e: ClassCastException) {
+            // Log error and return default
+            println("Warning: Failed to cast default value for key, using default: $defaultValue")
+            defaultValue
+        }
+    }
 }
 
 

@@ -6,6 +6,7 @@ import androidx.work.*
 import com.mtlc.studyplan.data.isMutedToday
 import com.mtlc.studyplan.data.isQuietNow
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -29,7 +30,7 @@ class DailyStudyReminderWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
-        private const val WORK_NAME = "daily_study_reminder"
+        const val WORK_NAME = "daily_study_reminder"
         private const val REMINDER_HOUR = 18 // 6:00 PM
         private const val REMINDER_MINUTE = 0
 
@@ -150,7 +151,7 @@ class DailyStudyReminderWorker @AssistedInject constructor(
             .apply()
     }
 
-    private fun generateMotivationalMessage(studyStats: AppIntegrationManager.StudyStats): String {
+    private fun generateMotivationalMessage(studyStats: StudyStats): String {
         val currentStreak = studyStats.currentStreak
         val completedTasks = studyStats.totalTasksCompleted
         val weeklyGoal = studyStats.weeklyGoalHours

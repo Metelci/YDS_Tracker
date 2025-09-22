@@ -271,7 +271,7 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
                 true
             }
             R.id.action_export_settings -> { showSnackbar("Not implemented"); true }
@@ -299,22 +299,30 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
             .show()
     }
 
-    override fun onBackPressed() {
-        when {
-            supportFragmentManager.backStackEntryCount > 0 -> {
-                supportFragmentManager.popBackStack()
+    private val onBackPressedCallback = object : androidx.activity.OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            when {
+                supportFragmentManager.backStackEntryCount > 0 -> {
+                    supportFragmentManager.popBackStack()
 
-                // Show main content and hide fragment container
-                binding.fragmentContainer.visibility = View.GONE
-                binding.mainContent.visibility = View.VISIBLE
+                    // Show main content and hide fragment container
+                    binding.fragmentContainer.visibility = View.GONE
+                    binding.mainContent.visibility = View.VISIBLE
 
-                // Restore main toolbar
-                supportActionBar?.title = getString(R.string.settings_title)
-            }
-            else -> {
-                super.onBackPressed()
+                    // Restore main toolbar
+                    supportActionBar?.title = getString(R.string.settings_title)
+                }
+                else -> {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
+                }
             }
         }
+    }
+
+    init {
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     private fun handleWindowInsets() {

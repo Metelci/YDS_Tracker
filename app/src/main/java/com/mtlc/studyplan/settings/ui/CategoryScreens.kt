@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
@@ -71,7 +71,7 @@ fun SocialSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun TaskSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Tasks", subtitle = "Study planning and scheduling", onBack = onBack) {
-        CategoryCardHeader("Tasks", Icons.Filled.Send)
+        CategoryCardHeader("Tasks", Icons.AutoMirrored.Filled.Send)
     }
 }
 
@@ -110,7 +110,7 @@ private fun NavigationCategoryCard() {
 
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            CategoryCardHeader("Navigation", Icons.Filled.Send)
+            CategoryCardHeader("Navigation", Icons.AutoMirrored.Filled.Send)
             SettingRowToggle(title = "Bottom Navigation", description = "Show navigation at bottom of screen", checked = bottomNav.value) { bottomNav.value = it }
             SettingRowToggle(title = "Haptic Feedback", description = "Vibrate on button taps and interactions", checked = haptics.value) { haptics.value = it }
         }

@@ -122,8 +122,6 @@ fun SocialScreen(
                     .padding(horizontal = spacing.md),
                 verticalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
-            PrivacyBanner()
-
             Surface(
                 color = DesignTokens.Surface,
                 shape = RoundedCornerShape(16.dp)
@@ -290,29 +288,3 @@ private fun SocialScreenPreview() {
     }
 }
 
-@Composable
-private fun PrivacyBanner() {
-    Surface(
-        color = DesignTokens.SurfaceContainer,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.social_privacy_banner_title),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = DesignTokens.Primary
-            )
-            Text(
-                text = stringResource(id = R.string.social_privacy_banner_body),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-            )
-        }
-    }
-}

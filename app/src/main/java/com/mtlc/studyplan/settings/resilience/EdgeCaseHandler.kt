@@ -70,15 +70,25 @@ class EdgeCaseHandler(
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-        } else {
-            @Suppress("DEPRECATION")
-            val networkInfo = connectivityManager.activeNetworkInfo
-            networkInfo?.isConnected == true
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+                val network = connectivityManager.activeNetwork ?: return false
+                val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                @Suppress("DEPRECATION")
+                connectivityManager.allNetworks.any { network ->
+                    connectivityManager.getNetworkCapabilities(network)?.hasCapability(
+                        NetworkCapabilities.NET_CAPABILITY_INTERNET
+                    ) == true
+                }
+            }
+            else -> {
+                @Suppress("DEPRECATION")
+                connectivityManager.activeNetworkInfo?.isConnected == true
+            }
         }
     }
 

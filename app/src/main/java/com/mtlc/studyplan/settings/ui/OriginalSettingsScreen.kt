@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.EventNote
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -301,7 +302,7 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
             )
 
             SettingToggleItem(
-                icon = Icons.Outlined.EventNote,
+                icon = Icons.AutoMirrored.Outlined.EventNote,
                 title = "Daily Goal Reminders",
                 description = "Remind me of my daily study goals",
                 checked = taskSettings.dailyGoalReminders,
@@ -311,7 +312,7 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
             )
 
             SettingToggleItem(
-                icon = Icons.Outlined.EventNote,
+                icon = Icons.AutoMirrored.Outlined.EventNote,
                 title = "Weekend Mode",
                 description = "Lighter study load on weekends",
                 checked = taskSettings.weekendMode,

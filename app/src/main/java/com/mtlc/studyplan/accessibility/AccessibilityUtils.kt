@@ -252,10 +252,11 @@ object AccessibilityUtils {
      * Temporarily disable accessibility on a view (useful during animations)
      */
     fun temporarilyDisableAccessibility(view: View, duration: Long = 300) {
-        ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        val originalImportance = view.importantForAccessibility
+        view.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
 
         view.postDelayed({
-            ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
+            view.importantForAccessibility = originalImportance
         }, duration)
     }
 

@@ -430,7 +430,7 @@ class SettingsBackupManager(
         private val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
 
         override fun serialize(src: Date?, typeOfSrc: java.lang.reflect.Type?, context: JsonSerializationContext?): JsonElement {
-            return JsonPrimitive(format.format(src))
+            return src?.let { JsonPrimitive(format.format(it)) } ?: JsonNull.INSTANCE
         }
 
         override fun deserialize(json: JsonElement?, typeOfT: java.lang.reflect.Type?, context: JsonDeserializationContext?): Date {

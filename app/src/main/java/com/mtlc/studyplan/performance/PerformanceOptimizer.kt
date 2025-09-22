@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.mtlc.studyplan.performance
 
 import android.content.Context
@@ -5,7 +7,11 @@ import android.os.Build
 import android.os.Debug
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -18,7 +24,7 @@ import kotlin.system.measureTimeMillis
  */
 class PerformanceOptimizer private constructor(
     private val context: Context
-) : LifecycleObserver {
+) : LifecycleEventObserver {
 
     private val performanceMetrics = MutableStateFlow(PerformanceMetrics())
     private val memoryPressureState = MutableStateFlow(MemoryPressureLevel.NORMAL)
@@ -466,21 +472,25 @@ class PerformanceOptimizer private constructor(
     fun getMemoryPressureState(): StateFlow<MemoryPressureLevel> = memoryPressureState.asStateFlow()
 
     /**
-     * Lifecycle-aware cleanup
+     * Lifecycle-aware cleanup using LifecycleEventObserver
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onAppStopped() {
-        CoroutineScope(Dispatchers.Main).launch {
-            performMemoryOptimizations()
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_STOP -> {
+                CoroutineScope(Dispatchers.Main).launch {
+                    performMemoryOptimizations()
+                }
+            }
+            Lifecycle.Event.ON_DESTROY -> {
+                optimizationScope.cancel()
+                cacheRegistry.clear()
+                imageCache.clear()
+                dataCache.clear()
+            }
+            else -> {
+                // Handle other lifecycle events if needed
+            }
         }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onAppDestroyed() {
-        optimizationScope.cancel()
-        cacheRegistry.clear()
-        imageCache.clear()
-        dataCache.clear()
     }
 
     /**

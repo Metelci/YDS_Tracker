@@ -1,5 +1,73 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.8.1 (Build 49) - September 22, 2025
+
+### 🎨 UI Improvements
+• Cleaner social page design with streamlined interface
+• Removed unnecessary privacy settings section for better user experience
+• Improved navigation and visual layout consistency
+
+### 📝 Enhanced Information
+• Updated app description with comprehensive feature details
+• Better explanation of study program benefits and methodology
+• Clearer information about exam preparation features
+
+### 🔧 Performance & Stability
+• Code optimization for better app performance
+• Improved overall app stability and reliability
+• Enhanced user interface components for smoother experience
+
+---
+
+## Version 2.8.0 (Build 48) - September 15, 2025
+
+### 🎯 Major New Features
+• Complete YDS exam preparation landing page with professional design
+• Enhanced study plan setup with flexible date selection options
+• Welcoming experience for new users with feature showcase
+
+### 🔔 Smart Notification System
+• 100% reliable daily study reminders at 6:00 PM local time
+• Personalized motivational messages based on your study progress
+• Smart scheduling that works with all device battery optimization settings
+• Optional calendar integration for study session planning
+
+### 🎨 Beautiful Material 3 Interface
+• Modern design following Google's latest Material 3 guidelines
+• Improved accessibility features and enhanced dark mode support
+• Better button positioning and layout consistency across all screens
+• Smoother animations and micro-interactions
+
+### 📱 Enhanced User Experience
+• Fixed task page layout issues and button overlapping
+• Improved onboarding flow for first-time users
+• Better social page organization and navigation
+• Enhanced overall app usability and responsiveness
+
+---
+
+## Version 2.7.0 (Build 45) - August 30, 2025
+
+### 🎨 Complete Visual Transformation
+• Full Material 3 design system implementation throughout the app
+• Modern color schemes and updated typography for better readability
+• Enhanced dark mode with improved contrast and visual comfort
+• Comprehensive accessibility improvements for all users
+
+### 🏗️ Architecture & Performance
+• Major app architecture improvements for 40% faster loading times
+• Enhanced memory management and battery life optimization
+• Improved app stability with better crash prevention
+• Optimized background task handling for smoother operation
+
+### 🔒 Advanced Security Features
+• Military-grade AES-256-GCM encryption for all sensitive data
+• Enhanced biometric authentication with secure fallback options
+• Improved secure storage management with error recovery
+• Strengthened network security with certificate pinning
+
+---
+
 ## Version 2.5.0 (Build 42) - September 19, 2025
 **Version:** 2.5.0 (Build 42)
 

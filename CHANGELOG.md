@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.8.1] - 2025-09-22
+
+### 🗑️ **Removed**
+- **Privacy Settings Section**: Removed privacy banner and settings card from social page for cleaner UI
+  - Eliminated `PrivacyBanner()` component from main social screen (`SocialScreen.kt:125`)
+  - Removed `PrivacySettingsCard()` from profile tab (`ProfileTab.kt:66`)
+  - Streamlined social page layout for better user experience
+  - Cleaned up unused composable functions and imports
+
+### 📝 **Documentation**
+- **Enhanced Store Listings**: Complete rewrite of Play Store and GitHub descriptions
+  - New comprehensive Play Store description with feature highlights and user benefits
+  - Professional GitHub README with technical details and contribution guidelines
+  - Added detailed feature explanations and usage examples
+  - Improved project structure documentation and security guidelines
+  - Better formatting and visual appeal for both platforms
+
+### 🔧 **Internal Improvements**
+- Updated documentation structure for better maintainability
+- Enhanced code organization in social components
+- Improved component modularity by removing unused functions
+- Cleaner codebase with reduced technical debt
+
+---
+
 ## [2.8.0] - 2025-09-22
 
 ### 🚀 **MAJOR: Complete Notification System & UI Improvements**

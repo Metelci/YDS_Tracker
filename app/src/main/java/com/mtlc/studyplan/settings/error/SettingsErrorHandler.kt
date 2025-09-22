@@ -111,8 +111,13 @@ class SettingsErrorHandler(
                 handleRetry(operation, error, strategy, fallbackValue)
             }
             RecoveryAction.FALLBACK -> {
-                val fallback = fallbackValue ?: getFallbackValue(operation)
-                ErrorHandlingResult.Recovered(fallback as T?, "Used fallback value")
+                val typedFallback = resolveFallbackValue(operation, fallbackValue)
+                val message = if (typedFallback != null) {
+                    "Used fallback value"
+                } else {
+                    "Fallback value unavailable"
+                }
+                ErrorHandlingResult.Recovered(typedFallback, message)
             }
             RecoveryAction.RESET -> {
                 handleReset(operation)
@@ -366,6 +371,25 @@ class SettingsErrorHandler(
 
     private fun getFallbackValue(operation: String): Any? {
         return fallbackValues[operation]
+    }
+
+    private fun <T> resolveFallbackValue(operation: String, explicitFallback: T?): T? {
+        if (explicitFallback != null) {
+            return explicitFallback
+        }
+
+        val storedFallback = fallbackValues[operation] ?: return null
+        return coerceFallbackValue(operation, storedFallback)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> coerceFallbackValue(operation: String, candidate: Any?): T? {
+        return try {
+            candidate as T
+        } catch (e: ClassCastException) {
+            Log.w(TAG, "Fallback value for $operation has unexpected type ${candidate?.javaClass?.simpleName}", e)
+            null
+        }
     }
 
     fun setRetryStrategy(operation: String, strategy: RetryStrategy) {

@@ -236,7 +236,7 @@ class SecureStorageManager(private val context: Context) {
             // Tüm güvenli verileri topla
             context.secureDataStore.data.map { preferences ->
                 preferences.asMap().forEach { (key, value) ->
-                    if (key is Preferences.Key<*> && value is String) {
+                    if (value is String) {
                         allData[key.name] = value
                     }
                 }
