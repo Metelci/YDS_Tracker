@@ -50,7 +50,8 @@
       "Bash(del test_exam_countdown.kt)",
       "Bash(./gradlew.bat:*)",
       "Bash(.gradlew.bat compileDebugKotlin:*)",
-      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\reading\\IntRangeSerializerTest.kt\")"
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\reading\\IntRangeSerializerTest.kt\")",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
