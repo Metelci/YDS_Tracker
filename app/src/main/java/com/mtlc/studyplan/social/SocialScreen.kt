@@ -76,6 +76,7 @@ import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.ui.components.*
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,20 +142,28 @@ fun SocialScreen(
         }
     }
 
-    FixedTopBarLayout(
-        topBar = FixedTopBarDefaults.socialTopBar(
-            onMenuClick = { /* TODO: Implement menu click */ },
-            onSettingsClick = onNavigateToSettings
-        )
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Snackbar host for this screen
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
+    Scaffold(
+        topBar = {
+            StudyPlanTopBar(
+                title = "Social",
+                showLanguageSwitcher = true,
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                }
             )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
 
             // Username required dialog overlay
             if (showUsernameDialog) {
@@ -275,7 +284,6 @@ fun SocialScreen(
             }
 
             // Section removed per product requirements
-            }
         }
     }
 }

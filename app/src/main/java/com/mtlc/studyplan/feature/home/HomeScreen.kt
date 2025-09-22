@@ -21,6 +21,7 @@ import androidx.datastore.core.DataStore
 import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import com.mtlc.studyplan.utils.settingsDataStore
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -68,7 +69,10 @@ fun HomeScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Home", fontWeight = FontWeight.Bold) })
+            StudyPlanTopBar(
+                title = "Home",
+                showLanguageSwitcher = true
+            )
         }
     ) { padding ->
         LazyColumn(
