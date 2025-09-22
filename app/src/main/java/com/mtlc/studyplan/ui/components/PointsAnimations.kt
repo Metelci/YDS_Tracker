@@ -204,7 +204,6 @@ private fun TaskCategoryBadge(
         TaskCategory.LISTENING -> Color(0xFFFF9800)
         TaskCategory.VOCABULARY -> Color(0xFF9C27B0)
         TaskCategory.OTHER -> Color(0xFFF44336)
-        TaskCategory.OTHER -> Color(0xFF607D8B)
     }
 
     Surface(
