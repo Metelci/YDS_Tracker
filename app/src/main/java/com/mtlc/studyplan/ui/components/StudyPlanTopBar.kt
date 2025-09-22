@@ -24,7 +24,7 @@ fun StudyPlanTopBar(
     title: String,
     navigationIcon: ImageVector? = null,
     onNavigationClick: (() -> Unit)? = null,
-    showLanguageSwitcher: Boolean = true,
+    showLanguageSwitcher: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     val context = LocalContext.current

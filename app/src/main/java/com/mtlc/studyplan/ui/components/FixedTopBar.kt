@@ -69,7 +69,7 @@ fun FixedTopBar(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    showLanguageSwitcher: Boolean = true,
+    showLanguageSwitcher: Boolean = false,
     showSearch: Boolean = false,
     showMenu: Boolean = false,
     onSearchClick: (() -> Unit)? = null,
@@ -226,7 +226,7 @@ object FixedTopBarDefaults {
             title = "Study Plan",
             showMenu = true,
             showSearch = true,
-            showLanguageSwitcher = true,
+            showLanguageSwitcher = false,
             onMenuClick = onMenuClick,
             onSearchClick = onSearchClick,
             backgroundColor = MaterialTheme.colorScheme.surface,
@@ -242,7 +242,7 @@ object FixedTopBarDefaults {
         FixedTopBar(
             title = "Social Hub",
             showMenu = true,
-            showLanguageSwitcher = true,
+            showLanguageSwitcher = false,
             onMenuClick = onMenuClick,
             backgroundColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
@@ -268,7 +268,7 @@ object FixedTopBarDefaults {
     ): @Composable () -> Unit = {
         FixedTopBar(
             title = title,
-            showLanguageSwitcher = true,
+            showLanguageSwitcher = false,
             backgroundColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
             actions = actions
