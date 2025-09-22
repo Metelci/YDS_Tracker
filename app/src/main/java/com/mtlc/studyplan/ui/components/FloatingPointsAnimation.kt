@@ -364,7 +364,7 @@ private fun getPointsColor(
         multiplier >= 2f -> Color(0xFFFF9800) // Orange for medium multipliers
         points >= 50 -> Color(0xFF9C27B0) // Purple for high points
         points >= 20 -> Color(0xFF2196F3) // Blue for medium points
-        category == TaskCategory.PRACTICE_EXAM -> Color(0xFFFF5722) // Deep orange for exams
+        category == TaskCategory.OTHER -> Color(0xFFFF5722) // Deep orange for exams
         category == TaskCategory.GRAMMAR -> Color(0xFF4CAF50) // Green for grammar
         else -> Color(0xFF607D8B) // Blue grey for standard
     }

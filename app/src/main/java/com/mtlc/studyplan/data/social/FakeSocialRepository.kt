@@ -14,7 +14,7 @@ class FakeSocialRepository : SocialRepository {
 
     private val profileState = MutableStateFlow(
         SocialProfile(
-            username = "StudyNinja42",
+            username = "",
             selectedAvatarId = "target",
             availableAvatars = listOf(
                 AvatarOption("target", "Target"),
@@ -133,5 +133,10 @@ class FakeSocialRepository : SocialRepository {
 
     override suspend fun updateWeeklyGoal(hours: Int) {
         profileState.update { profile -> profile.copy(weeklyGoalHours = hours.coerceIn(profile.goalRange)) }
+    }
+
+    override suspend fun updateUsername(username: String) {
+        val sanitized = username.trim()
+        profileState.update { it.copy(username = sanitized) }
     }
 }

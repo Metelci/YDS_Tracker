@@ -9,7 +9,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.PlanSettingsStore
-import com.mtlc.studyplan.data.dataStore
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.first
 import org.junit.Assert.assertEquals
@@ -47,7 +47,7 @@ class OnboardingFlowTest {
         composeRule.waitUntil(timeoutMillis = 5_000) { done }
 
         // Verify PlanSettingsStore updated with defaults
-        val settings = PlanSettingsStore(ctx.dataStore)
+        val settings = PlanSettingsStore(ctx.settingsDataStore)
         val now = LocalDate.now()
         val expectedEnd = now.plusWeeks(4).toEpochDay()
         val s = runBlocking { settings.settingsFlow.first() }

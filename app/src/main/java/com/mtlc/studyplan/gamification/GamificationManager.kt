@@ -250,7 +250,6 @@ class GamificationManager(
             TaskCategory.READING -> 20
             TaskCategory.LISTENING -> 18
             TaskCategory.VOCABULARY -> 12
-            TaskCategory.PRACTICE_EXAM -> 120
             TaskCategory.OTHER -> 15
         }
 

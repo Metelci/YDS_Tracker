@@ -16,7 +16,8 @@ object YdsExamService {
         val registrationStart: LocalDate,
         val registrationEnd: LocalDate,
         val lateRegistrationEnd: LocalDate,
-        val resultDate: LocalDate
+        val resultDate: LocalDate,
+        val applicationUrl: String = "https://ais.osym.gov.tr"
     )
 
     private val yds2025Sessions = listOf(
@@ -26,7 +27,8 @@ object YdsExamService {
             registrationStart = LocalDate.of(2025, 5, 20),
             registrationEnd = LocalDate.of(2025, 5, 26),
             lateRegistrationEnd = LocalDate.of(2025, 5, 30),
-            resultDate = LocalDate.of(2025, 7, 29)
+            resultDate = LocalDate.of(2025, 7, 29),
+            applicationUrl = "https://ais.osym.gov.tr"
         ),
         YdsExamSession(
             name = "YDS 2025/2",
@@ -34,7 +36,8 @@ object YdsExamService {
             registrationStart = LocalDate.of(2025, 9, 30),
             registrationEnd = LocalDate.of(2025, 10, 8),
             lateRegistrationEnd = LocalDate.of(2025, 10, 15),
-            resultDate = LocalDate.of(2025, 12, 5)
+            resultDate = LocalDate.of(2025, 12, 5),
+            applicationUrl = "https://ais.osym.gov.tr"
         )
     )
 
@@ -46,6 +49,16 @@ object YdsExamService {
         return yds2025Sessions
             .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
             .minByOrNull { it.examDate }
+    }
+
+    /**
+     * Get all upcoming YDS exams ordered by date
+     */
+    fun getAllUpcomingExams(): List<YdsExamSession> {
+        val today = LocalDate.now()
+        return yds2025Sessions
+            .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
+            .sortedBy { it.examDate }
     }
 
     /**

@@ -25,24 +25,28 @@ data class ExamTracker(
 
 @Serializable
 data class WeeklyStudyPlan(
-    val title: String = "Reading Comprehension Focus",
+    val title: String = "YDS Study Plan - Week 1",
     val description: String = "Week Progress",
-    val currentWeek: Int = 2,
-    val totalWeeks: Int = 3,
-    val progressPercentage: Float = 0.65f,
+    val currentWeek: Int = 1,
+    val totalWeeks: Int = 30, // 30-week comprehensive plan
+    val progressPercentage: Float = 0.0f, // Start at 0% for new users
     val days: List<WeekDay> = createDefaultWeekDays()
 ) {
     companion object {
         fun createDefaultWeekDays(): List<WeekDay> = listOf(
-            WeekDay("Mon", 100, true),
-            WeekDay("Tue", 100, true),
-            WeekDay("Wed", 70, false)
+            WeekDay("Mon", 0, false),
+            WeekDay("Tue", 0, false),
+            WeekDay("Wed", 0, false),
+            WeekDay("Thu", 0, false),
+            WeekDay("Fri", 0, false),
+            WeekDay("Sat", 0, false),
+            WeekDay("Sun", 0, false)
         )
     }
 
-    val weekProgressText: String = "$currentWeek/$totalWeeks days"
     val completedDays: Int = days.count { it.isCompleted }
     val totalDays: Int = days.size
+    val weekProgressText: String = "$completedDays/$totalDays days"
     val weekCompletionPercentage: Float = if (totalDays > 0) completedDays.toFloat() / totalDays.toFloat() else 0f
 }
 
@@ -57,10 +61,10 @@ data class WeekDay(
 
 @Serializable
 data class TodayStats(
-    val progressPercentage: Int = 65,
-    val pointsEarned: Int = 40,
-    val completedTasks: Int = 1,
-    val totalTasks: Int = 3
+    val progressPercentage: Int = 0, // Start at 0% for new users
+    val pointsEarned: Int = 0, // No points earned initially
+    val completedTasks: Int = 0, // No tasks completed initially
+    val totalTasks: Int = 5 // Default daily task goal
 ) {
     val tasksProgressText: String = "$completedTasks/$totalTasks"
     val isAllTasksCompleted: Boolean = completedTasks >= totalTasks
@@ -68,11 +72,11 @@ data class TodayStats(
 
 @Serializable
 data class StreakInfo(
-    val currentStreak: Int = 12,
-    val multiplier: String = "2x"
+    val currentStreak: Int = 0, // Start with no streak for new users
+    val multiplier: String = "1x" // Base multiplier
 ) {
     val hasMultiplier: Boolean = currentStreak >= 7
-    val displayText: String = "$currentStreak day streak"
-    val motivationText: String = "You're on fire! 🔥"
+    val displayText: String = if (currentStreak > 0) "$currentStreak day streak" else "Start your streak!"
+    val motivationText: String = if (currentStreak > 0) "You're on fire! 🔥" else "Complete your first day to start a streak"
     val showMultiplierBadge: Boolean = hasMultiplier
 }

@@ -36,7 +36,7 @@ fun HomeScreen() {
     // Progress repository removed
 
     val plan by planRepo.planFlow.collectAsState(initial = emptyList())
-    // Progress tracking removed - using empty state
+    // TODO: Connect to real progress tracking when available
     val progress = UserProgress()
 
     val today = remember { LocalDate.now() }
@@ -88,7 +88,6 @@ fun HomeScreen() {
                 val ratio = remember(plannedMinutes, completedMinutes) {
                     if (plannedMinutes > 0) (completedMinutes.toFloat() / plannedMinutes).coerceIn(0f, 1f) else 0f
                 }
-                // Progress ring removed with progress functionality
                 Card(Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -103,45 +102,82 @@ fun HomeScreen() {
                             text = "${tasks.size} tasks planned",
                             style = MaterialTheme.typography.bodyMedium
                         )
-                    }
-                }
-            }
-            item {
-                // Exam countdown
-                val nextExam = ExamCalendarDataSource.getNextExam()
-                if (nextExam != null) {
-                    val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
-                    Card(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text("Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
-                            Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
+                        if (plannedMinutes > 0) {
+                            Text(
+                                text = "$completedMinutes / $plannedMinutes minutes completed",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                             LinearProgressIndicator(
-                            progress = { ((-daysToExam).coerceAtMost(0) / -1f).coerceIn(0f,1f) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(4.dp)
-                                .padding(top = 8.dp),
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        )
-                            Text("Days left: ${daysToExam}", style = MaterialTheme.typography.bodySmall)
+                                progress = { ratio },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(4.dp)
+                                    .padding(top = 8.dp),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            )
                         }
                     }
                 }
             }
             item {
-                // Streak and progress
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Streak: ${progress.streakCount} days")
-                        LinearProgressIndicator(
-                            progress = { progressRatio },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(3.dp)),
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        )
-                        Text("Overall: ${completedInPlan} / ${totalTasks}")
+                // Real exam countdown using YdsExamService
+                val nextExam = YdsExamService.getNextExam()
+                if (nextExam != null) {
+                    val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
+                    val registrationStatus = YdsExamService.getRegistrationStatus()
+                    Card(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text("Next Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
+                            Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
+                            Text("Status: ${YdsExamService.getStatusMessage()}", style = MaterialTheme.typography.bodySmall)
+                            LinearProgressIndicator(
+                                progress = { if (daysToExam > 0) (100 - daysToExam.coerceAtMost(100)) / 100f else 1f },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(4.dp)
+                                    .padding(top = 8.dp),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            )
+                            Text("Days remaining: ${daysToExam}", style = MaterialTheme.typography.bodySmall)
+
+                            // Show registration info if relevant
+                            when (registrationStatus) {
+                                YdsExamService.RegistrationStatus.OPEN -> {
+                                    Text("Registration period: ${nextExam.registrationStart} - ${nextExam.registrationEnd}",
+                                         style = MaterialTheme.typography.bodySmall,
+                                         color = MaterialTheme.colorScheme.primary)
+                                }
+                                YdsExamService.RegistrationStatus.LATE_REGISTRATION -> {
+                                    Text("Late registration until: ${nextExam.lateRegistrationEnd}",
+                                         style = MaterialTheme.typography.bodySmall,
+                                         color = MaterialTheme.colorScheme.error)
+                                }
+                                else -> {}
+                            }
+                        }
+                    }
+                }
+            }
+            item {
+                // Study statistics - only show if there's real data
+                if (totalTasks > 0) {
+                    Card(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Study Progress", style = MaterialTheme.typography.titleSmall)
+                            LinearProgressIndicator(
+                                progress = { progressRatio },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(6.dp)
+                                    .clip(RoundedCornerShape(3.dp)),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            )
+                            Text("Overall: ${completedInPlan} / ${totalTasks} tasks completed")
+                            // Only show streak if it's greater than 0
+                            if (progress.streakCount > 0) {
+                                Text("Current streak: ${progress.streakCount} days")
+                            }
+                        }
                     }
                 }
             }
@@ -156,9 +192,10 @@ fun HomeScreen() {
                         headlineContent = { Text(t.desc) },
                         supportingContent = { if (t.details != null) Text(t.details!!) },
                         leadingContent = {
-                            Checkbox(checked = isDone, onCheckedChange = {
-                                // Task completion tracking removed with progress functionality
-                            })
+                            Checkbox(
+                                checked = isDone,
+                                onCheckedChange = null // Disabled until progress tracking is connected
+                            )
                         }
                     )
                     HorizontalDivider()

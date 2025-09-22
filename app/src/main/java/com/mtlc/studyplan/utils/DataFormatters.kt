@@ -203,12 +203,6 @@ object DataFormatters {
                 color = Color.parseColor("#795548"), // Brown
                 description = "Develop listening skills"
             )
-            TaskCategory.PRACTICE_EXAM -> TaskCategoryInfo(
-                name = "Practice Exam",
-                icon = R.drawable.ic_list,
-                color = Color.parseColor("#FF7043"), // Deep Orange
-                description = "Simulate exam conditions"
-            )
             TaskCategory.OTHER -> TaskCategoryInfo(
                 name = "Other",
                 icon = R.drawable.ic_people,

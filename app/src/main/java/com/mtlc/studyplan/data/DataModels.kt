@@ -93,7 +93,6 @@ enum class TaskCategory(val basePoints: Int, val displayName: String) {
     READING(15, "Reading"),
     LISTENING(12, "Listening"),
     VOCABULARY(8, "Vocabulary"),
-    PRACTICE_EXAM(50, "Practice Exam"),
     OTHER(5, "Other");
 
     companion object {
@@ -102,7 +101,6 @@ enum class TaskCategory(val basePoints: Int, val displayName: String) {
             "reading", "okuma" -> READING
             "listening", "dinleme" -> LISTENING
             "vocabulary", "vocab", "kelime" -> VOCABULARY
-            "exam", "practice", "mock" -> PRACTICE_EXAM
             else -> OTHER
         }
     }

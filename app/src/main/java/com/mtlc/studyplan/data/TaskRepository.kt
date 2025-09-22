@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.Calendar
 import javax.inject.Inject
@@ -23,78 +24,140 @@ interface TaskRepository {
 }
 
 @Singleton
-class TaskRepositoryImpl @Inject constructor() : TaskRepository {
+class TaskRepositoryImpl @Inject constructor(
+    private val databaseTaskRepository: com.mtlc.studyplan.repository.TaskRepository? = null
+) : TaskRepository {
 
-    private val _tasks = MutableStateFlow<List<Task>>(generateSampleTasks())
+    // Use database repository if available, otherwise fall back to in-memory storage
+    private val databaseAvailable = databaseTaskRepository != null
+
+    private val _tasks = MutableStateFlow<List<Task>>(if (databaseAvailable) emptyList() else generateSampleTasks())
     private val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
+    // Reactive flow that combines database and in-memory data
+    private val combinedTasksFlow = if (databaseAvailable) {
+        databaseTaskRepository!!.allTasks.map { entities ->
+            entities.map { entity -> entity.toTask() }
+        }
+    } else {
+        tasks
+    }
+
     override fun getAllTasks(): Flow<List<Task>> {
-        return tasks
+        return combinedTasksFlow
     }
 
     override suspend fun getAllTasksSync(): List<Task> {
-        return _tasks.value
+        return if (databaseAvailable) {
+            databaseTaskRepository!!.allTasks.first().map { it.toTask() }
+        } else {
+            _tasks.value
+        }
     }
 
     override suspend fun getTaskById(id: String): Task? {
-        return _tasks.value.find { it.id == id }
+        return if (databaseAvailable) {
+            databaseTaskRepository!!.getTaskById(id)?.toTask()
+        } else {
+            _tasks.value.find { it.id == id }
+        }
     }
 
     override suspend fun insertTask(task: Task): Task {
-        val currentTasks = _tasks.value.toMutableList()
-        currentTasks.add(task)
-        _tasks.value = currentTasks
-        return task
-    }
-
-    override suspend fun updateTask(task: Task): Task {
-        val currentTasks = _tasks.value.toMutableList()
-        val index = currentTasks.indexOfFirst { it.id == task.id }
-        if (index != -1) {
-            currentTasks[index] = task
+        if (databaseAvailable) {
+            databaseTaskRepository!!.insertTask(task.toTaskEntity())
+        } else {
+            val currentTasks = _tasks.value.toMutableList()
+            currentTasks.add(task)
             _tasks.value = currentTasks
         }
         return task
     }
 
+    override suspend fun updateTask(task: Task): Task {
+        if (databaseAvailable) {
+            databaseTaskRepository!!.updateTask(task.toTaskEntity())
+        } else {
+            val currentTasks = _tasks.value.toMutableList()
+            val index = currentTasks.indexOfFirst { it.id == task.id }
+            if (index != -1) {
+                currentTasks[index] = task
+                _tasks.value = currentTasks
+            }
+        }
+        return task
+    }
+
     override suspend fun deleteTask(id: String) {
-        val currentTasks = _tasks.value.toMutableList()
-        currentTasks.removeAll { it.id == id }
-        _tasks.value = currentTasks
+        if (databaseAvailable) {
+            databaseTaskRepository!!.deleteTask(id)
+        } else {
+            val currentTasks = _tasks.value.toMutableList()
+            currentTasks.removeAll { it.id == id }
+            _tasks.value = currentTasks
+        }
     }
 
     override suspend fun getTodaysTasks(): List<Task> {
-        val today = Calendar.getInstance()
-        today.set(Calendar.HOUR_OF_DAY, 0)
-        today.set(Calendar.MINUTE, 0)
-        today.set(Calendar.SECOND, 0)
-        today.set(Calendar.MILLISECOND, 0)
-        val todayStart = today.timeInMillis
+        return if (databaseAvailable) {
+            databaseTaskRepository!!.todayTasks.first().map { it.toTask() }
+        } else {
+            val today = Calendar.getInstance()
+            today.set(Calendar.HOUR_OF_DAY, 0)
+            today.set(Calendar.MINUTE, 0)
+            today.set(Calendar.SECOND, 0)
+            today.set(Calendar.MILLISECOND, 0)
+            val todayStart = today.timeInMillis
 
-        today.add(Calendar.DAY_OF_MONTH, 1)
-        val tomorrowStart = today.timeInMillis
+            today.add(Calendar.DAY_OF_MONTH, 1)
+            val tomorrowStart = today.timeInMillis
 
-        return _tasks.value.filter { task ->
-            task.dueDate?.let { dueDate ->
-                dueDate >= todayStart && dueDate < tomorrowStart
-            } ?: false
+            _tasks.value.filter { task ->
+                task.dueDate?.let { dueDate ->
+                    dueDate >= todayStart && dueDate < tomorrowStart
+                } ?: false
+            }
         }
     }
 
     override suspend fun getUpcomingTasks(): List<Task> {
-        val now = System.currentTimeMillis()
-        return _tasks.value.filter { task ->
-            !task.isCompleted && task.dueDate != null && task.dueDate > now
-        }.sortedBy { it.dueDate }
+        return if (databaseAvailable) {
+            databaseTaskRepository!!.upcomingTasks.first().map { it.toTask() }
+        } else {
+            val now = System.currentTimeMillis()
+            _tasks.value.filter { task ->
+                !task.isCompleted && task.dueDate != null && task.dueDate > now
+            }.sortedBy { it.dueDate }
+        }
     }
 
     override suspend fun getTasksByCategory(category: String): List<Task> {
-        return _tasks.value.filter { it.category == category }
+        return if (databaseAvailable) {
+            val taskCategory = when (category) {
+                "YDS Vocabulary" -> com.mtlc.studyplan.shared.TaskCategory.VOCABULARY
+                "YDS Grammar" -> com.mtlc.studyplan.shared.TaskCategory.GRAMMAR
+                "YDS Reading" -> com.mtlc.studyplan.shared.TaskCategory.READING
+                "YDS Listening" -> com.mtlc.studyplan.shared.TaskCategory.LISTENING
+                else -> com.mtlc.studyplan.shared.TaskCategory.OTHER
+            }
+            databaseTaskRepository!!.getTasksByCategory(taskCategory).first().map { it.toTask() }
+        } else {
+            _tasks.value.filter { it.category == category }
+        }
     }
 
     override suspend fun getEarlyMorningCompletedTasks(): List<Task> {
-        return _tasks.value.filter { task ->
-            task.isCompleted && task.completedAt != null && isEarlyMorning(task.completedAt)
+        return if (databaseAvailable) {
+            // For database, we'll need to filter manually since the database doesn't have this specific query
+            databaseTaskRepository!!.allTasks.first()
+                .filter { entity ->
+                    entity.isCompleted && entity.completedAt != null && isEarlyMorning(entity.completedAt)
+                }
+                .map { it.toTask() }
+        } else {
+            _tasks.value.filter { task ->
+                task.isCompleted && task.completedAt != null && isEarlyMorning(task.completedAt)
+            }
         }
     }
 
@@ -103,6 +166,61 @@ class TaskRepositoryImpl @Inject constructor() : TaskRepository {
         calendar.timeInMillis = timestamp
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         return hour < 9 // Before 9 AM
+    }
+
+    // Conversion functions between TaskEntity and Task
+    private fun com.mtlc.studyplan.database.entities.TaskEntity.toTask(): Task {
+        return Task(
+            id = this.id,
+            title = this.title,
+            description = this.description,
+            category = this.category.name, // Convert enum to string
+            priority = when (this.priority) { // Convert enum
+                com.mtlc.studyplan.shared.TaskPriority.LOW -> TaskPriority.LOW
+                com.mtlc.studyplan.shared.TaskPriority.MEDIUM -> TaskPriority.MEDIUM
+                com.mtlc.studyplan.shared.TaskPriority.HIGH -> TaskPriority.HIGH
+                com.mtlc.studyplan.shared.TaskPriority.CRITICAL -> TaskPriority.CRITICAL
+            },
+            dueDate = this.dueDate,
+            createdAt = this.createdAt,
+            completedAt = this.completedAt,
+            isCompleted = this.isCompleted,
+            estimatedMinutes = this.estimatedMinutes,
+            actualMinutes = if (this.actualMinutes > 0) this.actualMinutes else null,
+            tags = this.tags,
+            streakContribution = this.streakContribution,
+            pointsValue = this.pointsValue
+        )
+    }
+
+    private fun Task.toTaskEntity(): com.mtlc.studyplan.database.entities.TaskEntity {
+        return com.mtlc.studyplan.database.entities.TaskEntity(
+            id = this.id,
+            title = this.title,
+            description = this.description,
+            category = when (this.category) { // Convert string to enum
+                "YDS Vocabulary" -> com.mtlc.studyplan.shared.TaskCategory.VOCABULARY
+                "YDS Grammar" -> com.mtlc.studyplan.shared.TaskCategory.GRAMMAR
+                "YDS Reading" -> com.mtlc.studyplan.shared.TaskCategory.READING
+                "YDS Listening" -> com.mtlc.studyplan.shared.TaskCategory.LISTENING
+                else -> com.mtlc.studyplan.shared.TaskCategory.OTHER
+            },
+            priority = when (this.priority) { // Convert enum
+                TaskPriority.LOW -> com.mtlc.studyplan.shared.TaskPriority.LOW
+                TaskPriority.MEDIUM -> com.mtlc.studyplan.shared.TaskPriority.MEDIUM
+                TaskPriority.HIGH -> com.mtlc.studyplan.shared.TaskPriority.HIGH
+                TaskPriority.CRITICAL -> com.mtlc.studyplan.shared.TaskPriority.CRITICAL
+            },
+            estimatedMinutes = this.estimatedMinutes,
+            actualMinutes = this.actualMinutes ?: 0,
+            isCompleted = this.isCompleted,
+            completedAt = this.completedAt,
+            createdAt = this.createdAt,
+            dueDate = this.dueDate,
+            tags = this.tags,
+            streakContribution = this.streakContribution,
+            pointsValue = this.pointsValue
+        )
     }
 
     private fun generateSampleTasks(): List<Task> {
@@ -203,17 +321,6 @@ class TaskRepositoryImpl @Inject constructor() : TaskRepository {
                 estimatedTime = 50,
                 tags = listOf("yds", "english", "reading", "paragraph")
             ),
-            Task(
-                id = "yds-10",
-                title = "YDS Full Practice Exam (1)",
-                description = "Complete a full mock exam and review mistakes",
-                category = "YDS Practice Exam",
-                priority = TaskPriority.MEDIUM,
-                isCompleted = true,
-                completedAt = now - 2 * oneDay,
-                estimatedTime = 120,
-                tags = listOf("yds", "english", "exam")
-            )
         )
     }
 }

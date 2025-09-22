@@ -4,18 +4,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GroupAdd
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,17 +46,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.components.FloatingLanguageSwitcher
 import androidx.compose.foundation.layout.Box
+import com.mtlc.studyplan.data.social.AvatarOption
 import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.Group
+import com.mtlc.studyplan.data.social.PersistentSocialRepository
+import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.data.social.SocialRepository
+import com.mtlc.studyplan.utils.socialDataStore
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 import com.mtlc.studyplan.shared.SharedAppViewModel
@@ -65,7 +80,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
-    repository: SocialRepository = remember { FakeSocialRepository() },
+    repository: SocialRepository? = null,
     sharedViewModel: SharedAppViewModel? = null,
     navigationManager: StudyPlanNavigationManager? = null
 ) {
@@ -74,11 +89,16 @@ fun SocialScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val profile by repository.profile.collectAsState()
-    val ranks by repository.ranks.collectAsState()
-    val groups by repository.groups.collectAsState()
-    val friends by repository.friends.collectAsState()
-    val awards by repository.awards.collectAsState()
+    // Use persistent repository if none provided, otherwise fall back to fake for previews
+    val socialRepository = repository ?: remember {
+        PersistentSocialRepository(context.socialDataStore)
+    }
+
+    val profile by socialRepository.profile.collectAsState()
+    val ranks by socialRepository.ranks.collectAsState()
+    val groups by socialRepository.groups.collectAsState()
+    val friends by socialRepository.friends.collectAsState()
+    val awards by socialRepository.awards.collectAsState()
 
     val studyStats by if (sharedViewModel != null) {
         sharedViewModel.studyStats.collectAsState()
@@ -96,6 +116,9 @@ fun SocialScreen(
         ?: remember { mutableStateOf(null) }
 
     var selectedTab by rememberSaveable { mutableStateOf(SocialTab.Profile) }
+    var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
+    var pendingUsername by rememberSaveable { mutableStateOf("") }
+    var usernameError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(deepLinkParams) {
         deepLinkParams?.socialTab?.let { tab ->
@@ -107,80 +130,96 @@ fun SocialScreen(
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+    // Enforce username selection if missing
+    LaunchedEffect(profile.username) {
+        val needsUsername = profile.username.isBlank()
+        showUsernameDialog = needsUsername
+        if (needsUsername) {
+            pendingUsername = ""
+            usernameError = null
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        // Snackbar host for this screen
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+        // Username required dialog overlay
+        if (showUsernameDialog) {
+            UsernameRequiredDialog(
+                value = pendingUsername,
+                onValueChange = { input ->
+                    pendingUsername = input
+                    usernameError = validateUsername(input)
+                },
+                error = usernameError,
+                onConfirm = {
+                    val err = validateUsername(pendingUsername)
+                    usernameError = err
+                    if (err == null) {
+                        scope.launch {
+                            socialRepository.updateUsername(pendingUsername.trim())
+                            showUsernameDialog = false
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.social_username_set_success, pendingUsername.trim()),
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
+                },
+                onDismiss = { /* keep open until a valid username saved */ },
+                confirmEnabled = usernameError == null && pendingUsername.isNotBlank()
+            )
+        }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = spacing.md),
-                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+                verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-            Surface(
-                color = DesignTokens.Surface,
-                shape = RoundedCornerShape(16.dp)
+            // Header with title and invite button
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing.sm),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Text(
+                    text = stringResource(id = R.string.social_hub_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                FilledTonalButton(
+                    onClick = {
+                        scope.launch {
+                            val message = context.getString(R.string.social_invite_stub)
+                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                    )
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.social_hub_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                    Icon(
+                        imageVector = Icons.Outlined.GroupAdd,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = stringResource(id = R.string.social_hub_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                        text = stringResource(id = R.string.social_invite_friends),
+                        modifier = Modifier.padding(start = 6.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        HighlightChip(
-                            label = stringResource(id = R.string.social_stat_completed),
-                            value = studyStats.totalTasksCompleted.toString(),
-                            modifier = Modifier.weight(1f)
-                        )
-                        HighlightChip(
-                            label = stringResource(id = R.string.social_stat_streak),
-                            value = if (currentStreak > 0) stringResource(id = R.string.social_stat_streak_value, currentStreak) else stringResource(id = R.string.social_stat_streak_placeholder),
-                            modifier = Modifier.weight(1f)
-                        )
-                        HighlightChip(
-                            label = stringResource(id = R.string.social_stat_goal_hours),
-                            value = stringResource(id = R.string.social_stat_goal_hours_value, profile.weeklyGoalHours),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    FilledTonalButton(
-                        onClick = {
-                            scope.launch {
-                                val message = context.getString(R.string.social_invite_stub)
-                                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                            }
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = DesignTokens.Surface),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(imageVector = Icons.Outlined.GroupAdd, contentDescription = null)
-                        Text(
-                            text = stringResource(id = R.string.social_invite_friends),
-                            modifier = Modifier.padding(start = 6.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
                 }
             }
 
@@ -190,14 +229,14 @@ fun SocialScreen(
             )
 
             when (selectedTab) {
-                SocialTab.Profile -> ProfileTab(
+                SocialTab.Profile -> ProfileSection(
                     profile = profile,
-                    onAvatarSelected = { id -> scope.launch { repository.selectAvatar(id) } },
-                    onSaveGoal = { hours ->
+                    onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } },
+                    onUsernameSave = { username ->
                         scope.launch {
-                            repository.updateWeeklyGoal(hours)
-                            val message = context.getString(R.string.social_goal_updated, hours)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+                            socialRepository.updateUsername(username)
+                            val msg = context.getString(R.string.social_username_set_success, username)
+                            snackbarHostState.showSnackbar(message = msg, duration = SnackbarDuration.Short)
                         }
                     }
                 )
@@ -206,7 +245,7 @@ fun SocialScreen(
                     groups = groups,
                     onToggleJoin = { group ->
                         scope.launch {
-                            repository.toggleGroupMembership(group.id)
+                            socialRepository.toggleGroupMembership(group.id)
                             val messageRes = if (group.joined) R.string.social_left_group else R.string.social_joined_group
                             val message = context.getString(messageRes, group.name)
                             snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
@@ -214,7 +253,7 @@ fun SocialScreen(
                     },
                     onShare = { group ->
                         scope.launch {
-                            repository.shareGroup(group.id)
+                            socialRepository.shareGroup(group.id)
                             val message = context.getString(R.string.social_shared_group, group.name)
                             snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
                         }
@@ -238,8 +277,8 @@ fun SocialScreen(
                 )
                 SocialTab.Awards -> AwardsTab(awards = awards)
             }
-            }
 
+            // Section removed per product requirements
         }
     }
 }
@@ -278,6 +317,314 @@ private fun HighlightChip(label: String, value: String, modifier: Modifier = Mod
             )
         }
     }
+}
+
+@Composable
+private fun ProfileSection(
+    profile: SocialProfile,
+    onAvatarSelected: (String) -> Unit,
+    onUsernameSave: (String) -> Unit
+) {
+    val spacing = LocalSpacing.current
+
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.md)
+        ) {
+            // Profile header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = stringResource(id = R.string.social_profile_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+
+            // Username section (editable)
+            var editing by rememberSaveable(profile.username) { mutableStateOf(false) }
+            var input by rememberSaveable(profile.username) { mutableStateOf(profile.username) }
+            var error by remember { mutableStateOf<String?>(null) }
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Username",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    if (!editing) {
+                        TextButton(onClick = { editing = true; input = profile.username; error = null }) {
+                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Text(text = "Edit", modifier = Modifier.padding(start = 6.dp))
+                        }
+                    }
+                }
+                if (editing) {
+                    OutlinedTextField(
+                        value = input,
+                        onValueChange = {
+                            input = it.lowercase()
+                            error = validateUsername(input)
+                        },
+                        singleLine = true,
+                        isError = error != null,
+                        supportingText = {
+                            when (error) {
+                                "invalid" -> Text(text = stringResource(id = R.string.social_username_error))
+                                else -> Text(text = stringResource(id = R.string.social_username_hint))
+                            }
+                        }
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                        TextButton(onClick = {
+                            val err = validateUsername(input)
+                            error = err
+                            if (err == null) {
+                                onUsernameSave(input.trim())
+                                editing = false
+                            }
+                        }, enabled = error == null && input.isNotBlank()) {
+                            Text(text = stringResource(id = R.string.save))
+                        }
+                        TextButton(onClick = { editing = false; input = profile.username; error = null }) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                    }
+                } else {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = profile.username,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = R.string.social_username_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                }
+            }
+
+            // Avatar section
+            Text(
+                text = stringResource(id = R.string.social_choose_avatar),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+
+            // Avatar grid (2x4 layout)
+            val avatarOptions = profile.availableAvatars
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                avatarOptions.chunked(4).forEach { row ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        row.forEach { option ->
+                            val isSelected = option.id == profile.selectedAvatarId
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .clickable { onAvatarSelected(option.id) },
+                                color = if (isSelected)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                else
+                                    MaterialTheme.colorScheme.surface,
+                                shape = RoundedCornerShape(12.dp),
+                                border = if (isSelected)
+                                    androidx.compose.foundation.BorderStroke(
+                                        2.dp,
+                                        MaterialTheme.colorScheme.primary
+                                    )
+                                else null
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = avatarEmoji(option.id),
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                    if (isSelected) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomEnd)
+                                                .padding(4.dp)
+                                                .size(18.dp),
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text(
+                                                    text = "✓",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Add empty spaces if row doesn't have 4 items
+                        repeat(4 - row.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            // Upload custom avatar button
+            FilledTonalButton(
+                onClick = { /* Upload custom avatar stub */ },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Image,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = stringResource(id = R.string.social_upload_avatar),
+                    modifier = Modifier.padding(start = spacing.xs)
+                )
+            }
+
+            // Preview section
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(spacing.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+                ) {
+                    // Avatar preview
+                    Surface(
+                        modifier = Modifier.size(40.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = avatarEmoji(profile.selectedAvatarId).take(2),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = profile.username,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Study Level: Intermediate",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+// Deprecated helper removed
+
+private fun avatarEmoji(id: String): String = when (id) {
+    "target" -> "🎯"
+    "rocket" -> "🚀"
+    "star" -> "⭐"
+    "flame" -> "🔥"
+    "diamond" -> "💎"
+    "trophy" -> "🏆"
+    "puzzle" -> "🧩"
+    "sun" -> "🌞"
+    else -> "🙂"
+}
+
+private fun validateUsername(input: String): String? {
+    val trimmed = input.trim()
+    val regex = Regex("^[a-z0-9_]{3,20}$")
+    return when {
+        trimmed.isEmpty() -> ""
+        !regex.matches(trimmed) -> "invalid"
+        else -> null
+    }
+}
+
+@Composable
+private fun UsernameRequiredDialog(
+    value: String,
+    onValueChange: (String) -> Unit,
+    error: String?,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    confirmEnabled: Boolean
+) {
+    val spacing = LocalSpacing.current
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm, enabled = confirmEnabled) {
+                Text(text = stringResource(id = R.string.save))
+            }
+        },
+        title = { Text(text = stringResource(id = R.string.social_choose_username_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { onValueChange(it.lowercase()) },
+                    singleLine = true,
+                    label = { Text(stringResource(id = R.string.social_username_label)) },
+                    supportingText = {
+                        when (error) {
+                            "invalid" -> Text(stringResource(id = R.string.social_username_error))
+                            else -> Text(stringResource(id = R.string.social_username_hint))
+                        }
+                    }
+                )
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

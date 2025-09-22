@@ -203,7 +203,7 @@ private fun TaskCategoryBadge(
         TaskCategory.READING -> Color(0xFF4CAF50)
         TaskCategory.LISTENING -> Color(0xFFFF9800)
         TaskCategory.VOCABULARY -> Color(0xFF9C27B0)
-        TaskCategory.PRACTICE_EXAM -> Color(0xFFF44336)
+        TaskCategory.OTHER -> Color(0xFFF44336)
         TaskCategory.OTHER -> Color(0xFF607D8B)
     }
 

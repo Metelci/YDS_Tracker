@@ -47,10 +47,12 @@ fun StudyBottomNav(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding(),
-        color = DesignTokens.Surface,
+            .navigationBarsPadding()
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        color = Color(0xFFF1F8E9), // Pastel light green background
         contentColor = DesignTokens.Foreground,
-        shadowElevation = 8.dp
+        shadowElevation = 8.dp,
+        shape = RoundedCornerShape(24.dp)
     ) {
         Row(
             modifier = Modifier

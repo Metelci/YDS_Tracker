@@ -155,7 +155,7 @@ fun SettingsScreen(
             // Footer
             Spacer(Modifier.width(4.dp))
             Text(
-                text = "StudyPlan YDS Tracker\nVersion 1.0.0 • Made with ❤",
+                text = "StudyPlan YDS Tracker\nVersion 2.8.1",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,

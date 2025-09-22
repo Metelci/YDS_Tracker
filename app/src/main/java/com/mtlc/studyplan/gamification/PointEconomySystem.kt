@@ -99,13 +99,6 @@ enum class CategoryMultiplier(
         "Word Builder",
         "Steady rewards for vocabulary expansion"
     ),
-    PRACTICE_EXAM_MULTIPLIER(
-        TaskCategory.PRACTICE_EXAM,
-        3.0f,
-        0.3f,
-        "Test Champion",
-        "Maximum rewards for full exam completion"
-    ),
     OTHER_MULTIPLIER(
         TaskCategory.OTHER,
         0.8f,

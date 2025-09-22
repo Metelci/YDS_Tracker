@@ -1,0 +1,449 @@
+0001: package com.mtlc.studyplan.integration
+0002: 
+0003: import kotlinx.coroutines.ExperimentalCoroutinesApi
+0004: import kotlinx.coroutines.flow.first
+0005: import kotlinx.coroutines.test.*
+0006: import kotlinx.coroutines.delay
+0007: import org.junit.Before
+0008: import org.junit.Test
+0009: import org.junit.Assert.*
+0010: import org.mockito.Mockito.*
+0011: import com.mtlc.studyplan.database.entities.*
+0012: import com.mtlc.studyplan.database.dao.*
+0013: import com.mtlc.studyplan.repository.*
+0014: import com.mtlc.studyplan.eventbus.*
+0015: import com.mtlc.studyplan.shared.*
+0016: 
+0017: /**
+0018:  * Comprehensive integration test for data flow and synchronization
+0019:  */
+0020: @OptIn(ExperimentalCoroutinesApi::class)
+0021: class DataFlowIntegrationTest {
+0022: 
+0023:     private lateinit var testScheduler: TestCoroutineScheduler
+0024:     private lateinit var testScope: TestScope
+0025: 
+0026:     // Mock DAOs
+0027:     private lateinit var mockTaskDao: TaskDao
+0028:     private lateinit var mockProgressDao: ProgressDao
+0029:     private lateinit var mockAchievementDao: AchievementDao
+0030:     private lateinit var mockStreakDao: StreakDao
+0031:     private lateinit var mockUserSettingsDao: UserSettingsDao
+0032:     private lateinit var mockSocialDao: SocialDao
+0033: 
+0034:     // Repositories
+0035:     private lateinit var taskRepository: TaskRepository
+0036:     private lateinit var achievementRepository: AchievementRepository
+0037:     private lateinit var streakRepository: StreakRepository
+0038:     private lateinit var userSettingsRepository: UserSettingsRepository
+0039:     private lateinit var socialRepository: SocialRepository
+0040: 
+0041:     // EventBus and Integration Manager
+0042:     private lateinit var eventBus: ReactiveEventBus
+0043:     private lateinit var integrationManager: EnhancedAppIntegrationManager
+0044: 
+0045:     // ViewModels
+0046:     private lateinit var sharedViewModel: SharedAppViewModel
+0047: 
+0048:     @Before
+0049:     fun setup() {
+0050:         testScheduler = TestCoroutineScheduler()
+0051:         testScope = TestScope(testScheduler)
+0052: 
+0053:         // Setup mock DAOs
+0054:         setupMockDaos()
+0055: 
+0056:         // Setup repositories
+0057:         setupRepositories()
+0058: 
+0059:         // Setup EventBus
+0060:         eventBus = ReactiveEventBus(testScope)
+0061: 
+0062:         // Setup Integration Manager
+0063:         integrationManager = EnhancedAppIntegrationManager(
+0064:             taskRepository = taskRepository,
+0065:             achievementRepository = achievementRepository,
+0066:             streakRepository = streakRepository,
+0067:             userSettingsRepository = userSettingsRepository,
+0068:             socialRepository = socialRepository,
+0069:             eventBus = eventBus,
+0070:             applicationScope = testScope
+0071:         )
+0072: 
+0073:         // Setup ViewModels
+0074:         setupViewModels()
+0075:     }
+0076: 
+0077:     private fun setupMockDaos() {
+0078:         mockTaskDao = mock(TaskDao::class.java)
+0079:         mockProgressDao = mock(ProgressDao::class.java)
+0080:         mockAchievementDao = mock(AchievementDao::class.java)
+0081:         mockStreakDao = mock(StreakDao::class.java)
+0082:         mockUserSettingsDao = mock(UserSettingsDao::class.java)
+0083:         mockSocialDao = mock(SocialDao::class.java)
+0084: 
+0085:         // Setup default mock responses
+0086:         setupDefaultMockResponses()
+0087:     }
+0088: 
+0089:     private fun setupDefaultMockResponses() {
+0090:         // Task DAO mocks
+0091:         `when`(mockTaskDao.getAllTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0092:         `when`(mockTaskDao.getPendingTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0093:         `when`(mockTaskDao.getCompletedTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0094:         `when`(mockTaskDao.getTodayTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0095: 
+0096:         // Progress DAO mocks
+0097:         `when`(mockProgressDao.getTodayProgress()).thenReturn(kotlinx.coroutines.flow.flowOf(null))
+0098:         `when`(mockProgressDao.getAllProgress()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0099:         `when`(mockProgressDao.getCurrentStreak()).thenReturn(kotlinx.coroutines.flow.flowOf(0))
+0100: 
+0101:         // Achievement DAO mocks
+0102:         `when`(mockAchievementDao.getAllAchievements()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0103:         `when`(mockAchievementDao.getUnlockedAchievements()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0104: 
+0105:         // Streak DAO mocks
+0106:         `when`(mockStreakDao.getAllStreaks()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0107:         `when`(mockStreakDao.getCurrentDailyStreak()).thenReturn(kotlinx.coroutines.flow.flowOf(0))
+0108: 
+0109:         // Settings DAO mocks
+0110:         `when`(mockUserSettingsDao.getUserSettings()).thenReturn(
+0111:             kotlinx.coroutines.flow.flowOf(UserSettingsEntity())
+0112:         )
+0113: 
+0114:         // Social DAO mocks
+0115:         `when`(mockSocialDao.getAllActivities()).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0116:         `when`(mockSocialDao.getUserActivities(any())).thenReturn(kotlinx.coroutines.flow.flowOf(emptyList()))
+0117:     }
+0118: 
+0119:     private fun setupRepositories() {
+0120:         taskRepository = TaskRepository(mockTaskDao)
+0121:         achievementRepository = AchievementRepository(mockAchievementDao)
+0122:         streakRepository = StreakRepository(mockStreakDao)
+0123:         userSettingsRepository = UserSettingsRepository(mockUserSettingsDao)
+0124:         socialRepository = SocialRepository(mockSocialDao)
+0125:     }
+0126: 
+0127:     private fun setupViewModels() {
+0128:         // For testing purposes, we'll mock the SharedAppViewModel
+0129:         sharedViewModel = mock(SharedAppViewModel::class.java)
+0130:     }
+0131: 
+0132:     @Test
+0133:     fun `test complete task flow end-to-end`() = testScope.runTest {
+0134:         // Arrange
+0135:         val testTask = TaskEntity(
+0136:             id = "test_task_1",
+0137:             title = "Test Task",
+0138:             description = "Test Description",
+0139:             category = TaskCategory.STUDY,
+0140:             priority = TaskPriority.HIGH
+0141:         )
+0142: 
+0143:         `when`(mockTaskDao.getTaskById("test_task_1")).thenReturn(testTask)
+0144: 
+0145:         // Collect events to verify they're published
+0146:         val publishedEvents = mutableListOf<Event>()
+0147:         eventBus.subscribeToAll().collect { event ->
+0148:             publishedEvents.add(event)
+0149:         }
+0150: 
+0151:         // Act
+0152:         integrationManager.completeTask("test_task_1", actualMinutes = 30, pointsEarned = 15)
+0153: 
+0154:         // Advance time to allow async operations
+0155:         testScheduler.advanceUntilIdle()
+0156: 
+0157:         // Assert
+0158:         // Verify task completion was called
+0159:         verify(mockTaskDao).updateTaskCompletion("test_task_1", true, any(), 30)
+0160: 
+0161:         // Verify progress update was called
+0162:         verify(mockProgressDao).updateDailyStats(any(), 1, 30, 15, any())
+0163: 
+0164:         // Verify events were published
+0165:         assertTrue("TaskCompleted event should be published",
+0166:             publishedEvents.any { it is TaskEvent.TaskCompleted })
+0167: 
+0168:         assertTrue("UI success event should be published",
+0169:             publishedEvents.any { it is UIEvent.SnackbarRequested })
+0170:     }
+0171: 
+0172:     @Test
+0173:     fun `test reactive data flow between repositories`() = testScope.runTest {
+0174:         // Arrange
+0175:         val testTasks = listOf(
+0176:             TaskEntity(id = "1", title = "Task 1", category = TaskCategory.STUDY, priority = TaskPriority.HIGH),
+0177:             TaskEntity(id = "2", title = "Task 2", category = TaskCategory.WORK, priority = TaskPriority.MEDIUM)
+0178:         )
+0179: 
+0180:         // Mock the flow to return test data
+0181:         `when`(mockTaskDao.getAllTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(testTasks))
+0182: 
+0183:         // Act
+0184:         val tasks = taskRepository.allTasks.first()
+0185: 
+0186:         // Assert
+0187:         assertEquals("Should return correct number of tasks", 2, tasks.size)
+0188:         assertEquals("Should return correct task data", "Task 1", tasks[0].title)
+0189:         assertEquals("Should return correct task category", TaskCategory.STUDY, tasks[0].category)
+0190:     }
+0191: 
+0192:     @Test
+0193:     fun `test event bus communication`() = testScope.runTest {
+0194:         // Arrange
+0195:         val testEvent = TaskEvent.TaskCreated(
+0196:             taskId = "test_task",
+0197:             taskTitle = "Test Task",
+0198:             category = "STUDY",
+0199:             priority = "HIGH"
+0200:         )
+0201: 
+0202:         var receivedEvent: TaskEvent? = null
+0203: 
+0204:         // Subscribe to task events
+0205:         eventBus.subscribeToTaskEvents<TaskEvent.TaskCreated>().collect { event ->
+0206:             receivedEvent = event
+0207:         }
+0208: 
+0209:         // Act
+0210:         eventBus.publish(testEvent)
+0211:         testScheduler.advanceUntilIdle()
+0212: 
+0213:         // Assert
+0214:         assertNotNull("Event should be received", receivedEvent)
+0215:         assertEquals("Event data should match", "test_task", receivedEvent?.taskId)
+0216:         assertEquals("Event data should match", "Test Task", receivedEvent?.taskTitle)
+0217:     }
+0218: 
+0219:     @Test
+0220:     fun `test integration manager state synchronization`() = testScope.runTest {
+0221:         // Arrange
+0222:         val testProgress = ProgressEntity(
+0223:             userId = "test_user",
+0224:             date = "2023-12-01",
+0225:             tasksCompleted = 5,
+0226:             studyMinutes = 120,
+0227:             pointsEarned = 50
+0228:         )
+0229: 
+0230:         `when`(mockProgressDao.getTodayProgress()).thenReturn(
+0231:             kotlinx.coroutines.flow.flowOf(testProgress)
+0232:         )
+0233: 
+0234:         // Act
+0235:         val appState = integrationManager.masterAppState.first()
+0236: 
+0237:         // Assert
+0238:         assertTrue("App should be initialized", appState.isInitialized)
+0239:         assertEquals("Progress state should reflect data", 5, appState.progressState.todayTasksCompleted)
+0240:         assertEquals("Progress state should reflect data", 120, appState.progressState.todayStudyMinutes)
+0241:     }
+0242: 
+0243:     @Test
+0244:     fun `test achievement unlocking flow`() = testScope.runTest {
+0245:         // Arrange
+0246:         val testAchievement = AchievementEntity(
+0247:             id = "test_achievement",
+0248:             title = "Test Achievement",
+0249:             description = "Test Description",
+0250:             iconRes = "test_icon",
+0251:             category = AchievementCategory.PRODUCTIVITY,
+0252:             threshold = 10,
+0253:             currentProgress = 10,
+0254:             isUnlocked = false
+0255:         )
+0256: 
+0257:         `when`(mockAchievementDao.getAchievementById("test_achievement")).thenReturn(testAchievement)
+0258:         `when`(mockAchievementDao.updateProgressAndCheckUnlock("test_achievement", 10)).thenReturn(true)
+0259:         `when`(mockAchievementDao.getAchievementById("test_achievement")).thenReturn(
+0260:             testAchievement.copy(isUnlocked = true, unlockedAt = System.currentTimeMillis())
+0261:         )
+0262: 
+0263:         // Collect achievement events
+0264:         val achievementEvents = mutableListOf<AchievementEvent>()
+0265:         eventBus.subscribeToAchievementEvents<AchievementEvent>().collect { event ->
+0266:             achievementEvents.add(event)
+0267:         }
+0268: 
+0269:         // Act
+0270:         val wasUnlocked = achievementRepository.updateProgress("test_achievement", 10)
+0271:         testScheduler.advanceUntilIdle()
+0272: 
+0273:         // Assert
+0274:         assertTrue("Achievement should be unlocked", wasUnlocked)
+0275:         verify(mockAchievementDao).updateProgressAndCheckUnlock("test_achievement", 10)
+0276:     }
+0277: 
+0278:     @Test
+0279:     fun `test settings synchronization across repositories`() = testScope.runTest {
+0280:         // Arrange
+0281:         val updatedSettings = UserSettingsEntity(
+0282:             dailyStudyGoalMinutes = 180,
+0283:             dailyTaskGoal = 8,
+0284:             theme = "dark"
+0285:         )
+0286: 
+0287:         `when`(mockUserSettingsDao.getUserSettingsSync()).thenReturn(updatedSettings)
+0288: 
+0289:         // Act
+0290:         integrationManager.updateSettings { settings ->
+0291:             settings.copy(
+0292:                 dailyStudyGoalMinutes = 180,
+0293:                 dailyTaskGoal = 8,
+0294:                 theme = "dark"
+0295:             )
+0296:         }
+0297: 
+0298:         testScheduler.advanceUntilIdle()
+0299: 
+0300:         // Assert
+0301:         verify(mockUserSettingsDao).updateSetting(eq("default_user"), any())
+0302: 
+0303:         // Verify refresh event was published
+0304:         val events = mutableListOf<Event>()
+0305:         eventBus.subscribeToAll().collect { event ->
+0306:             events.add(event)
+0307:         }
+0308: 
+0309:         assertTrue("Refresh event should be published",
+0310:             events.any { it is UIEvent.RefreshRequested })
+0311:     }
+0312: 
+0313:     @Test
+0314:     fun `test repository data flow`() = testScope.runTest {
+0315:         // Arrange
+0316:         val testTasks = listOf(
+0317:             TaskEntity(id = "1", title = "Task 1", category = TaskCategory.STUDY, priority = TaskPriority.HIGH),
+0318:             TaskEntity(id = "2", title = "Task 2", category = TaskCategory.WORK, priority = TaskPriority.MEDIUM)
+0319:         )
+0320: 
+0321:         `when`(mockTaskDao.getAllTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(testTasks))
+0322: 
+0323:         // Act
+0324:         val allTasks = taskRepository.allTasks.first()
+0325: 
+0326:         // Assert
+0327:         assertEquals("Repository should receive all tasks", 2, allTasks.size)
+0328:         assertEquals("Task data should be correct", "Task 1", allTasks[0].title)
+0329:     }
+0330: 
+0331:     @Test
+0332:     fun `test error handling and recovery`() = testScope.runTest {
+0333:         // Arrange
+0334:         `when`(mockTaskDao.getTaskById("invalid_task")).thenReturn(null)
+0335: 
+0336:         // Collect error events
+0337:         val errorEvents = mutableListOf<UIEvent.ErrorOccurred>()
+0338:         eventBus.subscribeToUIEvents<UIEvent.ErrorOccurred>().collect { event ->
+0339:             errorEvents.add(event)
+0340:         }
+0341: 
+0342:         // Act
+0343:         integrationManager.completeTask("invalid_task")
+0344:         testScheduler.advanceUntilIdle()
+0345: 
+0346:         // Assert
+0347:         assertTrue("Error event should be published",
+0348:             errorEvents.any { it.component == "TaskCompletion" })
+0349:     }
+0350: 
+0351:     @Test
+0352:     fun `test data synchronization performance`() = testScope.runTest {
+0353:         // Arrange
+0354:         val startTime = System.currentTimeMillis()
+0355: 
+0356:         // Create multiple simultaneous operations
+0357:         repeat(10) { index ->
+0358:             val task = TaskEntity(
+0359:                 id = "task_$index",
+0360:                 title = "Task $index",
+0361:                 category = TaskCategory.STUDY,
+0362:                 priority = TaskPriority.MEDIUM
+0363:             )
+0364: 
+0365:             `when`(mockTaskDao.getTaskById("task_$index")).thenReturn(task)
+0366:         }
+0367: 
+0368:         // Act - Perform multiple operations simultaneously
+0369:         repeat(10) { index ->
+0370:             integrationManager.completeTask("task_$index", actualMinutes = 15, pointsEarned = 10)
+0371:         }
+0372: 
+0373:         testScheduler.advanceUntilIdle()
+0374: 
+0375:         // Assert
+0376:         val endTime = System.currentTimeMillis()
+0377:         val duration = endTime - startTime
+0378: 
+0379:         // Verify all operations completed
+0380:         verify(mockTaskDao, times(10)).updateTaskCompletion(anyString(), eq(true), any(), eq(15))
+0381:         verify(mockProgressDao, times(10)).updateDailyStats(any(), eq(1), eq(15), eq(10), any())
+0382: 
+0383:         // Performance should be reasonable (this is a basic check)
+0384:         assertTrue("Operations should complete in reasonable time", duration < 5000)
+0385:     }
+0386: 
+0387:     @Test
+0388:     fun `test complete integration workflow`() = testScope.runTest {
+0389:         // This test simulates a complete user workflow from task creation to completion
+0390: 
+0391:         // Arrange
+0392:         val task = TaskEntity(
+0393:             id = "workflow_task",
+0394:             title = "Workflow Task",
+0395:             category = TaskCategory.STUDY,
+0396:             priority = TaskPriority.HIGH,
+0397:             estimatedMinutes = 30
+0398:         )
+0399: 
+0400:         `when`(mockTaskDao.getTaskById("workflow_task")).thenReturn(task)
+0401: 
+0402:         // Collect all events
+0403:         val allEvents = mutableListOf<Event>()
+0404:         eventBus.subscribeToAll().collect { event ->
+0405:             allEvents.add(event)
+0406:         }
+0407: 
+0408:         // Act - Simulate complete workflow
+0409:         // 1. Create task
+0410:         integrationManager.createTask(task)
+0411: 
+0412:         // 2. Complete task
+0413:         integrationManager.completeTask("workflow_task", actualMinutes = 35, pointsEarned = 20)
+0414: 
+0415:         // 3. Update settings
+0416:         integrationManager.updateSettings { settings ->
+0417:             settings.copy(dailyStudyGoalMinutes = 200)
+0418:         }
+0419: 
+0420:         testScheduler.advanceUntilIdle()
+0421: 
+0422:         // Assert - Verify complete workflow
+0423:         assertTrue("Task created event should be published",
+0424:             allEvents.any { it is TaskEvent.TaskCreated })
+0425: 
+0426:         assertTrue("Task completed event should be published",
+0427:             allEvents.any { it is TaskEvent.TaskCompleted })
+0428: 
+0429:         assertTrue("Settings updated event should be published",
+0430:             allEvents.any { it is UIEvent.RefreshRequested })
+0431: 
+0432:         // Verify database operations
+0433:         verify(mockTaskDao).insertTask(task)
+0434:         verify(mockTaskDao).updateTaskCompletion("workflow_task", true, any(), 35)
+0435:         verify(mockProgressDao).updateDailyStats(any(), 1, 35, 20, any())
+0436:     }
+0437: 
+0438:     // Helper method to create a test task
+0439:     private fun createTestTask(id: String = "test_task"): TaskEntity {
+0440:         return TaskEntity(
+0441:             id = id,
+0442:             title = "Test Task $id",
+0443:             description = "Test Description",
+0444:             category = TaskCategory.STUDY,
+0445:             priority = TaskPriority.MEDIUM,
+0446:             estimatedMinutes = 30
+0447:         )
+0448:     }
+0449: }

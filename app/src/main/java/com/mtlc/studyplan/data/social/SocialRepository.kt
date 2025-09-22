@@ -17,4 +17,5 @@ interface SocialRepository {
     suspend fun shareGroup(groupId: String)
     suspend fun selectAvatar(avatarId: String)
     suspend fun updateWeeklyGoal(hours: Int)
+    suspend fun updateUsername(username: String)
 }

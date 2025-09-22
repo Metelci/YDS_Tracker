@@ -375,7 +375,7 @@ data class TaskDetails(
 
 
 enum class TaskCategory {
-    VOCABULARY, GRAMMAR, READING, LISTENING, PRACTICE_EXAM, OTHER;
+    VOCABULARY, GRAMMAR, READING, LISTENING, OTHER;
 
     companion object {
         fun fromString(description: String): TaskCategory {
@@ -384,7 +384,6 @@ enum class TaskCategory {
                 description.contains("grammar", ignoreCase = true) -> GRAMMAR
                 description.contains("reading", ignoreCase = true) -> READING
                 description.contains("listening", ignoreCase = true) -> LISTENING
-                description.contains("exam", ignoreCase = true) -> PRACTICE_EXAM
                 else -> OTHER
             }
         }

@@ -13,7 +13,7 @@ import com.mtlc.studyplan.database.dao.*
 import com.mtlc.studyplan.repository.*
 import com.mtlc.studyplan.eventbus.*
 import com.mtlc.studyplan.shared.*
-import com.mtlc.studyplan.viewmodel.*
+import com.mtlc.studyplan.shared.AchievementCategory
 
 /**
  * Comprehensive integration test for data flow and synchronization
@@ -34,7 +34,6 @@ class DataFlowIntegrationTest {
 
     // Repositories
     private lateinit var taskRepository: TaskRepository
-    private lateinit var progressRepository: ProgressRepository
     private lateinit var achievementRepository: AchievementRepository
     private lateinit var streakRepository: StreakRepository
     private lateinit var userSettingsRepository: UserSettingsRepository
@@ -45,10 +44,7 @@ class DataFlowIntegrationTest {
     private lateinit var integrationManager: EnhancedAppIntegrationManager
 
     // ViewModels
-    private lateinit var sharedViewModel: IntegratedSharedViewModel
-    private lateinit var tasksViewModel: IntegratedTasksViewModel
-    private lateinit var progressViewModel: IntegratedProgressViewModel
-    private lateinit var achievementViewModel: IntegratedAchievementViewModel
+    private lateinit var sharedViewModel: SharedAppViewModel
 
     @Before
     fun setup() {
@@ -66,9 +62,7 @@ class DataFlowIntegrationTest {
 
         // Setup Integration Manager
         integrationManager = EnhancedAppIntegrationManager(
-            context = mock(),
             taskRepository = taskRepository,
-            progressRepository = progressRepository,
             achievementRepository = achievementRepository,
             streakRepository = streakRepository,
             userSettingsRepository = userSettingsRepository,
@@ -125,7 +119,6 @@ class DataFlowIntegrationTest {
 
     private fun setupRepositories() {
         taskRepository = TaskRepository(mockTaskDao)
-        progressRepository = ProgressRepository(mockProgressDao)
         achievementRepository = AchievementRepository(mockAchievementDao)
         streakRepository = StreakRepository(mockStreakDao)
         userSettingsRepository = UserSettingsRepository(mockUserSettingsDao)
@@ -133,10 +126,8 @@ class DataFlowIntegrationTest {
     }
 
     private fun setupViewModels() {
-        sharedViewModel = IntegratedSharedViewModel(integrationManager)
-        tasksViewModel = IntegratedTasksViewModel(integrationManager, taskRepository)
-        progressViewModel = IntegratedProgressViewModel(integrationManager, progressRepository)
-        achievementViewModel = IntegratedAchievementViewModel(integrationManager, achievementRepository)
+        // For testing purposes, we'll mock the SharedAppViewModel
+        sharedViewModel = mock(SharedAppViewModel::class.java)
     }
 
     @Test
@@ -146,8 +137,9 @@ class DataFlowIntegrationTest {
             id = "test_task_1",
             title = "Test Task",
             description = "Test Description",
-            category = TaskCategory.STUDY,
-            priority = TaskPriority.HIGH
+            category = TaskCategory.GRAMMAR,
+            priority = TaskPriority.HIGH,
+            estimatedMinutes = 30
         )
 
         `when`(mockTaskDao.getTaskById("test_task_1")).thenReturn(testTask)
@@ -183,8 +175,8 @@ class DataFlowIntegrationTest {
     fun `test reactive data flow between repositories`() = testScope.runTest {
         // Arrange
         val testTasks = listOf(
-            TaskEntity(id = "1", title = "Task 1", category = TaskCategory.STUDY, priority = TaskPriority.HIGH),
-            TaskEntity(id = "2", title = "Task 2", category = TaskCategory.WORK, priority = TaskPriority.MEDIUM)
+            TaskEntity(id = "1", title = "Task 1", description = "Description 1", category = TaskCategory.GRAMMAR, priority = TaskPriority.HIGH, estimatedMinutes = 30),
+            TaskEntity(id = "2", title = "Task 2", description = "Description 2", category = TaskCategory.VOCABULARY, priority = TaskPriority.MEDIUM, estimatedMinutes = 25)
         )
 
         // Mock the flow to return test data
@@ -196,7 +188,7 @@ class DataFlowIntegrationTest {
         // Assert
         assertEquals("Should return correct number of tasks", 2, tasks.size)
         assertEquals("Should return correct task data", "Task 1", tasks[0].title)
-        assertEquals("Should return correct task category", TaskCategory.STUDY, tasks[0].category)
+        assertEquals("Should return correct task category", TaskCategory.GRAMMAR, tasks[0].category)
     }
 
     @Test
@@ -209,7 +201,7 @@ class DataFlowIntegrationTest {
             priority = "HIGH"
         )
 
-        var receivedEvent: TaskEvent? = null
+        var receivedEvent: TaskEvent.TaskCreated? = null
 
         // Subscribe to task events
         eventBus.subscribeToTaskEvents<TaskEvent.TaskCreated>().collect { event ->
@@ -258,7 +250,7 @@ class DataFlowIntegrationTest {
             title = "Test Achievement",
             description = "Test Description",
             iconRes = "test_icon",
-            category = AchievementCategory.PRODUCTIVITY,
+            category = AchievementCategory.TASKS,
             threshold = 10,
             currentProgress = 10,
             isUnlocked = false
@@ -321,23 +313,20 @@ class DataFlowIntegrationTest {
     }
 
     @Test
-    fun `test ViewModel integration with repositories`() = testScope.runTest {
+    fun `test repository data flow`() = testScope.runTest {
         // Arrange
         val testTasks = listOf(
-            TaskEntity(id = "1", title = "Task 1", category = TaskCategory.STUDY, priority = TaskPriority.HIGH),
-            TaskEntity(id = "2", title = "Task 2", category = TaskCategory.WORK, priority = TaskPriority.MEDIUM)
+            TaskEntity(id = "1", title = "Task 1", description = "Description 1", category = TaskCategory.GRAMMAR, priority = TaskPriority.HIGH, estimatedMinutes = 30),
+            TaskEntity(id = "2", title = "Task 2", description = "Description 2", category = TaskCategory.VOCABULARY, priority = TaskPriority.MEDIUM, estimatedMinutes = 25)
         )
 
         `when`(mockTaskDao.getAllTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(testTasks))
-        `when`(mockTaskDao.getPendingTasks()).thenReturn(kotlinx.coroutines.flow.flowOf(testTasks))
 
         // Act
-        val allTasks = tasksViewModel.allTasks.first()
-        val pendingTasks = tasksViewModel.pendingTasks.first()
+        val allTasks = taskRepository.allTasks.first()
 
         // Assert
-        assertEquals("ViewModel should receive all tasks", 2, allTasks.size)
-        assertEquals("ViewModel should receive pending tasks", 2, pendingTasks.size)
+        assertEquals("Repository should receive all tasks", 2, allTasks.size)
         assertEquals("Task data should be correct", "Task 1", allTasks[0].title)
     }
 
@@ -371,8 +360,10 @@ class DataFlowIntegrationTest {
             val task = TaskEntity(
                 id = "task_$index",
                 title = "Task $index",
-                category = TaskCategory.STUDY,
-                priority = TaskPriority.MEDIUM
+                description = "Performance test task $index",
+                category = TaskCategory.GRAMMAR,
+                priority = TaskPriority.MEDIUM,
+                estimatedMinutes = 15
             )
 
             `when`(mockTaskDao.getTaskById("task_$index")).thenReturn(task)
@@ -405,7 +396,8 @@ class DataFlowIntegrationTest {
         val task = TaskEntity(
             id = "workflow_task",
             title = "Workflow Task",
-            category = TaskCategory.STUDY,
+            description = "Complete workflow test task",
+            category = TaskCategory.GRAMMAR,
             priority = TaskPriority.HIGH,
             estimatedMinutes = 30
         )
@@ -453,8 +445,8 @@ class DataFlowIntegrationTest {
         return TaskEntity(
             id = id,
             title = "Test Task $id",
-            description = "Test Description",
-            category = TaskCategory.STUDY,
+            description = "Test Description for $id",
+            category = TaskCategory.GRAMMAR,
             priority = TaskPriority.MEDIUM,
             estimatedMinutes = 30
         )

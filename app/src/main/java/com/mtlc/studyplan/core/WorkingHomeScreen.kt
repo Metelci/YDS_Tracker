@@ -52,22 +52,42 @@ fun WorkingHomeScreen(
     // Calculate stats
     var taskStats by remember { mutableStateOf(TaskStats()) }
 
+    // Enhanced first-use detection: user needs proper initial state if they have minimal or no meaningful data
+    val isFirstTimeUser = remember(taskStats, studyStreak) {
+        // Consider user as first-time if they have no tasks OR no completed tasks AND no streak
+        (taskStats.totalTasks == 0 && taskStats.completedTasks == 0) ||
+        (taskStats.completedTasks == 0 && studyStreak.currentStreak == 0)
+    }
+
     // Use ExamCountdownManager for real-time exam data
     val examCountdownManager = remember { ExamCountdownManager.getInstance(context) }
     val examTracker by examCountdownManager.examData.collectAsState()
     val weeklyPlan = remember { WeeklyStudyPlan() }
-    val todayStats = remember(taskStats) {
-        TodayStats(
-            progressPercentage = taskStats.getProgressPercentage(),
-            pointsEarned = taskStats.completedTasks * 10,
-            completedTasks = taskStats.completedTasks,
-            totalTasks = maxOf(taskStats.totalTasks, 3)
-        )
+    val todayStats = remember(taskStats, isFirstTimeUser) {
+        if (isFirstTimeUser) {
+            // For first-time users, show welcoming empty state
+            TodayStats(
+                progressPercentage = 0,
+                pointsEarned = 0,
+                completedTasks = 0,
+                totalTasks = 0
+            )
+        } else {
+            TodayStats(
+                progressPercentage = taskStats.getProgressPercentage(),
+                pointsEarned = taskStats.completedTasks * 10,
+                completedTasks = taskStats.completedTasks,
+                totalTasks = maxOf(taskStats.totalTasks, 1)
+            )
+        }
     }
-    val streakInfo = remember(studyStreak) {
-        StreakInfo(
-            currentStreak = studyStreak.currentStreak
-        )
+    val streakInfo = remember(studyStreak, isFirstTimeUser) {
+        if (isFirstTimeUser) {
+            // For first-time users, start with no streak
+            StreakInfo(currentStreak = 0)
+        } else {
+            StreakInfo(currentStreak = studyStreak.currentStreak)
+        }
     }
 
     LaunchedEffect(allTasks) {
@@ -96,13 +116,16 @@ fun WorkingHomeScreen(
                 modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
             ) {
                 Text(
-                    text = "Good morning! 👋",
+                    text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Ready to ace your YDS exam?",
+                    text = if (isFirstTimeUser)
+                        "Let's start your YDS study journey!"
+                    else
+                        "Ready to ace your YDS exam?",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
@@ -134,25 +157,47 @@ fun WorkingHomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "${todayStats.progressPercentage}%",
-                            fontSize = 24.sp, // Reduced font size
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Today",
-                            fontSize = 12.sp, // Reduced font size
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                        Spacer(modifier = Modifier.height(3.dp)) // Reduced spacing
-                        CircularProgressIndicator(
-                            progress = { todayStats.progressPercentage / 100f },
-                            modifier = Modifier.size(28.dp), // Reduced size
-                            color = Color.White,
-                            trackColor = Color.White.copy(alpha = 0.3f),
-                            strokeWidth = 2.5.dp // Reduced stroke width
-                        )
+                        if (isFirstTimeUser) {
+                            Text(
+                                text = "Start",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Your Journey",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(3.dp))
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = "Start studying",
+                                modifier = Modifier.size(28.dp),
+                                tint = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "${todayStats.progressPercentage}%",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Today",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                            Spacer(modifier = Modifier.height(3.dp))
+                            CircularProgressIndicator(
+                                progress = { todayStats.progressPercentage / 100f },
+                                modifier = Modifier.size(28.dp),
+                                color = Color.White,
+                                trackColor = Color.White.copy(alpha = 0.3f),
+                                strokeWidth = 2.5.dp
+                            )
+                        }
                     }
                 }
 
@@ -223,18 +268,33 @@ fun WorkingHomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "${todayStats.pointsEarned}",
-                            fontSize = 20.sp, // Reduced font size
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Points Today",
-                            fontSize = 11.sp, // Reduced font size
-                            color = Color.White.copy(alpha = 0.9f),
-                            textAlign = TextAlign.Center
-                        )
+                        if (isFirstTimeUser) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = "Earn points",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.White
+                            )
+                            Text(
+                                text = "Earn Points",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = "${todayStats.pointsEarned}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Points Today",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
 
@@ -256,18 +316,33 @@ fun WorkingHomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = todayStats.tasksProgressText,
-                            fontSize = 20.sp, // Reduced font size
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Tasks Done",
-                            fontSize = 11.sp, // Reduced font size
-                            color = Color.White.copy(alpha = 0.9f),
-                            textAlign = TextAlign.Center
-                        )
+                        if (isFirstTimeUser) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "Create tasks",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.White
+                            )
+                            Text(
+                                text = "Create Tasks",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = todayStats.tasksProgressText,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Tasks Done",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
