@@ -22,8 +22,6 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -299,7 +297,6 @@ private fun SessionCard(
             Spacer(Modifier.height(LocalSpacing.current.xs))
             Text("~${s.estMinutes} min  •  difficulty ${s.difficulty}", style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(LocalSpacing.current.sm))
-            var menuExpanded by remember { mutableStateOf(false) }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { onStart(s.id) }) { Text("Start") }
                 OutlinedButton(
@@ -317,20 +314,6 @@ private fun SessionCard(
                     Text("Focus")
                 }
                 TextButton(onClick = { onSkip(s.id) }) { Text("Skip") }
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { menuExpanded = true }, modifier = Modifier.largeTouchTarget()) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "More")
-                }
-                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-                    DropdownMenuItem(text = { Text("Reschedule later today") }, onClick = {
-                        menuExpanded = false
-                        onReschedule(java.time.LocalDateTime.now().plusHours(2))
-                    })
-                    DropdownMenuItem(text = { Text("Tomorrow") }, onClick = {
-                        menuExpanded = false
-                        onReschedule(java.time.LocalDateTime.now().plusDays(1))
-                    })
-                }
             }
         }
     }
