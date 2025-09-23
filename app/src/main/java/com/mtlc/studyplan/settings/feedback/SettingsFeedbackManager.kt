@@ -5,6 +5,7 @@ package com.mtlc.studyplan.settings.feedback
 import android.content.Context
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.os.VibrationEffect
 import androidx.annotation.StringRes
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -33,8 +34,8 @@ class SettingsFeedbackManager(private val context: Context) {
         val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
         vibratorManager?.defaultVibrator
     } else {
-        @Suppress("DEPRECATION")
-        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        // For API 30, still use VIBRATOR_SERVICE but with proper typing
+        context.getSystemService(Vibrator::class.java)
     }
 
     /**
@@ -340,8 +341,7 @@ class SettingsFeedbackManager(private val context: Context) {
                     HapticType.INFO -> longArrayOf(0, 25)
                     HapticType.CLICK -> longArrayOf(0, 10)
                 }
-                @Suppress("DEPRECATION")
-                vibrator?.vibrate(pattern, -1)
+                vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
             }
         } catch (e: Exception) {
             // Ignore vibration errors

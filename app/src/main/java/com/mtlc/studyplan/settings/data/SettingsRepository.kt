@@ -190,11 +190,14 @@ class SettingsRepository(
      * Get a string set setting value with default fallback
      */
     fun getStringSet(key: String, defaultValue: Set<String> = defaultValues.getStringSetOrDefault(key)): Set<String> {
-        @Suppress("UNCHECKED_CAST")
-        return getCachedValue(key) as? Set<String> ?: run {
-            val value = preferences.getStringSet(key, defaultValue) ?: defaultValue
-            valueCache[key] = value
-            value
+        return when (val cached = getCachedValue(key)) {
+            is Set<*> -> cached.filterIsInstance<String>().toSet().takeIf { it.size == cached.size } ?: defaultValue
+            null -> {
+                val value = preferences.getStringSet(key, defaultValue) ?: defaultValue
+                valueCache[key] = value
+                value
+            }
+            else -> defaultValue
         }
     }
 
@@ -349,16 +352,78 @@ class SettingsRepository(
     }
 
     /**
-     * Get reactive flow for a specific setting
+     * Get reactive flow for Boolean settings
      */
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getSettingFlow(key: String, defaultValue: T): Flow<T> {
+    fun getBooleanSettingFlow(key: String, defaultValue: Boolean): Flow<Boolean> {
         return changeEvents
             .filter { it.key == key }
-            .map { safeCastToType<T>(getValueForKey(key), defaultValue) }
-            .onStart { emit(safeCastToType<T>(getValueForKey(key), defaultValue)) }
+            .map { safeCastToBoolean(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToBoolean(getValueForKey(key), defaultValue)) }
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Get reactive flow for String settings
+     */
+    fun getStringSettingFlow(key: String, defaultValue: String): Flow<String> {
+        return changeEvents
+            .filter { it.key == key }
+            .map { safeCastToString(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToString(getValueForKey(key), defaultValue)) }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Get reactive flow for Int settings
+     */
+    fun getIntSettingFlow(key: String, defaultValue: Int): Flow<Int> {
+        return changeEvents
+            .filter { it.key == key }
+            .map { safeCastToInt(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToInt(getValueForKey(key), defaultValue)) }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Get reactive flow for Float settings
+     */
+    fun getFloatSettingFlow(key: String, defaultValue: Float): Flow<Float> {
+        return changeEvents
+            .filter { it.key == key }
+            .map { safeCastToFloat(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToFloat(getValueForKey(key), defaultValue)) }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Get reactive flow for StringSet settings
+     */
+    fun getStringSetSettingFlow(key: String, defaultValue: Set<String>): Flow<Set<String>> {
+        return changeEvents
+            .filter { it.key == key }
+            .map { safeCastToStringSet(getValueForKey(key), defaultValue) }
+            .onStart { emit(safeCastToStringSet(getValueForKey(key), defaultValue)) }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Generic fallback for backwards compatibility
+     */
+    @Suppress("UNCHECKED_CAST") // Generic fallback - prefer type-specific methods above
+    fun <T> getSettingFlow(key: String, defaultValue: T): Flow<T> {
+        return when (defaultValue) {
+            is Boolean -> getBooleanSettingFlow(key, defaultValue) as Flow<T>
+            is String -> getStringSettingFlow(key, defaultValue) as Flow<T>
+            is Int -> getIntSettingFlow(key, defaultValue) as Flow<T>
+            is Float -> getFloatSettingFlow(key, defaultValue) as Flow<T>
+            is Set<*> -> getStringSetSettingFlow(key, defaultValue as Set<String>) as Flow<T>
+            else -> flowOf(defaultValue) // Unsupported type - return default
+        }
     }
 
     /**
@@ -426,7 +491,6 @@ class SettingsRepository(
             }
             is String -> updateSetting(SettingsUpdateRequest.UpdateString(key, value))
             is Collection<*> -> {
-                @Suppress("UNCHECKED_CAST")
                 val stringSet = value.filterIsInstance<String>().toSet()
                 preferences.edit { putStringSet(key, stringSet) }
                 valueCache[key] = stringSet
@@ -466,33 +530,122 @@ class SettingsRepository(
     }
 
     /**
-     * Safely cast a value to the expected type with proper error handling
+     * Type-safe settings value wrapper using sealed class pattern
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> safeCastToType(value: Any?, defaultValue: T): T {
-        return try {
-            when (defaultValue) {
-                is Boolean -> (value as? Boolean ?: defaultValue) as T
-                is Int -> (value as? Int ?: defaultValue) as T
-                is Float -> (value as? Float ?: defaultValue) as T
-                is String -> (value as? String ?: defaultValue) as T
-                is Set<*> -> (value as? Set<String> ?: defaultValue as Set<String>) as T
-                else -> {
-                    // For complex types, try safe cast or return default
-                    (value as? T) ?: defaultValue
+    sealed class SettingValue<out T> {
+        data class BooleanValue(val value: Boolean) : SettingValue<Boolean>()
+        data class IntValue(val value: Int) : SettingValue<Int>()
+        data class FloatValue(val value: Float) : SettingValue<Float>()
+        data class StringValue(val value: String) : SettingValue<String>()
+        data class StringSetValue(val value: Set<String>) : SettingValue<Set<String>>()
+
+        companion object {
+            fun from(value: Any?): SettingValue<*>? {
+                return when (value) {
+                    is Boolean -> BooleanValue(value)
+                    is Int -> IntValue(value)
+                    is Float -> FloatValue(value)
+                    is String -> StringValue(value)
+                    is Set<*> -> StringSetValue(value.filterIsInstance<String>().toSet())
+                    else -> null
                 }
             }
-        } catch (e: ClassCastException) {
-            // Log the error and return default value
-            errorHandler.logger.logError(
-                AppError(
-                    type = ErrorType.DATA,
-                    message = "Type casting failed for value: $value, expected type: ${defaultValue!!::class.simpleName}",
-                    cause = e
-                )
-            )
+        }
+
+        fun extractBoolean(defaultValue: Boolean): Boolean {
+            return if (this is BooleanValue) value else defaultValue
+        }
+
+        fun extractInt(defaultValue: Int): Int {
+            return if (this is IntValue) value else defaultValue
+        }
+
+        fun extractFloat(defaultValue: Float): Float {
+            return if (this is FloatValue) value else defaultValue
+        }
+
+        fun extractString(defaultValue: String): String {
+            return if (this is StringValue) value else defaultValue
+        }
+
+        fun extractStringSet(defaultValue: Set<String>): Set<String> {
+            return if (this is StringSetValue) value else defaultValue
+        }
+    }
+
+    /**
+     * Type-safe Boolean value extraction
+     */
+    private fun safeCastToBoolean(value: Any?, defaultValue: Boolean): Boolean {
+        return try {
+            val settingValue = SettingValue.from(value)
+            settingValue?.extractBoolean(defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            logCastError(value, "Boolean", e)
             defaultValue
         }
+    }
+
+    /**
+     * Type-safe String value extraction
+     */
+    private fun safeCastToString(value: Any?, defaultValue: String): String {
+        return try {
+            val settingValue = SettingValue.from(value)
+            settingValue?.extractString(defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            logCastError(value, "String", e)
+            defaultValue
+        }
+    }
+
+    /**
+     * Type-safe Int value extraction
+     */
+    private fun safeCastToInt(value: Any?, defaultValue: Int): Int {
+        return try {
+            val settingValue = SettingValue.from(value)
+            settingValue?.extractInt(defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            logCastError(value, "Int", e)
+            defaultValue
+        }
+    }
+
+    /**
+     * Type-safe Float value extraction
+     */
+    private fun safeCastToFloat(value: Any?, defaultValue: Float): Float {
+        return try {
+            val settingValue = SettingValue.from(value)
+            settingValue?.extractFloat(defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            logCastError(value, "Float", e)
+            defaultValue
+        }
+    }
+
+    /**
+     * Type-safe StringSet value extraction
+     */
+    private fun safeCastToStringSet(value: Any?, defaultValue: Set<String>): Set<String> {
+        return try {
+            val settingValue = SettingValue.from(value)
+            settingValue?.extractStringSet(defaultValue) ?: defaultValue
+        } catch (e: Exception) {
+            logCastError(value, "Set<String>", e)
+            defaultValue
+        }
+    }
+
+    private fun logCastError(value: Any?, expectedType: String, exception: Exception) {
+        errorHandler.logger.logError(
+            AppError(
+                type = ErrorType.DATA,
+                message = "Type casting failed for value: $value, expected type: $expectedType",
+                cause = exception
+            )
+        )
     }
 
     private suspend fun validateAndUpdate(key: String, value: Any, updateAction: () -> Unit): SettingsOperationResult {
@@ -1072,7 +1225,6 @@ private object defaultValues {
     fun getIntOrDefault(key: String): Int = safeCastValue(defaults[key], 0)
     fun getFloatOrDefault(key: String): Float = safeCastValue(defaults[key], 0f)
     fun getStringOrDefault(key: String): String = safeCastValue(defaults[key], "")
-    @Suppress("UNCHECKED_CAST")
     fun getStringSetOrDefault(key: String): Set<String> = safeCastValue(defaults[key], emptySet<String>())
 
     fun getValueForKey(key: String): Any? = defaults[key]
@@ -1082,7 +1234,6 @@ private object defaultValues {
     /**
      * Safely cast default values with proper error handling
      */
-    @Suppress("UNCHECKED_CAST")
     private inline fun <reified T> safeCastValue(value: Any?, defaultValue: T): T {
         return try {
             when (T::class) {

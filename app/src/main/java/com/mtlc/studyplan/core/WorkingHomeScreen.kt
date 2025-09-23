@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import androidx.compose.ui.platform.LocalContext
@@ -537,12 +539,12 @@ fun WorkingHomeScreen(
                     TextButton(
                         onClick = onNavigateToWeeklyPlan
                     ) {
-                        Text("View Full Week")
+                        Text(stringResource(R.string.view_full_week))
                     }
                     TextButton(
                         onClick = onNavigateToWeeklyPlan
                     ) {
-                        Text("▶ Modify Plan")
+                        Text(stringResource(R.string.modify_plan))
                     }
                 }
             }

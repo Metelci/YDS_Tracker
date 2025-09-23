@@ -441,5 +441,15 @@
     <string name="gamification_level_up_message">Level %1$d - %2$s</string>
     <string name="gamification_new_achievement_message">Unlocked: %1$s</string>
     <string name="gamification_achievement_banner">Achievement unlocked: %1$s</string>
+    <string name="go_to_plan">Go to Plan</string>
+    <string name="back_to_plan">← Plan</string>
+    <string name="view_full_week">View Full Week</string>
+    <string name="modify_plan">▶ Modify Plan</string>
+    <string name="gamification_settings">Gamification Settings</string>
+    <string name="achievement_notification_text">You\'ve earned a new achievement!</string>
+    <string name="achievement_notification_description">Congratulations! You\'ve unlocked a new achievement. Keep up the great work!</string>
+    <string name="streak_expiry_notification">Your %1$d-day streak expires in %2$d hours</string>
+    <string name="streak_expiry_description">Don\'t break your %1$d-day study streak! Complete a task in the next %2$d hours to keep it going.</string>
+    <string name="daily_goal_complete">Great job! You\'ve completed your daily study goal</string>
 </resources>
 

@@ -69,8 +69,8 @@ class LanguageManager(private val context: Context) {
         val config = context.resources.configuration
         config.setLocale(locale)
 
-        @Suppress("DEPRECATION")
-        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+        // Create new context with updated configuration (modern approach for API 30+)
+        context.createConfigurationContext(config)
     }
 
     /**

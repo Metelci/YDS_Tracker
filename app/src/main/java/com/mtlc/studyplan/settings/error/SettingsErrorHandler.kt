@@ -373,21 +373,77 @@ class SettingsErrorHandler(
         return fallbackValues[operation]
     }
 
+    /**
+     * Type-safe fallback value registry using sealed class pattern
+     */
+    sealed class FallbackValue {
+        data class BooleanFallback(val value: Boolean) : FallbackValue()
+        data class StringFallback(val value: String) : FallbackValue()
+        data class IntFallback(val value: Int) : FallbackValue()
+        data class FloatFallback(val value: Float) : FallbackValue()
+
+        companion object {
+            fun from(value: Any?): FallbackValue? {
+                return when (value) {
+                    is Boolean -> BooleanFallback(value)
+                    is String -> StringFallback(value)
+                    is Int -> IntFallback(value)
+                    is Float -> FloatFallback(value)
+                    else -> null
+                }
+            }
+        }
+
+        fun extractBoolean(): Boolean? = if (this is BooleanFallback) value else null
+        fun extractString(): String? = if (this is StringFallback) value else null
+        fun extractInt(): Int? = if (this is IntFallback) value else null
+        fun extractFloat(): Float? = if (this is FloatFallback) value else null
+    }
+
+    // Type-specific fallback resolution methods
+    fun resolveBooleanFallback(operation: String, explicitFallback: Boolean?): Boolean? {
+        if (explicitFallback != null) return explicitFallback
+        val storedValue = fallbackValues[operation] ?: return null
+        return FallbackValue.from(storedValue)?.extractBoolean()
+    }
+
+    fun resolveStringFallback(operation: String, explicitFallback: String?): String? {
+        if (explicitFallback != null) return explicitFallback
+        val storedValue = fallbackValues[operation] ?: return null
+        return FallbackValue.from(storedValue)?.extractString()
+    }
+
+    fun resolveIntFallback(operation: String, explicitFallback: Int?): Int? {
+        if (explicitFallback != null) return explicitFallback
+        val storedValue = fallbackValues[operation] ?: return null
+        return FallbackValue.from(storedValue)?.extractInt()
+    }
+
+    fun resolveFloatFallback(operation: String, explicitFallback: Float?): Float? {
+        if (explicitFallback != null) return explicitFallback
+        val storedValue = fallbackValues[operation] ?: return null
+        return FallbackValue.from(storedValue)?.extractFloat()
+    }
+
+    // Generic fallback for backward compatibility - avoid if possible
+    @Suppress("UNCHECKED_CAST") // Generic fallback method - prefer type-specific methods above
     private fun <T> resolveFallbackValue(operation: String, explicitFallback: T?): T? {
         if (explicitFallback != null) {
             return explicitFallback
         }
 
-        val storedFallback = fallbackValues[operation] ?: return null
-        return coerceFallbackValue(operation, storedFallback)
-    }
+        val storedValue = fallbackValues[operation] ?: return null
 
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> coerceFallbackValue(operation: String, candidate: Any?): T? {
         return try {
-            candidate as T
+            when (storedValue) {
+                is Boolean -> if (explicitFallback is Boolean?) storedValue as T else null
+                is String -> if (explicitFallback is String?) storedValue as T else null
+                is Int -> if (explicitFallback is Int?) storedValue as T else null
+                is Float -> if (explicitFallback is Float?) storedValue as T else null
+                else -> storedValue as? T
+            }
         } catch (e: ClassCastException) {
-            Log.w(TAG, "Fallback value for $operation has unexpected type ${candidate?.javaClass?.simpleName}", e)
+            Log.w(TAG, "Fallback value for $operation has unexpected type ${storedValue.javaClass.simpleName}")
             null
         }
     }

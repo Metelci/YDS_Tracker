@@ -145,16 +145,15 @@ class NetworkSecurityManager(private val context: Context) {
     }
 
     /**
-     * Creates a secure Trust Manager
+     * Creates a secure Trust Manager using system defaults
      */
-    @SuppressLint("CustomX509TrustManager")
     private fun getTrustManager(): X509TrustManager {
         return try {
             val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
             trustManagerFactory.init(null as java.security.KeyStore?)
 
             val trustManagers = trustManagerFactory.trustManagers
-            trustManagers.first { it is X509TrustManager } as X509TrustManager
+            trustManagers.filterIsInstance<X509TrustManager>().first()
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Trust Manager creation failed: ${e.message}",

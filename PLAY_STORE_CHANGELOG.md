@@ -1,5 +1,25 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.9.3 (Build 53) - September 23, 2025
+
+### New & Improved
+• Unified top bar styling across all screens for a consistent look
+• Cleaner Settings with consistent pill-style buttons for better readability
+
+### UI/UX Polish
+• Social screen fixes and smoother navigation
+• Removed unused Settings icons from Today cards
+• Simplified localization flags (now only on Settings)
+
+### Stability & Performance
+• Build stability improvements and smaller app via R8/ProGuard tuning
+
+### Bug Fixes
+• Resolved missing imports and a composable brace issue in Social screen
+• Removed duplicate branch logic in TaskCategoryBadge
+
+---
+
 ## Version 2.9.2 (Build 52) - September 22, 2025
 
 ### 🎨 Complete Material 3 Migration

@@ -33,7 +33,6 @@ fun SimplifiedAppNavHost() {
         startDestination = "home"
     ) {
         composable("home") {
-            @SuppressLint("UnusedContentLambdaTargetStateParameter")
             AnimatedContent(
                 targetState = "home",
                 label = "home_animation"
@@ -48,7 +47,6 @@ fun SimplifiedAppNavHost() {
         }
 
         composable("tasks") {
-            @SuppressLint("UnusedContentLambdaTargetStateParameter")
             AnimatedContent(
                 targetState = "tasks",
                 label = "tasks_animation"

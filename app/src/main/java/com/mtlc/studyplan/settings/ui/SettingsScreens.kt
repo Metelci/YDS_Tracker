@@ -60,11 +60,11 @@ fun SettingsScreen(
     onBack: () -> Unit = {}
 ) {
     val s = LocalSpacing.current
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    Scaffold { _ ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

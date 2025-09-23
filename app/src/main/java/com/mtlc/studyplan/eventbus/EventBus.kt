@@ -88,20 +88,16 @@ class ReactiveEventBus @Inject constructor(
     }
 
     override fun <T : Event> subscribe(eventType: KClass<T>): Flow<T> {
-        return _eventFlow
-            .filter { eventType.isInstance(it) }
-            .map {
-                @Suppress("UNCHECKED_CAST")
-                it as T
-            }
+        return EventTypeMatcher.filterEvents(_eventFlow, eventType)
             .onStart {
                 getCurrentState(eventType)?.let { emit(it) }
             }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T : Event> getCurrentState(eventType: KClass<T>): T? {
-        return _stateFlow.value[eventType.simpleName] as? T
+        return _stateFlow.value[eventType.simpleName]?.let { event ->
+            EventTypeMatcher.matchSingle(event, eventType)
+        }
     }
 
     override suspend fun clear() {
@@ -125,12 +121,7 @@ class ReactiveEventBus @Inject constructor(
      * Get events by category
      */
     fun <T : Event> subscribeToCategory(categoryType: KClass<T>): Flow<T> {
-        return _eventFlow
-            .filter { categoryType.isInstance(it) }
-            .map {
-                @Suppress("UNCHECKED_CAST")
-                it as T
-            }
+        return EventTypeMatcher.filterEvents(_eventFlow, categoryType)
     }
 
     /**
@@ -292,6 +283,52 @@ private fun <T> Flow<T>.windowLatest(windowMs: Long): Flow<List<T>> = flow {
         }
     }
 }
+
+/**
+ * Type-safe event filtering using when expressions with sealed types
+ * This eliminates unsafe casts by leveraging Kotlin's smart casting
+ */
+object EventTypeMatcher {
+
+    @Suppress("UNCHECKED_CAST") // Required for KClass matching - this is the fundamental limitation we're consolidating
+    fun <T : Event> filterEvents(events: Flow<Event>, targetType: KClass<T>): Flow<T> {
+        return events.mapNotNull { event ->
+            when (event) {
+                is TaskEvent -> if (targetType.isInstance(event)) event as T else null
+                is ProgressEvent -> if (targetType.isInstance(event)) event as T else null
+                is AchievementEvent -> if (targetType.isInstance(event)) event as T else null
+                is StreakEvent -> if (targetType.isInstance(event)) event as T else null
+                is SettingsEvent -> if (targetType.isInstance(event)) event as T else null
+                is SocialEvent -> if (targetType.isInstance(event)) event as T else null
+                is UIEvent -> if (targetType.isInstance(event)) event as T else null
+                is SyncEvent -> if (targetType.isInstance(event)) event as T else null
+                is NotificationEvent -> if (targetType.isInstance(event)) event as T else null
+                is AnalyticsEvent -> if (targetType.isInstance(event)) event as T else null
+                // Sealed interface is exhaustive, but we need this for compilation
+                else -> if (targetType.isInstance(event)) event as T else null
+            }
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST") // Required for KClass matching - consolidated suppression point
+    fun <T : Event> matchSingle(event: Event, targetType: KClass<T>): T? {
+        return when (event) {
+            is TaskEvent -> if (targetType.isInstance(event)) event as T else null
+            is ProgressEvent -> if (targetType.isInstance(event)) event as T else null
+            is AchievementEvent -> if (targetType.isInstance(event)) event as T else null
+            is StreakEvent -> if (targetType.isInstance(event)) event as T else null
+            is SettingsEvent -> if (targetType.isInstance(event)) event as T else null
+            is SocialEvent -> if (targetType.isInstance(event)) event as T else null
+            is UIEvent -> if (targetType.isInstance(event)) event as T else null
+            is SyncEvent -> if (targetType.isInstance(event)) event as T else null
+            is NotificationEvent -> if (targetType.isInstance(event)) event as T else null
+            is AnalyticsEvent -> if (targetType.isInstance(event)) event as T else null
+            // Sealed interface is exhaustive, but we need this for compilation
+            else -> if (targetType.isInstance(event)) event as T else null
+        }
+    }
+}
+
 
 
 

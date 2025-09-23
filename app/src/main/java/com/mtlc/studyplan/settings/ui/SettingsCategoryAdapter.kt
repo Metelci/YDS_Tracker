@@ -261,8 +261,7 @@ class SettingsCategoryAdapter(
         } else {
             // Handle partial updates
             val category = categories[position]
-            @Suppress("UNCHECKED_CAST")
-            val changes = payloads[0] as? Map<String, Any> ?: return
+            val changes = (payloads[0] as? Map<*, *>)?.mapKeys { it.key.toString() } ?: return
 
             changes["title"]?.let {
                 holder.binding.categoryTitle.text = it as String

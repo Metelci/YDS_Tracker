@@ -1,0 +1,112 @@
+[
+  {
+    "id": "yds_grammar_001",
+    "examType": "YDS",
+    "questionType": "GRAMMAR",
+    "difficulty": "B1",
+    "questionText": "Choose the correct form: 'If I ___ you, I would study harder.'",
+    "options": ["were", "was", "am", "be"],
+    "correctAnswer": 0,
+    "explanation": "'Were' is used in the subjunctive mood for hypothetical situations. This is a second conditional structure.",
+    "tags": ["grammar", "conditional", "subjunctive"]
+  },
+  {
+    "id": "yds_reading_001",
+    "examType": "YDS",
+    "questionType": "READING",
+    "difficulty": "B2",
+    "questionText": "According to the passage, what is the main reason for the decline in bee populations?",
+    "options": ["Climate change", "Pesticide use", "Habitat loss", "All of the above"],
+    "correctAnswer": 3,
+    "explanation": "The passage discusses multiple factors including climate change, pesticide use, and habitat loss as contributing to the decline in bee populations.",
+    "tags": ["reading", "comprehension", "environment"]
+  },
+  {
+    "id": "yds_vocabulary_001",
+    "examType": "YDS",
+    "questionType": "VOCABULARY",
+    "difficulty": "C1",
+    "questionText": "The word 'ubiquitous' most nearly means:",
+    "options": ["Rare", "Present everywhere", "Temporary", "Expensive"],
+    "correctAnswer": 1,
+    "explanation": "'Ubiquitous' means present, appearing, or found everywhere. It comes from Latin 'ubique' meaning 'everywhere'.",
+    "tags": ["vocabulary", "synonyms", "advanced"]
+  },
+  {
+    "id": "yokdil_listening_001",
+    "examType": "YOKDIL",
+    "questionType": "LISTENING",
+    "difficulty": "B1",
+    "questionText": "What is the main topic of the lecture?",
+    "options": ["History of medicine", "Modern healthcare systems", "Traditional healing methods", "Medical research"],
+    "correctAnswer": 1,
+    "explanation": "The lecture focuses on how modern healthcare systems have evolved and their current structure.",
+    "tags": ["listening", "academic", "healthcare"]
+  },
+  {
+    "id": "yds_grammar_002",
+    "examType": "YDS",
+    "questionType": "GRAMMAR",
+    "difficulty": "A2",
+    "questionText": "She ___ to the store yesterday.",
+    "options": ["go", "goes", "went", "going"],
+    "correctAnswer": 2,
+    "explanation": "'Went' is the simple past tense of 'go'. The sentence describes a completed action in the past.",
+    "tags": ["grammar", "past tense", "regular verbs"]
+  },
+  {
+    "id": "yokdil_reading_001",
+    "examType": "YOKDIL",
+    "questionType": "READING",
+    "difficulty": "C1",
+    "questionText": "The author's tone in the passage can best be described as:",
+    "options": ["Optimistic", "Critical", "Neutral", "Sarcastic"],
+    "correctAnswer": 1,
+    "explanation": "The author presents a critical analysis of the current education system, pointing out several flaws and areas for improvement.",
+    "tags": ["reading", "tone", "academic writing"]
+  },
+  {
+    "id": "yds_vocabulary_002",
+    "examType": "YDS",
+    "questionType": "VOCABULARY",
+    "difficulty": "B2",
+    "questionText": "The company's decision was ___ because it ignored the employees' concerns.",
+    "options": ["prudent", "myopic", "visionary", "comprehensive"],
+    "correctAnswer": 1,
+    "explanation": "'Myopic' means lacking foresight or narrow-minded. It suggests the company couldn't see the bigger picture.",
+    "tags": ["vocabulary", "idioms", "business"]
+  },
+  {
+    "id": "yokdil_grammar_001",
+    "examType": "YOKDIL",
+    "questionType": "GRAMMAR",
+    "difficulty": "B2",
+    "questionText": "The research findings ___ the initial hypothesis.",
+    "options": ["confirm", "confirms", "confirmed", "confirming"],
+    "correctAnswer": 2,
+    "explanation": "'Confirmed' is the past tense needed here. The findings are in the past and they validated the hypothesis.",
+    "tags": ["grammar", "subject-verb agreement", "academic"]
+  },
+  {
+    "id": "yds_listening_001",
+    "examType": "YDS",
+    "questionType": "LISTENING",
+    "difficulty": "B1",
+    "questionText": "According to the speaker, what is the most important factor in language learning?",
+    "options": ["Grammar rules", "Vocabulary size", "Consistent practice", "Native speaker teachers"],
+    "correctAnswer": 2,
+    "explanation": "The speaker emphasizes that consistent, daily practice is more important than any other factor in language learning success.",
+    "tags": ["listening", "language learning", "education"]
+  },
+  {
+    "id": "yokdil_vocabulary_001",
+    "examType": "YOKDIL",
+    "questionType": "VOCABULARY",
+    "difficulty": "C1",
+    "questionText": "The politician's speech was filled with ___ rhetoric designed to appeal to voters' emotions.",
+    "options": ["dispassionate", "didactic", "demagogic", "diplomatic"],
+    "correctAnswer": 2,
+    "explanation": "'Demagogic' refers to political rhetoric that appeals to emotions and prejudices rather than reason. It comes from 'demagogue' meaning a leader who gains power by appealing to people's emotions.",
+    "tags": ["vocabulary", "politics", "rhetoric"]
+  }
+]

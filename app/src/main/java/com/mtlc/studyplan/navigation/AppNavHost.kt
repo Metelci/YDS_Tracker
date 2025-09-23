@@ -76,7 +76,6 @@ import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 import com.mtlc.studyplan.utils.settingsDataStore
 
 
-@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun AppNavHost(
     appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null,
