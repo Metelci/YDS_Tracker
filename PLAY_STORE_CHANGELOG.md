@@ -1,5 +1,54 @@
 # StudyPlan - Play Store Release Notes
 
+## Version 2.9.5 (Build 55) - September 23, 2025
+
+### Critical Bug Fixes
+• Fixed overflowing hour information in Tasks screen Plan tab
+• Resolved social tab build errors and syntax issues
+• Re-enabled username required dialog functionality in social features
+
+### UI/UX Polish
+• Improved task time display layout with proper text truncation
+• Enhanced social screen stability with correct component integration
+• Better responsive layout handling for task descriptions
+
+### Social Features Restoration
+• Fully restored social tab functionality with all 5 tabs (Profile, Ranks, Groups, Friends, Awards)
+• Fixed ProfileTab integration and avatar selection
+• Restored username validation and onboarding flow
+
+### Technical Improvements
+• Added proper text overflow handling with ellipsis for long task descriptions
+• Improved Row layout constraints in task display components
+• Enhanced build stability and compilation success rate
+
+---
+
+## Version 2.9.4 (Build 54) - September 23, 2025
+
+### Build Stability & Performance
+• Critical Gradle configuration fix resolving build failures and IDE sync issues
+• Improved build system stability with optimized task ordering
+• Enhanced development workflow with faster, more reliable builds
+
+### New Features & Components
+• Study progress repository for comprehensive progress tracking
+• Award notification component for achievement displays
+• QA tabs checklist for improved testing coverage
+• Enhanced dependency documentation and management
+
+### UI/UX Improvements
+• Social screen enhancements with smoother navigation
+• Better component architecture and separation of concerns
+• Improved state management and transitions
+
+### Bug Fixes
+• Resolved Gradle task ordering issues affecting development
+• Fixed component integration and initialization problems
+• Improved type safety and error handling throughout the app
+
+---
+
 ## Version 2.9.3 (Build 53) - September 23, 2025
 
 ### New & Improved

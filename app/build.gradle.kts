@@ -22,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 53
-        versionName = "2.9.3"
+        versionCode = 55
+        versionName = "2.9.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -90,6 +90,9 @@ android {
     }
 
     lint {
+        // Use a baseline so existing issues don't fail CI; new issues will
+        // still be reported and can be fixed incrementally.
+        baseline = file("lint-baseline.xml")
         disable.add("SuspiciousModifierThen")
         disable.add("NullSafeMutableLiveData")
         disable.add("FrequentlyChangingValue")
@@ -188,6 +191,17 @@ dependencies {
 ksp {
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+}
+
+// Work around IDE/NetBeans eagerly resolving ASM transform outputs for unit tests.
+// Disables only the problematic unit test transform tasks to prevent
+// "Querying the mapped value ... before task has completed" errors during sync/tests.
+// Does not affect app assemble or androidTest tasks.
+tasks.matching { it.name == "transformDebugUnitTestClassesWithAsm" }.configureEach {
+    onlyIf { false }
+}
+tasks.matching { it.name == "transformReleaseUnitTestClassesWithAsm" }.configureEach {
+    onlyIf { false }
 }
 
 

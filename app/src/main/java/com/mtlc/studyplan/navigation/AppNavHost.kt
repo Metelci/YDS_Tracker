@@ -94,6 +94,12 @@ fun AppNavHost(
         )
     }
 
+    // Create StudyProgressRepository for week progression tracking
+    val context = LocalContext.current
+    val studyProgressRepository = remember {
+        com.mtlc.studyplan.data.StudyProgressRepository(context)
+    }
+
     // Handle navigation events from SharedViewModel
     sharedViewModel?.let { viewModel ->
         LaunchedEffect(navController) {
@@ -275,9 +281,14 @@ fun AppNavHost(
             ) { _ ->
                 com.mtlc.studyplan.core.WorkingTasksScreen(
                     appIntegrationManager = mainAppIntegrationManager,
+                    studyProgressRepository = studyProgressRepository,
                     onNavigateBack = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.popBackStack()
+                    },
+                    onNavigateToStudyPlan = {
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        navController.navigate("study-plan-overview")
                     }
                 )
             }
@@ -526,6 +537,7 @@ fun AppNavHost(
         composable("study-plan-overview") {
             com.mtlc.studyplan.studyplan.StudyPlanOverviewScreen(
                 appIntegrationManager = mainAppIntegrationManager,
+                studyProgressRepository = studyProgressRepository,
                 onNavigateBack = {
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     navController.popBackStack()

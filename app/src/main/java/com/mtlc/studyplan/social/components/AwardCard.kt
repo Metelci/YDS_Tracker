@@ -40,12 +40,12 @@ fun AwardCard(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    val palette = rarityColors(award.rarity)
+    val palette = rarityColors(award.rarity, award.isUnlocked)
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         color = palette.background,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        contentColor = if (award.isUnlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
         border = BorderStroke(2.dp, palette.border),
         tonalElevation = 0.dp
     ) {
@@ -66,11 +66,11 @@ fun AwardCard(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = DesignTokens.Surface,
-                        tonalElevation = 1.dp
+                        color = if (award.isUnlocked) DesignTokens.Surface else DesignTokens.Surface.copy(alpha = 0.5f),
+                        tonalElevation = if (award.isUnlocked) 1.dp else 0.dp
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.EmojiEvents,
+                            imageVector = if (award.isUnlocked) Icons.Outlined.EmojiEvents else Icons.Outlined.EmojiEvents,
                             contentDescription = stringResource(id = R.string.social_award_icon_cd, award.title),
                             modifier = Modifier.padding(8.dp),
                             tint = palette.border
@@ -78,14 +78,15 @@ fun AwardCard(
                     }
                     Column {
                         Text(
-                            text = award.title,
+                            text = if (award.isUnlocked) award.title else "🔒 ${award.title}",
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (award.isUnlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                         Text(
                             text = award.description,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                            color = if (award.isUnlocked) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
                 }
@@ -104,29 +105,61 @@ fun AwardCard(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-                Text(
-                    text = stringResource(id = R.string.social_unlocked_by),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(spacing.xs),
-                    verticalArrangement = Arrangement.spacedBy(spacing.xs)
-                ) {
-                    award.unlockedBy.forEach { name ->
-                        Surface(
-                            color = DesignTokens.SuccessContainer,
-                            contentColor = DesignTokens.Success,
-                            shape = RoundedCornerShape(20.dp)
+                if (award.isUnlocked) {
+                    // Show unlock date if available
+                    award.unlockedDate?.let { date ->
+                        Text(
+                            text = "Unlocked on $date",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = DesignTokens.Success
+                        )
+                    }
+
+                    // Show who else unlocked this award
+                    if (award.unlockedBy.isNotEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.social_unlocked_by),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+                            verticalArrangement = Arrangement.spacedBy(spacing.xs)
                         ) {
-                            Text(
-                                text = name,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(horizontal = spacing.sm, vertical = 6.dp)
-                            )
+                            award.unlockedBy.forEach { name ->
+                                Surface(
+                                    color = DesignTokens.SuccessContainer,
+                                    contentColor = DesignTokens.Success,
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text(
+                                        text = name,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(horizontal = spacing.sm, vertical = 6.dp)
+                                    )
+                                }
+                            }
                         }
+                    }
+                } else {
+                    // Show requirements or hint for locked awards
+                    Text(
+                        text = "Complete the requirements to unlock this award",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+
+                    // Show who else has unlocked this (if any)
+                    if (award.unlockedBy.isNotEmpty()) {
+                        Text(
+                            text = "Unlocked by ${award.unlockedBy.size} other${if (award.unlockedBy.size == 1) "" else "s"}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
                     }
                 }
             }
@@ -140,25 +173,30 @@ private fun rarityLabel(rarity: AwardRarity): Int = when (rarity) {
     AwardRarity.Legendary -> R.string.social_rarity_legendary
 }
 
-private fun rarityColors(rarity: AwardRarity): RarityPalette = when (rarity) {
-    AwardRarity.Rare -> RarityPalette(
-        border = DesignTokens.Primary,
-        background = DesignTokens.PrimaryContainer.copy(alpha = 0.35f),
-        chipColor = DesignTokens.Primary,
-        chipContent = DesignTokens.PrimaryForeground
-    )
-    AwardRarity.Epic -> RarityPalette(
-        border = DesignTokens.Tertiary,
-        background = DesignTokens.TertiaryContainer.copy(alpha = 0.4f),
-        chipColor = DesignTokens.Tertiary,
-        chipContent = DesignTokens.PrimaryForeground
-    )
-    AwardRarity.Legendary -> RarityPalette(
-        border = DesignTokens.AchievementGold,
-        background = DesignTokens.SecondaryContainer.copy(alpha = 0.4f),
-        chipColor = DesignTokens.AchievementGold,
-        chipContent = DesignTokens.PrimaryForeground
-    )
+private fun rarityColors(rarity: AwardRarity, isUnlocked: Boolean = true): RarityPalette {
+    val alpha = if (isUnlocked) 1f else 0.3f
+    val backgroundAlpha = if (isUnlocked) 0.35f else 0.15f
+
+    return when (rarity) {
+        AwardRarity.Rare -> RarityPalette(
+            border = DesignTokens.Primary.copy(alpha = alpha),
+            background = DesignTokens.PrimaryContainer.copy(alpha = backgroundAlpha),
+            chipColor = DesignTokens.Primary.copy(alpha = alpha),
+            chipContent = DesignTokens.PrimaryForeground.copy(alpha = alpha)
+        )
+        AwardRarity.Epic -> RarityPalette(
+            border = DesignTokens.Tertiary.copy(alpha = alpha),
+            background = DesignTokens.TertiaryContainer.copy(alpha = backgroundAlpha),
+            chipColor = DesignTokens.Tertiary.copy(alpha = alpha),
+            chipContent = DesignTokens.PrimaryForeground.copy(alpha = alpha)
+        )
+        AwardRarity.Legendary -> RarityPalette(
+            border = DesignTokens.AchievementGold.copy(alpha = alpha),
+            background = DesignTokens.SecondaryContainer.copy(alpha = backgroundAlpha),
+            chipColor = DesignTokens.AchievementGold.copy(alpha = alpha),
+            chipContent = DesignTokens.PrimaryForeground.copy(alpha = alpha)
+        )
+    }
 }
 
 private data class RarityPalette(

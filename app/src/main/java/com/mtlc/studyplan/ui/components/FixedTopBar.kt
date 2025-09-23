@@ -137,10 +137,8 @@ fun FixedTopBar(
                     // Title
                     Text(
                         text = title,
-                        style = typography.cardTitle.copy(
-                            fontSize = if (deviceProfile.isSmallScreen) 16.sp else 18.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = contentColor,
                         modifier = Modifier.weight(1f, fill = false)
                     )
@@ -225,7 +223,7 @@ object FixedTopBarDefaults {
         FixedTopBar(
             title = "Study Plan",
             showMenu = true,
-            showSearch = true,
+            showSearch = false,
             showLanguageSwitcher = false,
             onMenuClick = onMenuClick,
             onSearchClick = onSearchClick,

@@ -18,4 +18,5 @@ interface SocialRepository {
     suspend fun selectAvatar(avatarId: String)
     suspend fun updateWeeklyGoal(hours: Int)
     suspend fun updateUsername(username: String)
+    suspend fun unlockAward(awardId: String): Award?
 }

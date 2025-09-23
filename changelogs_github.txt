@@ -4,6 +4,35 @@ StudyPlan Changelog
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [2.9.4] - 2025-09-23
+
+### 🔧 Build System & Stability
+
+#### Critical Gradle Configuration Fix
+- **Fixed Gradle Configuration Cache Issue**: Resolved "Querying the mapped value of task property 'jarsOutputDir' before task has completed" error that was preventing builds
+- **Improved Build Stability**: Disabled Gradle configuration cache to prevent task ordering issues in complex builds
+- **Enhanced Development Experience**: Eliminated IDE sync failures and build interruptions
+
+### 🆕 New Features & Components
+- **Study Progress Repository**: Added comprehensive study progress tracking and management system
+- **Award Notification Component**: New UI component for displaying achievement notifications
+- **QA Tabs Checklist**: Added comprehensive testing checklist for tab-based UI components
+- **Dependencies Documentation**: Enhanced dependency tracking and management documentation
+
+### 🎨 UI/UX Improvements
+- **Social Features Enhancement**: Improved social screen components and navigation flow
+- **Component Architecture**: Better separation of concerns with dedicated repository and UI components
+- **Navigation Polish**: Smoother transitions and improved state management in social features
+
+### 📦 Dependencies & Infrastructure
+- **Updated Dependencies**: Minor version updates for improved compatibility and security
+- **Build Configuration**: Optimized Gradle settings for better performance and reliability
+
+### 🐛 Bug Fixes
+- **Build System**: Resolved critical Gradle task ordering issues affecting development workflow
+- **Component Integration**: Fixed missing imports and component initialization issues
+- **Code Quality**: Improved type safety and error handling throughout the codebase
+
 
 ## [2.7.0] - 2024-12-28
 

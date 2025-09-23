@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import android.annotation.SuppressLint
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,12 +21,18 @@ import com.mtlc.studyplan.integration.AppIntegrationManager
 @Composable
 fun SimplifiedAppNavHost() {
     val navController = rememberNavController()
-    
+    val context = LocalContext.current
+
     // Create main AppIntegrationManager for core functionality
     val mainAppIntegrationManager = remember {
         AppIntegrationManager(
             taskRepository = com.mtlc.studyplan.data.TaskRepositoryImpl()
         )
+    }
+
+    // Create StudyProgressRepository for week progression tracking
+    val studyProgressRepository = remember {
+        com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
 
     NavHost(
@@ -53,6 +60,7 @@ fun SimplifiedAppNavHost() {
             ) { _ ->
                 WorkingTasksScreen(
                     appIntegrationManager = mainAppIntegrationManager,
+                    studyProgressRepository = studyProgressRepository,
                     onNavigateBack = {
                         navController.popBackStack()
                     }

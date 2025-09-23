@@ -38,7 +38,19 @@ fun AwardsTab(
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing.sm)
         ) {
-            awards.forEach { award ->
+            // Sort awards: unlocked first, then by rarity (Legendary -> Epic -> Rare)
+            val sortedAwards = awards.sortedWith(
+                compareByDescending<Award> { it.isUnlocked }
+                    .thenByDescending {
+                        when (it.rarity) {
+                            com.mtlc.studyplan.data.social.AwardRarity.Legendary -> 3
+                            com.mtlc.studyplan.data.social.AwardRarity.Epic -> 2
+                            com.mtlc.studyplan.data.social.AwardRarity.Rare -> 1
+                        }
+                    }
+            )
+
+            sortedAwards.forEach { award ->
                 AwardCard(award = award)
             }
         }

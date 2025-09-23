@@ -13,6 +13,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.PlayArrow
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,15 +46,23 @@ import java.util.Locale
 @Composable
 fun WorkingTasksScreen(
     appIntegrationManager: AppIntegrationManager,
+    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
     onNavigateBack: () -> Unit = {},
+    onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    // Get current week from study progress repository
+    val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
+
     val plan = remember { PlanDataSource.planData }
 
     var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan, 3: Custom
     var selectedDay by remember { mutableStateOf<DayPlan?>(null) }
 
-    val thisWeek = plan.firstOrNull()
+    // Get the week that corresponds to user's current progress
+    val thisWeek = remember(currentWeek) {
+        plan.getOrNull(currentWeek - 1) ?: plan.firstOrNull()
+    }
     val weeklyIds = remember(thisWeek) { thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet() }
     val weeklyCompleted = 0
     val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
@@ -78,14 +88,15 @@ fun WorkingTasksScreen(
         )
         Spacer(Modifier.height(8.dp))
         when (selectedTab) {
-            0 -> DailyTab(selectedDay, onBackToPlan = { selectedTab = 2 })
+            0 -> DailyTab(selectedDay, currentWeek = currentWeek, onBackToPlan = { selectedTab = 2 })
             2 -> PlanTab(
                 thisWeek = thisWeek,
                 weeklyProgressPct = weeklyProgressPct,
                 onDayClick = { day ->
                     selectedDay = day
                     selectedTab = 0  // Switch to Daily tab
-                }
+                },
+                onNavigateToStudyPlan = onNavigateToStudyPlan
             )
             else -> PlaceholderTab()
         }
@@ -203,7 +214,8 @@ private fun PlaceholderTab() {
 private fun PlanTab(
     thisWeek: WeekPlan?,
     weeklyProgressPct: Float,
-    onDayClick: (DayPlan) -> Unit = {}
+    onDayClick: (DayPlan) -> Unit = {},
+    onNavigateToStudyPlan: () -> Unit = {}
 ) {
     val cardShape = RoundedCornerShape(16.dp)
     LazyColumn(
@@ -211,6 +223,57 @@ private fun PlanTab(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(bottom = 28.dp)
     ) {
+        // Study Plan Overview Card
+        item {
+            Card(
+                shape = cardShape,
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4)), // Light yellow
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToStudyPlan() }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.EditCalendar,
+                            contentDescription = null,
+                            tint = Color(0xFF795548), // Brown color for better contrast on yellow
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "View Full Study Plan",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp,
+                                color = Color(0xFF795548) // Brown color for better contrast on yellow
+                            )
+                            Text(
+                                text = "Comprehensive YDS preparation schedule",
+                                fontSize = 13.sp,
+                                color = Color(0xFF795548).copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = "Navigate to full study plan",
+                        tint = Color(0xFF795548), // Brown color for better contrast on yellow
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+
         // This Week's Study Plan
         item {
             Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface)) {
@@ -330,12 +393,25 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                 }
                 Spacer(Modifier.height(6.dp))
                 day.tasks.forEach { t ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text(t.desc, color = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.weight(1f))
-                        Text("09:00-09:30", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                        Text(
+                            text = t.desc,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "09:00-09:30",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp
+                        )
                     }
                     Spacer(Modifier.height(4.dp))
                 }
@@ -346,7 +422,7 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
 
 // Daily Tab Implementation
 @Composable
-private fun DailyTab(selectedDay: DayPlan?, onBackToPlan: () -> Unit) {
+private fun DailyTab(selectedDay: DayPlan?, currentWeek: Int = 1, onBackToPlan: () -> Unit) {
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedDay) {
@@ -419,7 +495,7 @@ private fun DailyTab(selectedDay: DayPlan?, onBackToPlan: () -> Unit) {
     }
 
     // Create study info based on selected day
-    val studyInfo = createDailyStudyInfo(selectedDay)
+    val studyInfo = createDailyStudyInfo(selectedDay, currentWeek)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -893,42 +969,104 @@ private fun NotesSection(notes: String) {
 }
 
 // Helper function to create DailyStudyInfo from DayPlan
-private fun createDailyStudyInfo(dayPlan: DayPlan): DailyStudyInfo {
+private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1): DailyStudyInfo {
     val dayIndex = when (dayPlan.day.lowercase()) {
-        "monday" -> 0
-        "tuesday" -> 1
-        "wednesday" -> 2
-        "thursday" -> 3
-        "friday" -> 4
-        "saturday" -> 5
-        "sunday" -> 6
+        "pazartesi", "monday" -> 0
+        "salı", "tuesday" -> 1
+        "çarşamba", "wednesday" -> 2
+        "perşembe", "thursday" -> 3
+        "cuma", "friday" -> 4
+        "cumartesi", "saturday" -> 5
+        "pazar", "sunday" -> 6
         else -> 0
     }
 
-    // Assign books based on day of week
-    val book = when (dayIndex % 3) {
-        0 -> StudyBook.RED_BOOK
-        1 -> StudyBook.BLUE_BOOK
-        else -> StudyBook.GREEN_BOOK
+    // Assign books based on the 30-week curriculum progression
+    val book = when (currentWeek) {
+        in 1..8 -> StudyBook.RED_BOOK      // Weeks 1-8: Red Book Foundation
+        in 9..18 -> StudyBook.BLUE_BOOK    // Weeks 9-18: Blue Book Intermediate
+        in 19..26 -> StudyBook.GREEN_BOOK  // Weeks 19-26: Green Book Advanced
+        else -> StudyBook.RED_BOOK         // Weeks 27-30: Exam Camp (mixed/review - default to Red for now)
     }
 
-    // Create sample units for the day
-    val units = listOf(
-        StudyUnit(
-            title = "Present Tense Structures",
-            unitNumber = 10 + dayIndex,
-            pages = "${25 + dayIndex * 3}-${28 + dayIndex * 3}",
-            exercises = listOf("10.1", "10.2", "10.3"),
-            isCompleted = dayIndex < 3
-        ),
-        StudyUnit(
-            title = "Question Formation",
-            unitNumber = 11 + dayIndex,
-            pages = "${29 + dayIndex * 3}-${32 + dayIndex * 3}",
-            exercises = listOf("11.1", "11.2"),
-            isCompleted = dayIndex < 2
-        )
-    )
+    // Create realistic units based on the curriculum and book progression
+    val units = when {
+        // Red Book: Units 1-115 across 8 weeks
+        book == StudyBook.RED_BOOK -> {
+            val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1 // Roughly 14 units per week
+            listOf(
+                StudyUnit(
+                    title = when (baseUnitNumber % 10) {
+                        0 -> "Present Simple and Continuous"
+                        1 -> "Past Simple and Continuous"
+                        2 -> "Present Perfect"
+                        3 -> "Modal Verbs"
+                        4 -> "Future Forms"
+                        5 -> "Conditionals"
+                        6 -> "Passive Voice"
+                        7 -> "Reported Speech"
+                        8 -> "Gerunds and Infinitives"
+                        else -> "Questions and Negatives"
+                    },
+                    unitNumber = minOf(baseUnitNumber, 115),
+                    pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
+                    exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
+                    isCompleted = dayIndex < 3
+                )
+            )
+        }
+
+        // Blue Book: Intermediate level topics
+        book == StudyBook.BLUE_BOOK -> {
+            val weekInBlueBook = currentWeek - 8 // Blue book starts at week 9
+            listOf(
+                StudyUnit(
+                    title = when (weekInBlueBook) {
+                        1 -> "Tenses Review (All Tenses Comparison)"
+                        2 -> "Future in Detail (Continuous/Perfect)"
+                        3 -> "Modals 1 (Ability, Permission, Advice)"
+                        4 -> "Modals 2 (Deduction, Obligation, Regret)"
+                        5 -> "Conditionals & Wish (All Types)"
+                        6 -> "Passive Voice (All Tenses) & 'have something done'"
+                        7 -> "Reported Speech (Questions, Commands, Advanced)"
+                        8 -> "Noun Clauses & Relative Clauses"
+                        9 -> "Gerunds & Infinitives (Advanced patterns)"
+                        10 -> "Conjunctions & Connectors"
+                        else -> "Advanced Grammar Review"
+                    },
+                    unitNumber = weekInBlueBook * 10 + dayIndex,
+                    pages = "${weekInBlueBook * 8}-${weekInBlueBook * 8 + 7}",
+                    exercises = listOf("${weekInBlueBook}.1", "${weekInBlueBook}.2", "${weekInBlueBook}.3"),
+                    isCompleted = dayIndex < 3
+                )
+            )
+        }
+
+        // Green Book: Advanced level topics
+        book == StudyBook.GREEN_BOOK -> {
+            val weekInGreenBook = currentWeek - 18 // Green book starts at week 19
+            listOf(
+                StudyUnit(
+                    title = when (weekInGreenBook) {
+                        1 -> "Advanced Tense Nuances & Narrative Tenses"
+                        2 -> "Inversion & Emphasis (Not only, Hardly...)"
+                        3 -> "Advanced Modals (Speculation, Hypothetical)"
+                        4 -> "Participle Clauses (-ing and -ed clauses)"
+                        5 -> "Advanced Connectors & Discourse Markers"
+                        6 -> "Hypothetical Meaning & Subjunctives"
+                        7 -> "Adjectives & Adverbs (Advanced Uses)"
+                        else -> "Prepositions & Phrasal Verbs (Advanced)"
+                    },
+                    unitNumber = weekInGreenBook * 5 + dayIndex,
+                    pages = "${weekInGreenBook * 6}-${weekInGreenBook * 6 + 5}",
+                    exercises = listOf("${weekInGreenBook}.1", "${weekInGreenBook}.2"),
+                    isCompleted = dayIndex < 2
+                )
+            )
+        }
+
+        else -> emptyList()
+    }
 
     // Create sample tasks based on the day's existing tasks
     val tasks = dayPlan.tasks.take(3).mapIndexed { index, task ->
@@ -977,7 +1115,7 @@ private fun createDailyStudyInfo(dayPlan: DayPlan): DailyStudyInfo {
     }
 
     return DailyStudyInfo(
-        weekTitle = "Week ${(dayIndex / 7) + 1} - ${book.description}",
+        weekTitle = "Week $currentWeek - ${book.description}",
         dayName = dayPlan.day,
         date = LocalDate.now().plusDays(dayIndex.toLong()).format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())),
         book = book,

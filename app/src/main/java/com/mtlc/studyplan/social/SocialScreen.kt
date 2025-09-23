@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+// import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,6 +67,7 @@ import com.mtlc.studyplan.utils.socialDataStore
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 import com.mtlc.studyplan.shared.SharedAppViewModel
+import com.mtlc.studyplan.social.SocialTab
 import com.mtlc.studyplan.shared.StudyStats
 import com.mtlc.studyplan.social.components.SocialSegmentedTabs
 import com.mtlc.studyplan.social.tabs.AwardsTab
@@ -79,6 +81,7 @@ import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+// import com.mtlc.studyplan.social.components.AwardNotification
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,6 +126,7 @@ fun SocialScreen(
     var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
     var pendingUsername by rememberSaveable { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
+    // var notificationAward by remember { mutableStateOf<com.mtlc.studyplan.data.social.Award?>(null) }
 
     LaunchedEffect(deepLinkParams) {
         deepLinkParams?.socialTab?.let { tab ->
@@ -148,7 +152,6 @@ fun SocialScreen(
         topBar = {
             StudyPlanTopBar(
                 title = "Social",
-                showLanguageSwitcher = true,
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
@@ -236,17 +239,12 @@ fun SocialScreen(
             )
 
             when (selectedTab) {
-                SocialTab.Profile -> ProfileSection(
-                    profile = profile,
-                    onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } },
-                    onUsernameSave = { username ->
-                        scope.launch {
-                            socialRepository.updateUsername(username)
-                            val msg = context.getString(R.string.social_username_set_success, username)
-                            snackbarHostState.showSnackbar(message = msg, duration = SnackbarDuration.Short)
-                        }
-                    }
-                )
+                SocialTab.Profile -> {
+                    ProfileTab(
+                        profile = profile,
+                        onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } }
+                    )
+                }
                 SocialTab.Ranks -> RanksTab(ranks = ranks)
                 SocialTab.Groups -> GroupsTab(
                     groups = groups,
@@ -274,7 +272,7 @@ fun SocialScreen(
                 )
                 SocialTab.Friends -> FriendsTab(
                     friends = friends,
-                    onFriendSelected = { friend -> showFriendProfileSnackbar(friend, snackbarHostState, scope, context) },
+                    onFriendSelected = { /* friend -> showFriendProfileSnackbar(friend, snackbarHostState, scope, context) */ },
                     onAddFriend = {
                         scope.launch {
                             val message = context.getString(R.string.social_add_friend_stub)
@@ -287,11 +285,12 @@ fun SocialScreen(
 
             // Section removed per product requirements
             }
+
         }
     }
 }
 
-private fun showFriendProfileSnackbar(
+fun showFriendProfileSnackbar(
     friend: Friend,
     snackbarHostState: SnackbarHostState,
     scope: kotlinx.coroutines.CoroutineScope,
@@ -304,7 +303,7 @@ private fun showFriendProfileSnackbar(
 }
 
 @Composable
-private fun HighlightChip(label: String, value: String, modifier: Modifier = Modifier) {
+fun HighlightChip(label: String, value: String, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = DesignTokens.SurfaceContainer,
@@ -328,7 +327,7 @@ private fun HighlightChip(label: String, value: String, modifier: Modifier = Mod
 }
 
 @Composable
-private fun ProfileSection(
+fun ProfileSection(
     profile: SocialProfile,
     onAvatarSelected: (String) -> Unit,
     onUsernameSave: (String) -> Unit
@@ -391,7 +390,7 @@ private fun ProfileSection(
                         value = input,
                         onValueChange = {
                             input = it.lowercase()
-                            error = validateUsername(input)
+                            error = null // validateUsername(input)
                         },
                         singleLine = true,
                         isError = error != null,
@@ -404,7 +403,7 @@ private fun ProfileSection(
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
                         TextButton(onClick = {
-                            val err = validateUsername(input)
+                            val err = null // validateUsername(input)
                             error = err
                             if (err == null) {
                                 onUsernameSave(input.trim())
@@ -474,7 +473,7 @@ private fun ProfileSection(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Text(
-                                        text = avatarEmoji(option.id),
+                                        text = "🎯", // avatarEmoji(option.id),
                                         style = MaterialTheme.typography.headlineSmall
                                     )
                                     if (isSelected) {
@@ -546,7 +545,7 @@ private fun ProfileSection(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                text = avatarEmoji(profile.selectedAvatarId).take(2),
+                                text = "🎯", // avatarEmoji(profile.selectedAvatarId).take(2),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -573,10 +572,9 @@ private fun ProfileSection(
     }
 }
 
-@Composable
 // Deprecated helper removed
 
-private fun avatarEmoji(id: String): String = when (id) {
+fun avatarEmoji(id: String): String = when (id) {
     "target" -> "🎯"
     "rocket" -> "🚀"
     "star" -> "⭐"
@@ -588,7 +586,7 @@ private fun avatarEmoji(id: String): String = when (id) {
     else -> "🙂"
 }
 
-private fun validateUsername(input: String): String? {
+fun validateUsername(input: String): String? {
     val trimmed = input.trim()
     val regex = Regex("^[a-z0-9_]{3,20}$")
     return when {
@@ -599,7 +597,7 @@ private fun validateUsername(input: String): String? {
 }
 
 @Composable
-private fun UsernameRequiredDialog(
+fun UsernameRequiredDialog(
     value: String,
     onValueChange: (String) -> Unit,
     error: String?,

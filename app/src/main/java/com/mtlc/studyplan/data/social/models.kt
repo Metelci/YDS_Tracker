@@ -44,7 +44,9 @@ data class Award(
     val title: String,
     val description: String,
     val rarity: AwardRarity,
-    val unlockedBy: List<String>
+    val unlockedBy: List<String>,
+    val isUnlocked: Boolean = false,
+    val unlockedDate: String? = null
 )
 
 data class AvatarOption(

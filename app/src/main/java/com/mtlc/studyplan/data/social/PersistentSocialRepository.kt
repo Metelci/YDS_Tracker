@@ -99,26 +99,273 @@ class PersistentSocialRepository(
 
     private val awardsState = MutableStateFlow(
         listOf(
+            // Legendary Awards
             Award(
                 id = "a1",
                 title = "Study Streak Master",
                 description = "Maintained 30-day streak",
                 rarity = AwardRarity.Legendary,
-                unlockedBy = listOf("Alex Chen", "Sarah Kim")
+                unlockedBy = listOf("Alex Chen", "Sarah Kim"),
+                isUnlocked = false
             ),
             Award(
                 id = "a2",
-                title = "Vocabulary Virtuoso",
-                description = "Learned 1000+ words",
-                rarity = AwardRarity.Epic,
-                unlockedBy = listOf("You", "Mike Jones", "Emma Davis")
+                title = "YDS Champion",
+                description = "Scored 80+ in YDS exam",
+                rarity = AwardRarity.Legendary,
+                unlockedBy = listOf(),
+                isUnlocked = false
             ),
             Award(
                 id = "a3",
+                title = "Perfect Week",
+                description = "Completed all study goals for 7 consecutive days",
+                rarity = AwardRarity.Legendary,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a16",
+                title = "YDS Legend",
+                description = "Scored 85+ in YDS exam - Top 1% achievement",
+                rarity = AwardRarity.Legendary,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a17",
+                title = "Academic Excellence",
+                description = "Maintained 90%+ accuracy in all practice tests",
+                rarity = AwardRarity.Legendary,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+
+            // Epic Awards
+            Award(
+                id = "a4",
+                title = "Vocabulary Virtuoso",
+                description = "Learned 1000+ words",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf("You", "Mike Jones", "Emma Davis"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-15"
+            ),
+            Award(
+                id = "a5",
+                title = "Grammar Guardian",
+                description = "Mastered all grammar sections",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a6",
+                title = "Reading Rocket",
+                description = "Completed 50 reading comprehension exercises",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf("Sarah Kim"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a7",
+                title = "Consistent Learner",
+                description = "Studied for 14 consecutive days",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a18",
+                title = "YDS Scholar",
+                description = "Completed 100 YDS practice questions",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf("Alex Chen"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a19",
+                title = "Listening Master",
+                description = "Achieved 85%+ in 10 listening exercises",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a20",
+                title = "Academic Vocabulary Expert",
+                description = "Mastered 500+ academic English words",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf("Sarah Kim"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a21",
+                title = "Mock Test Champion",
+                description = "Scored 75+ in 5 full-length mock tests",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a22",
+                title = "Time Management Pro",
+                description = "Completed 3 practice tests within time limit",
+                rarity = AwardRarity.Epic,
+                unlockedBy = listOf("Mike Jones"),
+                isUnlocked = false
+            ),
+
+            // Rare Awards
+            Award(
+                id = "a8",
                 title = "Speed Demon",
                 description = "Completed 100 questions in 30min",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("Sarah Kim", "Lisa Wang")
+                unlockedBy = listOf("Sarah Kim", "Lisa Wang"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a9",
+                title = "Early Bird",
+                description = "Studied before 8 AM for 5 days",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-10"
+            ),
+            Award(
+                id = "a10",
+                title = "Night Owl",
+                description = "Studied after 10 PM for 5 days",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a11",
+                title = "Word Hunter",
+                description = "Learned 100 new words",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Mike Jones", "Emma Davis"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a12",
+                title = "Practice Pioneer",
+                description = "Completed 25 practice tests",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a13",
+                title = "First Steps",
+                description = "Completed your first study session",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You", "Alex Chen", "Sarah Kim", "Mike Jones", "Emma Davis"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-01"
+            ),
+            Award(
+                id = "a14",
+                title = "Social Butterfly",
+                description = "Joined your first study group",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a15",
+                title = "Goal Setter",
+                description = "Set your weekly study goal",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-01"
+            ),
+            Award(
+                id = "a23",
+                title = "YDS Starter",
+                description = "Completed your first YDS practice test",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You", "Alex Chen"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-02"
+            ),
+            Award(
+                id = "a24",
+                title = "Vocabulary Builder",
+                description = "Learned 50 new words in one week",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Emma Davis"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a25",
+                title = "Reading Enthusiast",
+                description = "Completed 10 reading comprehension exercises",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Lisa Wang", "Sarah Kim"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a26",
+                title = "Grammar Rookie",
+                description = "Scored 80%+ in grammar section",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Mike Jones"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a27",
+                title = "Weekly Warrior",
+                description = "Studied every day for one week",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You", "Tom Wilson"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-08"
+            ),
+            Award(
+                id = "a28",
+                title = "Question Master",
+                description = "Answered 500 practice questions correctly",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a29",
+                title = "Motivation Keeper",
+                description = "Maintained study streak during exam stress period",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Alex Chen"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a30",
+                title = "Error Hunter",
+                description = "Identified and corrected 100 mistakes",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("Sarah Kim", "Emma Davis"),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a31",
+                title = "Study Buddy",
+                description = "Helped 3 friends with their YDS preparation",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf(),
+                isUnlocked = false
+            ),
+            Award(
+                id = "a32",
+                title = "Progress Tracker",
+                description = "Logged study progress for 30 days",
+                rarity = AwardRarity.Rare,
+                unlockedBy = listOf("You"),
+                isUnlocked = true,
+                unlockedDate = "2024-12-20"
             )
         )
     )
@@ -189,5 +436,31 @@ class PersistentSocialRepository(
         dataStore.edit { preferences ->
             preferences[USERNAME_KEY] = sanitized
         }
+    }
+
+    override suspend fun unlockAward(awardId: String): Award? {
+        var unlockedAward: Award? = null
+        awardsState.update { awards ->
+            awards.map { award ->
+                if (award.id == awardId && !award.isUnlocked) {
+                    val updated = award.copy(
+                        isUnlocked = true,
+                        unlockedDate = getCurrentDate(),
+                        unlockedBy = award.unlockedBy + "You"
+                    )
+                    unlockedAward = updated
+                    updated
+                } else {
+                    award
+                }
+            }
+        }
+        return unlockedAward
+    }
+
+    private fun getCurrentDate(): String {
+        // Simple date formatting for demo purposes
+        val now = java.time.LocalDate.now()
+        return "${now.year}-${now.monthValue.toString().padStart(2, '0')}-${now.dayOfMonth.toString().padStart(2, '0')}"
     }
 }
