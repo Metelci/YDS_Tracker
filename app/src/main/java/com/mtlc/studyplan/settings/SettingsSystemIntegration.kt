@@ -3,6 +3,7 @@ package com.mtlc.studyplan.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.mtlc.studyplan.core.ViewModelFactory
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
@@ -478,15 +479,9 @@ class SettingsSystemViewModel(
         settingsManager.dispose()
     }
 
-    class Factory(private val context: Context) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(SettingsSystemViewModel::class.java)) {
-                return SettingsSystemViewModel(SettingsSystemManager(context)) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
+    class Factory(private val context: Context) : ViewModelFactory<SettingsSystemViewModel>({
+        SettingsSystemViewModel(SettingsSystemManager(context))
+    })
 }
 
 /**

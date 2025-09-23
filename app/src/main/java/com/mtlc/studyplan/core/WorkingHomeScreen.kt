@@ -150,7 +150,7 @@ fun WorkingHomeScreen(
                         .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToStudyPlan() },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF26C6DA)
+                        containerColor = Color(0xFFE6E3FF)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -166,12 +166,12 @@ fun WorkingHomeScreen(
                                 text = "Start",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Your Journey",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(3.dp))
@@ -179,26 +179,26 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.PlayArrow,
                                 contentDescription = "Start studying",
                                 modifier = Modifier.size(28.dp),
-                                tint = Color.White
+                                tint = Color(0xFF2C2C2C)
                             )
                         } else {
                             Text(
                                 text = "${todayStats.progressPercentage}%",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Today",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.9f)
+                                color = Color(0xFF424242)
                             )
                             Spacer(modifier = Modifier.height(3.dp))
                             CircularProgressIndicator(
                                 progress = { todayStats.progressPercentage / 100f },
                                 modifier = Modifier.size(28.dp),
-                                color = Color.White,
-                                trackColor = Color.White.copy(alpha = 0.3f),
+                                color = Color(0xFF2C2C2C),
+                                trackColor = Color(0xFF424242).copy(alpha = 0.3f),
                                 strokeWidth = 2.5.dp
                             )
                         }
@@ -212,7 +212,7 @@ fun WorkingHomeScreen(
                         .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToExamDetails() },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF4FC3F7)
+                        containerColor = Color(0xFFF0F8FF)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -227,19 +227,19 @@ fun WorkingHomeScreen(
                             text = "${examTracker.daysToExam}",
                             fontSize = 24.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = Color(0xFF2C2C2C)
                         )
                         Text(
                             text = "Days to YDS",
                             fontSize = 12.sp, // Reduced font size
-                            color = Color.White.copy(alpha = 0.9f),
+                            color = Color(0xFF424242),
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(1.dp)) // Reduced spacing
                         Text(
                             text = examTracker.statusMessage,
                             fontSize = 9.sp, // Reduced font size
-                            color = Color.White.copy(alpha = 0.8f),
+                            color = Color(0xFF616161),
                             textAlign = TextAlign.Center,
                             maxLines = 1
                         )
@@ -261,7 +261,7 @@ fun WorkingHomeScreen(
                         .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { /* Progress feature removed */ },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF66BB6A)
+                        containerColor = Color(0xFFE8F5E8)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -277,12 +277,12 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.Star,
                                 contentDescription = "Earn points",
                                 modifier = Modifier.size(24.dp),
-                                tint = Color.White
+                                tint = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Earn Points",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         } else {
@@ -290,12 +290,12 @@ fun WorkingHomeScreen(
                                 text = "${todayStats.pointsEarned}",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Points Today",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -309,7 +309,7 @@ fun WorkingHomeScreen(
                         .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { onNavigateToTasks() },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFF8A65)
+                        containerColor = Color(0xFFFFE5CC)
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -325,12 +325,12 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = "Create tasks",
                                 modifier = Modifier.size(24.dp),
-                                tint = Color.White
+                                tint = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Create Tasks",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         } else {
@@ -338,12 +338,12 @@ fun WorkingHomeScreen(
                                 text = todayStats.tasksProgressText,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = "Tasks Done",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -385,7 +385,7 @@ fun WorkingHomeScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                color = Color.White.copy(alpha = 0.2f),
+                                color = Color(0xFFE0E0E0),
                                 shape = CircleShape,
                                 modifier = Modifier.size(40.dp)
                             ) {
@@ -407,18 +407,18 @@ fun WorkingHomeScreen(
                                     text = streakInfo.displayText,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = Color(0xFF2C2C2C)
                                 )
                                 Text(
                                     text = streakInfo.motivationText,
                                     fontSize = 14.sp,
-                                    color = Color.White.copy(alpha = 0.9f)
+                                    color = Color(0xFF424242)
                                 )
                             }
 
                             if (streakInfo.showMultiplierBadge) {
                                 Surface(
-                                    color = Color.White,
+                                    color = Color(0xFF2C2C2C),
                                     shape = RoundedCornerShape(20.dp)
                                 ) {
                                     Text(
@@ -443,7 +443,7 @@ fun WorkingHomeScreen(
                     .fillMaxWidth()
                     .clickable { onNavigateToWeeklyPlan() },
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF1F8E9)
+                    containerColor = Color(0xFFF0FFF0)
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -470,7 +470,7 @@ fun WorkingHomeScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF2C2C2C)
                             )
                         }
                     }
@@ -555,7 +555,7 @@ fun WorkingHomeScreen(
                     .fillMaxWidth()
                     .clickable { onNavigateToExamDetails() },
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFE3F2FD)
+                    containerColor = Color(0xFFF0F8FF)
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -646,7 +646,7 @@ fun DayProgressCard(
             .width(80.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = if (day.isCompleted) Color(0xFF4CAF50) else Color(0xFFE8F5E8)
+            containerColor = if (day.isCompleted) Color(0xFFB8E6B8) else Color(0xFFF0FFF0)
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -660,14 +660,14 @@ fun DayProgressCard(
                 text = day.dayName,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (day.isCompleted) Color.White else Color(0xFF2E7D32)
+                color = if (day.isCompleted) Color(0xFF2C2C2C) else Color(0xFF2E7D32)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = day.displayText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (day.isCompleted) Color.White else Color(0xFF1B5E20)
+                color = if (day.isCompleted) Color(0xFF2C2C2C) else Color(0xFF1B5E20)
             )
         }
     }

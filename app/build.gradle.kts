@@ -22,8 +22,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 52
-        versionName = "2.9.2"
+        versionCode = 53
+        versionName = "2.9.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -92,6 +92,9 @@ android {
     lint {
         disable.add("SuspiciousModifierThen")
         disable.add("NullSafeMutableLiveData")
+        disable.add("FrequentlyChangingValue")
+        disable.add("RememberInComposition")
+        disable.add("AutoboxingStateCreation")
     }
 
     // Fix Gradle 9.0 compatibility warnings

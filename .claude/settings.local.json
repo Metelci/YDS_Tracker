@@ -52,7 +52,11 @@
       "Bash(.gradlew.bat compileDebugKotlin:*)",
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\reading\\IntRangeSerializerTest.kt\")",
       "Bash(git pull:*)",
-      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\FixedTopBarResponsiveTest.kt\")"
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\test\\java\\com\\mtlc\\studyplan\\FixedTopBarResponsiveTest.kt\")",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\ui\\QuickNote.kt\")",
+      "Bash(Select-String -Pattern \"BUILD|FAILED|SUCCESS|error:\")",
+      "Bash(Select-String -Pattern \"BUILD|FAILED|SUCCESS\")",
+      "Bash(Select-Object -Last 1)"
     ],
     "deny": [],
     "ask": []

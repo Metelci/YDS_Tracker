@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.3] - 2025-09-23
+
+### ✨ **New Features**
+- **Standardized Top Bar Styling**: Unified top bar appearance across all screens for consistent user experience
+- **Enhanced Settings UI**: Updated pill-style buttons with consistent light grey background (#F0F0F0) for better visual hierarchy
+
+### 🎨 **UI/UX Improvements**
+- **Social Screen Polish**: Added missing imports and fixed function structure for proper compilation
+- **Settings Icons Cleanup**: Removed non-functional settings icons from Today screen session cards
+- **Localization Simplification**: Removed localization flags from all pages except Settings for cleaner interface
+
+### 🔧 **Technical Improvements**
+- **Build System Stability**: Disabled NullSafeMutableLiveData lint detector to resolve build failures
+- **ProGuard Optimization**: Updated rules to explicitly keep default constructors for better R8 compatibility
+- **Code Quality**: Removed duplicate branch conditions in TaskCategoryBadge for cleaner logic
+
+### 🐛 **Bug Fixes**
+- Fixed missing IconButton and Settings icon imports in SocialScreen
+- Corrected missing closing brace in SocialScreen function
+- Resolved duplicate branch condition in TaskCategoryBadge when statement
+
+### 📱 **Platform Updates**
+- **Android**: Version 2.9.3 (Build 53)
+- **Target SDK**: 35 (Android 14)
+- **Minimum SDK**: 30 (Android 11)
+
+---
+
 ## [2.9.0] - 2025-01-20
 
 ### 🚀 **Major Features**

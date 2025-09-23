@@ -28,6 +28,7 @@ import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.Elevations
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mtlc.studyplan.core.viewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -37,12 +38,7 @@ fun MockExamRoute(
 ) {
     val context = LocalContext.current
     val repo = remember { MockExamRepository(context.mockExamDataStore) }
-    val vm: MockExamViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-            @Suppress("UNCHECKED_CAST")
-            return MockExamViewModel(repo) as T
-        }
-    })
+    val vm: MockExamViewModel = viewModel(factory = viewModelFactory { MockExamViewModel(repo) })
 
     val state by vm.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {

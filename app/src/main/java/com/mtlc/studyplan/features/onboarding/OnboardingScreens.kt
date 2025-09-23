@@ -76,6 +76,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.core.viewModelFactory
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.utils.settingsDataStore
@@ -89,12 +90,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
     val context = LocalContext.current
     val repo = remember { OnboardingRepository(context.settingsDataStore) }
     val settings = remember { PlanSettingsStore(context.settingsDataStore) }
-    val vm: OnboardingViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-            @Suppress("UNCHECKED_CAST")
-            return OnboardingViewModel(repo, settings) as T
-        }
-    })
+    val vm: OnboardingViewModel = viewModel(factory = viewModelFactory { OnboardingViewModel(repo, settings) })
 
     var step by rememberSaveable { mutableIntStateOf(0) }
     val haptics = LocalHapticFeedback.current

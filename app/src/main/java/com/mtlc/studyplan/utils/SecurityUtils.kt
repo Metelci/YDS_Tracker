@@ -77,25 +77,16 @@ object SecurityUtils {
     /**
      * Android Keystore'dan AES anahtarını alır
      */
-    @SuppressLint("ObsoleteSdkInt")
     private fun getAESKey(): SecretKey {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
-            keyStore.load(null)
+        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
+        keyStore.load(null)
 
-            if (!keyStore.containsAlias(AES_KEY_ALIAS)) {
-                generateAESKey()
-            }
-
-            val keyEntry = keyStore.getEntry(AES_KEY_ALIAS, null) as KeyStore.SecretKeyEntry
-            keyEntry.secretKey
-        } else {
-            // API 23 altı için fallback - secure random ile anahtar oluştur
-            val secureRandom = SecureRandom()
-            val keyBytes = ByteArray(32) // 256-bit key
-            secureRandom.nextBytes(keyBytes)
-            SecretKeySpec(keyBytes, "AES")
+        if (!keyStore.containsAlias(AES_KEY_ALIAS)) {
+            generateAESKey()
         }
+
+        val keyEntry = keyStore.getEntry(AES_KEY_ALIAS, null) as KeyStore.SecretKeyEntry
+        return keyEntry.secretKey
     }
 
     /**

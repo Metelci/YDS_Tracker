@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.mtlc.studyplan.core.ViewModelFactory
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.data.SettingsRepository
@@ -318,16 +319,9 @@ class BackupSettingsViewModel(
  */
 class BackupSettingsViewModelFactory(
     private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(BackupSettingsViewModel::class.java)) {
-            val repository = SettingsRepository(context)
-            val backupManager = SettingsBackupManager(context, repository)
-            val cloudSyncManager = CloudSyncManager(context, repository, backupManager)
-            return BackupSettingsViewModel(context, repository, backupManager, cloudSyncManager) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<BackupSettingsViewModel>({
+    val repository = SettingsRepository(context)
+    val backupManager = SettingsBackupManager(context, repository)
+    val cloudSyncManager = CloudSyncManager(context, repository, backupManager)
+    BackupSettingsViewModel(context, repository, backupManager, cloudSyncManager)
+})

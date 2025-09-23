@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.mtlc.studyplan.core.ViewModelFactory
 import com.mtlc.studyplan.data.social.*
 import com.mtlc.studyplan.core.error.*
 import kotlinx.coroutines.flow.*
@@ -375,13 +376,4 @@ class SocialViewModel(
 class SocialViewModelFactory(
     private val repository: SocialRepository,
     private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SocialViewModel::class.java)) {
-            return SocialViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<SocialViewModel>({ SocialViewModel(repository, context) })

@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
@@ -73,7 +72,6 @@ import com.mtlc.studyplan.feature.review.ReviewScreen
 import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
-import com.mtlc.studyplan.ui.animations.StudyPlanMicroInteractions.pressAnimation
 import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 import com.mtlc.studyplan.utils.settingsDataStore
 
@@ -158,55 +156,6 @@ fun AppNavHost(
                 )
             }
         },
-        floatingActionButton = {
-            var showActions by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-            if (showActions) {
-                androidx.compose.material3.ModalBottomSheet(onDismissRequest = { showActions = false }) {
-                    androidx.compose.material3.ListItem(
-                        headlineContent = { Text("Start Session") },
-                        supportingContent = { Text("Jump to Today and begin") },
-                        modifier = Modifier
-                            .clickable {
-                                showActions = false
-                                if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                navController.navigate(TODAY_ROUTE)
-                            }
-                    )
-                    androidx.compose.material3.ListItem(
-                        headlineContent = { Text("Add Quick Note") },
-                        supportingContent = { Text("Save a flashcard idea") },
-                        modifier = Modifier
-                            .clickable {
-                                showActions = false
-                                if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                navController.navigate("quickNote")
-                            }
-                    )
-                }
-            }
-            // Compact FAB with small size to reduce overlap
-            androidx.compose.material3.SmallFloatingActionButton(
-                onClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    showActions = true
-                },
-                modifier = Modifier
-                    .padding(bottom = 12.dp)
-                    .pressAnimation(HapticFeedbackType.TextHandleMove)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Quick Actions",
-                    modifier = Modifier.animateContentSize(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        )
-                    )
-                )
-            }
-        },
-        floatingActionButtonPosition = androidx.compose.material3.FabPosition.End
     ) { padding ->
         navController.currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
 
@@ -503,14 +452,14 @@ fun AppNavHost(
                                 hapticType = HapticFeedbackType.TextHandleMove
                             )
                         },
-                        modifier = Modifier.pressAnimation(HapticFeedbackType.TextHandleMove)
+                        modifier = Modifier
                     ) { Text("Open Insights") }
                     androidx.compose.material3.Button(
                         onClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             navController.popBackStack(TODAY_ROUTE, inclusive = false)
                         },
-                        modifier = Modifier.pressAnimation(HapticFeedbackType.TextHandleMove)
+                        modifier = Modifier
                     ) {
                         Text("Back to Today")
                     }
@@ -523,8 +472,6 @@ fun AppNavHost(
             val ui = kotlinx.serialization.json.Json.decodeFromString<MockResultUi>(json2)
             ReviewScreen(result = ui, onRetrySet = { ids -> navController.navigate("mock/start") }, onBack = { navController.popBackStack() })
         }
-        // Quick note route (simple sheet)
-        composable("quickNote") { com.mtlc.studyplan.ui.QuickNoteRoute(onClose = { navController.popBackStack() }) }
 
         // Weekly Plan route
         composable("weekly-plan") {

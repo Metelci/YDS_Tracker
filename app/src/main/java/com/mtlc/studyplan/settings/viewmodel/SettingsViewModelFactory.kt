@@ -1,9 +1,9 @@
 package com.mtlc.studyplan.settings.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.accessibility.AccessibilityManager
+import com.mtlc.studyplan.core.ViewModelFactory
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
@@ -19,8 +19,7 @@ class CompositeSettingsViewModelFactory(
     private val animationCoordinator: SettingsAnimationCoordinator
 ) : ViewModelProvider.Factory {
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(MainSettingsViewModel::class.java) -> {
                 MainSettingsViewModel(
@@ -68,23 +67,15 @@ class CompositeSettingsBackupViewModelFactory(
     private val backupManager: SettingsBackupManager,
     private val accessibilityManager: AccessibilityManager,
     private val animationCoordinator: SettingsAnimationCoordinator
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsBackupViewModel::class.java)) {
-            return SettingsBackupViewModel(backupManager, accessibilityManager, animationCoordinator) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<SettingsBackupViewModel>({
+    SettingsBackupViewModel(backupManager, accessibilityManager, animationCoordinator)
+})
 
 class ConflictResolutionViewModelFactory(
     private val context: Context
 ) : ViewModelProvider.Factory {
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
@@ -93,95 +84,42 @@ class AdvancedToggleViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val accessibilityManager: AccessibilityManager,
     private val animationCoordinator: SettingsAnimationCoordinator
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AdvancedToggleViewModel::class.java)) {
-            return AdvancedToggleViewModel(
-                settingsRepository,
-                accessibilityManager,
-                animationCoordinator
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<AdvancedToggleViewModel>({
+    AdvancedToggleViewModel(settingsRepository, accessibilityManager, animationCoordinator)
+})
 
 class AccessibilityViewModelFactory(
     private val accessibilityManager: AccessibilityManager,
     private val settingsRepository: SettingsRepository
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AccessibilityViewModel::class.java)) {
-            return AccessibilityViewModel(
-                accessibilityManager,
-                settingsRepository
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<AccessibilityViewModel>({
+    AccessibilityViewModel(accessibilityManager, settingsRepository)
+})
 
 class PerformanceViewModelFactory(
     private val performanceMonitor: SettingsPerformanceMonitor,
     private val settingsRepository: SettingsRepository,
     private val accessibilityManager: AccessibilityManager
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PerformanceViewModel::class.java)) {
-            return PerformanceViewModel(
-                performanceMonitor,
-                settingsRepository,
-                accessibilityManager
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<PerformanceViewModel>({
+    PerformanceViewModel(performanceMonitor, settingsRepository, accessibilityManager)
+})
 
 class GamificationSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(GamificationSettingsViewModel::class.java)) {
-            return GamificationSettingsViewModel(settingsRepository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<GamificationSettingsViewModel>({
+    GamificationSettingsViewModel(settingsRepository, context)
+})
 
 class NotificationSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NotificationSettingsViewModel::class.java)) {
-            return NotificationSettingsViewModel(settingsRepository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<NotificationSettingsViewModel>({
+    NotificationSettingsViewModel(settingsRepository, context)
+})
 
 class PrivacySettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val context: Context
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PrivacySettingsViewModel::class.java)) {
-            return PrivacySettingsViewModel(settingsRepository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<PrivacySettingsViewModel>({
+    PrivacySettingsViewModel(settingsRepository, context)
+})

@@ -399,7 +399,7 @@ fun StudyProgressChart(
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Study Progress",
+                text = stringResource(R.string.study_progress),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -611,7 +611,7 @@ fun PerformanceMetricsCard(
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Performance Metrics",
+                text = stringResource(R.string.performance_metrics),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -674,7 +674,7 @@ fun WeakAreasCard(
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Areas for Improvement",
+                text = stringResource(R.string.areas_for_improvement),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )

@@ -3,6 +3,7 @@ package com.mtlc.studyplan.settings.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mtlc.studyplan.core.ViewModelFactory
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
 import com.mtlc.studyplan.settings.data.SettingsCategory
@@ -305,13 +306,4 @@ class SettingsViewModel(
 class SettingsViewModelFactory(
     private val repository: SettingsRepository,
     private val context: Context
-) : androidx.lifecycle.ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            return SettingsViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
+) : ViewModelFactory<SettingsViewModel>({ SettingsViewModel(repository, context) })
