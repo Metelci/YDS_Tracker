@@ -1,4 +1,4 @@
-package com.mtlc.studyplan.ui.components
+ package com.mtlc.studyplan.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

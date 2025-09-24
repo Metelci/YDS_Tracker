@@ -585,6 +585,7 @@ private fun SettingsGradientTopBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
+        shadowElevation = 2.dp,
         color = Color.Transparent
     ) {
         Box(
@@ -593,13 +594,13 @@ private fun SettingsGradientTopBar(
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFFFF9E6), // Light cream/yellow
-                            Color(0xFFE8F5F3)  // Light blue-green
+                            Color(0xFFFFF0DC), // Cream/yellow - more saturated
+                            Color(0xFFCCE7E0)  // Blue-green - more saturated
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
