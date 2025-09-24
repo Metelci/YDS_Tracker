@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -76,13 +78,11 @@ fun ReaderScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(passage.title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
+            StudyPlanTopBar(
+                title = passage.title,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onBack,
+                style = StudyPlanTopBarStyle.Progress,
                 actions = {
                     IconButton(onClick = { showControls = true }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = "Reader settings")

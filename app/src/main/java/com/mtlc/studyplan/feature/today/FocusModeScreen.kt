@@ -26,7 +26,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -74,13 +75,11 @@ fun FocusModeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Focus Mode") },
-                navigationIcon = {
-                    IconButton(onClick = { showExitConfirm = true }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            StudyPlanTopBar(
+                title = "Focus Mode",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = { showExitConfirm = true },
+                style = StudyPlanTopBarStyle.Tasks
             )
         }
     ) { padding ->

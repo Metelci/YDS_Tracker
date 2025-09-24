@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,13 +82,11 @@ fun TaskSettingsScreen(onBack: () -> Unit) {
 private fun SettingsCategoryScaffold(title: String, subtitle: String, onBack: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            StudyPlanTopBar(
+                title = title,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onBack,
+                style = StudyPlanTopBarStyle.Settings
             )
         }
     ) { padding ->

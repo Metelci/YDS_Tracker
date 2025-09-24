@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Award
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.social.components.AwardCard
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
@@ -57,12 +56,3 @@ fun AwardsTab(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun AwardsTabPreview() {
-    val repo = FakeSocialRepository()
-    val awards = repo.awards.collectAsState()
-    StudyPlanTheme {
-        AwardsTab(awards = awards.value)
-    }
-}

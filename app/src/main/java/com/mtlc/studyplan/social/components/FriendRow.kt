@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.FriendStatus
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -132,12 +131,3 @@ private fun statusLabel(status: FriendStatus): String = when (status) {
     FriendStatus.Studying -> stringResource(id = R.string.social_status_studying)
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun FriendRowPreview() {
-    val repo = FakeSocialRepository()
-    val friends = repo.friends.collectAsState()
-    StudyPlanTheme {
-        FriendRow(friend = friends.value.first(), onClick = {})
-    }
-}

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -85,7 +86,8 @@ fun StudyPlanOverviewScreen(
                 title = "Study Plan Overview",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = onNavigateBack,
-                showLanguageSwitcher = false
+                showLanguageSwitcher = false,
+                style = StudyPlanTopBarStyle.Progress
             )
         }
     ) { padding ->
@@ -162,13 +164,13 @@ private fun StudyPlanTabChip(
     onClick: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFF1976D2) else Color(0xFFF5F5F5),
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(200),
         label = "tab_background"
     )
 
     val contentColor by animateColorAsState(
-        targetValue = if (isSelected) Color.White else Color(0xFF666666),
+        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(200),
         label = "tab_content"
     )
@@ -194,7 +196,7 @@ private fun StudyPlanTabChip(
             Text(
                 text = tab.title,
                 color = contentColor,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
             )
         }
@@ -226,7 +228,7 @@ private fun WeeklyScheduleView(
         item {
             Text(
                 text = "This Week's Schedule",
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -255,29 +257,46 @@ private fun ProgressOverview(
     weeklyPlan: WeeklyStudyPlan,
     modifier: Modifier = Modifier
 ) {
+    val hasStarted = taskStats.totalTasks > 0
+
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
-        // Overall Progress Card
-        item {
-            OverallProgressCard(taskStats = taskStats)
-        }
+        if (hasStarted) {
+            // Overall Progress Card
+            item {
+                OverallProgressCard(taskStats = taskStats)
+            }
 
-        // Subject Progress
-        item {
-            SubjectProgressCard(taskStats = taskStats)
-        }
+            // Subject Progress
+            item {
+                SubjectProgressCard(taskStats = taskStats)
+            }
 
-        // Weekly Progress Chart
-        item {
-            WeeklyProgressChart(weeklyPlan = weeklyPlan)
-        }
+            // Weekly Progress Chart
+            item {
+                WeeklyProgressChart(weeklyPlan = weeklyPlan)
+            }
 
-        // Achievement Summary
-        item {
-            AchievementSummaryCard()
+            // Achievement Summary
+            item {
+                AchievementSummaryCard(taskStats = taskStats)
+            }
+        } else {
+            // Empty state for first-time users
+            item {
+                WelcomeProgressCard()
+            }
+
+            item {
+                StudyPlanPreviewCard()
+            }
+
+            item {
+                GetStartedCard()
+            }
         }
     }
 }
@@ -329,7 +348,7 @@ private fun CurrentWeekCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -343,23 +362,23 @@ private fun CurrentWeekCard(
                 Column {
                     Text(
                         text = "Current Week Progress",
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
                         text = "Week ${weeklyPlan.currentWeek} of ${weeklyPlan.totalWeeks}",
-                        fontSize = 14.sp,
-                        color = Color(0xFF1976D2).copy(alpha = 0.7f)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
                 }
 
                 CircularProgressIndicator(
                     progress = { taskStats.getProgressPercentage() / 100f },
                     modifier = Modifier.size(60.dp),
-                    color = Color(0xFF1976D2),
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 6.dp,
-                    trackColor = Color(0xFF1976D2).copy(alpha = 0.2f)
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                 )
             }
 
@@ -394,14 +413,14 @@ private fun ProgressMetric(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value,
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1976D2)
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
         Text(
             text = label,
-            fontSize = 12.sp,
-            color = Color(0xFF1976D2).copy(alpha = 0.7f)
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
         )
     }
 }
@@ -428,13 +447,13 @@ private fun DailyScheduleCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = dailySchedule.dayName,
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${dailySchedule.tasks.size} tasks • ${dailySchedule.estimatedTime}",
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -449,11 +468,11 @@ private fun DailyScheduleCard(
                         .width(60.dp)
                         .height(4.dp)
                         .clip(RoundedCornerShape(2.dp)),
-                    color = if (dailySchedule.completionPercentage >= 100) Color(0xFF4CAF50) else Color(0xFF2196F3)
+                    color = if (dailySchedule.completionPercentage >= 100) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "${dailySchedule.completionPercentage}%",
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -532,7 +551,7 @@ private fun createStudyScheduleData(): StudyScheduleData {
         DailySchedule("Tuesday", startOfWeek.plusDays(1).format(dateFormatter), listOf("Vocabulary", "Listening"), "2h", 0, false),
         DailySchedule("Wednesday", startOfWeek.plusDays(2).format(dateFormatter), listOf("Reading", "Writing"), "3h", 0, today.dayOfWeek.value == 3),
         DailySchedule("Thursday", startOfWeek.plusDays(3).format(dateFormatter), listOf("Grammar", "Practice"), "2h 15m", 0, today.dayOfWeek.value == 4),
-        DailySchedule("Friday", startOfWeek.plusDays(4).format(dateFormatter), listOf("Mock Test", "Review"), "3h 30m", 0, today.dayOfWeek.value == 5),
+        DailySchedule("Friday", startOfWeek.plusDays(4).format(dateFormatter), listOf("Practice Test", "Review"), "3h 30m", 0, today.dayOfWeek.value == 5),
         DailySchedule("Saturday", startOfWeek.plusDays(5).format(dateFormatter), listOf("Vocabulary Review"), "1h 30m", 0, today.dayOfWeek.value == 6),
         DailySchedule("Sunday", startOfWeek.plusDays(6).format(dateFormatter), listOf("Free Study"), "2h", 0, today.dayOfWeek.value == 7)
     )
@@ -783,9 +802,9 @@ private fun UpcomingTaskCard(task: UpcomingTask) {
                 text = task.dueTime,
                 fontSize = 12.sp,
                 color = when (task.priority) {
-                    Priority.HIGH -> Color(0xFFE53935)
-                    Priority.MEDIUM -> Color(0xFFFF9800)
-                    Priority.LOW -> Color(0xFF4CAF50)
+                    Priority.HIGH -> MaterialTheme.colorScheme.error
+                    Priority.MEDIUM -> MaterialTheme.colorScheme.tertiary
+                    Priority.LOW -> MaterialTheme.colorScheme.primary
                 }
             )
         }
@@ -826,7 +845,7 @@ private fun WeekTargetCard(target: WeekTarget) {
                     .fillMaxWidth()
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp)),
-                color = Color(0xFF4CAF50)
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -869,7 +888,7 @@ private fun GoalItem(goal: StudyGoal) {
         Icon(
             imageVector = if (goal.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
             contentDescription = null,
-            tint = if (goal.isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (goal.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -897,134 +916,80 @@ private fun OverallProgressCard(taskStats: TaskStats) {
     val progress = taskStats.getProgressPercentage() / 100f
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "progress_animation"
     )
 
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(
-            Color(0xFF1976D2), // Deep Blue
-            Color(0xFF42A5F5), // Light Blue
-            Color(0xFF26C6DA), // Cyan
-            Color(0xFF66BB6A)  // Green
-        )
-    )
-
-    val backgroundBrush = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFF1976D2).copy(alpha = 0.08f),
-            Color(0xFF26C6DA).copy(alpha = 0.12f),
-            Color(0xFF66BB6A).copy(alpha = 0.08f)
-        ),
-        start = Offset.Zero,
-        end = Offset.Infinite
-    )
-
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize(
-                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-            ),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(brush = backgroundBrush)
-                .padding(12.dp)
+                .padding(20.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.TrendingUp,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Overall Progress",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
                     Text(
-                        text = "Study Progress",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF1976D2).copy(alpha = 0.8f)
+                        text = "${taskStats.getProgressPercentage()}%",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = if (taskStats.totalTasks == 0) "Ready!" else "${taskStats.getProgressPercentage()}%",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2),
-                        modifier = Modifier.graphicsLayer(
-                            scaleX = animatedProgress.coerceAtLeast(0.8f),
-                            scaleY = animatedProgress.coerceAtLeast(0.8f)
-                        )
-                    )
-                    Text(
-                        text = if (taskStats.totalTasks == 0) "Start your study journey" else "${taskStats.completedTasks}/${taskStats.totalTasks} completed",
-                        fontSize = 10.sp,
-                        color = Color(0xFF26C6DA).copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Medium
+                        text = "${taskStats.completedTasks}/${taskStats.totalTasks} tasks completed",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
                 }
 
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(
-                            brush = gradientBrush,
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-                        .background(
-                            color = Color.White,
-                            shape = CircleShape
-                        )
+                    modifier = Modifier.size(56.dp)
                 ) {
                     CircularProgressIndicator(
                         progress = { animatedProgress },
-                        modifier = Modifier.size(40.dp),
-                        strokeWidth = 3.dp,
-                        color = Color(0xFF1976D2),
-                        trackColor = Color(0xFF1976D2).copy(alpha = 0.15f)
+                        modifier = Modifier.size(56.dp),
+                        strokeWidth = 4.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                     )
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                        contentDescription = null,
-                        tint = Color(0xFF26C6DA),
-                        modifier = Modifier
-                            .size(16.dp)
-                            .graphicsLayer(
-                                rotationZ = animatedProgress * 15f
-                            )
+                    Text(
+                        text = "${(animatedProgress * 100).toInt()}%",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Medium
                     )
                 }
-            }
-
-            // Animated progress bar at the bottom
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(3.dp)
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        color = Color(0xFF1976D2).copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
-                    )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(animatedProgress)
-                        .fillMaxHeight()
-                        .background(
-                            brush = gradientBrush,
-                            shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
-                        )
-                        .animateContentSize(
-                            animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
-                        )
-                )
             }
         }
     }
@@ -1032,137 +997,78 @@ private fun OverallProgressCard(taskStats: TaskStats) {
 
 @Composable
 private fun SubjectProgressCard(taskStats: TaskStats) {
-    val backgroundBrush = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFF2196F3).copy(alpha = 0.06f),
-            Color(0xFF03DAC6).copy(alpha = 0.1f),
-            Color(0xFF6200EE).copy(alpha = 0.06f)
-        ),
-        start = Offset(0f, 0f),
-        end = Offset.Infinite
-    )
-
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(brush = backgroundBrush)
-                .padding(10.dp)
+                .padding(20.dp)
         ) {
-            Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Subject Progress",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Calculate subject progress based on actual task stats
+            val baseProgress = taskStats.getProgressPercentage()
+            val subjects = listOf(
+                "Grammar" to MaterialTheme.colorScheme.primary,
+                "Reading" to MaterialTheme.colorScheme.secondary,
+                "Vocabulary" to MaterialTheme.colorScheme.tertiary,
+                "Listening" to MaterialTheme.colorScheme.error
+            )
+
+            subjects.forEach { (subject, color) ->
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.MenuBook,
-                        contentDescription = null,
-                        tint = Color(0xFF1976D2),
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Subjects",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1976D2).copy(alpha = 0.8f)
+                        text = subject,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${baseProgress}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = color
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Calculate realistic subject progress based on overall task stats
-                val baseProgress = taskStats.getProgressPercentage()
-                val subjects = if (taskStats.totalTasks == 0) {
-                    // First-time user: Show encouraging starting state
-                    listOf(
-                        "Grammar" to (0 to Color(0xFF4CAF50)),
-                        "Reading" to (0 to Color(0xFF2196F3)),
-                        "Vocabulary" to (0 to Color(0xFF9C27B0)),
-                        "Listening" to (0 to Color(0xFFFF9800))
-                    )
-                } else {
-                    // Existing user: Calculate based on actual progress
-                    listOf(
-                        "Grammar" to ((baseProgress * 0.95).toInt() to Color(0xFF4CAF50)),
-                        "Reading" to ((baseProgress * 0.82).toInt() to Color(0xFF2196F3)),
-                        "Vocabulary" to ((baseProgress * 1.08).toInt().coerceAtMost(100) to Color(0xFF9C27B0)),
-                        "Listening" to ((baseProgress * 0.73).toInt() to Color(0xFFFF9800))
-                    )
-                }
-
-                subjects.forEachIndexed { index, (subject, progressData) ->
-                    val (progress, color) = progressData
-                    val animatedProgress by animateFloatAsState(
-                        targetValue = progress / 100f,
-                        animationSpec = tween(
-                            durationMillis = 800 + index * 200,
-                            easing = FastOutSlowInEasing
-                        ),
-                        label = "subject_progress_$subject"
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = subject,
-                            fontSize = 11.sp,
-                            color = Color(0xFF1976D2).copy(alpha = 0.9f),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = "$progress%",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = color
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .padding(vertical = 1.dp)
-                            .background(
-                                color = color.copy(alpha = 0.15f),
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(animatedProgress)
-                                .fillMaxHeight()
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            color.copy(alpha = 0.7f),
-                                            color,
-                                            color.copy(alpha = 0.9f)
-                                        )
-                                    ),
-                                    shape = RoundedCornerShape(2.dp)
-                                )
-                                .animateContentSize(
-                                    animationSpec = tween(
-                                        durationMillis = 1000 + index * 150,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                )
-                        )
-                    }
-
-                    if (index != subjects.lastIndex) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
+                LinearProgressIndicator(
+                    progress = { baseProgress / 100f },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    color = color,
+                    trackColor = color.copy(alpha = 0.2f)
+                )
             }
         }
     }
@@ -1171,15 +1077,20 @@ private fun SubjectProgressCard(taskStats: TaskStats) {
 @Composable
 private fun WeeklyProgressChart(weeklyPlan: WeeklyStudyPlan) {
     val chartColors = listOf(
-        Color(0xFF6200EE), Color(0xFF3700B3), Color(0xFF9C27B0),
-        Color(0xFF673AB7), Color(0xFF2196F3), Color(0xFF03DAC6), Color(0xFF4CAF50)
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.tertiary,
+        MaterialTheme.colorScheme.primaryContainer,
+        MaterialTheme.colorScheme.secondaryContainer,
+        MaterialTheme.colorScheme.tertiaryContainer,
+        MaterialTheme.colorScheme.outline
     )
 
     val backgroundBrush = Brush.radialGradient(
         colors = listOf(
-            Color(0xFF6200EE).copy(alpha = 0.05f),
-            Color(0xFF9C27B0).copy(alpha = 0.1f),
-            Color(0xFF2196F3).copy(alpha = 0.05f)
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.05f)
         ),
         radius = 300f
     )
@@ -1208,7 +1119,7 @@ private fun WeeklyProgressChart(weeklyPlan: WeeklyStudyPlan) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                             contentDescription = null,
-                            tint = Color(0xFF6200EE),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -1216,13 +1127,13 @@ private fun WeeklyProgressChart(weeklyPlan: WeeklyStudyPlan) {
                             text = "This Week",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF6200EE).copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                         )
                     }
                     Text(
                         text = "Week ${weeklyPlan.currentWeek}/${weeklyPlan.totalWeeks}",
                         fontSize = 10.sp,
-                        color = Color(0xFF9C27B0).copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -1308,14 +1219,16 @@ private fun WeeklyProgressChart(weeklyPlan: WeeklyStudyPlan) {
 }
 
 @Composable
-private fun AchievementSummaryCard() {
+private fun AchievementSummaryCard(taskStats: TaskStats) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFF9800).copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -1324,19 +1237,19 @@ private fun AchievementSummaryCard() {
                 Icon(
                     imageVector = Icons.Filled.EmojiEvents,
                     contentDescription = null,
-                    tint = Color(0xFFF57C00),
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Recent Achievements",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFFF57C00)
+                    text = "Achievements",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1344,21 +1257,21 @@ private fun AchievementSummaryCard() {
             ) {
                 AchievementMetric(
                     icon = Icons.Filled.Star,
-                    value = "12",
-                    label = "Awards",
-                    color = Color(0xFFFFD54F)
+                    value = taskStats.completedTasks.toString(),
+                    label = "Tasks Done",
+                    color = MaterialTheme.colorScheme.primary
                 )
                 AchievementMetric(
                     icon = Icons.Filled.Whatshot,
-                    value = "5",
-                    label = "Streak",
-                    color = Color(0xFFFF8A65)
+                    value = if (taskStats.completedTasks > 0) "1" else "0",
+                    label = "Day Streak",
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 AchievementMetric(
                     icon = Icons.AutoMirrored.Filled.TrendingUp,
-                    value = "78%",
-                    label = "Score",
-                    color = Color(0xFF81C784)
+                    value = "${taskStats.getProgressPercentage()}%",
+                    label = "Progress",
+                    color = MaterialTheme.colorScheme.tertiary
                 )
             }
         }
@@ -1392,14 +1305,14 @@ private fun AchievementMetric(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFF57C00)
+            color = MaterialTheme.colorScheme.onTertiaryContainer
         )
         Text(
             text = label,
-            fontSize = 10.sp,
-            color = Color(0xFFF57C00).copy(alpha = 0.7f)
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
         )
     }
 }
@@ -1638,9 +1551,9 @@ private fun DailyStudyHeader(
 
                 Surface(
                     color = when {
-                        dayInfo.completionPercentage >= 100 -> Color(0xFF4CAF50)
-                        dayInfo.completionPercentage > 0 -> Color(0xFFFF9800)
-                        else -> Color(0xFF9E9E9E)
+                        dayInfo.completionPercentage >= 100 -> MaterialTheme.colorScheme.primary
+                        dayInfo.completionPercentage > 0 -> MaterialTheme.colorScheme.tertiary
+                        else -> MaterialTheme.colorScheme.outline
                     },
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -1728,7 +1641,7 @@ private fun StudyUnitItem(unit: StudyUnit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = if (unit.isCompleted) Color(0xFFE8F5E8) else MaterialTheme.colorScheme.surfaceVariant,
+                color = if (unit.isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(12.dp),
@@ -1737,7 +1650,7 @@ private fun StudyUnitItem(unit: StudyUnit) {
         Icon(
             imageVector = if (unit.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
             contentDescription = null,
-            tint = if (unit.isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (unit.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
 
@@ -1809,7 +1722,7 @@ private fun DailyTaskItem(task: DailyTask) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = if (task.isCompleted) Color(0xFFE8F5E8) else MaterialTheme.colorScheme.surfaceVariant,
+                color = if (task.isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(12.dp),
@@ -1818,7 +1731,7 @@ private fun DailyTaskItem(task: DailyTask) {
         Icon(
             imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
             contentDescription = null,
-            tint = if (task.isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
 
@@ -1845,9 +1758,9 @@ private fun DailyTaskItem(task: DailyTask) {
 
         Surface(
             color = when (task.priority) {
-                Priority.HIGH -> Color(0xFFE53935)
-                Priority.MEDIUM -> Color(0xFFFF9800)
-                Priority.LOW -> Color(0xFF4CAF50)
+                Priority.HIGH -> MaterialTheme.colorScheme.error
+                Priority.MEDIUM -> MaterialTheme.colorScheme.tertiary
+                Priority.LOW -> MaterialTheme.colorScheme.primary
             },
             shape = RoundedCornerShape(4.dp)
         ) {
@@ -1957,7 +1870,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
 private fun NotesSection(notes: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
@@ -1969,7 +1882,7 @@ private fun NotesSection(notes: String) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.StickyNote2,
                     contentDescription = null,
-                    tint = Color(0xFFFF8F00),
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -1988,6 +1901,167 @@ private fun NotesSection(notes: String) {
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 20.sp
+            )
+        }
+    }
+}
+
+// Empty state components for first-time users
+@Composable
+private fun WelcomeProgressCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.TrendingUp,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(48.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Welcome to Your Study Journey",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Start tracking your YDS preparation progress and see your achievements grow!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun StudyPlanPreviewCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "What You'll Track",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val subjects = listOf(
+                "Grammar" to Icons.Default.Create,
+                "Reading" to Icons.AutoMirrored.Filled.MenuBook,
+                "Vocabulary" to Icons.AutoMirrored.Filled.StickyNote2,
+                "Listening" to Icons.AutoMirrored.Filled.VolumeUp
+            )
+
+            subjects.forEach { (subject, icon) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = subject,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Ready to start",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GetStartedCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(32.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Ready to Begin?",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Switch to the Weekly tab to start your first study session and begin tracking your progress!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
             )
         }
     }

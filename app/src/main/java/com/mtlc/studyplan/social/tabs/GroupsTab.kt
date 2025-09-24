@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Group
 import com.mtlc.studyplan.social.components.GroupCard
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -77,19 +76,3 @@ fun GroupsTab(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GroupsTabPreview() {
-    val repo = FakeSocialRepository()
-    StudyPlanTheme {
-        val spacing = LocalSpacing.current
-        val groups = repo.groups.collectAsState()
-        GroupsTab(
-            groups = groups.value,
-            onToggleJoin = {},
-            onShare = {},
-            onCreateGroup = {},
-            modifier = Modifier.padding(horizontal = spacing.md)
-        )
-    }
-}

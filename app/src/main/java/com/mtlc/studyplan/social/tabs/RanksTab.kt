@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.GroupAdd
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.RankEntry
 import com.mtlc.studyplan.social.components.LeaderboardRow
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -39,19 +41,18 @@ fun RanksTab(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacing.md)
     ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = DesignTokens.PrimaryContainer.copy(alpha = 0.4f)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(spacing.md),
-                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+        if (ranks.isEmpty()) {
+            // Compact info card for empty state
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = DesignTokens.PrimaryContainer.copy(alpha = 0.4f)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacing.xs)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(spacing.md),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing.sm)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.EmojiEvents,
@@ -59,22 +60,63 @@ fun RanksTab(
                         tint = DesignTokens.Primary
                     )
                     Text(
-                        text = stringResource(id = R.string.social_weekly_leaderboard),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        text = stringResource(id = R.string.social_invite_friends_to_rank),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
-                }
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(spacing.xs)
-                ) {
-                    ranks.forEachIndexed { index, item ->
-                        LeaderboardRow(rank = index + 1, entry = item)
+                    FilledTonalButton(
+                        onClick = { /* Invite friends action */ },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = DesignTokens.Surface
+                        )
+                    ) {
+                        Icon(imageVector = Icons.Outlined.GroupAdd, contentDescription = null)
+                        Text(
+                            text = stringResource(id = R.string.social_invite_friends),
+                            modifier = Modifier.padding(start = spacing.xs)
+                        )
                     }
                 }
             }
-        }
+        } else {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = DesignTokens.PrimaryContainer.copy(alpha = 0.4f)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(spacing.sm)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(spacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.EmojiEvents,
+                            contentDescription = null,
+                            tint = DesignTokens.Primary
+                        )
+                        Text(
+                            text = stringResource(id = R.string.social_weekly_leaderboard),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(spacing.xs)
+                    ) {
+                        ranks.forEachIndexed { index, item ->
+                            LeaderboardRow(rank = index + 1, entry = item)
+                        }
+                    }
+                }
+            }
 
-        StatRow(ranks = ranks)
+            StatRow(ranks = ranks)
+        }
     }
 }
 
@@ -137,12 +179,3 @@ private fun ordinalSuffix(rank: Int): String = when {
     else -> "th"
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun RanksTabPreview() {
-    val repo = FakeSocialRepository()
-    StudyPlanTheme {
-        val ranks = repo.ranks.collectAsState()
-        RanksTab(ranks = ranks.value)
-    }
-}

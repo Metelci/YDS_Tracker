@@ -20,9 +20,6 @@ fun NavGraphBuilder.todayGraph(navController: NavController) {
             onNavigateToLesson = { id ->
                 navController.navigate(focusRoute(id))
             },
-            onNavigateToMock = {
-                navController.navigate("mock/start")
-            },
             onNavigateToFocus = { id ->
                 navController.navigate(focusRoute(id))
             }
@@ -41,3 +38,5 @@ fun NavGraphBuilder.todayGraph(navController: NavController) {
         )
     }
 }
+
+

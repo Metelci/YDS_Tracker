@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.YdsExamService
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.network.OsymExamCalendarClient
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -76,7 +77,8 @@ fun ExamDetailsScreen(
                 title = "YDS Exam Information",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = onNavigateBack,
-                showLanguageSwitcher = false
+                showLanguageSwitcher = false,
+                style = StudyPlanTopBarStyle.Progress
             )
         }
     ) { padding ->

@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.settings.viewmodel.*
 import com.mtlc.studyplan.settings.data.*
-import com.mtlc.studyplan.ui.components.LanguageSwitcher
-import com.mtlc.studyplan.ui.components.Language
-import com.mtlc.studyplan.localization.rememberLanguageManager
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 
 /**
  * Enhanced settings screen with polished UI and micro-interactions
@@ -35,9 +32,6 @@ fun EnhancedSettingsScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val languageManager = rememberLanguageManager(context)
-    val coroutineScope = rememberCoroutineScope()
-
     // Real ViewModels from our settings system
     val notificationViewModel: NotificationSettingsViewModel = viewModel {
         NotificationSettingsViewModel(settingsRepository, context)
@@ -70,28 +64,13 @@ fun EnhancedSettingsScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Top App Bar with back button
-        TopAppBar(
-            title = { Text("Settings") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-            },
+        StudyPlanTopBar(
+            title = "Settings",
+            navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+            onNavigationClick = onNavigateBack,
+            showLanguageSwitcher = true,
+            style = StudyPlanTopBarStyle.Settings,
             actions = {
-                // Language switcher in top right
-                Box(
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    LanguageSwitcher(
-                        currentLanguage = languageManager.currentLanguage,
-                        onLanguageChanged = { newLanguage ->
-                            coroutineScope.launch {
-                                languageManager.changeLanguage(newLanguage)
-                            }
-                        }
-                    )
-                }
-
                 if (mainSettingsState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),

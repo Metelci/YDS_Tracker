@@ -35,9 +35,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,11 +61,14 @@ import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.ui.a11y.largeTouchTarget
 import com.mtlc.studyplan.ui.components.EmptyState
 import com.mtlc.studyplan.ui.components.ErrorState
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.ui.theme.Elevations
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @Composable
@@ -76,7 +76,6 @@ fun TodayRoute(
     vm: TodayViewModel = viewModel(),
     onNavigateToPlan: () -> Unit = {},
     onNavigateToLesson: (String) -> Unit = {},
-    onNavigateToMock: () -> Unit = {},
     onNavigateToFocus: (String) -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -114,8 +113,7 @@ fun TodayRoute(
         },
         onSnackbarShown = { vm.consumeSnackbar() },
         onViewPlan = onNavigateToPlan,
-        onNavigateToMock = onNavigateToMock,
-        onRefresh = { vm.dispatch(TodayIntent.Load) },
+                onRefresh = { vm.dispatch(TodayIntent.Load) },
         onReschedule = { id, at -> vm.dispatch(TodayIntent.Reschedule(id, at)) },
         onNavigateToFocus = onNavigateToFocus
     )
@@ -129,16 +127,13 @@ fun TodayScreen(
     onStart: (String) -> Unit,
     onSnackbarShown: () -> Unit,
     onViewPlan: () -> Unit = {},
-    onNavigateToMock: () -> Unit = {},
     onRefresh: () -> Unit = {},
-    onReschedule: (String, java.time.LocalDateTime) -> Unit = {_, _ -> },
+    onReschedule: (String, LocalDateTime) -> Unit = {_, _ -> },
     onNavigateToFocus: (String) -> Unit = {},
     showFloatingActionButton: Boolean = false,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    // Bind pull-to-refresh indicator to UI state
-    val pullRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(state.snackbar) {
         state.snackbar?.let { msg ->
@@ -150,14 +145,12 @@ fun TodayScreen(
     val sTokens = LocalSpacing.current
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Today") },
+            StudyPlanTopBar(
+                title = "Today",
+                style = StudyPlanTopBarStyle.Tasks,
                 actions = {
                     TextButton(onClick = onViewPlan, modifier = Modifier.largeTouchTarget()) {
                         Text("View Full Plan")
-                    }
-                    TextButton(onClick = onNavigateToMock, modifier = Modifier.largeTouchTarget()) {
-                        Text("Mock Exam")
                     }
                 }
             )
@@ -243,29 +236,23 @@ fun TodayScreen(
                                     .padding(horizontal = sTokens.md)
                             )
                         }
-                        PullToRefreshBox(
-                            state = pullRefreshState,
-                            isRefreshing = false,
-                            onRefresh = { onRefresh() }
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = sTokens.md),
+                            verticalArrangement = Arrangement.spacedBy(sTokens.sm)
                         ) {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = sTokens.md),
-                                verticalArrangement = Arrangement.spacedBy(sTokens.sm)
-                            ) {
-                                items(state.sessions, key = { it.id }) { item ->
-                                    SwipeableSession(
-                                        session = item,
-                                        onStart = onStart,
-                                        onReschedule = { at -> onReschedule(item.id, at) },
-                                        onNavigateToFocus = onNavigateToFocus
-                                    )
-                                }
-                                // Add a spacer at the end to account for the FAB
-                                item {
-                                    Spacer(modifier = Modifier.height(80.dp))
-                                }
+                            items(state.sessions, key = { it.id }) { item ->
+                                SwipeableSession(
+                                    session = item,
+                                    onStart = onStart,
+                                    onReschedule = { at -> onReschedule(item.id, at) },
+                                    onNavigateToFocus = onNavigateToFocus
+                                )
+                            }
+                            // Add a spacer at the end to account for the FAB
+                            item {
+                                Spacer(modifier = Modifier.height(80.dp))
                             }
                         }
                     }
@@ -280,7 +267,7 @@ private fun SessionCard(
     s: SessionUi,
     onStart: (String) -> Unit,
     onSkip: (String) -> Unit,
-    onReschedule: (java.time.LocalDateTime) -> Unit = {},
+    onReschedule: (LocalDateTime) -> Unit = {},
     onNavigateToFocus: (String) -> Unit = {}
 ) {
     Card(shape = MaterialTheme.shapes.large, elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = Elevations.level1)) {
@@ -323,7 +310,7 @@ private fun SessionCard(
 private fun SwipeableSession(
     session: SessionUi,
     onStart: (String) -> Unit,
-    onReschedule: (java.time.LocalDateTime) -> Unit,
+    onReschedule: (LocalDateTime) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
     // TODO: Implement swipe-to-dismiss functionality for Material 3
@@ -347,6 +334,8 @@ private fun TodayScreenPreview() {
         onStart = {}, onSnackbarShown = {}
     )
 }
+
+
 
 
 

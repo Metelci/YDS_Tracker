@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.RankEntry
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
@@ -115,12 +114,3 @@ private fun fallbackInitial(name: String): String = name
     .take(2)
     .joinToString(separator = "") { it.first().uppercase() }
 
-@Preview(showBackground = true)
-@Composable
-private fun LeaderboardRowPreview() {
-    val repo = FakeSocialRepository()
-    StudyPlanTheme {
-        val ranks = repo.ranks.collectAsState()
-        LeaderboardRow(rank = 1, entry = ranks.value.first())
-    }
-}

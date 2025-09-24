@@ -320,7 +320,7 @@ private fun PlanTab(
                     }
                     Spacer(Modifier.height(8.dp))
                     Text("Thu: Grammar deep dive + Vocabulary expansion", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("Fri: Mixed practice + Mock test preparation", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Fri: Mixed practice + Practice test preparation", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text("Weekend: Review week + Prep next week's plan", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
@@ -1127,3 +1127,4 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1): DailyS
         notes = notes
     )
 }
+

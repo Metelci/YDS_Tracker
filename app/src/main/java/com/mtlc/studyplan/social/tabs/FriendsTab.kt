@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.social.components.FriendRow
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -62,28 +61,50 @@ fun FriendsTab(
                 )
             }
         }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(spacing.sm)
-        ) {
-            friends.forEach { friend ->
-                FriendRow(friend = friend, onClick = onFriendSelected)
+        if (friends.isEmpty()) {
+            // Empty state with invite button
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing.xl),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing.md)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.social_no_friends_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+                Text(
+                    text = stringResource(id = R.string.social_no_friends_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+                FilledTonalButton(
+                    onClick = onAddFriend,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = DesignTokens.Surface
+                    )
+                ) {
+                    Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
+                    Text(
+                        text = stringResource(id = R.string.social_invite_friends),
+                        modifier = Modifier.padding(start = spacing.xs)
+                    )
+                }
+            }
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                friends.forEach { friend ->
+                    FriendRow(friend = friend, onClick = onFriendSelected)
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun FriendsTabPreview() {
-    val repo = FakeSocialRepository()
-    val friends = repo.friends.collectAsState()
-    StudyPlanTheme {
-        val spacing = LocalSpacing.current
-        FriendsTab(
-            friends = friends.value,
-            onFriendSelected = {},
-            onAddFriend = {},
-            modifier = Modifier.padding(horizontal = spacing.md)
-        )
-    }
-}

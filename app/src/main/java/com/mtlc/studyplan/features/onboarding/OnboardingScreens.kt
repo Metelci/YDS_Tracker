@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.features.onboarding
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
@@ -49,7 +51,6 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -104,8 +105,9 @@ fun OnboardingRoute(onDone: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.onboarding_title)) },
+            StudyPlanTopBar(
+                title = stringResource(R.string.onboarding_title),
+                style = StudyPlanTopBarStyle.Home,
                 actions = {
                     // Shared progress indicator
                     Row(

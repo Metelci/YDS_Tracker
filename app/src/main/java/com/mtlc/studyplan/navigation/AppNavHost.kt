@@ -1,5 +1,7 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.navigation
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
@@ -64,10 +66,8 @@ import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
-import com.mtlc.studyplan.feature.mock.MockExamRoute
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
-import com.mtlc.studyplan.feature.review.MockResultUi
 import com.mtlc.studyplan.feature.review.ReviewScreen
 import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.features.onboarding.OnboardingRoute
@@ -308,7 +308,7 @@ fun AppNavHost(
             com.mtlc.studyplan.feature.today.TodayRoute(
                 onNavigateToPlan = { navController.navigate("plan") },
                 onNavigateToLesson = { lessonId -> navController.navigate("lesson/$lessonId") },
-                onNavigateToMock = { navController.navigate("mock/start") },
+                
                 onNavigateToFocus = { taskId -> navController.navigate("focus/$taskId") }
             )
         }
@@ -424,64 +424,7 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() }
             )
         }
-        // Mock exam start route
-        composable("mock/start") {
-            MockExamRoute(onSubmit = { result ->
-                navController.navigate("mock/result/${'$'}json")
-            })
-        }
-        composable("mock/result/{data}") { backStackEntry ->
-            val encoded = backStackEntry.arguments?.getString("data").orEmpty()
-            val json = java.net.URLDecoder.decode(encoded, "UTF-8")
-            val mock = kotlinx.serialization.json.Json.decodeFromString<com.mtlc.studyplan.feature.mock.MockResult>(json)
-            val review = MockResultUi(
-                correct = mock.correct,
-                total = mock.total,
-                avgSecPerQ = mock.avgSecPerQ,
-                perSection = mock.perSection.map { (sec, pair) -> com.mtlc.studyplan.feature.review.SectionStatUi(sec, pair.first, pair.second, if (mock.total>0) mock.avgSecPerQ else 0) },
-                wrongIds = mock.wrongIds
-            )
-            Scaffold(topBar = {
-                androidx.compose.material3.TopAppBar(title = { Text("Exam Result") })
-            }) { padding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text("Correct: ${'$'}{review.correct} / ${'$'}{review.total}")
-                    Text("Avg sec per Q: ${'$'}{review.avgSecPerQ}")
-                    androidx.compose.material3.Button(
-                        onClick = {
-                            java.net.URLEncoder.encode(kotlinx.serialization.json.Json.encodeToString(MockResultUi.serializer(), review), "UTF-8")
-                            EnhancedNavigation.navigateWithFeedback(
-                                navController = navController,
-                                route = "mock/review/${'$'}data",
-                                hapticType = HapticFeedbackType.TextHandleMove
-                            )
-                        },
-                        modifier = Modifier
-                    ) { Text("Open Insights") }
-                    androidx.compose.material3.Button(
-                        onClick = {
-                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            navController.popBackStack(TODAY_ROUTE, inclusive = false)
-                        },
-                        modifier = Modifier
-                    ) {
-                        Text("Back to Today")
-                    }
-                }
-            }
-        }
-        composable("mock/review/{data}") { backStackEntry ->
-            val enc = backStackEntry.arguments?.getString("data").orEmpty()
-            val json2 = java.net.URLDecoder.decode(enc, "UTF-8")
-            val ui = kotlinx.serialization.json.Json.decodeFromString<MockResultUi>(json2)
-            ReviewScreen(result = ui, onRetrySet = { ids -> navController.navigate("mock/start") }, onBack = { navController.popBackStack() })
-        }
+        
 
         // Weekly Plan route
         composable("weekly-plan") {
@@ -502,13 +445,11 @@ fun AppNavHost(
             val day = backStackEntry.arguments?.getString("day") ?: ""
             Scaffold(
                 topBar = {
-                    androidx.compose.material3.TopAppBar(
-                        title = { Text("$day Study Plan") },
-                        navigationIcon = {
-                            androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        }
+                    StudyPlanTopBar(
+                        title = "$day Study Plan",
+                        navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                        onNavigationClick = { navController.popBackStack() },
+                        style = StudyPlanTopBarStyle.Tasks
                     )
                 }
             ) { padding ->
@@ -637,3 +578,7 @@ private fun EnhancedNavigationBar(
         }
     }
 }
+
+
+
+

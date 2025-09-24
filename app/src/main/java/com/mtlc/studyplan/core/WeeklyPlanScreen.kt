@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.data.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +67,7 @@ fun WeeklyPlanScreen(
             ),
             WeeklyStudyPlan(
                 title = "Practice Tests",
-                description = "Week 3 - Mock Exams",
+                description = "Week 3 - Practice Sets",
                 currentWeek = 3,
                 totalWeeks = 4,
                 progressPercentage = 0.0f,
@@ -100,25 +102,11 @@ fun WeeklyPlanScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Weekly Study Plan",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+            StudyPlanTopBar(
+                title = "Weekly Study Plan",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onNavigateBack,
+                style = StudyPlanTopBarStyle.Tasks
             )
         }
     ) { paddingValues ->

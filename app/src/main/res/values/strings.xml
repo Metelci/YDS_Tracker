@@ -359,6 +359,7 @@
     <string name="social_stat_goal_hours">Weekly goal</string>
     <string name="social_stat_goal_hours_value">%1$d hrs</string>
     <string name="social_invite_friends">Invite Friends</string>
+    <string name="social_invite_friends_to_rank">Invite some friends to see your rank</string>
     <string name="social_invite_stub">Sharing coming soon</string>
     <string name="social_privacy_banner_title">Privacy First</string>
     <string name="social_privacy_banner_body">Your real identity is never shared. Only your chosen username and avatar are visible to others.</string>
@@ -371,6 +372,10 @@
     <string name="social_username_set_success">Username set to @%1$s</string>
     <string name="social_choose_avatar">Choose Your Avatar</string>
     <string name="social_upload_avatar">Upload Custom Avatar</string>
+    <string name="social_avatar_upload_error_size">Avatar image must be smaller than 2MB</string>
+    <string name="social_avatar_upload_error_dimensions">Avatar image must be 512x512 pixels or smaller</string>
+    <string name="social_avatar_upload_error_format">Invalid image format. Please select a valid image file</string>
+    <string name="social_avatar_upload_success">Avatar uploaded successfully</string>
     <string name="social_study_level">Study Level: %1$s</string>
     <string name="social_weekly_goal_title">Weekly Study Goal</string>
     <string name="social_goal_hours_label">Study hours per week</string>
@@ -398,6 +403,8 @@
     <string name="social_create_group_stub">Group creation is coming soon</string>
     <string name="social_study_buddies_title">Study Buddies</string>
     <string name="social_add_friend">Add Friend</string>
+    <string name="social_no_friends_title">No Friends Yet</string>
+    <string name="social_no_friends_description">Connect with other students to share progress and stay motivated together.</string>
     <string name="social_friend_streak">%1$d streak</string>
     <string name="social_status_online">Online</string>
     <string name="social_status_offline">Offline</string>

@@ -19,7 +19,6 @@ object Routes {
     const val PROGRESS_ROUTE = "progress"
     const val READER_ROUTE = "reader"
     const val REVIEW_ROUTE = "review"
-    const val MOCK_EXAM_ROUTE = "mock_exam"
 }
 
 // Placeholder composable for missing screens

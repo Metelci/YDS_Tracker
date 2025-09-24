@@ -1,4 +1,6 @@
 package com.mtlc.studyplan.gamification
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 
 // CelebrationIntensity import removed with celebrations module
 import androidx.compose.foundation.BorderStroke
@@ -36,7 +38,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -264,16 +265,11 @@ fun GamificationSettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Gamification Settings") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
-                        )
-                    }
-                }
+            StudyPlanTopBar(
+                title = "Gamification Settings",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = onNavigateBack,
+                style = StudyPlanTopBarStyle.Settings
             )
         }
     ) { paddingValues ->

@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.ui.theme.LocalSpacing
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.material3.CardDefaults
 import com.mtlc.studyplan.data.PlanTask
 import com.mtlc.studyplan.data.UserPlanOverrides
@@ -58,27 +59,7 @@ fun CustomizePlanScreen(
 ) {
     val s = LocalSpacing.current
     var showInfo by remember { mutableStateOf(false) }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.customize_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showInfo = true }) {
-                        Icon(imageVector = Icons.Filled.Info, contentDescription = stringResource(id = R.string.info))
-                    }
-                    TextButton(onClick = onBack) { Text(text = stringResource(id = R.string.cancel)) }
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -139,8 +120,10 @@ private fun WeekCard(
             Spacer(Modifier.height(8.dp))
             week.days.forEachIndexed { dayIndex, day ->
                 val dayDate = remember(weekStart, dayIndex) { weekStart.plusDays(dayIndex.toLong()) }
-                val dayLabel = "${day.day} (${dayDate.format(fmtShort)})"
-                Text(dayLabel, style = MaterialTheme.typography.labelLarge)
+                Column {
+                    Text(day.day, style = MaterialTheme.typography.labelLarge)
+                    Text(dayDate.format(fmtShort), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
                 Spacer(Modifier.height(4.dp))
                 day.tasks.forEach { task ->
                     TaskRow(

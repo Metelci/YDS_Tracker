@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Group
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
@@ -220,16 +219,3 @@ private fun tagColor(tag: String): Pair<Color, Color> {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GroupCardPreview() {
-    val repo = FakeSocialRepository()
-    val groups = repo.groups.collectAsState()
-    StudyPlanTheme {
-        GroupCard(
-            group = groups.value.first(),
-            onToggleJoin = {},
-            onShare = {}
-        )
-    }
-}

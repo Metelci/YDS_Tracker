@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.AvatarOption
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
@@ -362,15 +361,3 @@ private fun avatarEmoji(id: String): String = when (id) {
 private fun minutesPerDay(hours: Int): Int = (hours * 60) / 7
 private fun hoursPerMonth(hours: Int): Int = hours * 4
 
-@Preview(showBackground = true, widthDp = 360)
-@Composable
-private fun ProfileTabPreview() {
-    val repo = FakeSocialRepository()
-    StudyPlanTheme {
-        val profile = repo.profile.collectAsState()
-        ProfileTab(
-            profile = profile.value,
-            onAvatarSelected = {}
-        )
-    }
-}

@@ -9,7 +9,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,7 +25,7 @@ import com.mtlc.studyplan.ui.theme.LocalSpacing
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewScreen(result: MockResultUi, onRetrySet: (List<Int>) -> Unit, onBack: () -> Unit = {}) {
-    Scaffold(topBar = { TopAppBar(title = { Text("Review & Insights") }) }) { padding ->
+    Scaffold(topBar = { StudyPlanTopBar(title = "Review & Insights", style = StudyPlanTopBarStyle.Progress) }) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).padding(LocalSpacing.current.md).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.md)

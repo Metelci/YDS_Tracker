@@ -1,42 +1,44 @@
 package com.mtlc.studyplan.social
 
+// import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.GpsFixed
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Psychology
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-// import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,25 +51,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
-import androidx.compose.foundation.layout.Box
-import com.mtlc.studyplan.data.social.AvatarOption
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.data.social.Friend
-import com.mtlc.studyplan.data.social.Group
 import com.mtlc.studyplan.data.social.PersistentSocialRepository
 import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.data.social.SocialRepository
-import com.mtlc.studyplan.utils.socialDataStore
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
-import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 import com.mtlc.studyplan.shared.SharedAppViewModel
-import com.mtlc.studyplan.social.SocialTab
 import com.mtlc.studyplan.shared.StudyStats
 import com.mtlc.studyplan.social.components.SocialSegmentedTabs
 import com.mtlc.studyplan.social.tabs.AwardsTab
@@ -75,12 +69,14 @@ import com.mtlc.studyplan.social.tabs.FriendsTab
 import com.mtlc.studyplan.social.tabs.GroupsTab
 import com.mtlc.studyplan.social.tabs.ProfileTab
 import com.mtlc.studyplan.social.tabs.RanksTab
+import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.utils.socialDataStore
 import kotlinx.coroutines.launch
-import com.mtlc.studyplan.ui.components.*
-import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
+
 // import com.mtlc.studyplan.social.components.AwardNotification
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,15 +84,15 @@ import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 fun SocialScreen(
     repository: SocialRepository? = null,
     sharedViewModel: SharedAppViewModel? = null,
-    navigationManager: StudyPlanNavigationManager? = null,
-    onNavigateToSettings: () -> Unit = {}
+    navigationManager: StudyPlanNavigationManager? = null
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Use persistent repository if none provided, otherwise fall back to fake for previews
+
+    // Use persistent repository if none provided
     val socialRepository = repository ?: remember {
         PersistentSocialRepository(context.socialDataStore)
     }
@@ -126,6 +122,10 @@ fun SocialScreen(
     var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
     var pendingUsername by rememberSaveable { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
+
+    // Avatar upload state - placeholder for future implementation
+    var showAvatarUploadDialog by remember { mutableStateOf(false) }
+
     // var notificationAward by remember { mutableStateOf<com.mtlc.studyplan.data.social.Award?>(null) }
 
     LaunchedEffect(deepLinkParams) {
@@ -148,27 +148,17 @@ fun SocialScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            StudyPlanTopBar(
-                title = "Social",
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Settings"
-                        )
-                    }
-                }
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize()
         ) {
+            // Snackbar host
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
 
             // Username required dialog overlay
             if (showUsernameDialog) {
@@ -205,35 +195,8 @@ fun SocialScreen(
                     .padding(horizontal = spacing.md),
                 verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-                // Invite friends button (moved from header to content area)
-                FilledTonalButton(
-                    onClick = {
-                        scope.launch {
-                            val message = context.getString(R.string.social_invite_stub)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    ),
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.GroupAdd,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.social_invite_friends),
-                        modifier = Modifier.padding(start = 6.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
 
-            SocialSegmentedTabs(
+                SocialSegmentedTabs(
                 selected = selectedTab,
                 onTabSelected = { selectedTab = it }
             )
@@ -507,7 +470,7 @@ fun ProfileSection(
 
             // Upload custom avatar button
             FilledTonalButton(
-                onClick = { /* Upload custom avatar stub */ },
+                onClick = { /* TODO: upload avatar (validations applied elsewhere) */ },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(
@@ -633,11 +596,12 @@ fun UsernameRequiredDialog(
     )
 }
 
+
 @Preview(showBackground = true)
 @Composable
 private fun SocialScreenPreview() {
     StudyPlanTheme {
-        SocialScreen(repository = FakeSocialRepository())
+        SocialScreen()
     }
 }
 

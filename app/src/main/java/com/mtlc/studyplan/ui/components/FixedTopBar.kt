@@ -12,15 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.ui.responsive.*
-import kotlinx.coroutines.launch
 
 /**
  * Fixed top bar component that stays at the top while content scrolls beneath
@@ -67,8 +61,7 @@ import kotlinx.coroutines.launch
 fun FixedTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    style: StudyPlanTopBarStyle = StudyPlanTopBarStyle.Default,
     showLanguageSwitcher: Boolean = false,
     showSearch: Boolean = false,
     showMenu: Boolean = false,
@@ -76,83 +69,37 @@ fun FixedTopBar(
     onMenuClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val languageManager = rememberLanguageManager(context)
-    val coroutineScope = rememberCoroutineScope()
-
-    // Responsive utilities
     val safeAreaInsets = rememberSafeAreaInsets()
-    val deviceProfile = rememberDeviceProfile()
-    val typography = responsiveOnboardingTypography()
+    val appearance = rememberTopBarAppearance(style)
 
-    // Fixed positioning with proper z-index
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .zIndex(100f) // High z-index to stay above scrolling content
+            .zIndex(100f)
             .shadow(
                 elevation = 4.dp,
                 ambientColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
                 spotColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
             ),
-        color = backgroundColor,
-        contentColor = contentColor
+        color = Color.Transparent,
+        contentColor = appearance.iconColor
     ) {
         Column {
-            // Top bar content
-            Row(
+            StudyPlanTopBar(
+                title = title,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(backgroundColor)
                     .padding(
                         top = safeAreaInsets.top,
                         start = safeAreaInsets.start,
                         end = safeAreaInsets.end,
                         bottom = 8.dp
-                    )
-                    .height(56.dp), // Standard Material Design top bar height
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Left side - Menu icon and title
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Menu button if enabled
-                    if (showMenu && onMenuClick != null) {
-                        IconButton(
-                            onClick = onMenuClick,
-                            modifier = Modifier.size(touchTargetSize())
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = contentColor
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-
-                    // Title
-                    Text(
-                        text = title,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = contentColor,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-                }
-
-                // Right side - Actions
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Custom actions
+                    ),
+                navigationIcon = if (showMenu && onMenuClick != null) Icons.Default.Menu else null,
+                onNavigationClick = onMenuClick,
+                showLanguageSwitcher = showLanguageSwitcher,
+                style = style,
+                actions = {
                     actions()
-
-                    // Search button if enabled
                     if (showSearch && onSearchClick != null) {
                         IconButton(
                             onClick = onSearchClick,
@@ -160,27 +107,13 @@ fun FixedTopBar(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = contentColor
+                                contentDescription = "Search"
                             )
                         }
                     }
-
-                    // Language switcher if enabled
-                    if (showLanguageSwitcher) {
-                        LanguageSwitcher(
-                            currentLanguage = languageManager.currentLanguage,
-                            onLanguageChanged = { newLanguage ->
-                                coroutineScope.launch {
-                                    languageManager.changeLanguage(newLanguage)
-                                }
-                            }
-                        )
-                    }
                 }
-            }
+            )
 
-            // Divider for visual separation
             HorizontalDivider(
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
@@ -188,6 +121,7 @@ fun FixedTopBar(
         }
     }
 }
+
 
 /**
  * Container for content that scrolls beneath the fixed top bar
@@ -227,8 +161,7 @@ object FixedTopBarDefaults {
             showLanguageSwitcher = false,
             onMenuClick = onMenuClick,
             onSearchClick = onSearchClick,
-            backgroundColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
+            style = StudyPlanTopBarStyle.Home
         )
     }
 
@@ -242,8 +175,7 @@ object FixedTopBarDefaults {
             showMenu = true,
             showLanguageSwitcher = false,
             onMenuClick = onMenuClick,
-            backgroundColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            style = StudyPlanTopBarStyle.Social,
             actions = {
                 IconButton(
                     onClick = onSettingsClick,
@@ -251,8 +183,7 @@ object FixedTopBarDefaults {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.onSurface
+                        contentDescription = "Settings"
                     )
                 }
             }
@@ -262,13 +193,13 @@ object FixedTopBarDefaults {
     @Composable
     fun customTopBar(
         title: String,
+        style: StudyPlanTopBarStyle = StudyPlanTopBarStyle.Default,
         actions: @Composable RowScope.() -> Unit = {}
     ): @Composable () -> Unit = {
         FixedTopBar(
             title = title,
             showLanguageSwitcher = false,
-            backgroundColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            style = style,
             actions = actions
         )
     }
@@ -312,9 +243,8 @@ fun FixedTopBarLayout(
 @Composable
 fun rememberTopBarHeight(): androidx.compose.ui.unit.Dp {
     val safeAreaInsets = rememberSafeAreaInsets()
-    val deviceProfile = rememberDeviceProfile()
 
-    return remember(safeAreaInsets, deviceProfile) {
+    return remember(safeAreaInsets) {
         val baseHeight = 56.dp // Material Design standard
         val padding = 16.dp // Top and bottom padding
         val safeAreaTop = safeAreaInsets.top

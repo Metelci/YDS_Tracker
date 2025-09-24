@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import com.mtlc.studyplan.utils.settingsDataStore
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -71,7 +72,8 @@ fun HomeScreen() {
         topBar = {
             StudyPlanTopBar(
                 title = "Home",
-                showLanguageSwitcher = true
+                showLanguageSwitcher = true,
+                style = StudyPlanTopBarStyle.Home
             )
         }
     ) { padding ->

@@ -48,15 +48,7 @@ class PersistentSocialRepository(
         )
     )
 
-    private val ranksState = MutableStateFlow(
-        listOf(
-            RankEntry("1", "Alex Chen", "AC", xp = 2850, streak = 25),
-            RankEntry("2", "Sarah Kim", "SK", xp = 2720, streak = 18),
-            RankEntry("3", "You", "YU", xp = 2650, streak = 15, isYou = true),
-            RankEntry("4", "Mike Jones", "MJ", xp = 2580, streak = 12),
-            RankEntry("5", "Emma Davis", "ED", xp = 2450, streak = 20)
-        )
-    )
+    private val ranksState = MutableStateFlow(emptyList<RankEntry>())
 
     private val groupsState = MutableStateFlow(
         listOf(
@@ -88,14 +80,7 @@ class PersistentSocialRepository(
         )
     )
 
-    private val friendsState = MutableStateFlow(
-        listOf(
-            Friend("f1", "JL", "Jessica Liu", FriendStatus.Online, score = 85, streak = 12),
-            Friend("f2", "DP", "David Park", FriendStatus.Offline, score = 92, streak = 8),
-            Friend("f3", "LW", "Lisa Wang", FriendStatus.Studying, score = 78, streak = 22),
-            Friend("f4", "TW", "Tom Wilson", FriendStatus.Online, score = 88, streak = 5)
-        )
-    )
+    private val friendsState = MutableStateFlow(emptyList<Friend>())
 
     private val awardsState = MutableStateFlow(
         listOf(
@@ -147,9 +132,8 @@ class PersistentSocialRepository(
                 title = "Vocabulary Virtuoso",
                 description = "Learned 1000+ words",
                 rarity = AwardRarity.Epic,
-                unlockedBy = listOf("You", "Mike Jones", "Emma Davis"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-15"
+                unlockedBy = listOf("Mike Jones", "Emma Davis"),
+                isUnlocked = false
             ),
             Award(
                 id = "a5",
@@ -201,10 +185,10 @@ class PersistentSocialRepository(
             ),
             Award(
                 id = "a21",
-                title = "Mock Test Champion",
-                description = "Scored 75+ in 5 full-length mock tests",
+                title = "Writing Wizard",
+                description = "Achieved 85%+ in 5 writing exercises",
                 rarity = AwardRarity.Epic,
-                unlockedBy = listOf(),
+                unlockedBy = listOf("Lisa Wang"),
                 isUnlocked = false
             ),
             Award(
@@ -230,9 +214,8 @@ class PersistentSocialRepository(
                 title = "Early Bird",
                 description = "Studied before 8 AM for 5 days",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-10"
+                unlockedBy = listOf(),
+                isUnlocked = false
             ),
             Award(
                 id = "a10",
@@ -263,9 +246,8 @@ class PersistentSocialRepository(
                 title = "First Steps",
                 description = "Completed your first study session",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You", "Alex Chen", "Sarah Kim", "Mike Jones", "Emma Davis"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-01"
+                unlockedBy = listOf("Alex Chen", "Sarah Kim", "Mike Jones", "Emma Davis"),
+                isUnlocked = false
             ),
             Award(
                 id = "a14",
@@ -280,18 +262,16 @@ class PersistentSocialRepository(
                 title = "Goal Setter",
                 description = "Set your weekly study goal",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-01"
+                unlockedBy = listOf(),
+                isUnlocked = false
             ),
             Award(
                 id = "a23",
                 title = "YDS Starter",
                 description = "Completed your first YDS practice test",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You", "Alex Chen"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-02"
+                unlockedBy = listOf("Alex Chen"),
+                isUnlocked = false
             ),
             Award(
                 id = "a24",
@@ -322,9 +302,8 @@ class PersistentSocialRepository(
                 title = "Weekly Warrior",
                 description = "Studied every day for one week",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You", "Tom Wilson"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-08"
+                unlockedBy = listOf("Tom Wilson"),
+                isUnlocked = false
             ),
             Award(
                 id = "a28",
@@ -363,9 +342,8 @@ class PersistentSocialRepository(
                 title = "Progress Tracker",
                 description = "Logged study progress for 30 days",
                 rarity = AwardRarity.Rare,
-                unlockedBy = listOf("You"),
-                isUnlocked = true,
-                unlockedDate = "2024-12-20"
+                unlockedBy = listOf(),
+                isUnlocked = false
             )
         )
     )

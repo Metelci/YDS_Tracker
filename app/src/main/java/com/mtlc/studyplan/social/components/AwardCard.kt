@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Award
 import com.mtlc.studyplan.data.social.AwardRarity
-import com.mtlc.studyplan.data.social.FakeSocialRepository
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
@@ -206,12 +205,3 @@ private data class RarityPalette(
     val chipContent: Color
 )
 
-@Preview(showBackground = true)
-@Composable
-private fun AwardCardPreview() {
-    val repo = FakeSocialRepository()
-    val awards = repo.awards.collectAsState()
-    StudyPlanTheme {
-        AwardCard(award = awards.value.first())
-    }
-}
