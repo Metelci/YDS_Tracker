@@ -31,7 +31,7 @@ class TaskRepositoryImpl @Inject constructor(
     // Use database repository if available, otherwise fall back to in-memory storage
     private val databaseAvailable = databaseTaskRepository != null
 
-    private val _tasks = MutableStateFlow<List<Task>>(if (databaseAvailable) emptyList() else generateSampleTasks())
+    private val _tasks = MutableStateFlow(if (databaseAvailable) emptyList() else generateSampleTasks())
     private val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
     // Reactive flow that combines database and in-memory data

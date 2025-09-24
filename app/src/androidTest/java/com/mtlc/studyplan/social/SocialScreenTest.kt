@@ -10,14 +10,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mtlc.studyplan.data.social.PersistentSocialRepository
-import kotlinx.coroutines.test.TestScope
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SocialScreenTest {

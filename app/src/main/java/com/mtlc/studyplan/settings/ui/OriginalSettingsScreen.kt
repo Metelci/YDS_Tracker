@@ -4,20 +4,67 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.Assessment
+import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Navigation
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.People
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.TaskAlt
+import androidx.compose.material.icons.outlined.TrackChanges
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -26,25 +73,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.database.StudyPlanDatabase
+import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.repository.UserSettingsRepository
-import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.PrivacySettings
 import com.mtlc.studyplan.settings.data.ProfileVisibility
+import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.TaskSettings
 import com.mtlc.studyplan.ui.components.LanguageSwitcher
-import com.mtlc.studyplan.ui.components.Language
-import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.ui.theme.DesignTokens
-import java.util.Locale
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
+import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -98,14 +142,33 @@ fun OriginalSettingsScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-        // Header with language switcher
-        Row(
+        // Header with language switcher and gradient background
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFFBE9E7), // Light pastel red/pink
+                                Color(0xFFE3F2FD)  // Light pastel blue
+                            ),
+                            start = Offset.Zero,
+                            end = Offset.Infinite
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -113,24 +176,26 @@ fun OriginalSettingsScreen(
                     text = "Settings",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color(0xFF424242)
                 )
                 Text(
                     text = "Customize your study experience",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color(0xFF616161)
                 )
             }
 
-            // Language switcher in top right
-            LanguageSwitcher(
-                currentLanguage = languageManager.currentLanguage,
-                onLanguageChanged = { newLanguage ->
-                    coroutineScope.launch {
-                        languageManager.changeLanguage(newLanguage)
+                // Language switcher in top right
+                LanguageSwitcher(
+                    currentLanguage = languageManager.currentLanguage,
+                    onLanguageChanged = { newLanguage ->
+                        coroutineScope.launch {
+                            languageManager.changeLanguage(newLanguage)
+                        }
                     }
+                )
                 }
-            )
+            }
         }
 
         // Tab Row
@@ -219,9 +284,9 @@ fun OriginalSettingsScreen(
                         }
                     }
                     "Navigation" -> NavigationSettingsContent(settingsManager)
-                    "Notifications" -> NotificationsSettingsContent(settingsManager)
+                    "Notifications" -> NotificationsSettingsContent()
                     "Gamification" -> GamificationSettingsContent(settingsManager)
-                    "Social" -> SocialSettingsContent(settingsManager)
+                    "Social" -> SocialSettingsContent()
                     "Privacy" -> PrivacySettingsContent(settingsManager)
                 }
             }
@@ -478,7 +543,7 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
 }
 
 @Composable
-private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesManager) {
+private fun NotificationsSettingsContent() {
     SettingsCard(
         title = "Notifications",
         icon = Icons.Outlined.Notifications
@@ -534,7 +599,7 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
 }
 
 @Composable
-private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
+private fun SocialSettingsContent() {
     SettingsCard(
         title = "Social",
         icon = Icons.Outlined.People
@@ -786,8 +851,8 @@ private fun WeeklyGoalCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp), // Reduced padding: 20dp->16dp, 16dp->12dp
-            verticalArrangement = Arrangement.spacedBy(12.dp) // Reduced spacing: 16dp->12dp
+                .padding(horizontal = 14.dp, vertical = 8.dp), // Further reduced padding
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Further reduced spacing
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -851,9 +916,9 @@ private fun WeeklyGoalCard(
                 valueRange = WEEKLY_GOAL_MIN.toFloat()..WEEKLY_GOAL_MAX.toFloat(),
                 steps = WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN,
                 colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = WEEKLY_GOAL_ACTIVE_TRACK,
-                    inactiveTrackColor = WEEKLY_GOAL_INACTIVE_TRACK,
+                    thumbColor = Color(0xFF424242), // Dark grey thumb
+                    activeTrackColor = Color(0xFF616161), // Dark grey active track
+                    inactiveTrackColor = Color(0xFF9E9E9E), // Light grey inactive track
                     activeTickColor = Color.Transparent,
                     inactiveTickColor = Color.Transparent
                 )

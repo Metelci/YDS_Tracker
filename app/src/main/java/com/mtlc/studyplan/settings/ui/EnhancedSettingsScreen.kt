@@ -585,8 +585,7 @@ private fun SettingsGradientTopBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
-        shadowElevation = 2.dp,
-        color = Color.Transparent
+        color = Color(0xFFE3F2FD) // Light blue solid color as fallback
     ) {
         Box(
             modifier = Modifier
@@ -594,8 +593,8 @@ private fun SettingsGradientTopBar(
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFFFF0DC), // Cream/yellow - more saturated
-                            Color(0xFFCCE7E0)  // Blue-green - more saturated
+                            Color(0xFFE3F2FD), // Light blue
+                            Color(0xFFFCE4EC)  // Light peach/pink
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
@@ -611,10 +610,21 @@ private fun SettingsGradientTopBar(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                     Icon(
                         imageVector = Icons.Outlined.Settings,
                         contentDescription = null,
-                        tint = Color(0xFF2E3A2E),
+                        tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                     Column {
@@ -622,12 +632,12 @@ private fun SettingsGradientTopBar(
                             text = "Settings",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E3A2E)
+                            color = Color.White
                         )
                         Text(
                             text = "Customize your study experience",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF4A6741)
+                            color = Color.White.copy(alpha = 0.9f)
                         )
                     }
                 }
@@ -640,7 +650,7 @@ private fun SettingsGradientTopBar(
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF2E3A2E)
+                            color = Color.White
                         )
                     }
                     // Language switcher button
@@ -648,15 +658,15 @@ private fun SettingsGradientTopBar(
                         onClick = { /* Language switcher logic */ },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color.White.copy(alpha = 0.8f),
-                            contentColor = Color(0xFF2E3A2E)
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF1976D2)
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                     ) {
                         Text(
                             text = "EN",
                             style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }

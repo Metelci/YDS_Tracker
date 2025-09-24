@@ -49,7 +49,7 @@ fun StudyBottomNav(
             .fillMaxWidth()
             .navigationBarsPadding()
             .padding(horizontal = 12.dp, vertical = 8.dp),
-        color = Color(0xFFF1F8E9), // Pastel light green background
+        color = Color(0xFFD3D3D3), // Soft pastel grey background
         contentColor = DesignTokens.Foreground,
         shadowElevation = 8.dp,
         shape = RoundedCornerShape(24.dp)

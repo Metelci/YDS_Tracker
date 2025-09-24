@@ -35,11 +35,11 @@ fun HomeScreen() {
     val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
-    // Progress repository removed
+    val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
 
     val plan by planRepo.planFlow.collectAsState(initial = emptyList())
-    // TODO: Connect to real progress tracking when available
-    val progress = UserProgress()
+    val progress by progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
+    val todayStats by progressRepo.todayStats.collectAsState(initial = com.mtlc.studyplan.repository.ProgressRepository.DailyStats())
 
     val today = remember { LocalDate.now() }
     val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
@@ -81,19 +81,16 @@ fun HomeScreen() {
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Progress ring for today's plan
+            // Progress ring for today's plan - using real data
             item {
                 val tasks = todayTasks?.second.orEmpty()
-                val plannedMinutes = remember(tasks) {
-                    tasks.sumOf { com.mtlc.studyplan.ui.components.estimateTaskMinutes(it.desc, it.details) }
-                }
-                val completedMinutes = remember(tasks, progress.completedTasks) {
-                    tasks.filter { it.id in progress.completedTasks }
-                        .sumOf { com.mtlc.studyplan.ui.components.estimateTaskMinutes(it.desc, it.details) }
-                }
-                val ratio = remember(plannedMinutes, completedMinutes) {
-                    if (plannedMinutes > 0) (completedMinutes.toFloat() / plannedMinutes).coerceIn(0f, 1f) else 0f
-                }
+                val plannedTasks = tasks.size
+                val completedTasks = todayStats.tasksCompleted
+                val studyMinutes = todayStats.studyMinutes
+                val pointsEarned = todayStats.pointsEarned
+                val currentStreak = todayStats.streak
+                val ratio = if (plannedTasks > 0) (completedTasks.toFloat() / plannedTasks).coerceIn(0f, 1f) else 0f
+
                 Card(Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -105,23 +102,35 @@ fun HomeScreen() {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "${tasks.size} tasks planned",
+                            text = "$completedTasks / $plannedTasks tasks completed",
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        if (plannedMinutes > 0) {
+                        if (studyMinutes > 0) {
                             Text(
-                                text = "$completedMinutes / $plannedMinutes minutes completed",
+                                text = "$studyMinutes minutes studied",
                                 style = MaterialTheme.typography.bodySmall
                             )
-                            LinearProgressIndicator(
-                                progress = { ratio },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(4.dp)
-                                    .padding(top = 8.dp),
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        }
+                        if (pointsEarned > 0) {
+                            Text(
+                                text = "$pointsEarned XP earned today",
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
+                        if (currentStreak > 0) {
+                            Text(
+                                text = "${currentStreak}-day streak",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        LinearProgressIndicator(
+                            progress = { ratio },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .padding(top = 8.dp),
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
                     }
                 }
             }
@@ -165,8 +174,8 @@ fun HomeScreen() {
                 }
             }
             item {
-                // Study statistics - only show if there's real data
-                if (totalTasks > 0) {
+                // Study statistics - using real progress data
+                if (totalTasks > 0 || progress.totalXp > 0) {
                     Card(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Study Progress", style = MaterialTheme.typography.titleSmall)
@@ -179,6 +188,9 @@ fun HomeScreen() {
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             )
                             Text("Overall: ${completedInPlan} / ${totalTasks} tasks completed")
+                            if (progress.totalXp > 0) {
+                                Text("Total XP: ${progress.totalXp}")
+                            }
                             // Only show streak if it's greater than 0
                             if (progress.streakCount > 0) {
                                 Text("Current streak: ${progress.streakCount} days")
