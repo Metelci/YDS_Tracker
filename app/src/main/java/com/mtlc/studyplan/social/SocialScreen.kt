@@ -1,6 +1,9 @@
 package com.mtlc.studyplan.social
 
 // import androidx.compose.material3.FloatingActionButton
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,14 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.GpsFixed
-import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Psychology
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +49,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -123,8 +124,26 @@ fun SocialScreen(
     var pendingUsername by rememberSaveable { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
 
-    // Avatar upload state - placeholder for future implementation
+    // Avatar upload state and launcher
     var showAvatarUploadDialog by remember { mutableStateOf(false) }
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            // Handle the selected image URI
+            scope.launch {
+                // For now, show a success message - in a real app you'd process the image
+                val message = context.getString(R.string.social_avatar_upload_success)
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Short
+                )
+                showAvatarUploadDialog = false
+            }
+        }
+    }
 
     // var notificationAward by remember { mutableStateOf<com.mtlc.studyplan.data.social.Award?>(null) }
 
@@ -188,15 +207,47 @@ fun SocialScreen(
                 )
             }
 
+            // Avatar upload dialog
+            if (showAvatarUploadDialog) {
+                AvatarUploadDialog(
+                    onDismiss = { showAvatarUploadDialog = false },
+                    onGallerySelected = {
+                        imagePickerLauncher.launch("image/*")
+                    },
+                    onCameraSelected = {
+                        // For now, just show a message that camera feature is coming soon
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Camera feature coming soon! Please use gallery for now.",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                        showAvatarUploadDialog = false
+                    }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = spacing.md),
-                verticalArrangement = Arrangement.spacedBy(spacing.md)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
+                // Social Hub Top Bar
+                SocialHubTopBar(
+                    onInviteClick = {
+                        scope.launch {
+                            val message = context.getString(R.string.social_invite_stub)
+                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+                        }
+                    }
+                )
 
-                SocialSegmentedTabs(
+                Column(
+                    modifier = Modifier.padding(horizontal = spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md)
+                ) {
+                    SocialSegmentedTabs(
                 selected = selectedTab,
                 onTabSelected = { selectedTab = it }
             )
@@ -205,7 +256,8 @@ fun SocialScreen(
                 SocialTab.Profile -> {
                     ProfileTab(
                         profile = profile,
-                        onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } }
+                        onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } },
+                        onUploadAvatarClick = { showAvatarUploadDialog = true }
                     )
                 }
                 SocialTab.Ranks -> RanksTab(ranks = ranks)
@@ -247,8 +299,85 @@ fun SocialScreen(
             }
 
             // Section removed per product requirements
+                }
             }
 
+        }
+    }
+}
+
+@Composable
+fun SocialHubTopBar(
+    onInviteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val spacing = LocalSpacing.current
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = spacing.md, vertical = spacing.sm),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Transparent
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFE8F5E8),
+                            Color(0xFFD1ECF1)
+                        )
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 20.dp, vertical = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Social Hub",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
+                    Text(
+                        text = "Connect with fellow YDS students",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF4A6741)
+                    )
+                }
+
+                FilledTonalButton(
+                    onClick = onInviteClick,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFF2E7D32)
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PersonAdd,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFF2E7D32)
+                    )
+                    Spacer(modifier = Modifier.size(6.dp))
+                    Text(
+                        text = "Invite",
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         }
     }
 }
@@ -293,7 +422,8 @@ fun HighlightChip(label: String, value: String, modifier: Modifier = Modifier) {
 fun ProfileSection(
     profile: SocialProfile,
     onAvatarSelected: (String) -> Unit,
-    onUsernameSave: (String) -> Unit
+    onUsernameSave: (String) -> Unit,
+    onUploadAvatarClick: () -> Unit
 ) {
     val spacing = LocalSpacing.current
 
@@ -470,7 +600,7 @@ fun ProfileSection(
 
             // Upload custom avatar button
             FilledTonalButton(
-                onClick = { /* TODO: upload avatar (validations applied elsewhere) */ },
+                onClick = onUploadAvatarClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(
@@ -591,6 +721,77 @@ fun UsernameRequiredDialog(
                         }
                     }
                 )
+            }
+        }
+    )
+}
+
+@Composable
+fun AvatarUploadDialog(
+    onDismiss: () -> Unit,
+    onGallerySelected: () -> Unit,
+    onCameraSelected: () -> Unit
+) {
+    val spacing = LocalSpacing.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(id = R.string.social_upload_avatar),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                Text(
+                    text = "Choose how you'd like to add your avatar:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // Gallery option
+                FilledTonalButton(
+                    onClick = onGallerySelected,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Image,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Choose from Gallery")
+                }
+
+                // Camera option
+                FilledTonalButton(
+                    onClick = onCameraSelected,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person, // Using Person as placeholder for camera
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Take Photo")
+                }
+
+                Text(
+                    text = "• Image must be smaller than 2MB\n• Recommended size: 512x512 pixels\n• Supported formats: JPG, PNG",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
             }
         }
     )

@@ -4,6 +4,74 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.7] - 2025-09-24
+
+### 🎨 **Major UI Redesigns**
+
+#### **New Gradient Top Bars**
+- **Settings Top Bar**: Beautiful cream-to-teal gradient with proper spacing and typography
+- **Tasks Top Bar**: Multi-color gradient (blue-green-pink) with enhanced XP display
+- **Social Hub Top Bar**: Fresh mint gradient design with invite functionality
+- **Fixed Language Switcher**: Persistent "EN" button across all redesigned screens
+
+#### **Enhanced Visual Design**
+- **Consistent Rounded Corners**: 16dp radius across all new top bars
+- **Improved Typography**: Bold headers with descriptive subtitles
+- **Professional Color Scheme**: Dark green text (#2E3A2E) with muted accents (#4A6741)
+- **Icon Integration**: Contextual icons for each screen (Settings, Tasks, Social)
+
+### 🖼️ **Avatar Upload System**
+
+#### **Complete Avatar Upload Feature**
+- **Gallery Integration**: Native image picker for custom avatars
+- **Upload Dialog**: Clean Material 3 dialog with multiple options
+- **User Feedback**: Success notifications and error handling
+- **Image Guidelines**: Clear instructions for optimal avatar formats
+
+#### **Profile Enhancement**
+- **Working Upload Button**: Fixed previously non-functional avatar upload
+- **State Management**: Proper callback system across components
+- **UI Polish**: Consistent styling with existing profile elements
+
+### 🔧 **Technical Improvements**
+
+#### **Component Architecture**
+- **Custom Gradient Components**: Reusable top bar system
+- **Proper State Flow**: Better separation of concerns between components
+- **Import Optimization**: Cleaned up unnecessary dependencies
+- **Build Stability**: All changes compile successfully
+
+#### **Code Quality**
+- **Error Resolution**: Fixed unresolved reference issues
+- **Type Safety**: Maintained strong typing across new features
+- **Documentation**: Clear function naming and structure
+- **Performance**: Efficient gradient rendering and state management
+
+### 📱 **User Experience Enhancements**
+
+#### **Navigation Improvements**
+- **Consistent Top Bars**: Unified design language across screens
+- **Better Visual Hierarchy**: Clear titles and descriptions
+- **Intuitive Controls**: Well-positioned action buttons and switches
+
+#### **Social Features**
+- **Social Hub Design**: Modern card-based layout with gradient background
+- **Avatar Management**: Complete workflow for custom avatar uploads
+- **Profile Customization**: Enhanced user personalization options
+
+### 🐛 **Bug Fixes**
+- **Avatar Upload**: Resolved non-working upload custom avatar button
+- **State Management**: Fixed unresolved reference errors in social components
+- **Component Hierarchy**: Proper callback passing between ProfileTab → ProfileCard
+- **Build Issues**: Resolved compilation errors and import conflicts
+
+### 📋 **Technical Details**
+- **Version**: 2.9.6 → 2.9.7
+- **Build**: 56 → 57
+- **Files Modified**: 6 core files with significant UI improvements
+- **New Components**: Custom gradient top bar implementations
+- **Compatibility**: Maintained backward compatibility
+
 ## [2.9.3] - 2025-09-23
 
 ### ✨ **New Features**

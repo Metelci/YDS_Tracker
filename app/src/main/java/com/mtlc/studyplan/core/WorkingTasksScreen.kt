@@ -19,7 +19,10 @@ import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,7 +82,7 @@ fun WorkingTasksScreen(
                 .padding(horizontal = 16.dp)
         ) {
         Spacer(Modifier.height(12.dp))
-        HeaderWithButtons()
+        TasksGradientTopBar()
         Spacer(Modifier.height(8.dp))
         SegmentedControl(
             segments = listOf("Daily", "Weekly", "Plan", "Custom"),
@@ -176,18 +179,82 @@ private fun SegmentedControl(
 }
 
 @Composable
-private fun HeaderWithButtons() {
-    Row(
+private fun TasksGradientTopBar() {
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Transparent
     ) {
-        Text("Tasks", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFE8F4F8), // Light blue
+                            Color(0xFFF0F8E8), // Light green
+                            Color(0xFFFFF0F8)  // Light pink
+                        )
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            XpButton(xp = 0)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Task,
+                        contentDescription = null,
+                        tint = Color(0xFF2E3A2E),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "Daily Tasks",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2E3A2E)
+                        )
+                        Text(
+                            text = "Complete tasks to build your streak",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF4A6741)
+                        )
+                    }
+                }
+
+                // XP Badge
+                Surface(
+                    color = Color(0xFF4CAF50).copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            Icons.Outlined.Bolt,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            "1250 XP",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
         }
     }
 }

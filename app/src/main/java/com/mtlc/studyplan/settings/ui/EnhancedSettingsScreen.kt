@@ -2,14 +2,20 @@ package com.mtlc.studyplan.settings.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import androidx.compose.runtime.*
@@ -63,21 +69,10 @@ fun EnhancedSettingsScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Top App Bar with back button
-        StudyPlanTopBar(
-            title = "Settings",
-            navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-            onNavigationClick = onNavigateBack,
-            showLanguageSwitcher = true,
-            style = StudyPlanTopBarStyle.Settings,
-            actions = {
-                if (mainSettingsState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
-                    )
-                }
-            }
+        // Custom Settings Top Bar
+        SettingsGradientTopBar(
+            onNavigateBack = onNavigateBack,
+            isLoading = mainSettingsState.isLoading
         )
 
         // Feedback card
@@ -574,6 +569,95 @@ private fun SystemSettings(
                     Icon(Icons.Filled.Clear, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Clear Cache")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsGradientTopBar(
+    onNavigateBack: () -> Unit,
+    isLoading: Boolean = false
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Transparent
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFFFF9E6), // Light cream/yellow
+                            Color(0xFFE8F5F3)  // Light blue-green
+                        )
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 20.dp, vertical = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = null,
+                        tint = Color(0xFF2E3A2E),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "Settings",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2E3A2E)
+                        )
+                        Text(
+                            text = "Customize your study experience",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF4A6741)
+                        )
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = Color(0xFF2E3A2E)
+                        )
+                    }
+                    // Language switcher button
+                    FilledTonalButton(
+                        onClick = { /* Language switcher logic */ },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color.White.copy(alpha = 0.8f),
+                            contentColor = Color(0xFF2E3A2E)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "EN",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }

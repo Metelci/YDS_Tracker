@@ -51,6 +51,7 @@ import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 fun ProfileTab(
     profile: SocialProfile,
     onAvatarSelected: (String) -> Unit,
+    onUploadAvatarClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -67,6 +68,7 @@ fun ProfileTab(
             ProfileCard(
                 profile = profile,
                 onAvatarSelected = onAvatarSelected,
+                onUploadAvatarClick = onUploadAvatarClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = spacing.xs) // Add horizontal padding for very wide screens
@@ -79,6 +81,7 @@ fun ProfileTab(
 private fun ProfileCard(
     profile: SocialProfile,
     onAvatarSelected: (String) -> Unit,
+    onUploadAvatarClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -150,7 +153,7 @@ private fun ProfileCard(
 
             // Compact upload button
             FilledTonalButton(
-                onClick = { /* Upload custom avatar stub */ },
+                onClick = onUploadAvatarClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 40.dp), // Reduced minimum height
