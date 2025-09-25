@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings-specific colors -->
+    <color name="card_selected_background">#E3F2FD</color>
+    <color name="card_background">#F8F9FA</color>
+    <color name="icon_selected_tint">?attr/colorPrimary</color>
+    <color name="search_highlight_color">#FFEB3B</color>
+    <color name="selection_overlay_color">?attr/colorPrimary</color>
+
+    <!-- Status colors -->
+    <color name="settings_success">#4CAF50</color>
+    <color name="settings_warning">#FF9800</color>
+    <color name="settings_error">#F44336</color>
+
+    <!-- Category colors -->
+    <color name="category_privacy">#9C27B0</color>
+    <color name="category_notifications">#2196F3</color>
+    <color name="category_gamification">#FF9800</color>
+    <color name="category_tasks">#4CAF50</color>
+    <color name="category_navigation">#795548</color>
+    <color name="category_social">#E91E63</color>
+    <color name="category_accessibility">#607D8B</color>
+    <color name="category_data">#9E9E9E</color>
+</resources>

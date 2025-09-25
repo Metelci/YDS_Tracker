@@ -1,0 +1,17 @@
+StudyPlan v2.0.1 - UI Stability & Enhanced Progress Tracking
+
+🔧 Bug Fixes:
+• Fixed tooltips appearing repeatedly during navigation
+• Improved onboarding flow stability
+
+📈 Enhancements:
+• Extended Progress overview from 8 to 12 weeks
+• Enhanced Study Heatmap with 12-week timeline (84 days)
+• Better long-term progress visualization
+
+🎯 User Experience:
+• Smoother navigation without disruptive popups
+• More stable tooltip system
+• Enhanced progress tracking for better study planning
+
+This update improves app stability while providing better long-term insights into your study progress. All existing data is preserved.

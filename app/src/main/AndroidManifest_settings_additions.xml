@@ -1,0 +1,87 @@
+<!--
+This file contains the additions needed for AndroidManifest.xml to support the advanced settings features.
+Add these entries to your main AndroidManifest.xml file.
+-->
+
+<!-- Deep Link Support for Settings -->
+<activity
+    android:name=".settings.ui.SettingsDeepLinkActivity"
+    android:exported="true"
+    android:launchMode="singleTop"
+    android:theme="@style/Theme.StudyPlan">
+
+    <!-- Custom scheme deep links: studyplan://settings/... -->
+    <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="studyplan"
+              android:host="settings" />
+    </intent-filter>
+
+    <!-- HTTPS deep links: https://app.studyplan.com/settings/... -->
+    <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https"
+              android:host="app.studyplan.com"
+              android:pathPrefix="/settings" />
+    </intent-filter>
+</activity>
+
+<!-- File Access for Backup/Import -->
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.settings.fileprovider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/settings_file_paths" />
+</provider>
+
+<!-- Permissions for advanced features -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                 android:maxSdkVersion="28" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!-- Accessibility Service Declaration -->
+<service
+    android:name=".accessibility.StudyPlanAccessibilityService"
+    android:exported="false"
+    android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+    <intent-filter>
+        <action android:name="android.accessibilityservice.AccessibilityService" />
+    </intent-filter>
+    <meta-data
+        android:name="android.accessibilityservice"
+        android:resource="@xml/accessibility_service_config" />
+</service>
+
+<!-- Performance Monitoring Service -->
+<service
+    android:name=".performance.PerformanceMonitoringService"
+    android:exported="false" />
+
+<!-- Cloud Sync Background Service -->
+<service
+    android:name=".settings.sync.CloudSyncService"
+    android:exported="false"
+    android:permission="android.permission.BIND_JOB_SERVICE" />
+
+<!-- Backup File Provider Paths -->
+<!-- Create res/xml/settings_file_paths.xml with this content: -->
+<!--
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-files-path
+        name="settings_backups"
+        path="backups/" />
+    <cache-path
+        name="settings_cache"
+        path="settings/" />
+</paths>
+-->

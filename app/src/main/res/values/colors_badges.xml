@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Badge color system -->
+    <color name="badge_background">#FF1976D2</color>
+    <color name="badge_text">#FFFFFF</color>
+
+    <!-- Priority badge colors -->
+    <color name="badge_urgent">#F44336</color>
+    <color name="badge_warning">#FF9800</color>
+    <color name="badge_info">#2196F3</color>
+    <color name="badge_success">#4CAF50</color>
+
+    <!-- Specific badge types -->
+    <color name="badge_tasks">#FF1976D2</color>
+    <color name="badge_social">#9C27B0</color>
+    <color name="badge_achievements">#FFD700</color>
+    <color name="badge_settings">#607D8B</color>
+    <color name="badge_streak_warning">#F44336</color>
+
+    <!-- Warning colors -->
+    <color name="warning_red">#F44336</color>
+    <color name="warning_orange">#FF9800</color>
+    <color name="warning_yellow">#FFEB3B</color>
+</resources>

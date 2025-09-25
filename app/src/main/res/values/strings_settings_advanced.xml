@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings Search -->
+    <string name="search_hint">Search for settings…</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_results_count">%d results found</string>
+    <string name="search_no_results">No results found</string>
+    <string name="search_try_different">Try different keywords or check spelling</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_suggestions">Suggestions</string>
+    <string name="search_clear_history">Clear search history</string>
+    <string name="search_loading">Searching…</string>
+
+    <!-- Settings Backup -->
+    <string name="local_backup_title">Local Backup</string>
+    <string name="local_backup_description">Export and import your settings to/from files</string>
+    <string name="cloud_sync_title">Cloud Sync</string>
+    <string name="cloud_sync_description">Automatically sync settings across your devices</string>
+    <string name="advanced_options_title">Advanced Options</string>
+    <string name="advanced_options_description">Configure backup behavior and frequency</string>
+
+    <string name="setup_cloud_sync">Setup Cloud Sync</string>
+    <string name="sync_now">Sync Now</string>
+    <string name="clear_history">Clear History</string>
+
+    <string name="last_backup_date">Last backup: %s</string>
+    <string name="no_backup_yet">No backup created yet</string>
+    <string name="last_sync_date">Last sync: %s</string>
+    <string name="never_synced">Never synced</string>
+    <string name="backup_size_format">Backup size: %s</string>
+    <string name="no_backup_size">No backup size available</string>
+
+    <string name="cloud_sync_enabled">Cloud sync: Enabled</string>
+    <string name="cloud_sync_configured">Cloud sync: Configured</string>
+    <string name="cloud_sync_not_configured">Cloud sync: Not configured</string>
+    <string name="auto_sync_enabled">Automatic sync</string>
+
+    <!-- Backup Strategies -->
+    <string name="import_strategy_title">Import Strategy</string>
+    <string name="merge_strategy_replace">Replace all settings</string>
+    <string name="merge_strategy_merge">Merge and show conflicts</string>
+    <string name="merge_strategy_skip_existing">Only import new settings</string>
+
+    <!-- Backup Results -->
+    <string name="export_success">Settings exported successfully</string>
+    <string name="import_success_format" formatted="false">Imported %d settings with %d conflicts</string>
+    <string name="sync_success_format" formatted="false">Synced %d settings, resolved %d conflicts</string>
+
+    <!-- Import Conflicts -->
+    <string name="import_conflicts_title">Import Conflicts Detected</string>
+    <string name="import_conflicts_message">%d settings have conflicts between your current values and the backup. How would you like to resolve them?</string>
+    <string name="review_conflicts">Review Conflicts</string>
+    <string name="apply_defaults">Apply Defaults</string>
+
+    <!-- Cloud Providers -->
+    <string name="choose_sync_provider">Choose Cloud Provider</string>
+    <string name="google_drive">Google Drive</string>
+    <string name="dropbox">Dropbox</string>
+    <string name="provider_configuration_in_progress">Configuring cloud provider…</string>
+
+    <!-- Backup History -->
+    <string name="clear_backup_history_title">Clear Backup History</string>
+    <string name="clear_backup_history_message">This will remove all backup history and cached data. Your actual backup files will not be affected.</string>
+    <string name="clear">Clear</string>
+
+    <!-- Backup Frequency -->
+    <string name="backup_frequency">Backup Frequency</string>
+    <string name="backup_frequency_description">How often to automatically create backups</string>
+    <string name="backup_compression">Backup Compression</string>
+    <string name="backup_compression_description">Compress backup files to save space</string>
+
+    <!-- Advanced Toggle Components -->
+    <string name="dependent_settings">Dependent Settings</string>
+    <string name="setting_dependencies">This setting controls:</string>
+    <string name="dependency_requirements">Requirements:</string>
+    <string name="constraint_violation">Setting constraints violated</string>
+    <string name="dependency_violation">Dependency requirements not met</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_settings">Accessibility</string>
+    <string name="high_contrast_mode">High Contrast Mode</string>
+    <string name="large_text_mode">Large Text Mode</string>
+    <string name="reduce_motion">Reduce Motion</string>
+    <string name="screen_reader_support">Screen Reader Support</string>
+    <string name="touch_target_size">Touch Target Size</string>
+    <string name="focus_indicators">Focus Indicators</string>
+
+    <!-- Performance -->
+    <string name="performance_monitoring">Performance Monitoring</string>
+    <string name="memory_usage">Memory Usage</string>
+    <string name="cache_hit_rate">Cache Hit Rate</string>
+    <string name="frame_rate">Frame Rate</string>
+    <string name="memory_pressure_normal">Normal</string>
+    <string name="memory_pressure_high">High</string>
+    <string name="memory_pressure_critical">Critical</string>
+
+    <!-- Error Messages -->
+    <string name="error_search_failed">Search failed. Please try again.</string>
+    <string name="error_backup_failed">Backup operation failed</string>
+    <string name="error_import_failed">Import operation failed</string>
+    <string name="error_sync_failed">Sync operation failed</string>
+    <string name="error_invalid_backup_file">Invalid backup file format</string>
+    <string name="error_backup_corrupted">Backup file is corrupted</string>
+    <string name="error_version_incompatible">Backup version is not compatible</string>
+    <string name="error_insufficient_storage">Insufficient storage space</string>
+    <string name="error_network_unavailable">Network connection unavailable</string>
+    <string name="error_permission_denied">Permission denied</string>
+
+    <!-- Success Messages -->
+    <string name="success_settings_saved">Settings saved successfully</string>
+    <string name="success_backup_created">Backup created successfully</string>
+    <string name="success_settings_imported">Settings imported successfully</string>
+    <string name="success_sync_completed">Sync completed successfully</string>
+
+    <!-- Loading States -->
+    <string name="loading_settings">Loading settings…</string>
+    <string name="loading_backup">Creating backup…</string>
+    <string name="loading_import">Importing settings…</string>
+    <string name="loading_sync">Syncing settings…</string>
+    <string name="loading_search_index">Building search index…</string>
+
+    <!-- Progress Messages -->
+    <string name="progress_gathering_data">Gathering settings data…</string>
+    <string name="progress_creating_backup">Creating backup file…</string>
+    <string name="progress_uploading">Uploading to cloud…</string>
+    <string name="progress_downloading">Downloading from cloud…</string>
+    <string name="progress_applying_changes">Applying changes…</string>
+    <string name="progress_resolving_conflicts">Resolving conflicts…</string>
+
+    <!-- Undo Actions -->
+    <string name="undo_setting_change">Setting change undone</string>
+    <string name="undo_timeout">Undo option expired</string>
+
+    <!-- Deep Linking -->
+    <string name="deep_link_invalid">Invalid settings link</string>
+    <string name="deep_link_not_found">Setting not found</string>
+    <string name="deep_link_navigated">Navigated to %s</string>
+
+    <!-- Validation -->
+    <string name="validation_required">This field is required</string>
+    <string name="validation_min_length">Must be at least %d characters</string>
+    <string name="validation_max_length">Must be at most %d characters</string>
+    <string name="validation_invalid_email">Invalid email format</string>
+    <string name="validation_out_of_range" formatted="false">Value must be between %s and %s</string>
+
+    <!-- Accessibility Announcements -->
+    <string name="announce_setting_enabled">%s enabled</string>
+    <string name="announce_setting_disabled">%s disabled</string>
+    <string name="announce_setting_changed" formatted="false">%s changed to %s</string>
+    <string name="announce_search_results">%d search results found</string>
+    <string name="announce_backup_complete">Backup completed</string>
+    <string name="announce_import_complete">Import completed</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_search_button">Search settings</string>
+    <string name="cd_clear_search">Clear search query</string>
+    <string name="cd_voice_search">Voice search</string>
+    <string name="cd_export_button">Export settings to file</string>
+    <string name="cd_import_button">Import settings from file</string>
+    <string name="cd_sync_button">Sync settings with cloud</string>
+    <string name="cd_setting_toggle">Toggle %s setting</string>
+    <string name="cd_setting_menu">Open %s menu</string>
+    <string name="cd_dependency_info">Dependency information</string>
+    <string name="cd_constraint_warning">Constraint warning</string>
+
+    <!-- Feature Discovery -->
+    <string name="feature_search_title">Search Your Settings</string>
+    <string name="feature_search_description">Quickly find any setting using our smart search</string>
+    <string name="feature_backup_title">Backup Your Settings</string>
+    <string name="feature_backup_description">Never lose your preferences with automatic backups</string>
+    <string name="feature_sync_title">Sync Across Devices</string>
+    <string name="feature_sync_description">Keep your settings synchronized on all your devices</string>
+
+    <!-- Voice Search -->
+    <string name="voice_search_listening">Listening…</string>
+
+    <!-- Conflict Resolution -->
+    <string name="conflict_resolution_title">Resolve Setting Conflicts</string>
+    <string name="conflict_stats_format" formatted="false">%d of %d conflicts resolved</string>
+    <string name="resolution_summary_format" formatted="false">Keep Current: %d • Use Backup: %d • Manual Review: %d</string>
+
+    <string name="apply_current_values_title">Apply All Current Values</string>
+    <string name="apply_current_values_message">This will keep all your current settings and ignore the backup values. Are you sure?</string>
+    <string name="apply_backup_values_title">Apply All Backup Values</string>
+    <string name="apply_backup_values_message">This will replace all conflicting settings with backup values. Are you sure?</string>
+    <string name="smart_merge_title">Smart Merge</string>
+    <string name="smart_merge_message">This will automatically choose the best value for each conflict based on analysis. Are you sure?</string>
+
+    <string name="keep_current_value">Keep Current</string>
+    <string name="use_backup_value">Use Backup</string>
+    <string name="manual_review">Manual Review</string>
+    <string name="apply_selected">Apply Selected</string>
+    <string name="apply">Apply</string>
+
+    <string name="current_value">Current Value</string>
+    <string name="backup_value">Backup Value</string>
+    <string name="recommended">Recommended</string>
+
+    <string name="error_title">Error</string>
+    <string name="conflict_resolution_error">Failed to resolve conflicts. Please try again.</string>
+</resources>

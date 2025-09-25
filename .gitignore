@@ -1,0 +1,23 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.env
+
+# Additional Android/Gradle ignores
+.kotlin/
+app/build/
+gradle/
+*.class
+*.log
+*.tmp
+tmp_*
+nul
+logs/

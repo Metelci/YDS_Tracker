@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Çalışma Planı</string>
+    <string name="app_title">YDS Yolculuğu</string>
+    <string name="email_subject">YDS Yolculuğu Uygulama Geri Bildirimi</string>
+    <string name="email_chooser_title">E-posta gönder...</string>
+    <string name="upcoming_exam">Yaklaşan Sınav:</string>
+    <string name="application_deadline">Başvuru Son Tarihi</string>
+    <string name="time_until_exam">Sınava Kalan Süre</string>
+    <string name="osym_button">Resmi Sınav Kurulu Web Sitesine Git</string>
+    <string name="time_expired">Süre Doldu</string>
+
+    <string name="application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
+    <string name="study_reminder_title">Çalışma Zamanı!</string>
+    <string name="study_reminder_text">Bugünkü hedefleri tamamlamayı unutma.</string>
+    <string name="application_started">bugün başvurular başladı!</string>
+    <string name="application_deadline_today">bugün başvurular için son gün!</string>
+
+    <string name="red_book">Kırmızı Kitap - Temel İngilizce Dilbilgisi</string>
+    <string name="blue_book">Mavi Kitap - İngilizce Dilbilgisi</string>
+    <string name="green_book">Yeşil Kitap - İleri Düzey Dilbilgisi</string>
+
+    <string name="month_week_format">Ay %1$d, Hafta %2$d: %3$s</string>
+    <string name="foundation_level">Sağlam Temel</string>
+    <string name="development_level">B1-B2 Gelişim</string>
+    <string name="advanced_level">C1 Ustalık</string>
+    <string name="exam_camp">Sınav Kampı</string>
+
+    <string name="monday">Pazartesi</string>
+    <string name="tuesday">Salı</string>
+    <string name="wednesday">Çarşamba</string>
+    <string name="thursday">Perşembe</string>
+    <string name="friday">Cuma</string>
+    <string name="saturday">Cumartesi</string>
+    <string name="sunday">Pazar</string>
+
+    <string name="grammar_topics_lesson">1. Ders: Dilbilgisi Konuları</string>
+    <string name="quick_practice_lesson">2. Ders: Hızlı Uygulama</string>
+    <string name="reading_vocabulary_lesson">1. Ders: Okuma ve Kelime Bilgisi</string>
+    <string name="listening_repeat_lesson">2. Ders: Dinleme ve Tekrar</string>
+    <string name="weekly_vocabulary_lesson">1. Ders: Haftalık Kelime Tekrarı</string>
+    <string name="entertainment_english_lesson">2. Ders: İngilizce Eğlence (Dizi/Film)</string>
+    <string name="weekly_general_repeat">1. Ders: Haftalık Genel Tekrar</string>
+    <string name="free_reading_listening">2. Ders: Serbest Okuma/Dinleme</string>
+    <string name="full_exam">Tam Deneme Sınavı</string>
+    <string name="exam_analysis">Sınav Analizi</string>
+
+    <string name="achievements_title">Başarılar</string>
+    <string name="achievements_label">Başarılar</string>
+    <string name="first_task_title">İlk Adım</string>
+    <string name="first_task_desc">İlk görevinizi tamamladınız!</string>
+    <string name="hundred_tasks_title">Yolda</string>
+    <string name="hundred_tasks_desc">100 görevi tamamladınız!</string>
+    <string name="prep_complete_title">Hazırlık Dönemi Tamamlandı!</string>
+    <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladınız. Artık deneme sınavı zamanı!</string>
+    <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
+    <string name="first_exam_week_desc">Deneme sınavı kampının son ayına başladınız!</string>
+    <!-- Onboarding (Turkish) -->
+    <string name="onboarding_title">Planınızı Kişiselleştirin</string>
+    <string name="exam_date_title">Sınav Tarihini Seçin</string>
+    <string name="pick_min_date">En Erken</string>
+    <string name="pick_plus_month">+1 Ay</string>
+    <string name="availability_title">Haftalık Uygunluk (dk/gün)</string>
+    <string name="skills_title">Beceri Öncelikleri</string>
+    <string name="skill_grammar">Gramer</string>
+    <string name="skill_reading">Okuma</string>
+    <string name="skill_listening">Dinleme</string>
+    <string name="skill_vocab">Kelime</string>
+    <string name="weekly_plan_preview">Haftalık planınız günde %1$d görev (tahmini)</string>
+    <string name="generate_plan">Plan Oluştur</string>
+    <string name="next_onboarding">İleri</string>
+    <string name="back_onboarding">Geri</string>
+    <plurals name="tasks_completed">
+        <item quantity="one">%1$d / %2$d görev tamamlandı</item>
+        <item quantity="other">%1$d / %2$d görev tamamlandı</item>
+    </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="tasks_completed">%1$d / %2$d görev tamamlandı</string>
+    <string name="new_achievement">Yeni Başarı: %s</string>
+
+    <string name="streak_label">Çalışma Serisi</string>
+    <string name="overall_progress">Genel İlerleme</string>
+
+    <plurals name="days_unit">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="days_unit">%d gün</string>
+    <string name="percent_format">%d%%</string>
+
+    <string name="units">Birimler</string>
+    <!-- Settings screens resources -->
+    <string name="app_version_format">Sürüm %1$s (%2$s)</string>
+    <string name="app_version_unknown">Sürüm bilinmiyor</string>
+    <string name="settings_error_title">Hata</string>
+    <string name="settings_ok">Tamam</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="reset_progress_title">İlerlemeyi Sıfırla</string>
+    <string name="reset_progress_warning">Bu işlem tüm ilerlemeyi sıfırlayacak. Bu işlem geri alınamaz.</string>
+    <string name="reset_progress_confirm">Sıfırla</string>
+    <string name="reset_all_settings_title">Tüm Ayarları Sıfırla</string>
+    <string name="reset_all_settings_warning">Bu işlem tüm ayarları varsayılan değerlerine döndürecek. Devam edilsin mi?</string>
+    <string name="reset_all_confirm">Tümünü Sıfırla</string>
+    <string name="settings_expand_selection">Seçimi genişlet</string>
+    <string name="practice_description_1">Öğrendiğiniz konular için kitaptaki alıştırmaları çözerek pekiştirin.</string>
+    <string name="reading_description_1">Newsinlevels.com\'dan (Seviye 1-2) 3 haber makalesi okuyun ve 15 yeni kelime çıkarın.</string>
+    <string name="listening_description_1">ESL/British Council podcast\'i dinleyin ve öğrendiğiniz kelimeleri gözden geçirin.</string>
+    <string name="vocabulary_description_1">Bu hafta öğrendiğiniz tüm yeni kelimeleri (yaklaşık 40-50 kelime) flashcard uygulaması kullanarak gözden geçirin.</string>
+    <string name="entertainment_description_1">İngilizce altyazılı bir dizi bölümü veya film izleyin. Kulaklarınızı doldurmaya odaklanın, anlamaya değil.</string>
+    <string name="general_repeat_description_1">Bu hafta öğrendiğiniz tüm dilbilgisi konularını hızlıca gözden geçirin. Anlamadığınız yerleri not alın.</string>
+    <string name="free_reading_description_1">İlgi duyduğunuz bir konuda İngilizce YouTube kanalı izleyin veya blog okuyun.</string>
+
+    <string name="application_started_format">%s için başvurular bugün başladı!</string>
+    <string name="application_deadline_today_format">%s başvuruları için bugün son gün!</string>
+
+    <!-- Mini exam strings referenced in code -->
+    <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
+    <string name="mini_exam_description">40-50 soruluk deneme sınavı çözün (Süre: 60-75 dk). Okuma, dilbilgisi ve kelime odaklı dikkat edin.</string>
+    <string name="mini_analysis_lesson">2. Ders: Sınav Analizi ve Kelime Çalışması</string>
+    <string name="mini_analysis_description">Hataları ve bilinmeyen kelimeleri derinlemesine analiz edin; kelimeleri kelime setinize ekleyin.</string>
+
+    <!-- Lesson titles -->
+    <string name="grammar_topic_lesson">1. Ders: Dilbilgisi Konusu</string>
+    <string name="grammar_exercises_lesson">1. Ders: Dilbilgisi Alıştırmaları</string>
+    <string name="grammar_reinforcement_lesson">1. Ders: Dilbilgisi Pekiştirmesi</string>
+    <string name="grammar_topic_continuation_lesson">1. Ders: Dilbilgisi Konusu (Devamı)</string>
+    <string name="question_type_practice_lesson">1. Ders: Soru Türü Pratikleri</string>
+    <string name="weekly_grammar_review_lesson">1. Ders: Haftalık Dilbilgisi Gözden Geçirmesi</string>
+    <string name="next_week_preparation_lesson">1. Ders: Gelecek Hafta Hazırlığı</string>
+    <string name="weekly_analysis_planning_lesson">1. Ders: Haftalık Analiz ve Planlama</string>
+    <string name="listening_practice_review_lesson">2. Ders: Dinleme Pratiği ve Tekrar</string>
+    <string name="weekly_vocabulary_review_second_lesson">2. Ders: Haftalık Kelime Tekrarı</string>
+    <string name="entertainment_english_fun_lesson">2. Ders: Keyif için İngilizce</string>
+    <string name="reading_practice_vocabulary_lesson">2. Ders: Okuma Pratiği ve Kelime</string>
+    <string name="free_listening_lesson">2. Ders: Serbest Dinleme</string>
+    <string name="free_reading_lesson">2. Ders: Serbest Okuma</string>
+    <string name="question_analysis_review_lesson">2. Ders: Soru Analizi ve Tekrar</string>
+    <string name="challenging_reading_vocabulary_lesson">2. Ders: Zorlu Okuma ve Kelime</string>
+    <string name="weekly_vocabulary_review_title">Haftalık Kelime Tekrarı</string>
+    <!-- Lesson descriptions -->
+    <string name="grammar_topic_description">Kaynak: %1$s. Bu haftanın konusu \'%2$s\' üzerinde detaylı çalışın.</string>
+    <string name="grammar_exercises_description">%1$s kitabındaki dün çalıştığınız konu için alıştırmalar. Hiçbirini atlamadan tamamlayın.</string>
+    <string name="grammar_reinforcement_description">Öğrendiğiniz dilbilgisi yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yapın.</string>
+    <string name="grammar_topic_continuation_description">Bu haftanın dilbilgisi konusunu pekiştirin ve ek alıştırmalar çözün.</string>
+    <string name="question_type_practice_description">%1$s soru türünden en az 20 soru çözün.</string>
+    <string name="weekly_grammar_review_description">Bu hafta öğrendiğiniz tüm dilbilgisi konularını ve kurallarını gözden geçirin.</string>
+    <string name="next_week_preparation_description">Gelecek haftanın konusu \'%1$s\' üzerinde önceden hazırlık yapmak için kısaca gözden geçirin.</string>
+    <string name="weekly_analysis_planning_description">Haftanın genel bir değerlendirmesini yapın. Güçlü ve zayıf yönlerinizi belirleyin.</string>
+
+    <!-- Exam week descriptions -->
+    <string name="full_exam_description">Kaynak: Geçmiş yılların YDS/YÖKDİL sınavı. Tam 80 soruyu tam 180 dakikada çözün.</string>
+    <string name="exam_analysis_description">Sınav sonrası en az 1 saat mola verin. Sonra yanlış cevaplarınızı, boş bıraktıklarınızı ve emin olmadığınız doğru cevaplarınızı derinlemesine analiz edin. Bilinmeyen kelimeleri listeleyin.</string>
+    <string name="full_exam_description_2">Kaynak: Güvenilir bir yayıncının deneme sınavı. Tam 80 soruyu tam 180 dakikada çözün.</string>
+    <string name="exam_analysis_description_2">Dünkü gibi detaylı analiz yapın. Özellikle tekrarlayan hata türlerine odaklanın.</string>
+    <string name="full_exam_description_3">Kaynak: Geçmiş bir sınav. Tam 80 soruyu tam 180 dakikada çözün.</string>
+    <string name="exam_analysis_description_3">Sonuçlarınızı analiz edin ve bu deneme sınavında öğrendiğiniz yeni kelimeleri gözden geçirin.</string>
+    <string name="weekly_vocabulary_review_description">Bu haftanın deneme sınavlarından bilinmeyen tüm kelimeleri flashcard uygulaması kullanarak gözden geçirin.</string>
+    <string name="general_review_description">Bu haftanın deneme sınavlarından genel hata kalıplarını gözden geçirin (örn. zaman yönetimi, belirli soru türleri).</string>
+    <string name="strategy_motivation_description">Gelecek haftanın stratejisini belirleyin ve zihninizi dinlendirin. Sınav yaklaşıyor!</string>
+
+    <!-- Additional lesson titles -->
+    <string name="general_repeat">Genel Tekrar ve Dinlenme</string>
+    <string name="strategy_motivation">Strateji ve Motivasyon</string>
+
+    <!-- Week titles -->
+    <string name="exam_camp_week_title">%1$d. Ay, %2$d. Hafta: Sınav Kampı</string>
+    <string name="general_review_1_50">Genel Tekrar 1-50</string>
+    <string name="general_review_51_115">Genel Tekrar 51-115</string>
+    <string name="weak_topic_analysis">Zayıf Konu Analizi</string>
+    <string name="advanced_tenses">Yeşil Kitap - İleri Zamanlar</string>
+    <string name="final_review_exam_camp">Son Tekrar ve Sınav Kampı</string>
+
+    <!-- Achievements -->
+    <string name="first_step_achievement_title">İlk Adım</string>
+    <string name="first_step_achievement_desc">İlk görevinizi tamamladınız!</string>
+    <string name="hundred_tasks_achievement_title">Yolda</string>
+    <string name="hundred_tasks_achievement_desc">100 görevi tamamladınız!</string>
+    <string name="prep_complete_achievement_title">Hazırlık Dönemi Tamamlandı!</string>
+    <string name="prep_complete_achievement_desc">6 aylık hazırlık dönemini tamamladınız. Artık deneme sınavı zamanı!</string>
+    <string name="first_exam_week_achievement_title">Sınav Kampı Başladı!</string>
+    <string name="first_exam_week_achievement_desc">Deneme sınavı kampının son ayına başladınız!</string>
+    <string name="ten_exams_title">10 Deneme Sınavı Tamamlandı!</string>
+    <string name="ten_exams_desc">Toplam 10 tam deneme sınavı çözdünüz!</string>
+
+    <string name="ten_exams_achievement_title">10 Deneme Sınavı Tamamlandı!</string>
+    <string name="ten_exams_achievement_desc">Toplam 10 tam deneme sınavı çözdünüz!</string>
+
+    <!-- Exam names -->
+    <string name="yokdil_spring">YÖKDİL/1 (İlkbahar)</string>
+    <string name="yds_spring">YDS/1 (İlkbahar)</string>
+    <string name="yokdil_fall">YÖKDİL/2 (Sonbahar)</string>
+    <string name="yds_fall">YDS/2 (Sonbahar)</string>
+
+    <!-- Notification texts -->
+    <string name="study_time_title">Çalışma Zamanı!</string>
+    <string name="study_time_message">Bugünkü hedefleri tamamlamayı unutma.</string>
+    <string name="exam_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
+    <string name="exam_applications_started">%s başvuruları bugün başladı!</string>
+    <string name="exam_last_day_applications">%s başvuruları için bugün son gün!</string>
+    <string name="new_achievement_unlocked">Yeni Başarı: %s</string>
+    <string name="achievement_icon_description">Başarı İkonu</string>
+    <string name="task_minutes">~%1$d dk</string>
+
+    <!-- Book names -->
+    <string name="blue_book_full">Mavi Kitap - İngilizce Dilbilgisi</string>
+    <string name="green_book_full">Yeşil Kitap - İleri Düzey Dilbilgisi</string>
+    <string name="green_book_advanced_tenses">Yeşil Kitap - İleri Zamanlar</string>
+
+    <!-- Blue book topics -->
+    <string name="tenses_review_topic">Zamanlar Gözden Geçirmesi (Tüm Zamanların Karşılaştırılması)</string>
+    <string name="future_in_detail_topic">Gelecek Detaylı (Devamlı/Gerçek)</string>
+    <string name="modals_1_topic">Modallar 1 (Yetenek, İzin, Tavsiye)</string>
+    <string name="modals_2_topic">Modallar 2 (Çıkarım, Zorunluluk, Pişmanlık)</string>
+    <string name="conditionals_wish_topic">Koşullar ve Wish (Tüm Tipler ve İleri Düzey)</string>
+    <string name="passive_voice_topic">Edilgen Çatı (Tüm Zamanlar) ve \'have something done\'</string>
+    <string name="reported_speech_topic">Dolaylı Anlatım (Sorular, Komutlar, İleri Düzey)</string>
+    <string name="noun_clauses_topic">İsim Cümlecikleri ve İlişki Cümlecikleri</string>
+    <string name="gerunds_infinitives_topic">Gerundlar ve İnfinitivler (İleri Kalıplar)</string>
+    <string name="conjunctions_connectors_topic">Bağlaçlar ve Bağlayıcılar</string>
+
+    <!-- Green book topics -->
+    <string name="advanced_connectors_topic">İleri Bağlayıcılar ve Söylem Belirteçleri</string>
+    <string name="hypothetical_meaning_topic">Varsayımsal Anlam ve Subjunctives</string>
+    <string name="adjectives_adverbs_topic">Sıfatlar ve Zarflar (İleri Kullanım)</string>
+    <string name="prepositions_phrasal_verbs_topic">Edatlar ve Deyimsel Fiiller (İleri Düzey)</string>
+
+    <!-- Other -->
+    <string name="sentence_completion">Cümle Tamamlama</string>
+    <string name="paragraph_completion">Paragraf Tamamlama ve Cümle Kırılma Tutarlılığı</string>
+    <string name="final_review_exam_camp_short">Son Tekrar ve Sınav Kampı</string>
+    <string name="prep_period_note">Hazırlık dönemi artık ilk 26 hafta</string>
+    <string name="expand_collapse">Genişlet/Daralt</string>
+    <string name="log_task_result">Görev Sonucunu Kaydet</string>
+    <string name="minutes_spent">Harcanan Dakika</string>
+    <string name="mark_correct">Doğru olarak işaretle</string>
+    <string name="category_label">Kategori</string>
+    <string name="booster_suggestion">Takviye önerisi</string>
+    <string name="add_booster">Takviye ekle</string>
+    <string name="open_plan_settings">Plan Ayarlarını Aç</string>
+    <string name="booster_details">%1$s pratiği yaparak zayıf alanları geliştirin</string>
+
+    <!-- Green book topics continuation -->
+    <string name="advanced_tense_nuances_topic">İleri Zaman Nüansları ve Anlatı Zamanları</string>
+    <string name="inversion_emphasis_topic">Tersine Çevirme ve Vurgu (Not only, Hardly...)</string>
+    <string name="advanced_modals_topic">İleri Modallar (Çıkarım, Varsayımsal)</string>
+    <string name="participle_clauses_topic">Participle Cümlecikleri (-ing ve -ed cümlecikleri)</string>
+
+    <!-- About -->
+    <string name="about_title">Hakkında</string>
+    <string name="about_version">Sürüm: %s</string>
+    <string name="about_feature_customize_title">Özelleştirilebilir Çalışma Planları</string>
+    <string name="about_feature_customize_desc">Görevleri gizleyin/düzenleyin ve günde kendi görevlerinizi ekleyin.</string>
+    <string name="about_data_persistence">Değişiklikler cihazda depolanır ve uygulamada geçerlidir.</string>
+    <string name="about_contact">Geri bildirim için e-posta gönderin.</string>
+    <string name="customize_cd">Planı özelleştir</string>
+
+    <!-- Tooltip strings -->
+    <string name="tooltip_customize_plan_title">Planınızı Özelleştirin</string>
+    <string name="tooltip_customize_plan_message">Görevleri gizlemek, düzenlemek veya kendi görevlerinizi eklemek için takvim simgesine dokunun. Tüm değişiklikler cihazınızda kaydedilir.</string>
+    <string name="tooltip_plan_settings_title">Plan Ayarları</string>
+    <string name="tooltip_plan_settings_message">Müsaitliğinize uygun olarak çalışma programınızı, başlangıç tarihinizi ve günlük zaman tahsislerinizi ayarlayın.</string>
+    <string name="tooltip_achievements_title">İlerlemenizi Takip Edin</string>
+    <string name="tooltip_achievements_message">Çalışma kilometre taşlarınızı görmek ve motivasyonunuzu sürdürmek için başarı rozetine dokunun.</string>
+    <string name="tooltip_language_switch_title">Dil Desteği</string>
+    <string name="tooltip_language_switch_message">Başlıktaki TR/EN\'ye dokunarak Türkçe ve İngilizce arasında geçiş yapın.</string>
+    <string name="tooltip_expand_week_title">Hafta Detayları</string>
+    <string name="tooltip_expand_week_message">Günlük görevleri görmek için herhangi bir haftaya dokunun. Daraltmak için tekrar dokunun.</string>
+    <string name="tooltip_task_details_title">Görev Bilgileri</string>
+    <string name="tooltip_task_details_message">Ayrıntılı talimatlar ve tahmini zamanı görmek için herhangi bir göreve dokunun.</string>
+
+    <!-- Missing strings for XML layouts -->
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="reset_progress">İlerlemeyi Sıfırla</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_tasks">Görevler</string>
+    <string name="nav_progress">İlerleme</string>
+    <string name="nav_social">Sosyal</string>
+    <string name="nav_settings">Ayarlar</string>
+
+    <!-- Missing strings -->
+    <string name="settings">Ayarlar</string>
+    <string name="navigate_up">Yukarı git</string>
+    <string name="category_icon_description">Kategori ikonu</string>
+    <string name="tooltip_got_it">Anladım</string>
+    <string name="tooltip_close">İpucunu kapat</string>
+    <string name="save">Kaydet</string>
+    <string name="weekly_goal_save_error">Haftalık hedef kaydedilemedi. Lütfen tekrar deneyin.</string>
+
+    <!-- Undo system -->
+    <string name="task_completed_undo">Görev tamamlandı</string>
+    <string name="undo">Geri Al</string>
+
+    <!-- View toggles -->
+    <string name="show_current_period">Mevcut Dönemi Göster</string>
+    <string name="show_all_weeks">Tüm Haftaları Göster</string>
+
+    <!-- Social Features -->
+    <string name="study_community">Çalışma Topluluğu</string>
+    <string name="find_study_buddies">Çalışma Arkadaşları Bul</string>
+    <string name="my_study_groups">Çalışma Gruplarım</string>
+    <string name="recent_activity">Son Aktivite</string>
+    <string name="profile_settings">Profil Ayarları</string>
+    <string name="privacy_protected">Gizliliğiniz korunur. Sadece anonim veriler paylaşılır.</string>
+    <string name="no_buddies_found">Çalışma Arkadaşı Bulunamadı</string>
+    <string name="complete_profile_to_find_buddies">Uyumlu çalışma arkadaşları bulmak için profilinizi tamamlayın</string>
+    <string name="compatible_study_buddies">Uyumlu Çalışma Arkadaşları</string>
+    <string name="compatibility_score">%d%% Uyumlu</string>
+    <string name="online">Çevrimiçi</string>
+    <string name="create_profile_title">Çalışma Profilinizi Oluşturun</string>
+    <string name="privacy_first_notice">Gizlilik Öncelikli: Gerçek kimliğiniz asla paylaşılmaz. Sadece çalışma tercihleri eşleştirme için kullanılır.</string>
+
+    <!-- PDF Report Strings -->
+    <string name="report_title">Çalışma İlerleme Raporu</string>
+    <string name="generate_report">Rapor Oluştur</string>
+    <string name="share_report">Raporu Paylaş</string>
+    <string name="report_generating">Rapor Oluşturuluyor...</string>
+    <string name="report_success">Rapor Başarıyla Oluşturuldu</string>
+    <string name="report_error">Rapor Oluşturulurken Hata</string>
+    <string name="report_share_error">Rapor Paylaşılırken Hata</string>
+    <string name="report_no_data">Çalışma Verisi Yok</string>
+    <string name="report_insufficient_data">Rapor dönemi için yetersiz veri</string>
+
+    <!-- Report Labels -->
+    <string name="minutes">Dakika</string>
+    <string name="tasks">Görevler</string>
+    <string name="streak">Seri</string>
+    <string name="accuracy">Doğruluk</string>
+    <string name="total_study_time">Toplam Çalışma Süresi</string>
+    <string name="current_streak">Mevcut Seri</string>
+    <string name="average_accuracy">Ortalama Doğruluk</string>
+    <string name="study_analytics">Çalışma Analitiği</string>
+    <string name="analytics_loading_results">\"%s\" için arama sonuçları yükleniyor...</string>
+    <string name="time_by_skill">Becereğe Göre Zaman</string>
+    <string name="weekly_study_minutes">Haftalık Çalışma Dakikaları</string>
+    <string name="performance_insights">Performans İçgörüleri</string>
+    <string name="ai_recommendations">AI Önerileri</string>
+    <string name="strengths">Güçlü Yönler</string>
+    <string name="areas_for_improvement">Geliştirilmesi Gereken Alanlar</string>
+    <string name="performance_trends">Performans Eğilimleri</string>
+
+    <!-- Report Time Periods -->
+    <string name="last_week">Geçen Hafta</string>
+    <string name="last_month">Geçen Ay</string>
+    <string name="last_4_weeks">Son 4 Hafta</string>
+    <string name="custom_period">Özel Dönem</string>
+
+    <!-- Privacy Options -->
+    <string name="include_name">Öğrenci adını dahil et</string>
+    <string name="privacy_protected_report">Gizlilik için ad dahil edilmeyecek</string>
+
+        <!-- Top bar titles -->
+    <string name="topbar_home_title">Ana Sayfa</string>
+    <string name="topbar_review_title">İnceleme ve İçgörüler</string>
+    <string name="topbar_focus_mode_title">Odak Modu</string>
+    <string name="topbar_gamification_title">Oyunlaştırma Ayarları</string>
+    <string name="topbar_day_plan_title">%1$s Çalışma Planı</string>
+    <string name="topbar_tasks_title">Günlük Görevler</string>
+    <string name="topbar_tasks_subtitle">Serini güçlendirmek için görevleri tamamla</string>
+    <string name="topbar_invite_action">Davet Et</string>
+
+<!-- Social Hub Lovable redesign -->
+    <string name="social_tab_profile">Profil</string>
+    <string name="social_tab_ranks">Sıralamalar</string>
+    <string name="social_tab_groups">Gruplar</string>
+    <string name="social_tab_friends">Arkadaşlar</string>
+    <string name="social_tab_awards">Ödüller</string>
+    <string name="social_hub_title">Sosyal Hub</string>
+    <string name="social_hub_subtitle">Çalışma grubunuzla ilerlemenizi paylaşın</string>
+    <string name="social_stat_completed">Tamamlanan görevler</string>
+    <string name="social_stat_streak_value">%1$d günlük seri</string>
+    <string name="social_stat_streak_placeholder">Aktif seri yok</string>
+    <string name="social_stat_goal_hours">Haftalık hedef</string>
+    <string name="social_stat_goal_hours_value">%1$d saat</string>
+    <string name="social_invite_friends">Arkadaşları Davet Et</string>
+    <string name="social_invite_stub">Paylaşım yakında gelecek</string>
+    <string name="social_privacy_banner_title">Gizlilik Öncelikli</string>
+    <string name="social_privacy_banner_body">Gerçek kimliğiniz asla paylaşılmaz. Sadece seçtiğiniz kullanıcı adı ve avatar başkalarına görünür.</string>
+    <string name="social_profile_title">Profiliniz</string>
+    <string name="social_copy_username_cd">Kullanıcı adını kopyala</string>
+    <string name="social_username_hint">Bu başkalarının sizi nasıl göreceği (3-20 karakter)</string>
+    <string name="social_username_set_success">"Kullanıcı adı "</string>
+    <string name="social_choose_avatar">Avatarınızı Seçin</string>
+    <string name="social_upload_avatar">Özel Avatar Yükle</string>
+    <string name="social_avatar_upload_error_size">Avatar gorseli 2MB\'den kucuk olmali</string>
+    <string name="social_avatar_upload_error_dimensions">Avatar gorseli en fazla 512x512 piksel olmali</string>
+    <string name="social_avatar_upload_error_format">Gecersiz gorsel formati. Lutfen uygun bir dosya secin</string>
+    <string name="social_avatar_upload_success">Avatar basariyla yuklendi</string>
+    <string name="social_study_level">Çalışma Seviyesi: %1$s</string>
+    <string name="social_weekly_goal_title">Haftalık Çalışma Hedefi</string>
+    <string name="social_goal_hours_label">Haftalık çalışma saati</string>
+    <string name="social_goal_hours_value">%1$d sa</string>
+    <string name="social_goal_label_casual">%1$d sa (Rahat)</string>
+    <string name="social_goal_label_balanced">%1$d sa (Dengeli)</string>
+    <string name="social_goal_label_intensive">%1$d sa (Yoğun)</string>
+    <string name="social_goal_daily_target">%1$d dk günlük hedef</string>
+    <string name="social_goal_monthly_target">%1$d sa aylık hedef</string>
+    <string name="social_goal_cancel">İptal</string>
+    <string name="social_goal_save">Hedefi Kaydet</string>
+    <string name="social_goal_updated">Haftalık hedef %1$d saate güncellendi</string>
+    <string name="social_privacy_settings_title">Gizlilik ve Ayarlar</string>
+    <string name="social_privacy_settings_body">Daha fazla gizlilik kontrolü yakında gelecek.</string>
+    <string name="social_study_groups_title">Çalışma Grupları</string>
+    <string name="social_create_group">Grup Oluştur</string>
+    <string name="social_members_label">üye</string>
+    <string name="social_join">Katıl</string>
+    <string name="social_leave">Ayrıl</string>
+    <string name="social_join_chat_cd">%1$s için üyeliği değiştir</string>
+    <string name="social_share_group_cd">%1$s grubunu paylaş</string>
+    <string name="social_joined_group">%1$s\'a katıldı</string>
+    <string name="social_left_group">%1$s\'dan ayrıldı</string>
+    <string name="social_shared_group">%1$s için paylaşım bağlantısı gönderildi</string>
+    <string name="social_create_group_stub">Grup oluşturma yakında gelecek</string>
+    <string name="social_study_buddies_title">Çalışma Arkadaşları</string>
+    <string name="social_add_friend">Arkadaş Ekle</string>
+    <string name="social_no_friends_title">Henüz Arkadaş Yok</string>
+    <string name="social_no_friends_description">Ilerlemeni paylasmak ve motive kalmak icin diger ogrencilerle baglanti kur.</string>
+    <string name="social_friend_streak">%1$d seri</string>
+    <string name="social_status_online">Çevrimiçi</string>
+    <string name="social_status_offline">Çevrimdışı</string>
+    <string name="social_status_studying">Çalışıyor</string>
+    <string name="social_friend_profile_stub">%1$s profili yakında açılacak</string>
+    <string name="social_add_friend_stub">Arkadaş davetleri yakında gelecek</string>
+    <string name="social_achievements_title">Topluluk Başarıları</string>
+    <string name="social_award_icon_cd">%1$s için rozet</string>
+    <string name="social_unlocked_by">Şu kişi tarafından açıldı:</string>
+    <string name="social_rarity_rare">Nadir</string>
+    <string name="social_rarity_epic">Destansı</string>
+    <string name="social_rarity_legendary">Efsanevi</string>
+    <string name="social_weekly_leaderboard">Haftalık Sıralama</string>
+    <string name="social_rank_number">#%1$d</string>
+    <string name="social_leaderboard_streak">%1$d günlük seri</string>
+    <string name="social_points_suffix">puan</string>
+    <string name="social_stat_rank">Sıralamanız</string>
+    <string name="social_stat_score">Puanınız</string>
+    <string name="social_stat_streak">Günlük Seri</string>
+    <string name="social_invite_friends_to_rank">Siralamanizi gormek icin birkac arkadasinizi davet edin</string>
+
+    <!-- Settings strings -->
+    <string name="expand_selection">Seçimi genişlet</string>
+    <string name="settings_category_description">%1$s: %2$s</string>
+    <string name="category_active">Aktif</string>
+    <string name="search_settings">Ayarları ara</string>
+    <string name="export_settings">Ayarları dışa aktar</string>
+    <string name="import_settings">Ayarları içe aktar</string>
+    <string name="reset_all_settings">Tüm ayarları sıfırla</string>
+
+    <!-- Missing settings strings -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="search_settings_hint">Ayarları ara...</string>
+    <string name="no_results_found">Sonuç bulunamadı</string>
+    <string name="no_settings_found">Ayar bulunamadı</string>
+    <string name="try_different_search">Farklı bir arama terimi deneyin</string>
+    <string name="quick_actions">Hızlı İşlemler</string>
+    <string name="reset_notifications">Bildirimleri Sıfırla</string>
+    <string name="danger_zone">Tehlikeli Bölge</string>
+    <string name="study_progress">Çalışma İlerlemesi</string>
+    <string name="performance_metrics">Performans Ölçümleri</string>
+    <string name="gamification_points_earned_message">+%1$d puan kazanıldı</string>
+    <string name="gamification_level_up_message">Seviye %1$d - %2$s</string>
+    <string name="gamification_new_achievement_message">%1$s açıldı</string>
+    <string name="gamification_achievement_banner">Başarı açıldı: %1$s</string>
+    <string name="go_to_plan">Plana Git</string>
+    <string name="back_to_plan">← Plana Dön</string>
+    <string name="view_full_week">Tüm Haftayı Gör</string>
+    <string name="modify_plan">▶ Planı Düzenle</string>
+    <string name="gamification_settings">Oyunlaştırma Ayarları</string>
+    <string name="achievement_notification_text">Yeni bir başarı kazandınız!</string>
+    <string name="achievement_notification_description">Tebrikler! Yeni bir başarı açtınız. Harika iş çıkarıyorsunuz!</string>
+    <string name="streak_expiry_notification">%1$d günlük seriniz %2$d saat içinde sona eriyor</string>
+    <string name="streak_expiry_description">%1$d günlük çalışma serinizi bozmayın! Seriyi sürdürmek için sonraki %2$d saat içinde bir görev tamamlayın.</string>
+    <string name="daily_goal_complete">Harika! Günlük çalışma hedefinizi tamamladınız</string>
+
+    <!-- Home screen strings -->
+    <string name="start">Başla</string>
+    <string name="your_journey">Yolculuğunuz</string>
+    <string name="today">Bugün</string>
+    <string name="earn_points">Puan Kazan</string>
+    <string name="points_today">Bugünkü Puanlar</string>
+    <string name="create_tasks">Görev Oluştur</string>
+    <string name="tasks_done">Tamamlanan</string>
+    <string name="this_week">Bu Hafta</string>
+    <string name="start_studying">Çalışmaya başla</string>
+
+    <!-- Settings screen tabs -->
+    <string name="navigation">Navigasyon</string>
+    <string name="notifications">Bildirimler</string>
+    <string name="gamification">Oyunlaştırma</string>
+    <string name="privacy">Gizlilik</string>
+    <string name="customize_study_experience">Çalışma deneyiminizi özelleştirin</string>
+
+    <!-- Tasks settings card -->
+    <string name="weekly_goal">Haftalık Hedef</string>
+    <string name="reset_all_progress">Tüm İlerlemeyi Sıfırla</string>
+    <string name="reset_everything">Her Şeyi Sıfırla</string>
+    <string name="cancel">İptal</string>
+    <string name="unknown">Bilinmiyor</string>
+    <string name="studyplan_version">StudyPlan YDS Takipçisi\nSürüm %1$s</string>
+
+    <!-- Settings content -->
+    <string name="bottom_navigation">Alt Navigasyon</string>
+    <string name="bottom_navigation_desc">Ekranın alt kısmında navigasyonu göster</string>
+    <string name="haptic_feedback">Dokunsal Geri Bildirim</string>
+    <string name="haptic_feedback_desc">Buton dokunuşlarında ve etkileşimlerde titreşim</string>
+    <string name="social_choose_username_title">Kullanıcı adınızı seçin</string>
+    <string name="social_username_label">Kullanıcı adı</string>
+    <string name="social_username_error">3-20 küçük harf, rakam veya alt çizgi kullanın</string>
+
+</resources>
+

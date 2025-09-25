@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Study Plan</string>
+    <string name="app_title">Road to YDS</string>
+    <string name="email_subject">Road to YDS App Feedback</string>
+    <string name="email_chooser_title">Send email...</string>
+
+    <string name="upcoming_exam">Upcoming Exam:</string>
+    <string name="application_deadline">Application Deadline</string>
+    <string name="time_until_exam">Time Until Exam</string>
+    <string name="osym_button">Go to Official Exam Board Website</string>
+    <string name="time_expired">Time Expired</string>
+
+    <string name="achievements_title">Achievements</string>
+    <string name="first_task_title">First Step</string>
+    <string name="first_task_desc">You completed your first task!</string>
+    <string name="hundred_tasks_title">On Your Way</string>
+    <string name="hundred_tasks_desc">You completed 100 tasks!</string>
+    <string name="prep_complete_title">Preparation Period Complete!</string>
+    <string name="prep_complete_desc">You completed 6 months of preparation. Now it\'s time for practice exams!</string>
+    <string name="first_exam_week_title">Exam Camp Started!</string>
+    <string name="first_exam_week_desc">You started the final month of practice exam camp!</string>
+    <string name="ten_exams_title">10 Practice Exams Completed!</string>
+    <string name="ten_exams_desc">You solved a total of 10 full practice exams!</string>
+
+    <string name="streak_label">Study Streak</string>
+    <string name="achievements_label">Achievements</string>
+    <string name="overall_progress">Overall Progress</string>
+    <plurals name="tasks_completed">
+        <item quantity="one">%1$d / %2$d task completed</item>
+        <item quantity="other">%1$d / %2$d tasks completed</item>
+    </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="tasks_completed">%1$d / %2$d tasks completed</string>
+    <string name="new_achievement">New Achievement: %s</string>
+
+    <string name="application_reminder_title">Exam Application Reminder</string>
+    <string name="study_reminder_title">Study Time!</string>
+    <string name="study_reminder_text">Don\'t forget to complete today\'s goals.</string>
+    <string name="application_started">applications started today!</string>
+    <string name="application_deadline_today">today is the last day for applications!</string>
+
+    <string name="red_book">Red Book - Essential Grammar in Use</string>
+    <string name="blue_book">Blue Book - English Grammar in Use</string>
+    <string name="green_book">Green Book - Advanced Grammar in Use</string>
+
+    <string name="month_week_format">Month %1$d, Week %2$d: %3$s</string>
+    <string name="foundation_level">Solid Foundation</string>
+    <string name="development_level">B1-B2 Development</string>
+    <string name="advanced_level">C1 Mastery</string>
+    <string name="exam_camp">Exam Camp</string>
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <string name="grammar_topics_lesson">1. Lesson: Grammar Topics</string>
+    <string name="quick_practice_lesson">2. Lesson: Quick Practice</string>
+    <string name="reading_vocabulary_lesson">1. Lesson: Reading and Vocabulary</string>
+    <string name="listening_repeat_lesson">2. Lesson: Listening and Review</string>
+    <string name="weekly_vocabulary_lesson">1. Lesson: Weekly Vocabulary Review</string>
+    <string name="entertainment_english_lesson">2. Lesson: English Entertainment (Series/Movie)</string>
+    <string name="weekly_general_repeat">1. Lesson: Weekly General Review</string>
+    <string name="free_reading_listening">2. Lesson: Free Reading/Listening</string>
+    <string name="full_exam">Full Practice Exam</string>
+    <string name="exam_analysis">Exam Analysis</string>
+
+    <plurals name="days_unit">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <!-- Back-compat: code may still reference string versions -->
+    <string name="days_unit">%d days</string>
+    <string name="percent_format">%d%%</string>
+
+  <string name="units">Units</string>
+  <!-- Settings screens resources -->
+  <string name="app_version_format">Version %1$s (%2$s)</string>
+  <string name="app_version_unknown">Version unknown</string>
+  <string name="settings_error_title">Error</string>
+  <string name="settings_ok">Ok</string>
+  <string name="retry">Retry</string>
+  <string name="reset_progress_title">Reset Progress</string>
+  <string name="reset_progress_warning">This will reset all progress. This action cannot be undone.</string>
+  <string name="reset_progress_confirm">Reset</string>
+  <string name="reset_all_settings_title">Reset All Settings</string>
+  <string name="reset_all_settings_warning">This will reset all settings to their defaults. Continue?</string>
+  <string name="reset_all_confirm">Reset All</string>
+  <string name="settings_expand_selection">Expand selection</string>
+    <string name="practice_description_1">Solve the exercises in the book for the topics you studied to reinforce them.</string>
+    <string name="reading_description_1">Read at least 3 news articles from Newsinlevels.com (Level 1-2) and extract 15 new words.</string>
+    <string name="listening_description_1">Listen to a podcast from ESL/British Council and review the words you learned.</string>
+    <string name="vocabulary_description_1">Review all the new words (approximately 40-50 words) you learned this week using a flashcard app.</string>
+    <string name="entertainment_description_1">Watch a series episode or movie with English subtitles. Focus on filling your ears, not understanding.</string>
+    <string name="general_repeat_description_1">Quickly review all grammar topics covered this week. Note down anything you don\'t understand.</string>
+    <string name="free_reading_description_1">Watch an English YouTube channel or read a blog about a topic that interests you.</string>
+
+    <string name="application_started_format">Applications for %s started today!</string>
+    <string name="application_deadline_today_format">Today is the last day for %s applications!</string>
+
+    <!-- Mini exam strings referenced in code -->
+    <string name="mini_exam_lesson">1. Lesson: Mini Practice Exam</string>
+    <string name="mini_exam_description">Solve a 40-50 question practice exam (Time: 60-75 min). Pay attention to reading, grammar and vocabulary focus.</string>
+    <string name="mini_analysis_lesson">2. Lesson: Exam Analysis and Vocabulary Study</string>
+    <string name="mini_analysis_description">Thoroughly analyze mistakes and unknown words; add words to your vocabulary set.</string>
+
+    <!-- Lesson titles -->
+    <string name="grammar_topic_lesson">1. Lesson: Grammar Topic</string>
+    <string name="grammar_exercises_lesson">1. Lesson: Grammar Exercises</string>
+    <string name="grammar_reinforcement_lesson">1. Lesson: Grammar Reinforcement</string>
+    <string name="grammar_topic_continuation_lesson">1. Lesson: Grammar Topic (Continuation)</string>
+    <string name="question_type_practice_lesson">1. Lesson: Question Type Practice</string>
+    <string name="weekly_grammar_review_lesson">1. Lesson: Weekly Grammar Review</string>
+    <string name="next_week_preparation_lesson">1. Lesson: Next Week Preparation</string>
+    <string name="weekly_analysis_planning_lesson">1. Lesson: Weekly Analysis and Planning</string>
+    <string name="listening_practice_review_lesson">2. Lesson: Listening Practice and Review</string>
+    <string name="weekly_vocabulary_review_second_lesson">2. Lesson: Weekly Vocabulary Review</string>
+    <string name="entertainment_english_fun_lesson">2. Lesson: English for Fun</string>
+    <string name="reading_practice_vocabulary_lesson">2. Lesson: Reading Practice and Vocabulary</string>
+    <string name="free_listening_lesson">2. Lesson: Free Listening</string>
+    <string name="free_reading_lesson">2. Lesson: Free Reading</string>
+    <string name="question_analysis_review_lesson">2. Lesson: Question Analysis and Review</string>
+    <string name="challenging_reading_vocabulary_lesson">2. Lesson: Challenging Reading and Vocabulary</string>
+    <string name="weekly_vocabulary_review_title">Weekly Vocabulary Review</string>
+    <!-- Lesson descriptions -->
+    <string name="grammar_topic_description">Source: %1$s. Study in detail on this week\'s topic \'%2$s\'.</string>
+    <string name="grammar_exercises_description">%1$s book exercises on yesterday\'s topic. Complete all without skipping.</string>
+    <string name="grammar_reinforcement_description">Do translation or sentence construction exercises using the grammar structures you learned.</string>
+    <string name="grammar_topic_continuation_description">Reinforce this week\'s grammar topic and solve additional exercises.</string>
+    <string name="question_type_practice_description">Solve at least 20 questions from the %1$s question type.</string>
+    <string name="weekly_grammar_review_description">Review all grammar topics and rules covered this week.</string>
+    <string name="next_week_preparation_description">Briefly review next week\'s topic \'%1$s\' to prepare in advance.</string>
+    <string name="weekly_analysis_planning_description">Make a general assessment of the week. Identify your strengths and weaknesses.</string>
+
+    <!-- Exam week descriptions -->
+    <string name="full_exam_description">Source: A recent YDS/YÖKDİL exam from past years. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description">Take at least 1 hour break after the exam. Then thoroughly analyze your wrong answers, blanks, and correct answers you weren\'t confident about. List unknown words.</string>
+    <string name="full_exam_description_2">Source: A practice exam from a reliable publisher. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description_2">Perform detailed analysis like yesterday. Focus especially on recurring error types.</string>
+    <string name="full_exam_description_3">Source: A past exam. Solve all 80 questions in exactly 180 minutes.</string>
+    <string name="exam_analysis_description_3">Analyze your results and review new words you learned in this practice exam.</string>
+    <string name="weekly_vocabulary_review_description">Review all unknown words from this week\'s practice exams using a flashcard app.</string>
+    <string name="general_review_description">Review general error patterns from this week\'s practice exams (e.g., time management, specific question types).</string>
+    <string name="strategy_motivation_description">Determine next week\'s strategy and relax your mind. The exam is coming soon!</string>
+
+    <!-- Additional lesson titles -->
+    <string name="general_repeat">General Review and Rest</string>
+    <string name="strategy_motivation">Strategy and Motivation</string>
+
+    <!-- Week titles -->
+    <string name="exam_camp_week_title">%1$d. Month, %2$d. Week: Exam Camp</string>
+    <string name="general_review_1_50">General Review 1-50</string>
+    <string name="general_review_51_115">General Review 51-115</string>
+    <string name="weak_topic_analysis">Weak Topic Analysis</string>
+    <string name="advanced_tenses">Green Book - Advanced Tenses</string>
+    <string name="final_review_exam_camp">Final Review and Exam Camp</string>
+
+    <!-- Achievements -->
+    <string name="first_step_achievement_title">First Step</string>
+    <string name="first_step_achievement_desc">You completed your first task!</string>
+    <string name="hundred_tasks_achievement_title">On Your Way</string>
+    <string name="hundred_tasks_achievement_desc">You completed 100 tasks!</string>
+    <string name="prep_complete_achievement_title">Preparation Period Complete!</string>
+    <string name="prep_complete_achievement_desc">You completed 6 months of preparation. Now it\'s time for practice exams!</string>
+    <string name="first_exam_week_achievement_title">Exam Camp Started!</string>
+    <string name="first_exam_week_achievement_desc">You started the final month of practice exam camp!</string>
+    <string name="ten_exams_achievement_title">10 Practice Exams Completed!</string>
+    <string name="ten_exams_achievement_desc">You solved a total of 10 full practice exams!</string>
+
+    <!-- Exam names -->
+    <string name="yokdil_spring">YÖKDİL/1 (Spring)</string>
+    <string name="yds_spring">YDS/1 (Spring)</string>
+    <string name="yokdil_fall">YÖKDİL/2 (Fall)</string>
+    <string name="yds_fall">YDS/2 (Fall)</string>
+
+    <!-- Notification texts -->
+    <string name="study_time_title">Study Time!</string>
+    <string name="study_time_message">Don\'t forget to complete today\'s goals.</string>
+    <string name="exam_reminder_title">Exam Application Reminder</string>
+    <string name="exam_applications_started">applications for %s started today!</string>
+    <string name="exam_last_day_applications">today is the last day for %s applications!</string>
+    <string name="new_achievement_unlocked">New Achievement: %s</string>
+    <string name="achievement_icon_description">Achievement Icon</string>
+    <string name="task_minutes">~%1$d min</string>
+    <!-- Onboarding -->
+    <string name="onboarding_title">Personalize Your Plan</string>
+    <string name="exam_date_title">Select Exam Date</string>
+    <string name="pick_min_date">Soonest</string>
+    <string name="pick_plus_month">+1 Month</string>
+    <string name="availability_title">Weekly Availability (min/day)</string>
+    <string name="skills_title">Skill Priorities</string>
+    <string name="skill_grammar">Grammar</string>
+    <string name="skill_reading">Reading</string>
+    <string name="skill_listening">Listening</string>
+    <string name="skill_vocab">Vocabulary</string>
+    <string name="weekly_plan_preview">Your weekly plan will have %1$d tasks/day (est.)</string>
+    <string name="generate_plan">Generate Plan</string>
+    <string name="next_onboarding">Next</string>
+    <string name="back_onboarding">Back</string>
+
+    <!-- Book names -->
+    <string name="blue_book_full">Blue Book - English Grammar in Use</string>
+    <string name="green_book_full">Green Book - Advanced Grammar in Use</string>
+    <string name="green_book_advanced_tenses">Green Book - Advanced Tenses</string>
+
+    <!-- Blue book topics -->
+    <string name="tenses_review_topic">Tenses Review (Comparison of All Tenses)</string>
+    <string name="future_in_detail_topic">Future in Detail (Continuous/Perfect)</string>
+    <string name="modals_1_topic">Modals 1 (Ability, Permission, Advice)</string>
+    <string name="modals_2_topic">Modals 2 (Deduction, Obligation, Regret)</string>
+    <string name="conditionals_wish_topic">Conditionals and Wish (All Types and Advanced Level)</string>
+    <string name="passive_voice_topic">Passive Voice (All Tenses) and \'have something done\'</string>
+    <string name="reported_speech_topic">Reported Speech (Questions, Commands, Advanced Level)</string>
+    <string name="noun_clauses_topic">Noun Clauses and Relative Clauses</string>
+    <string name="gerunds_infinitives_topic">Gerunds and Infinitives (Advanced Patterns)</string>
+    <string name="conjunctions_connectors_topic">Conjunctions and Connectors</string>
+
+    <!-- Green book topics -->
+    <string name="advanced_connectors_topic">Advanced Connectors and Discourse Markers</string>
+    <string name="hypothetical_meaning_topic">Hypothetical Meaning and Subjunctives</string>
+    <string name="adjectives_adverbs_topic">Adjectives and Adverbs (Advanced Usage)</string>
+    <string name="prepositions_phrasal_verbs_topic">Prepositions and Phrasal Verbs (Advanced Level)</string>
+
+    <!-- Other -->
+    <string name="sentence_completion">Sentence Completion</string>
+    <string name="paragraph_completion">Paragraph Completion and Sentence Breaking Coherence</string>
+    <string name="final_review_exam_camp_short">Final Review and Exam Camp</string>
+    <string name="prep_period_note">Preparation period is now the first 26 weeks</string>
+    <string name="expand_collapse">Expand/Collapse</string>
+    <string name="log_task_result">Görev Sonucunu Kaydet</string>
+    <string name="minutes_spent">Harcanan Dakika</string>
+    <string name="mark_correct">Doğru olarak işaretle</string>
+    <string name="category_label">Kategori</string>
+    <string name="booster_suggestion">Takviye önerisi</string>
+    <string name="add_booster">Takviye ekle</string>
+    <string name="open_plan_settings">Plan Ayarlarını Aç</string>
+    <string name="booster_details">Focus on %1$s practice to improve weak areas</string>
+
+    <!-- Green book topics continuation -->
+    <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>
+    <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly...)</string>
+    <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
+    <string name="participle_clauses_topic">Participle Clauses (-ing and -ed clauses)</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_feature_customize_title">Configurable Study Plans</string>
+    <string name="about_feature_customize_desc">Hide/edit tasks and add your own per day.</string>
+    <string name="about_data_persistence">Changes are stored on device and apply across the app.</string>
+    <string name="about_contact">Send email for feedback.</string>
+    <string name="customize_cd">Customize plan</string>
+
+    <!-- Tooltip strings -->
+    <string name="tooltip_customize_plan_title">Customize Your Plan</string>
+    <string name="tooltip_customize_plan_message">Tap the calendar icon to hide, edit, or add your own tasks. All changes are saved on your device.</string>
+    <string name="tooltip_plan_settings_title">Plan Settings</string>
+    <string name="tooltip_plan_settings_message">Adjust your study schedule, start date, and daily time allocations to match your availability.</string>
+    <string name="tooltip_achievements_title">Track Your Progress</string>
+    <string name="tooltip_achievements_message">Tap the achievements badge to see your study milestones and maintain motivation.</string>
+    <string name="tooltip_language_switch_title">Language Support</string>
+    <string name="tooltip_language_switch_message">Switch between Turkish and English by tapping TR/EN in the header.</string>
+    <string name="tooltip_expand_week_title">Week Details</string>
+    <string name="tooltip_expand_week_message">Tap any week to expand and see daily tasks. Tap again to collapse.</string>
+    <string name="tooltip_task_details_title">Task Information</string>
+    <string name="tooltip_task_details_message">Tap any task to see detailed instructions and estimated time.</string>
+
+    <!-- Missing strings for XML layouts -->
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="reset_progress">Reset Progress</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_social">Social</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Missing strings -->
+    <string name="settings">Settings</string>
+    <string name="navigate_up">Navigate up</string>
+    <string name="category_icon_description">Category icon</string>
+    <string name="tooltip_got_it">Got it</string>
+    <string name="tooltip_close">Close tooltip</string>
+    <string name="save">Save</string>
+    <string name="weekly_goal_save_error">Unable to save weekly goal. Please try again.</string>
+
+    <string name="cancel">Cancel</string>
+
+    <!-- Undo system -->
+    <string name="task_completed_undo">Task completed</string>
+    <string name="undo">Undo</string>
+
+    <!-- View toggles -->
+    <string name="show_current_period">Show Current Period</string>
+    <string name="show_all_weeks">Show All Weeks</string>
+
+    <!-- Social Features -->
+    <string name="study_community">Study Community</string>
+    <string name="find_study_buddies">Find Study Buddies</string>
+    <string name="my_study_groups">My Study Groups</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="profile_settings">Profile Settings</string>
+    <string name="privacy_protected">Your privacy is protected. Only anonymized data is shared.</string>
+    <string name="no_buddies_found">No Study Buddies Found</string>
+    <string name="complete_profile_to_find_buddies">Complete your profile to find compatible study partners</string>
+    <string name="compatible_study_buddies">Compatible Study Buddies</string>
+    <string name="compatibility_score">%d%% Compatible</string>
+    <string name="online">Online</string>
+    <string name="create_profile_title">Create Your Study Profile</string>
+    <string name="privacy_first_notice">Privacy First: Your real identity is never shared. Only study preferences are used for matching.</string>
+
+    <!-- PDF Report Strings -->
+    <string name="report_title">Study Progress Report</string>
+    <string name="generate_report">Generate Report</string>
+    <string name="share_report">Share Report</string>
+    <string name="report_generating">Generating Report...</string>
+    <string name="report_success">Report Generated Successfully</string>
+    <string name="report_error">Error Generating Report</string>
+    <string name="report_share_error">Error Sharing Report</string>
+    <string name="report_no_data">No Study Data Available</string>
+    <string name="report_insufficient_data">Insufficient data for report period</string>
+    
+    <!-- Report Labels -->
+    <string name="minutes">Minutes</string>
+    <string name="tasks">Tasks</string>
+    <string name="streak">Streak</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="total_study_time">Total Study Time</string>
+    <string name="current_streak">Current Streak</string>
+    <string name="average_accuracy">Average Accuracy</string>
+    <string name="study_analytics">Study Analytics</string>
+    <string name="analytics_loading_results">Loading search results for "%s"...</string>
+    <string name="time_by_skill">Time by Skill</string>
+    <string name="weekly_study_minutes">Weekly Study Minutes</string>
+    <string name="performance_insights">Performance Insights</string>
+    <string name="ai_recommendations">AI Recommendations</string>
+    <string name="strengths">Strengths</string>
+    <string name="areas_for_improvement">Areas for Improvement</string>
+    <string name="performance_trends">Performance Trends</string>
+    
+    <!-- Report Time Periods -->
+    <string name="last_week">Last Week</string>
+    <string name="last_month">Last Month</string>
+    <string name="last_4_weeks">Last 4 Weeks</string>
+    <string name="custom_period">Custom Period</string>
+    
+    <!-- Privacy Options -->
+    <string name="include_name">Include student name</string>
+    <string name="privacy_protected_report">Name will not be included for privacy</string>
+
+        <!-- Top bar titles -->
+    <string name="topbar_home_title">Home</string>
+    <string name="topbar_review_title">Review &amp; Insights</string>
+    <string name="topbar_focus_mode_title">Focus Mode</string>
+    <string name="topbar_gamification_title">Gamification Settings</string>
+    <string name="topbar_day_plan_title">%1$s Study Plan</string>
+    <string name="topbar_tasks_title">Daily Tasks</string>
+    <string name="topbar_tasks_subtitle">Complete tasks to build your streak</string>
+    <string name="topbar_invite_action">Invite</string>
+
+<!-- Social Hub Lovable redesign -->
+    <string name="social_tab_profile">Profile</string>
+    <string name="social_tab_ranks">Ranks</string>
+    <string name="social_tab_groups">Groups</string>
+    <string name="social_tab_friends">Friends</string>
+    <string name="social_tab_awards">Awards</string>
+    <string name="social_hub_title">Social Hub</string>
+    <string name="social_hub_subtitle">Share progress with your study circle</string>
+    <string name="social_stat_completed">Completed tasks</string>
+    <string name="social_stat_streak_value">%1$d day streak</string>
+    <string name="social_stat_streak_placeholder">No active streak</string>
+    <string name="social_stat_goal_hours">Weekly goal</string>
+    <string name="social_stat_goal_hours_value">%1$d hrs</string>
+    <string name="social_invite_friends">Invite Friends</string>
+    <string name="social_invite_friends_to_rank">Invite some friends to see your rank</string>
+    <string name="social_invite_stub">Sharing coming soon</string>
+    <string name="social_privacy_banner_title">Privacy First</string>
+    <string name="social_privacy_banner_body">Your real identity is never shared. Only your chosen username and avatar are visible to others.</string>
+    <string name="social_profile_title">Your Profile</string>
+    <string name="social_copy_username_cd">Copy username</string>
+    <string name="social_username_hint">This is how others will see you (3-20 characters)</string>
+    <string name="social_choose_username_title">Choose your username</string>
+    <string name="social_username_label">Username</string>
+    <string name="social_username_error">Use 3-20 lowercase letters, numbers, or underscore</string>
+    <string name="social_username_set_success">Username set to @%1$s</string>
+    <string name="social_choose_avatar">Choose Your Avatar</string>
+    <string name="social_upload_avatar">Upload Custom Avatar</string>
+    <string name="social_avatar_upload_error_size">Avatar image must be smaller than 2MB</string>
+    <string name="social_avatar_upload_error_dimensions">Avatar image must be 512x512 pixels or smaller</string>
+    <string name="social_avatar_upload_error_format">Invalid image format. Please select a valid image file</string>
+    <string name="social_avatar_upload_success">Avatar uploaded successfully</string>
+    <string name="social_study_level">Study Level: %1$s</string>
+    <string name="social_weekly_goal_title">Weekly Study Goal</string>
+    <string name="social_goal_hours_label">Study hours per week</string>
+    <string name="social_goal_hours_value">%1$d h</string>
+    <string name="social_goal_label_casual">%1$d h (Casual)</string>
+    <string name="social_goal_label_balanced">%1$d h (Balanced)</string>
+    <string name="social_goal_label_intensive">%1$d h (Intensive)</string>
+    <string name="social_goal_daily_target">%1$d min daily target</string>
+    <string name="social_goal_monthly_target">%1$d h monthly goal</string>
+    <string name="social_goal_cancel">Cancel</string>
+    <string name="social_goal_save">Save Goal</string>
+    <string name="social_goal_updated">Weekly goal updated to %1$d hours</string>
+    <string name="social_privacy_settings_title">Privacy &amp; Settings</string>
+    <string name="social_privacy_settings_body">More privacy controls are on the way.</string>
+    <string name="social_study_groups_title">Study Groups</string>
+    <string name="social_create_group">Create Group</string>
+    <string name="social_members_label">members</string>
+    <string name="social_join">Join</string>
+    <string name="social_leave">Leave</string>
+    <string name="social_join_chat_cd">Toggle membership for %1$s</string>
+    <string name="social_share_group_cd">Share %1$s group</string>
+    <string name="social_joined_group">Joined %1$s</string>
+    <string name="social_left_group">Left %1$s</string>
+    <string name="social_shared_group">Share link sent for %1$s</string>
+    <string name="social_create_group_stub">Group creation is coming soon</string>
+    <string name="social_study_buddies_title">Study Buddies</string>
+    <string name="social_add_friend">Add Friend</string>
+    <string name="social_no_friends_title">No Friends Yet</string>
+    <string name="social_no_friends_description">Connect with other students to share progress and stay motivated together.</string>
+    <string name="social_friend_streak">%1$d streak</string>
+    <string name="social_status_online">Online</string>
+    <string name="social_status_offline">Offline</string>
+    <string name="social_status_studying">Studying</string>
+    <string name="social_friend_profile_stub">Profile for %1$s opens soon</string>
+    <string name="social_add_friend_stub">Friend invitations coming soon</string>
+    <string name="social_achievements_title">Community Achievements</string>
+    <string name="social_award_icon_cd">Badge for %1$s</string>
+    <string name="social_unlocked_by">Unlocked by:</string>
+    <string name="social_rarity_rare">Rare</string>
+    <string name="social_rarity_epic">Epic</string>
+    <string name="social_rarity_legendary">Legendary</string>
+    <string name="social_weekly_leaderboard">Weekly Leaderboard</string>
+    <string name="social_rank_number">#%1$d</string>
+    <string name="social_leaderboard_streak">%1$d day streak</string>
+    <string name="social_points_suffix">points</string>
+    <string name="social_stat_rank">Your Rank</string>
+    <string name="social_stat_score">Your Score</string>
+    <string name="social_stat_streak">Day Streak</string>
+
+    <!-- Settings strings -->
+    <string name="expand_selection">Expand selection</string>
+    <string name="settings_category_description">%1$s: %2$s</string>
+    <string name="category_active">Active</string>
+    <string name="search_settings">Search settings</string>
+    <string name="export_settings">Export settings</string>
+    <string name="import_settings">Import settings</string>
+    <string name="reset_all_settings">Reset all settings</string>
+
+    <!-- Missing settings strings -->
+    <string name="settings_title">Settings</string>
+    <string name="search_settings_hint">Search settings...</string>
+    <string name="no_results_found">No results found</string>
+    <string name="no_settings_found">No settings found</string>
+    <string name="try_different_search">Try a different search term</string>
+    <string name="reset_notifications">Reset Notifications</string>
+    <string name="danger_zone">Danger Zone</string>
+    <string name="study_progress">Study Progress</string>
+    <string name="performance_metrics">Performance Metrics</string>
+    <string name="gamification_points_earned_message">+%1$d pts earned</string>
+    <string name="gamification_level_up_message">Level %1$d - %2$s</string>
+    <string name="gamification_new_achievement_message">Unlocked: %1$s</string>
+    <string name="gamification_achievement_banner">Achievement unlocked: %1$s</string>
+    <string name="go_to_plan">Go to Plan</string>
+    <string name="back_to_plan">← Plan</string>
+    <string name="view_full_week">View Full Week</string>
+    <string name="modify_plan">▶ Modify Plan</string>
+    <string name="gamification_settings">Gamification Settings</string>
+    <string name="achievement_notification_text">You\'ve earned a new achievement!</string>
+    <string name="achievement_notification_description">Congratulations! You\'ve unlocked a new achievement. Keep up the great work!</string>
+    <string name="streak_expiry_notification">Your %1$d-day streak expires in %2$d hours</string>
+    <string name="streak_expiry_description">Don\'t break your %1$d-day study streak! Complete a task in the next %2$d hours to keep it going.</string>
+    <string name="daily_goal_complete">Great job! You\'ve completed your daily study goal</string>
+
+    <!-- Home screen strings -->
+    <string name="start">Start</string>
+    <string name="your_journey">Your Journey</string>
+    <string name="today">Today</string>
+    <string name="earn_points">Earn Points</string>
+    <string name="points_today">Points Today</string>
+    <string name="create_tasks">Create Tasks</string>
+    <string name="tasks_done">Tasks Done</string>
+    <string name="this_week">This Week</string>
+    <string name="start_studying">Start studying</string>
+
+    <!-- Settings screen tabs -->
+    <string name="navigation">Navigation</string>
+    <string name="notifications">Notifications</string>
+    <string name="gamification">Gamification</string>
+    <string name="privacy">Privacy</string>
+    <string name="customize_study_experience">Customize your study experience</string>
+
+    <!-- Tasks settings card -->
+    <string name="weekly_goal">Weekly Goal</string>
+    <string name="reset_all_progress">Reset All Progress</string>
+    <string name="reset_everything">Reset Everything</string>
+    <string name="unknown">Unknown</string>
+    <string name="studyplan_version">StudyPlan YDS Tracker\nVersion %1$s</string>
+
+    <!-- Settings content -->
+    <string name="bottom_navigation">Bottom Navigation</string>
+    <string name="bottom_navigation_desc">Show navigation at bottom of screen</string>
+    <string name="haptic_feedback">Haptic Feedback</string>
+    <string name="haptic_feedback_desc">Vibrate on button taps and interactions</string>
+
+</resources>

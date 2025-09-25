@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AdvancedToggleComponent">
+        <attr name="toggleTitle" format="string" />
+        <attr name="toggleDescription" format="string" />
+        <attr name="toggleEnabled" format="boolean" />
+        <attr name="toggleChecked" format="boolean" />
+        <attr name="showConstraintIndicator" format="boolean" />
+        <attr name="dependencyMode" format="enum">
+            <enum name="none" value="0" />
+            <enum name="requires" value="1" />
+            <enum name="excludes" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,7 @@
+style:
+  ForbiddenImport:
+    active: true
+    imports:
+      - "androidx.compose.material"
+      - "com.google.accompanist.swiperefresh"
+    excludes: "**/test/**,**/androidTest/**"

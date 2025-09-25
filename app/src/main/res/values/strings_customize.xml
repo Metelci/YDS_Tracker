@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Customize Plan (Base: English) -->
+    <string name="customize_title">Customize plan</string>
+    <string name="ok">OK</string>
+    <string name="info">Info</string>
+    <string name="back">Back</string>
+    <string name="customize_info_title">About Customization</string>
+    <string name="customize_info_message">You can hide/show tasks using the eye icon; edit text with the pencil icon. Use &quot;Add Task&quot; to add new tasks per day. Changes save instantly and apply across the app.</string>
+</resources>
+

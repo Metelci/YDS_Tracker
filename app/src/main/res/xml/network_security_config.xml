@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Temel ağ güvenliği yapılandırması -->
+
+    <!-- Ana domain güvenliği -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- OSYM API güvenliği -->
+        <domain includeSubdomains="true">ais.osym.gov.tr</domain>
+        <domain includeSubdomains="true">www.osym.gov.tr</domain>
+
+        <!-- Güvenilir CDN'ler -->
+        <domain includeSubdomains="true">cdn.jsdelivr.net</domain>
+        <domain includeSubdomains="true">fonts.googleapis.com</domain>
+        <domain includeSubdomains="true">fonts.gstatic.com</domain>
+
+        <!-- Pin sertifika hash'leri (güncellenmiş tarih ve gerçek pin ile) -->
+        <pin-set expiration="2026-12-31">
+            <!-- OSYM sertifika pin'i - gerçek hash ile güncellendi -->
+            <pin digest="SHA-256">4a6cPehI7JG923Nwvzn0EoBtcGGqs3oQmWKWSF+gKD4=</pin>
+            <!-- Backup pin - sertifika rotasyonu için kritik -->
+            <pin digest="SHA-256">Y9mvm0exBkEOvvaZgNEqy1wx1LXiOgtwT0M8LfKOtmI=</pin>
+        </pin-set>
+    </domain-config>
+
+    <!-- Debug yapılandırması - sadece development'ta aktif -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Development için user certificates'ları güven -->
+            <certificates src="user" />
+            <!-- System certificates'ları güven -->
+            <certificates src="system" />
+        </trust-anchors>
+    </debug-overrides>
+
+    <!-- Base configuration - tüm bağlantılar için (production güvenliği) -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Sadece sistem güvenilen sertifika yetkilileri -->
+            <certificates src="system" />
+            <!-- User certificates production'da güvenlik riski oluşturur - kaldırıldı -->
+        </trust-anchors>
+    </base-config>
+
+</network-security-config>

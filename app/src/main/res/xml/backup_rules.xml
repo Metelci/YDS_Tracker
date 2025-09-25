@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!-- Önce tüm shared preferences ve file alanlarını dahil et -->
+    <include domain="sharedpref" path="." />
+    <include domain="file" path="." />
+    
+    <!-- Hassas verilerin yedeklenmemesi için kurallar -->
+    <exclude domain="sharedpref" path="encrypted_prefs" />
+    <exclude domain="sharedpref" path="app_preferences" />
+    <exclude domain="file" path="secure_datastore.preferences_pb" />
+
+    <!-- Sadece ayarlar ve temel uygulama verilerinin yedeklenmesi -->
+    <include domain="sharedpref" path="Settings.xml" />
+    <include domain="file" path="app_settings/" />
+</full-backup-content>
