@@ -25,6 +25,7 @@ class PersistentSocialRepository(
     companion object {
         private val USERNAME_KEY = stringPreferencesKey("social_username")
         private val SELECTED_AVATAR_KEY = stringPreferencesKey("selected_avatar")
+        private val CUSTOM_AVATAR_PATH_KEY = stringPreferencesKey("custom_avatar_path")
     }
 
     private val profileState = MutableStateFlow(
@@ -392,16 +393,18 @@ class PersistentSocialRepository(
     }
 
     private fun loadPersistedData() {
-        // Load username and avatar from DataStore
+        // Load username, avatar, and custom avatar from DataStore
         CoroutineScope(Dispatchers.IO).launch {
             val preferences = dataStore.data.first()
             val savedUsername = preferences[USERNAME_KEY] ?: ""
             val savedAvatar = preferences[SELECTED_AVATAR_KEY] ?: "target"
+            val savedCustomAvatarPath = preferences[CUSTOM_AVATAR_PATH_KEY]
 
             profileState.update { currentProfile ->
                 currentProfile.copy(
                     username = savedUsername,
-                    selectedAvatarId = savedAvatar
+                    selectedAvatarId = savedAvatar,
+                    customAvatarPath = savedCustomAvatarPath
                 )
             }
         }
@@ -427,6 +430,19 @@ class PersistentSocialRepository(
         // Persist to DataStore
         dataStore.edit { preferences ->
             preferences[SELECTED_AVATAR_KEY] = avatarId
+        }
+    }
+
+    override suspend fun updateCustomAvatar(imagePath: String) {
+        // Update state with custom avatar
+        profileState.update { profile ->
+            profile.copy(selectedAvatarId = "custom", customAvatarPath = imagePath)
+        }
+
+        // Persist to DataStore
+        dataStore.edit { preferences ->
+            preferences[SELECTED_AVATAR_KEY] = "custom"
+            preferences[CUSTOM_AVATAR_PATH_KEY] = imagePath
         }
     }
 

@@ -75,6 +75,7 @@ import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import com.mtlc.studyplan.utils.socialDataStore
+import com.mtlc.studyplan.utils.ImageProcessor
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 
@@ -126,21 +127,52 @@ fun SocialScreen(
 
     // Avatar upload state and launcher
     var showAvatarUploadDialog by remember { mutableStateOf(false) }
+    var showUploadSuccessDialog by remember { mutableStateOf(false) }
+    var isProcessingImage by remember { mutableStateOf(false) }
+    var uploadError by remember { mutableStateOf<String?>(null) }
 
     // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            // Handle the selected image URI
             scope.launch {
-                // For now, show a success message - in a real app you'd process the image
-                val message = context.getString(R.string.social_avatar_upload_success)
-                snackbarHostState.showSnackbar(
-                    message = message,
-                    duration = SnackbarDuration.Short
-                )
-                showAvatarUploadDialog = false
+                try {
+                    isProcessingImage = true
+                    uploadError = null
+                    showAvatarUploadDialog = false
+
+                    // Process and crop the image
+                    val processedImagePath = ImageProcessor.processAvatarImage(context, it)
+
+                    if (processedImagePath != null) {
+                        // Update user's avatar with the processed image
+                        // In a real app, you might upload to server or save to profile
+                        socialRepository.updateCustomAvatar(processedImagePath)
+
+                        isProcessingImage = false
+                        showUploadSuccessDialog = true
+
+                        // Log success analytics
+                        val fileSize = ImageProcessor.getFileSize(processedImagePath)
+                        val fileSizeFormatted = ImageProcessor.formatFileSize(fileSize)
+
+                    } else {
+                        isProcessingImage = false
+                        uploadError = "Failed to process image. Please try again."
+                        snackbarHostState.showSnackbar(
+                            message = uploadError!!,
+                            duration = SnackbarDuration.Long
+                        )
+                    }
+                } catch (e: Exception) {
+                    isProcessingImage = false
+                    uploadError = "Error processing image: ${e.message}"
+                    snackbarHostState.showSnackbar(
+                        message = uploadError!!,
+                        duration = SnackbarDuration.Long
+                    )
+                }
             }
         }
     }
@@ -225,6 +257,18 @@ fun SocialScreen(
                         showAvatarUploadDialog = false
                     }
                 )
+            }
+
+            // Upload success confirmation dialog
+            if (showUploadSuccessDialog) {
+                UploadSuccessDialog(
+                    onDismiss = { showUploadSuccessDialog = false }
+                )
+            }
+
+            // Image processing dialog
+            if (isProcessingImage) {
+                ImageProcessingDialog()
             }
 
             Column(
@@ -797,6 +841,150 @@ fun AvatarUploadDialog(
                 Text("Cancel")
             }
         }
+    )
+}
+
+@Composable
+fun UploadSuccessDialog(
+    onDismiss: () -> Unit
+) {
+    val spacing = LocalSpacing.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                Surface(
+                    modifier = Modifier.size(24.dp),
+                    shape = CircleShape,
+                    color = Color(0xFF4CAF50)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "✓",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Text(
+                    text = "Upload Successful",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                Text(
+                    text = "Your new profile photo has been cropped and uploaded successfully!",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFFE8F5E8)
+                ) {
+                    Text(
+                        text = "✨ Your profile is now updated with your custom avatar",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF2E7D32),
+                        modifier = Modifier.padding(spacing.sm),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            FilledTonalButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = Color(0xFF4CAF50),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Great!")
+            }
+        },
+        dismissButton = {}
+    )
+}
+
+@Composable
+fun ImageProcessingDialog() {
+    val spacing = LocalSpacing.current
+
+    AlertDialog(
+        onDismissRequest = { /* Cannot dismiss while processing */ },
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Processing Image",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
+            ) {
+                Text(
+                    text = "Please wait while we process and crop your image...",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(spacing.sm),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "• Cropping to square format",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "• Resizing to 512x512 pixels",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "• Applying circular mask",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "• Optimizing file size",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {}
     )
 }
 

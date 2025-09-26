@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,8 +47,13 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.StudyProgressRepository
+import com.mtlc.studyplan.settings.data.NavigationSettings
+import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
@@ -167,14 +173,34 @@ private fun SettingsCategoryScaffold(title: String, subtitle: String, onBack: ()
 
 @Composable
 private fun NavigationCategoryCard() {
-    val bottomNav = remember { mutableStateOf(true) }
-    val haptics = remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    val settingsManager = remember { SettingsPreferencesManager(context) }
+    val navSettings by settingsManager.navigationSettings.collectAsState(initial = NavigationSettings())
 
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CategoryCardHeader("Navigation", Icons.AutoMirrored.Filled.Send)
-            SettingRowToggle(title = "Bottom Navigation", description = "Show navigation at bottom of screen", checked = bottomNav.value) { bottomNav.value = it }
-            SettingRowToggle(title = "Haptic Feedback", description = "Vibrate on button taps and interactions", checked = haptics.value) { haptics.value = it }
+            SettingRowToggle(
+                title = "Bottom Navigation",
+                description = "Show navigation at bottom of screen",
+                checked = navSettings.bottomNavigation
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(bottomNavigation = it))
+            }
+            SettingRowToggle(
+                title = "Haptic Feedback",
+                description = "Vibrate on button taps and interactions",
+                checked = navSettings.hapticFeedback
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(hapticFeedback = it))
+            }
+            SettingRowToggle(
+                title = "Dark Mode",
+                description = "Use dark theme throughout the app",
+                checked = navSettings.darkMode
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(darkMode = it))
+            }
         }
     }
 }
