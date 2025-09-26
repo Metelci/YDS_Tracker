@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.res.Configuration
 import com.mtlc.studyplan.localization.LanguageManager
 import com.mtlc.studyplan.ui.components.Language
+import dagger.hilt.android.HiltAndroidApp
 import java.util.*
 
+@HiltAndroidApp
 class StudyPlanApplication : Application() {
 
     override fun onCreate() {

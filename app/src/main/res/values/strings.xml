@@ -458,6 +458,7 @@
     <string name="no_results_found">No results found</string>
     <string name="no_settings_found">No settings found</string>
     <string name="try_different_search">Try a different search term</string>
+    <string name="quick_actions">Quick Actions</string>
     <string name="reset_notifications">Reset Notifications</string>
     <string name="danger_zone">Danger Zone</string>
     <string name="study_progress">Study Progress</string>

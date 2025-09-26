@@ -138,8 +138,6 @@ fun ExamDetailsScreen(
 
             // Selected Exam Details
             selectedExam?.let { exam ->
-                // Debug: Log exam data to ensure it's loaded
-                println("DEBUG: Selected exam: ${exam.name}, date: ${exam.examDate}")
                 val daysToExam = ChronoUnit.DAYS.between(LocalDate.now(), exam.examDate).toInt()
                 val registrationStatus = getRegistrationStatusForExam(exam)
 

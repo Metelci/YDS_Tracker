@@ -1,31 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="apply">Uygula</string>
-    <string name="current_value">Anlık değer</string>
-    <string name="backup_value">Yedek değer</string>
-    <string name="recommended">Önerilen</string>
-    <string name="error_title">Hata</string>
-    <string name="conflict_resolution_error">Karışıklık çözülemedi. Lütfen tekrar deneyin.</string>
-    <string name="apply_selected">Seçineni Uygula</string>
-    <string name="keep_current_value">Varolanı Sakla</string>
-    <string name="use_backup_value">Yedeği kullan</string>
-    <string name="smart_merge_title">Akıllı Birleştirme</string>
-    <string name="apply_backup_values_title">Tüm Yedek Değerlerini Uygula</string>
-    <string name="voice_search_listening">Dinliyor...</string>
+    <!-- Settings Search -->
+    <string name="search_hint">Ayarlarda arama yapın…</string>
     <string name="search_clear">Aramayı temizle</string>
+    <string name="search_results_count">%d sonuç bulundu</string>
+    <string name="search_no_results">Sonuç bulunamadı</string>
+    <string name="search_try_different">Farklı anahtar kelimeler deneyin veya yazımı kontrol edin</string>
     <string name="search_recent">Son aramalar</string>
     <string name="search_suggestions">Öneriler</string>
-    <string name="search_loading">Arıyor...</string>
+    <string name="search_clear_history">Arama geçmişini temizle</string>
+    <string name="search_loading">Arıyor…</string>
+
+    <!-- Settings Backup -->
     <string name="local_backup_title">Yerel Yedek</string>
+    <string name="local_backup_description">Ayarlarınızı dosyalara aktarın ve içe aktarın</string>
+    <string name="cloud_sync_title">Bulut Eşitlemesi</string>
+    <string name="cloud_sync_description">Ayarları cihazlarınız arasında otomatik olarak eşitleyin</string>
+    <string name="advanced_options_title">Gelişmiş Seçenekler</string>
+    <string name="advanced_options_description">Yedekleme davranışı ve sıklığını yapılandırın</string>
+
     <string name="setup_cloud_sync">Bulut Eşitlemesini Kur</string>
     <string name="sync_now">Şimdi Eşitle</string>
-    <string name="no_backup_yet">Henüz yedek oluşturulmadı</string>
     <string name="clear_history">Geçmişi Temizle</string>
-    <string name="advanced_options_title">Gelişmiş Seçenekler</string>
+
+    <string name="last_backup_date">Son yedek: %s</string>
+    <string name="no_backup_yet">Henüz yedek oluşturulmadı</string>
+    <string name="last_sync_date">Son eşitleme: %s</string>
+    <string name="never_synced">Hiç eşitlenmedi</string>
+    <string name="backup_size_format">Yedek boyutu: %s</string>
+    <string name="no_backup_size">Yedek boyutu mevcut değil</string>
+
+    <string name="cloud_sync_enabled">Bulut eşitleme: Etkin</string>
+    <string name="cloud_sync_configured">Bulut eşitleme: Yapılandırıldı</string>
+    <string name="cloud_sync_not_configured">Bulut eşitleme: Yapılandırılmadı</string>
+    <string name="auto_sync_enabled">Otomatik eşitleme</string>
+
+    <!-- Backup Strategies -->
+    <string name="import_strategy_title">İçe Aktarma Stratejisi</string>
+    <string name="merge_strategy_replace">Tüm ayarları değiştir</string>
+    <string name="merge_strategy_merge">Birleştir ve çakışmaları göster</string>
+    <string name="merge_strategy_skip_existing">Yalnızca yeni ayarları içe aktar</string>
+
+    <!-- Backup Results -->
+    <string name="export_success">Ayarlar başarıyla dışa aktarıldı</string>
+    <string name="import_success_format" formatted="false">%d ayar içe aktarıldı, %d çakışma</string>
+    <string name="sync_success_format" formatted="false">%d ayar eşitlendi, %d çakışma çözüldü</string>
+
+    <!-- Import Conflicts -->
+    <string name="import_conflicts_title">İçe Aktarma Çakışmaları Tespit Edildi</string>
+    <string name="import_conflicts_message">%d ayarın mevcut değerleriniz ile yedek arasında çakışması var. Bunları nasıl çözmek istiyorsunuz?</string>
+    <string name="review_conflicts">Çakışmaları Gözden Geçir</string>
+    <string name="apply_defaults">Varsayılanları Uygula</string>
+
+    <!-- Cloud Providers -->
+    <string name="choose_sync_provider">Bulut Sağlayıcısını Seç</string>
     <string name="google_drive">Google Drive</string>
     <string name="dropbox">Dropbox</string>
+    <string name="provider_configuration_in_progress">Bulut sağlayıcı yapılandırılıyor…</string>
+
+    <!-- Backup History -->
     <string name="clear_backup_history_title">Yedek Geçmişini Temizle</string>
+    <string name="clear_backup_history_message">Bu işlem tüm yedek geçmişini ve önbelleği temizleyecek. Gerçek yedek dosyalarınız etkilenmeyecek.</string>
     <string name="clear">Temizle</string>
+
+    <!-- Backup Frequency -->
+    <string name="backup_frequency">Yedekleme Sıklığı</string>
+    <string name="backup_frequency_description">Otomatik yedekleme sıklığı</string>
+    <string name="backup_compression">Yedek Sıkıştırması</string>
+    <string name="backup_compression_description">Alan tasarrufu için yedek dosyalarını sıkıştır</string>
+
+    <!-- Advanced Toggle Components -->
+    <string name="dependent_settings">Bağımlı Ayarlar</string>
+    <string name="setting_dependencies">Bu ayar şunları kontrol eder:</string>
+    <string name="dependency_requirements">Gereksinimler:</string>
+    <string name="constraint_violation">Ayar kısıtlamaları ihlal edildi</string>
+    <string name="dependency_violation">Bağımlılık gereksinimleri karşılanmadı</string>
+
+    <!-- Accessibility -->
     <string name="accessibility_settings">Erişilebilirlik</string>
     <string name="high_contrast_mode">Yüksek Karşıtlık Modu</string>
+    <string name="large_text_mode">Büyük Metin Modu</string>
+    <string name="reduce_motion">Hareketi Azalt</string>
+    <string name="screen_reader_support">Ekran Okuyucu Desteği</string>
+    <string name="touch_target_size">Dokunma Hedef Boyutu</string>
+    <string name="focus_indicators">Odak Göstergeleri</string>
+
+    <!-- Performance -->
+    <string name="performance_monitoring">Performans İzleme</string>
+    <string name="memory_usage">Bellek Kullanımı</string>
+    <string name="cache_hit_rate">Önbellek İsabet Oranı</string>
+    <string name="frame_rate">Kare Hızı</string>
+    <string name="memory_pressure_normal">Normal</string>
+    <string name="memory_pressure_high">Yüksek</string>
+    <string name="memory_pressure_critical">Kritik</string>
+
+    <!-- Error Messages -->
+    <string name="error_search_failed">Arama başarısız. Lütfen tekrar deneyin.</string>
+    <string name="error_backup_failed">Yedekleme işlemi başarısız</string>
+    <string name="error_import_failed">İçe aktarma işlemi başarısız</string>
+    <string name="error_sync_failed">Eşitleme işlemi başarısız</string>
+    <string name="error_invalid_backup_file">Geçersiz yedek dosya formatı</string>
+    <string name="error_backup_corrupted">Yedek dosyası bozuk</string>
+    <string name="error_version_incompatible">Yedek sürümü uyumlu değil</string>
+    <string name="error_insufficient_storage">Yetersiz depolama alanı</string>
+    <string name="error_network_unavailable">Ağ bağlantısı mevcut değil</string>
+    <string name="error_permission_denied">İzin reddedildi</string>
+
+    <!-- Success Messages -->
+    <string name="success_settings_saved">Ayarlar başarıyla kaydedildi</string>
+    <string name="success_backup_created">Yedek başarıyla oluşturuldu</string>
+    <string name="success_settings_imported">Ayarlar başarıyla içe aktarıldı</string>
+    <string name="success_sync_completed">Eşitleme başarıyla tamamlandı</string>
+
+    <!-- Loading States -->
+    <string name="loading_settings">Ayarlar yükleniyor…</string>
+    <string name="loading_backup">Yedek oluşturuluyor…</string>
+    <string name="loading_import">Ayarlar içe aktarılıyor…</string>
+    <string name="loading_sync">Ayarlar eşitleniyor…</string>
+    <string name="loading_search_index">Arama dizini oluşturuluyor…</string>
+
+    <!-- Progress Messages -->
+    <string name="progress_gathering_data">Ayar verileri toplanıyor…</string>
+    <string name="progress_creating_backup">Yedek dosyası oluşturuluyor…</string>
+    <string name="progress_uploading">Buluta yükleniyor…</string>
+    <string name="progress_downloading">Buluttan indiriliyor…</string>
+    <string name="progress_applying_changes">Değişiklikler uygulanıyor…</string>
+    <string name="progress_resolving_conflicts">Çakışmalar çözülüyor…</string>
+
+    <!-- Undo Actions -->
+    <string name="undo_setting_change">Ayar değişikliği geri alındı</string>
+    <string name="undo_timeout">Geri alma seçeneği süresi doldu</string>
+
+    <!-- Deep Linking -->
+    <string name="deep_link_invalid">Geçersiz ayar bağlantısı</string>
+    <string name="deep_link_not_found">Ayar bulunamadı</string>
+    <string name="deep_link_navigated">%s\'a yönlendirildi</string>
+
+    <!-- Validation -->
+    <string name="validation_required">Bu alan zorunludur</string>
+    <string name="validation_min_length">En az %d karakter olmalıdır</string>
+    <string name="validation_max_length">En fazla %d karakter olmalıdır</string>
+    <string name="validation_invalid_email">Geçersiz e-posta formatı</string>
+    <string name="validation_out_of_range" formatted="false">Değer %s ile %s arasında olmalıdır</string>
+
+    <!-- Accessibility Announcements -->
+    <string name="announce_setting_enabled">%s etkinleştirildi</string>
+    <string name="announce_setting_disabled">%s devre dışı bırakıldı</string>
+    <string name="announce_setting_changed" formatted="false">%s %s olarak değiştirildi</string>
+    <string name="announce_search_results">%d arama sonucu bulundu</string>
+    <string name="announce_backup_complete">Yedekleme tamamlandı</string>
+    <string name="announce_import_complete">İçe aktarma tamamlandı</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_search_button">Ayarlarda ara</string>
+    <string name="cd_clear_search">Arama sorgusunu temizle</string>
+    <string name="cd_voice_search">Sesli arama</string>
+    <string name="cd_export_button">Ayarları dosyaya aktar</string>
+    <string name="cd_import_button">Ayarları dosyadan içe aktar</string>
+    <string name="cd_sync_button">Ayarları bulutla eşitle</string>
+    <string name="cd_setting_toggle">%s ayarını değiştir</string>
+    <string name="cd_setting_menu">%s menüsünü aç</string>
+    <string name="cd_dependency_info">Bağımlılık bilgisi</string>
+    <string name="cd_constraint_warning">Kısıtlama uyarısı</string>
+
+    <!-- Feature Discovery -->
+    <string name="feature_search_title">Ayarlarınızda Arama Yapın</string>
+    <string name="feature_search_description">Akıllı aramımızla herhangi bir ayarı hızlıca bulun</string>
+    <string name="feature_backup_title">Ayarlarınızı Yedekleyin</string>
+    <string name="feature_backup_description">Otomatik yedeklemelerle tercihlerinizi asla kaybetmeyin</string>
+    <string name="feature_sync_title">Cihazlar Arası Eşitleme</string>
+    <string name="feature_sync_description">Ayarlarınızı tüm cihazlarınızda senkronize tutun</string>
+
+    <!-- Voice Search -->
+    <string name="voice_search_listening">Dinliyor…</string>
+
+    <!-- Conflict Resolution -->
+    <string name="conflict_resolution_title">Ayar Çakışmalarını Çöz</string>
+    <string name="conflict_stats_format" formatted="false">%d / %d çakışma çözüldü</string>
+    <string name="resolution_summary_format" formatted="false">Mevcut Tut: %d • Yedek Kullan: %d • Manuel İnceleme: %d</string>
+
+    <string name="apply_current_values_title">Tüm Mevcut Değerleri Uygula</string>
+    <string name="apply_current_values_message">Bu işlem tüm mevcut ayarlarınızı koruyacak ve yedek değerlerini yok sayacak. Emin misiniz?</string>
+    <string name="apply_backup_values_title">Tüm Yedek Değerleri Uygula</string>
+    <string name="apply_backup_values_message">Bu işlem tüm çakışan ayarları yedek değerlerle değiştirecek. Emin misiniz?</string>
+    <string name="smart_merge_title">Akıllı Birleştirme</string>
+    <string name="smart_merge_message">Bu işlem analiz temelinde her çakışma için en iyi değeri otomatik olarak seçecek. Emin misiniz?</string>
+
+    <string name="keep_current_value">Mevcut Değeri Koru</string>
+    <string name="use_backup_value">Yedek Değeri Kullan</string>
+    <string name="manual_review">Manuel İnceleme</string>
+    <string name="apply_selected">Seçilenleri Uygula</string>
+    <string name="apply">Uygula</string>
+
+    <string name="current_value">Mevcut Değer</string>
+    <string name="backup_value">Yedek Değer</string>
+    <string name="recommended">Önerilen</string>
+
+    <string name="error_title">Hata</string>
+    <string name="conflict_resolution_error">Çakışmalar çözülemedi. Lütfen tekrar deneyin.</string>
 </resources>
