@@ -382,8 +382,11 @@ fun AppNavHost(
                     com.mtlc.studyplan.settings.data.SettingsRepository(context)
                 }
 
-                com.mtlc.studyplan.settings.ui.OriginalSettingsScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                com.mtlc.studyplan.settings.ui.SettingsScreen(
+                    onNavigateToCategory = { category ->
+                        navController.navigate("settings/${category.lowercase()}")
+                    },
+                    onBack = { navController.popBackStack() }
                 )
             }
         }
