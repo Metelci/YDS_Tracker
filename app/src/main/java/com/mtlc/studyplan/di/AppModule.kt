@@ -2,10 +2,12 @@ package com.mtlc.studyplan.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.mtlc.studyplan.theme.ThemeManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import javax.inject.Qualifier
@@ -21,6 +23,8 @@ val koinAppModule = module {
     }
 
     single<Gson> { GsonBuilder().setPrettyPrinting().create() }
+
+    single<ThemeManager> { ThemeManager(androidContext()) }
 }
 
 // Qualifier annotations for different dispatchers

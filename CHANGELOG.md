@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.13] - 2025-01-14
+
+### 🌙 **Dark Theme Hotfix & UI Improvements**
+
+#### **Bug Fixes**
+- **Fixed Daily Tasks Dark Theme**: Updated all cards on daily tasks page to use theme-aware colors
+  - StudyBookCard, DailyTasksSection, and StudyMaterialsSection now properly support dark theme
+  - All task cards are now readable with proper contrast in dark mode
+  - Updated surface and surface variant colors to use Material 3 theme system
+
+- **Fixed Social Page Tabs**: Resolved tab visibility issues in dark theme
+  - Updated SocialSegmentedTabs to use theme-aware colors instead of static DesignTokens
+  - Unclicked tabs are now clearly visible in dark theme
+  - Selected tabs maintain proper highlighting in both themes
+
+- **Fixed Home Page Header**: Improved text visibility on gradient background
+  - Updated topbar text colors to use fixed dark colors for optimal readability
+  - Welcome message and subtitle now clearly visible in both light and dark themes
+  - Maintained contrast on light gradient background
+
+- **Fixed App Crash**: Resolved ThemeManager dependency injection issue
+  - Updated ThemeManager to work with Koin instead of javax.inject annotations
+  - Fixed app crashes related to theme switching functionality
+
+#### **Award System Improvements**
+- **Reset Award Cards**: Prepared awards for production use
+  - All awards now start in locked state (no fake unlocked awards)
+  - Removed placeholder data and fake statistics
+  - Awards system ready for real user achievement tracking
+
+#### **Technical Improvements**
+- Enhanced Material 3 theme integration across all UI components
+- Improved dark theme consistency throughout the application
+- Better color contrast ratios for accessibility compliance
+
+#### **Build Information**
+- Version: 2.9.13
+- Build: 63
+- Platform: Android API 34+
+
 ## [2.9.12] - 2025-01-14
 
 ### ✨ **Theme Switcher & UI Enhancements**

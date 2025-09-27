@@ -3,7 +3,6 @@ package com.mtlc.studyplan.navigation
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -17,14 +16,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -45,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -53,9 +46,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -64,15 +55,12 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
-import com.mtlc.studyplan.feature.Routes.TODAY_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
-import com.mtlc.studyplan.feature.review.ReviewScreen
 import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
-import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 import com.mtlc.studyplan.utils.settingsDataStore
 import org.koin.core.context.GlobalContext
 
@@ -353,7 +341,6 @@ fun AppNavHost(
                 label = "social_animation"
             ) { _ ->
                 com.mtlc.studyplan.social.SocialScreen(
-                    sharedViewModel = sharedViewModel
                 )
             }
         }
@@ -386,8 +373,6 @@ fun AppNavHost(
                 }
 
                 com.mtlc.studyplan.settings.ui.OriginalSettingsScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToCategory = { categoryId -> navController.navigate("settings/$categoryId") }
                 )
             }
         }

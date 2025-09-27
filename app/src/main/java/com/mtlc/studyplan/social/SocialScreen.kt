@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.social
 
 // import androidx.compose.material3.FloatingActionButton
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -22,15 +23,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Redo
+import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
@@ -40,9 +45,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -60,7 +68,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import android.net.Uri
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.PersistentSocialRepository
@@ -68,29 +75,40 @@ import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.data.social.SocialRepository
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
-import com.mtlc.studyplan.shared.SharedAppViewModel
-import com.mtlc.studyplan.shared.StudyStats
 import com.mtlc.studyplan.social.components.SocialSegmentedTabs
 import com.mtlc.studyplan.social.tabs.AwardsTab
 import com.mtlc.studyplan.social.tabs.FriendsTab
 import com.mtlc.studyplan.social.tabs.GroupsTab
 import com.mtlc.studyplan.social.tabs.ProfileTab
 import com.mtlc.studyplan.social.tabs.RanksTab
-import com.mtlc.studyplan.ui.components.*
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.utils.AvatarPreview
+import com.mtlc.studyplan.utils.ImageProcessingUtils
 import com.mtlc.studyplan.utils.socialDataStore
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 
 // import com.mtlc.studyplan.social.components.AwardNotification
 
+private const val AVATAR_HISTORY_LIMIT = 5
+
+private data class AvatarSnapshot(
+    val selectedAvatarId: String,
+    val customUri: String?
+)
+
+private data class PendingAvatarPreview(
+    val uri: Uri,
+    val preview: AvatarPreview
+)
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
     repository: SocialRepository? = null,
-    sharedViewModel: SharedAppViewModel? = null,
     navigationManager: StudyPlanNavigationManager? = null
 ) {
     val spacing = LocalSpacing.current
@@ -114,18 +132,6 @@ fun SocialScreen(
     val friends by socialRepository.friends.collectAsState()
     val awards by socialRepository.awards.collectAsState()
 
-    val studyStats by if (sharedViewModel != null) {
-        sharedViewModel.studyStats.collectAsState()
-    } else {
-        remember { mutableStateOf(StudyStats()) }
-    }
-
-    val currentStreak by if (sharedViewModel != null) {
-        sharedViewModel.currentStreak.collectAsState()
-    } else {
-        remember { mutableStateOf(0) }
-    }
-
     val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState()
         ?: remember { mutableStateOf(null) }
 
@@ -134,43 +140,194 @@ fun SocialScreen(
     var pendingUsername by rememberSaveable { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
 
-    // Avatar upload state and launcher
+        // Avatar upload + preview state
     var showAvatarUploadDialog by remember { mutableStateOf(false) }
+    val undoStack = remember { mutableStateListOf<AvatarSnapshot>() }
+    val redoStack = remember { mutableStateListOf<AvatarSnapshot>() }
+    var pendingAvatarPreview by remember { mutableStateOf<PendingAvatarPreview?>(null) }
+    var showAvatarPreviewDialog by remember { mutableStateOf(false) }
+    var isAvatarOperationRunning by remember { mutableStateOf(false) }
+    var isGeneratingPreview by remember { mutableStateOf(false) }
+    var previewErrorMessage by remember { mutableStateOf<String?>(null) }
+    var latestPreviewRequest by remember { mutableStateOf<String?>(null) }
 
-    // Image picker launcher
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            scope.launch {
-                try {
-                    // Upload the custom avatar with validation and processing
-                    socialRepository.uploadCustomAvatar(uri.toString())
-                    val message = context.getString(R.string.social_avatar_upload_success)
-                    snackbarHostState.showSnackbar(
-                        message = message,
-                        duration = SnackbarDuration.Short
-                    )
-                    showAvatarUploadDialog = false
-                } catch (e: Exception) {
-                    // Handle upload errors
-                    val errorMessage = when {
-                        e.message?.contains("2MB") == true -> "Image file must be smaller than 2MB"
-                        e.message?.contains("format") == true -> "Unsupported image format. Please use JPG, PNG, or WebP"
-                        e.message?.contains("dimensions") == true -> "Invalid image dimensions"
-                        e.message?.contains("access") == true -> "Cannot access image file"
-                        else -> "Failed to upload avatar: ${e.message ?: "Unknown error"}"
-                    }
-                    snackbarHostState.showSnackbar(
-                        message = errorMessage,
-                        duration = SnackbarDuration.Long
-                    )
-                    showAvatarUploadDialog = false
-                }
+    val defaultAvatarId = profile.availableAvatars.firstOrNull()?.id ?: "target"
+
+    fun recycleCurrentPreview() {
+        pendingAvatarPreview?.preview?.bitmap?.let { bitmap ->
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
+        pendingAvatarPreview = null
+    }
+
+    fun handlePreviewDismiss(clearError: Boolean = true) {
+        showAvatarPreviewDialog = false
+        latestPreviewRequest = null
+        if (clearError) {
+            previewErrorMessage = null
+        }
+        isGeneratingPreview = false
+        recycleCurrentPreview()
+    }
+
+    fun mapAvatarError(error: Throwable): String {
+        val message = error.message?.lowercase() ?: ""
+        return when {
+            message.contains("2mb") || message.contains("too large") -> context.getString(R.string.social_avatar_error_size)
+            message.contains("format") || message.contains("mime") || message.contains("type") -> context.getString(R.string.social_avatar_error_format)
+            message.contains("dimension") -> context.getString(R.string.social_avatar_error_dimensions)
+            message.contains("access") || message.contains("permission") -> context.getString(R.string.social_avatar_error_access)
+            else -> context.getString(R.string.social_avatar_error_generic, error.message ?: context.getString(R.string.social_avatar_error_generic_fallback))
+        }
+    }
+
+    fun pushUndoSnapshot(snapshot: AvatarSnapshot) {
+        if (undoStack.firstOrNull() != snapshot) {
+            undoStack.add(0, snapshot)
+            if (undoStack.size > AVATAR_HISTORY_LIMIT) {
+                undoStack.removeAt(undoStack.lastIndex)
             }
         }
     }
 
+    fun pushRedoSnapshot(snapshot: AvatarSnapshot) {
+        if (redoStack.firstOrNull() != snapshot) {
+            redoStack.add(0, snapshot)
+            if (redoStack.size > AVATAR_HISTORY_LIMIT) {
+                redoStack.removeAt(redoStack.lastIndex)
+            }
+        }
+    }
+
+    suspend fun applySnapshotInternal(snapshot: AvatarSnapshot) {
+        if (snapshot.selectedAvatarId == "custom" && !snapshot.customUri.isNullOrBlank()) {
+            val path = Uri.parse(snapshot.customUri).path
+            if (!path.isNullOrBlank()) {
+                socialRepository.updateCustomAvatar(path)
+                return
+            }
+        }
+        val targetId = snapshot.selectedAvatarId.takeIf { it.isNotBlank() } ?: defaultAvatarId
+        socialRepository.selectAvatar(targetId)
+    }
+
+    fun handleUndo() {
+        if (undoStack.isEmpty() || isAvatarOperationRunning) return
+        val target = undoStack.removeAt(0)
+        pushRedoSnapshot(AvatarSnapshot(profile.selectedAvatarId, profile.customAvatarUri))
+        isAvatarOperationRunning = true
+        scope.launch {
+            try {
+                applySnapshotInternal(target)
+                val message = context.getString(R.string.social_avatar_undo_success)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+            } catch (error: Exception) {
+                val message = mapAvatarError(error)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Long)
+            } finally {
+                isAvatarOperationRunning = false
+            }
+        }
+    }
+
+    fun handleRedo() {
+        if (redoStack.isEmpty() || isAvatarOperationRunning) return
+        val target = redoStack.removeAt(0)
+        pushUndoSnapshot(AvatarSnapshot(profile.selectedAvatarId, profile.customAvatarUri))
+        isAvatarOperationRunning = true
+        scope.launch {
+            try {
+                applySnapshotInternal(target)
+                val message = context.getString(R.string.social_avatar_redo_success)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+            } catch (error: Exception) {
+                val message = mapAvatarError(error)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Long)
+            } finally {
+                isAvatarOperationRunning = false
+            }
+        }
+    }
+
+    fun fallbackToDefaultAvatar() {
+        scope.launch {
+            socialRepository.selectAvatar(defaultAvatarId)
+        }
+    }
+
+    fun handlePreviewApply() {
+        val pending = pendingAvatarPreview ?: return
+        val snapshotBefore = AvatarSnapshot(profile.selectedAvatarId, profile.customAvatarUri)
+        isAvatarOperationRunning = true
+        scope.launch {
+            try {
+                socialRepository.uploadCustomAvatar(pending.uri.toString())
+                pushUndoSnapshot(snapshotBefore)
+                redoStack.clear()
+                val message = context.getString(R.string.social_avatar_upload_success)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+                handlePreviewDismiss()
+            } catch (error: Exception) {
+                val message = mapAvatarError(error)
+                snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Long)
+                handlePreviewDismiss()
+                fallbackToDefaultAvatar()
+            } finally {
+                isAvatarOperationRunning = false
+            }
+        }
+    }
+
+    fun startPreview(uri: Uri) {
+        recycleCurrentPreview()
+        isGeneratingPreview = true
+        previewErrorMessage = null
+        showAvatarPreviewDialog = true
+        val requestKey = uri.toString()
+        latestPreviewRequest = requestKey
+        scope.launch {
+            val result = ImageProcessingUtils.generatePreviewImage(context, uri)
+            if (latestPreviewRequest != requestKey) {
+                result.onSuccess { preview: AvatarPreview ->
+                    if (!preview.bitmap.isRecycled) {
+                        preview.bitmap.recycle()
+                    }
+                }
+                return@launch
+            }
+            result.fold(
+                onSuccess = { preview ->
+                    pendingAvatarPreview = PendingAvatarPreview(uri = uri, preview = preview)
+                    isGeneratingPreview = false
+                },
+                onFailure = { error ->
+                    previewErrorMessage = mapAvatarError(error)
+                    isGeneratingPreview = false
+                    recycleCurrentPreview()
+                }
+            )
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            latestPreviewRequest = null
+            recycleCurrentPreview()
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { picked ->
+        showAvatarUploadDialog = false
+        picked?.let { startPreview(it) } ?: run {
+            if (!showAvatarPreviewDialog) {
+                previewErrorMessage = null
+            }
+        }
+    }
     // var notificationAward by remember { mutableStateOf<com.mtlc.studyplan.data.social.Award?>(null) }
 
     LaunchedEffect(deepLinkParams) {
@@ -221,8 +378,10 @@ fun SocialScreen(
                             scope.launch {
                                 socialRepository.updateUsername(pendingUsername.trim())
                                 showUsernameDialog = false
+                                val usernameSetMessage = context.getString(R.string.social_username_set_success)
+                                    .replace("{username}", pendingUsername.trim())
                                 snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.social_username_set_success, pendingUsername.trim()),
+                                    message = usernameSetMessage,
                                     duration = SnackbarDuration.Short
                                 )
                             }
@@ -250,6 +409,28 @@ fun SocialScreen(
                         }
                         showAvatarUploadDialog = false
                     }
+                )
+            }
+            if (showAvatarPreviewDialog) {
+                AvatarPreviewDialog(
+                    preview = pendingAvatarPreview,
+                    isLoading = isGeneratingPreview,
+                    isApplying = isAvatarOperationRunning,
+                    errorMessage = previewErrorMessage,
+                    canUndo = undoStack.isNotEmpty(),
+                    canRedo = redoStack.isNotEmpty(),
+                    onDismiss = { handlePreviewDismiss() },
+                    onApply = { handlePreviewApply() },
+                    onRetry = {
+                        handlePreviewDismiss(clearError = false)
+                        imagePickerLauncher.launch("image/*")
+                    },
+                    onUseDefault = {
+                        handlePreviewDismiss()
+                        fallbackToDefaultAvatar()
+                    },
+                    onUndo = { handleUndo() },
+                    onRedo = { handleRedo() }
                 )
             }
 
@@ -282,9 +463,36 @@ fun SocialScreen(
                 SocialTab.Profile -> {
                     ProfileTab(
                         profile = profile,
-                        onAvatarSelected = { id -> scope.launch { socialRepository.selectAvatar(id) } },
-                        onUploadAvatarClick = { showAvatarUploadDialog = true }
+                        onAvatarSelected = { id ->
+                            if (id != profile.selectedAvatarId) {
+                                val snapshotBefore = AvatarSnapshot(profile.selectedAvatarId, profile.customAvatarUri)
+                                isAvatarOperationRunning = true
+                                scope.launch {
+                                    try {
+                                        socialRepository.selectAvatar(id)
+                                        pushUndoSnapshot(snapshotBefore)
+                                        redoStack.clear()
+                                    } catch (error: Exception) {
+                                        val message = mapAvatarError(error)
+                                        snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Long)
+                                    } finally {
+                                        isAvatarOperationRunning = false
+                                    }
+                                }
+                            }
+                        },
+                        onUploadAvatarClick = {
+                            if (!isAvatarOperationRunning && !isGeneratingPreview) {
+                                showAvatarUploadDialog = true
+                            }
+                        },
+                        onUndoAvatar = { handleUndo() },
+                        onRedoAvatar = { handleRedo() },
+                        canUndo = undoStack.isNotEmpty(),
+                        canRedo = redoStack.isNotEmpty(),
+                        isAvatarBusy = isAvatarOperationRunning || isGeneratingPreview
                     )
+
                 }
                 SocialTab.Ranks -> RanksTab(ranks = ranks)
                 SocialTab.Groups -> GroupsTab(
@@ -525,12 +733,11 @@ fun ProfileSection(
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
                         TextButton(onClick = {
-                            val err = null // validateUsername(input)
-                            error = err
-                            if (err == null) {
-                                onUsernameSave(input.trim())
-                                editing = false
-                            }
+                            // Username validation disabled for now
+                            error = null
+                            // Always proceed since validation is disabled
+                            onUsernameSave(input.trim())
+                            editing = false
                         }, enabled = error == null && input.isNotBlank()) {
                             Text(text = stringResource(id = R.string.save))
                         }
@@ -784,6 +991,190 @@ fun UsernameRequiredDialog(
 }
 
 @Composable
+private fun AvatarPreviewDialog(
+    preview: PendingAvatarPreview?,
+    isLoading: Boolean,
+    isApplying: Boolean,
+    errorMessage: String?,
+    canUndo: Boolean,
+    canRedo: Boolean,
+    onDismiss: () -> Unit,
+    onApply: () -> Unit,
+    onRetry: () -> Unit,
+    onUseDefault: () -> Unit,
+    onUndo: () -> Unit,
+    onRedo: () -> Unit
+) {
+    val spacing = LocalSpacing.current
+    val imageBitmap = remember(preview?.preview?.bitmap) {
+        preview?.preview?.bitmap?.takeIf { !it.isRecycled }?.asImageBitmap()
+    }
+    val hasPreview = preview != null && imageBitmap != null
+
+    val sizeText = if (preview != null) {
+        val size = preview.preview.estimatedFileSize
+        when {
+            size >= 1_048_576L -> stringResource(
+                id = R.string.social_avatar_size_mb,
+                size.toDouble() / (1024.0 * 1024.0)
+            )
+            size >= 1024L -> stringResource(
+                id = R.string.social_avatar_size_kb,
+                size / 1024
+            )
+            size > 0L -> stringResource(
+                id = R.string.social_avatar_size_kb,
+                1
+            )
+            else -> stringResource(id = R.string.social_avatar_size_unknown)
+        }
+    } else {
+        stringResource(id = R.string.social_avatar_size_unknown)
+    }
+
+    val resolutionText = if (preview != null) {
+        stringResource(
+            id = R.string.social_avatar_resolution,
+            preview.preview.width,
+            preview.preview.height
+        )
+    } else {
+        stringResource(id = R.string.social_avatar_resolution_unknown)
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(id = R.string.social_avatar_preview_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = onUndo,
+                        enabled = canUndo && !isLoading && !isApplying
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Undo,
+                            contentDescription = stringResource(id = R.string.social_avatar_undo_cd)
+                        )
+                    }
+                    IconButton(
+                        onClick = onRedo,
+                        enabled = canRedo && !isLoading && !isApplying
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Redo,
+                            contentDescription = stringResource(id = R.string.social_avatar_redo_cd)
+                        )
+                    }
+                }
+
+                when {
+                    isLoading -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(spacing.sm)
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                            Text(text = stringResource(id = R.string.social_avatar_preview_loading))
+                        }
+                    }
+                    errorMessage != null -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                            Text(
+                                text = errorMessage,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            FilledTonalButton(
+                                onClick = onRetry,
+                                enabled = !isApplying,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = stringResource(id = R.string.social_avatar_retry))
+                            }
+                        }
+                    }
+                    hasPreview -> {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(spacing.sm)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                tonalElevation = 2.dp
+                            ) {
+                                Image(
+                                    bitmap = imageBitmap,
+                                    contentDescription = stringResource(id = R.string.social_avatar_preview_cd),
+                                    modifier = Modifier
+                                        .size(120.dp)
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            Text(
+                                text = stringResource(id = R.string.social_avatar_preview_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = resolutionText,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                            Text(
+                                text = sizeText,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                    else -> {
+                        Text(
+                            text = stringResource(id = R.string.social_avatar_no_preview),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onApply,
+                enabled = !isLoading && !isApplying && errorMessage == null && hasPreview
+            ) {
+                if (isApplying) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(text = stringResource(id = R.string.social_avatar_apply))
+                }
+            }
+        },
+        dismissButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                TextButton(
+                    onClick = onUseDefault,
+                    enabled = !isLoading && !isApplying
+                ) {
+                    Text(text = stringResource(id = R.string.social_avatar_use_default))
+                }
+                TextButton(
+                    onClick = onDismiss,
+                    enabled = !isApplying
+                ) {
+                    Text(text = stringResource(id = R.string.social_avatar_cancel))
+                }
+            }
+        }
+    )
+}
+@Composable
 fun AvatarUploadDialog(
     onDismiss: () -> Unit,
     onGallerySelected: () -> Unit,
@@ -862,4 +1253,10 @@ private fun SocialScreenPreview() {
         SocialScreen()
     }
 }
+
+
+
+
+
+
 

@@ -382,7 +382,7 @@
     <string name="social_choose_username_title">Choose your username</string>
     <string name="social_username_label">Username</string>
     <string name="social_username_error">Use 3&#8211;20 lowercase letters, numbers, or underscore</string>
-    <string name="social_username_set_success">Username set to @%1$s</string>
+    <string name="social_username_set_success">Username set to {username}</string>
     <string name="social_choose_avatar">Choose Your Avatar</string>
     <string name="social_upload_avatar">Upload Custom Avatar</string>
     <string name="social_avatar_upload_error_size">Avatar image must be smaller than 2MB</string>
@@ -497,5 +497,35 @@
 
     <!-- Settings content -->
 
+    <string name="social_profile_photo_label">Profile Photo</string>
+    <string name="social_avatar_supported_formats_hint">Supported formats: JPG, PNG, GIF, WebP (max 2 MB)</string>
+    <string name="social_avatar_action_in_progress">Applying…</string>
+    <string name="social_upload_avatar_button">Upload Profile Photo</string>
+    <string name="social_avatar_upload_icon_cd">Upload profile photo</string>
+    <string name="social_avatar_custom_cd">Custom avatar</string>
+    <string name="social_avatar_undo_cd">Undo avatar change</string>
+    <string name="social_avatar_redo_cd">Redo avatar change</string>
+    <string name="social_avatar_error_size">Image file must be smaller than 2 MB</string>
+    <string name="social_avatar_error_format">Unsupported image format. Please use JPG, PNG, GIF, or WebP</string>
+    <string name="social_avatar_error_dimensions">Invalid image dimensions</string>
+    <string name="social_avatar_error_access">Cannot access image file</string>
+    <string name="social_avatar_error_generic">Failed to process avatar: %1$s</string>
+    <string name="social_avatar_error_generic_fallback">Unknown error</string>
+    <string name="social_avatar_preview_title">Preview Profile Photo</string>
+    <string name="social_avatar_preview_loading">Preparing your photo…</string>
+    <string name="social_avatar_retry">Try Again</string>
+    <string name="social_avatar_preview_hint">This preview shows how your profile photo will appear.</string>
+    <string name="social_avatar_size_mb">%1$.1f MB</string>
+    <string name="social_avatar_size_kb">%1$d KB</string>
+    <string name="social_avatar_size_unknown">File size unavailable</string>
+    <string name="social_avatar_resolution">%1$d × %2$d px</string>
+    <string name="social_avatar_resolution_unknown">Resolution unavailable</string>
+    <string name="social_avatar_no_preview">Preview unavailable.</string>
+    <string name="social_avatar_apply">Apply</string>
+    <string name="social_avatar_use_default">Use Default</string>
+    <string name="social_avatar_cancel">Cancel</string>
+    <string name="social_avatar_preview_cd">Preview of processed profile photo</string>
+    <string name="social_avatar_undo_success">Reverted to previous profile photo</string>    <string name="social_avatar_redo_success">Reapplied profile photo</string>
 </resources>
+
 

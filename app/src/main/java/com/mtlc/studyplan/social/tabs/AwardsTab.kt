@@ -4,13 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -48,14 +52,15 @@ fun AwardsTab(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Sort awards: unlocked first, then by rarity (Legendary -> Epic -> Rare)
+        // Sort awards: unlocked first, then by rarity (Legendary -> Epic -> Rare -> Common)
         val sortedAwards = awards.sortedWith(
             compareByDescending<Award> { it.isUnlocked }
                 .thenByDescending {
                     when (it.rarity) {
-                        com.mtlc.studyplan.data.social.AwardRarity.Legendary -> 3
-                        com.mtlc.studyplan.data.social.AwardRarity.Epic -> 2
-                        com.mtlc.studyplan.data.social.AwardRarity.Rare -> 1
+                        com.mtlc.studyplan.data.social.AwardRarity.Legendary -> 4
+                        com.mtlc.studyplan.data.social.AwardRarity.Epic -> 3
+                        com.mtlc.studyplan.data.social.AwardRarity.Rare -> 2
+                        com.mtlc.studyplan.data.social.AwardRarity.Common -> 1
                     }
                 }
         )
@@ -81,6 +86,90 @@ fun AwardsTab(
             ) {
                 sortedAwards.forEach { award ->
                     AwardCard(award = award)
+                }
+            }
+        }
+
+        // Achievement Progress Section
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = spacing.lg),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Achievement Progress",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    val unlockedCount = awards.count { it.isUnlocked }
+                    Text(
+                        text = "$unlockedCount of ${awards.size} unlocked",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Text(
+                    text = "Progress",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                val progress = if (awards.isNotEmpty()) {
+                    awards.count { it.isUnlocked }.toFloat() / awards.size.toFloat()
+                } else 0f
+
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+
+                Text(
+                    text = "${(progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total Points Earned",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    val totalPoints = awards.filter { it.isUnlocked }.sumOf { it.points }
+                    Text(
+                        text = "$totalPoints pts",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         }

@@ -157,22 +157,12 @@ fun WorkingHomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Header Section with gradient background
+        // Header Section with gradient background and theme switcher
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            // Theme switcher in top right corner
-            if (themeManager != null) {
-                ThemeSwitcher(
-                    currentTheme = currentTheme,
-                    onThemeChange = { newTheme ->
-                        themeManager.setTheme(newTheme)
-                    },
-                    modifier = Modifier.align(Alignment.TopEnd)
-                )
-            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -196,14 +186,25 @@ fun WorkingHomeScreen(
                         text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF424242)
+                        color = Color(0xFF2C2C2C) // Dark color for readability on light gradient
                     )
                     Text(
                         text = "Ready to ace your YDS exam?",
                         fontSize = 14.sp,
-                        color = Color(0xFF616161)
+                        color = Color(0xFF424242) // Slightly lighter dark color
                     )
                 }
+            }
+
+            // Theme switcher in top right corner
+            if (themeManager != null) {
+                ThemeSwitcher(
+                    currentTheme = currentTheme,
+                    onThemeChange = { newTheme ->
+                        themeManager.setTheme(newTheme)
+                    },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
             }
         }
 
@@ -289,7 +290,7 @@ fun WorkingHomeScreen(
                         .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToExamDetails() },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF0F8FF)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -304,19 +305,19 @@ fun WorkingHomeScreen(
                             text = "${examTracker.daysToExam}",
                             fontSize = 24.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C2C2C)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "Days to YDS",
                             fontSize = 12.sp, // Reduced font size
-                            color = Color(0xFF424242),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(1.dp)) // Reduced spacing
                         Text(
                             text = examTracker.statusMessage,
                             fontSize = 9.sp, // Reduced font size
-                            color = Color(0xFF616161),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center,
                             maxLines = 1
                         )
@@ -633,7 +634,7 @@ fun WorkingHomeScreen(
                     .fillMaxWidth()
                     .clickable { onNavigateToExamDetails() },
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF0F8FF)
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -644,7 +645,7 @@ fun WorkingHomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        color = Color(0xFF2196F3).copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         shape = CircleShape,
                         modifier = Modifier.size(40.dp)
                     ) {
@@ -666,12 +667,12 @@ fun WorkingHomeScreen(
                             text = "e-YDS 2025/10",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1976D2)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = examTracker.statusMessage,
                             fontSize = 14.sp,
-                            color = Color(0xFF1976D2).copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                         )
 
                         Spacer(modifier = Modifier.height(4.dp))
@@ -679,7 +680,7 @@ fun WorkingHomeScreen(
                         Text(
                             text = "🕒 ${examTracker.examDateFormatted}",
                             fontSize = 12.sp,
-                            color = Color(0xFF1976D2).copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     }
 
@@ -687,7 +688,7 @@ fun WorkingHomeScreen(
                         text = "${examTracker.daysToExam}d",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

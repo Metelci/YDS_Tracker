@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
 import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Notifications
@@ -31,13 +32,12 @@ import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -54,7 +54,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -87,7 +86,6 @@ import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.repository.UserSettingsRepository
-import com.mtlc.studyplan.settings.ui.dataStore
 import com.mtlc.studyplan.settings.data.PrivacySettings
 import com.mtlc.studyplan.settings.data.ProfileVisibility
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
@@ -108,11 +106,9 @@ data class SettingsTab(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OriginalSettingsScreen(
-    onNavigateBack: () -> Unit = {},
-    onNavigateToCategory: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
-    val activity = context as? android.app.Activity
+    val activity = context as? Activity
     val settingsManager = remember { SettingsPreferencesManager(context) }
     val languageManager = rememberLanguageManager(context)
     var selectedTab by remember { mutableStateOf("tasks") }
@@ -254,7 +250,7 @@ fun OriginalSettingsScreen(
             item {
                 when (selectedTab) {
                     "tasks" -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             WeeklyGoalCard(
                                 selectedGoalHours = weeklyGoalSelection,
                                 savedGoalHours = savedWeeklyGoalHours,
@@ -295,7 +291,7 @@ fun OriginalSettingsScreen(
                     }
                     "navigation" -> NavigationSettingsContent(settingsManager)
                     "notifications" -> NotificationsSettingsContent(settingsManager)
-                    "gamification" -> GamificationSettingsContent(settingsManager)
+                    "gamification" -> GamificationSettingsContent()
                     "social" -> SocialSettingsContent(settingsManager)
                     "privacy" -> PrivacySettingsContent(settingsManager)
                 }
@@ -331,7 +327,7 @@ fun OriginalSettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(32.dp)) }
+            item { Spacer(modifier = Modifier.height(28.dp)) }
 
             // Footer
             item {
@@ -339,7 +335,7 @@ fun OriginalSettingsScreen(
                     try {
                         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                         packageInfo.versionName ?: "Unknown"
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         "Unknown"
                     }
                 }
@@ -551,7 +547,7 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
         icon = Icons.Outlined.Navigation
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Navigation,
@@ -585,7 +581,7 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
         icon = Icons.Outlined.Notifications
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Notifications,
@@ -631,13 +627,13 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
 }
 
 @Composable
-private fun GamificationSettingsContent(settingsManager: SettingsPreferencesManager) {
+private fun GamificationSettingsContent() {
     SettingsCard(
         title = "Gamification",
         icon = Icons.Outlined.EmojiEvents
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Star,
@@ -667,7 +663,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
         icon = Icons.Outlined.People
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.People,
@@ -711,7 +707,7 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
         icon = Icons.Outlined.Lock
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Profile Visibility selection moved here from Social page
             Surface(
@@ -922,37 +918,29 @@ private fun WeeklyGoalCard(
     hasPendingChanges: Boolean,
     showSavedMessage: Boolean
 ) {
+    val dailyHoursLabel = remember(selectedGoalHours) {
+        String.format(Locale.US, "~%.1fh daily", selectedGoalHours / 7f)
+    }
+    val sliderProgressFraction = remember(selectedGoalHours) {
+        ((selectedGoalHours - WEEKLY_GOAL_MIN).toFloat() /
+            (WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN).toFloat()).coerceIn(0f, 1f)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, WEEKLY_GOAL_BORDER_COLOR),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = WEEKLY_GOAL_CARD_COLOR
         )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFF8F4FF), // Very light lavender
-                            Color(0xFFF0FFF0), // Very light mint green
-                            Color(0xFFFFF8F0)  // Very light peach
-                        ),
-                        start = Offset(0f, 0f),
-                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                    ),
-                    shape = RoundedCornerShape(18.dp)
-                )
-        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 6.dp), // Reduced vertical padding from 8dp to 6dp
-            verticalArrangement = Arrangement.spacedBy(6.dp) // Reduced spacing from 8dp to 6dp
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -961,11 +949,11 @@ private fun WeeklyGoalCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp) // Reduced spacing: 8dp->6dp
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(24.dp) // Reduced from 28dp to 24dp
+                            .size(26.dp)
                             .clip(CircleShape)
                             .background(WEEKLY_GOAL_ICON_BACKGROUND),
                         contentAlignment = Alignment.Center
@@ -974,114 +962,143 @@ private fun WeeklyGoalCard(
                             imageVector = Icons.Outlined.TrackChanges,
                             contentDescription = null,
                             tint = WEEKLY_GOAL_ICON_TINT,
-                            modifier = Modifier.size(14.dp) // Reduced from 16dp to 14dp
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                     Text(
                         text = stringResource(R.string.weekly_goal),
-                        fontSize = 15.sp, // Reduced from 16sp to 15sp
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = WEEKLY_GOAL_TITLE_COLOR
                     )
                 }
+
                 Column(
                     horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(1.dp) // Reduced spacing: 2dp->1dp
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    val dailyHoursLabel = remember(selectedGoalHours) {
-                        String.format(Locale.US, "~%.1fh daily", selectedGoalHours / 7f)
-                    }
                     Text(
                         text = "${selectedGoalHours}h",
-                        fontSize = 15.sp, // Reduced from 16sp to 15sp
-                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
                         color = WEEKLY_GOAL_VALUE_COLOR
                     )
                     Text(
                         text = dailyHoursLabel,
-                        fontSize = 11.sp, // Reduced from 12sp to 11sp
+                        fontSize = 12.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR
                     )
                 }
             }
 
-            Slider(
-                value = selectedGoalHours.toFloat(),
-                onValueChange = { rawValue ->
-                    val rounded = rawValue.roundToInt().coerceIn(WEEKLY_GOAL_MIN, WEEKLY_GOAL_MAX)
-                    if (rounded != selectedGoalHours) {
-                        onGoalChange(rounded)
-                    }
-                },
-                valueRange = WEEKLY_GOAL_MIN.toFloat()..WEEKLY_GOAL_MAX.toFloat(),
-                steps = WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN,
-                colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF003153), // Prussian blue thumb
-                    activeTrackColor = Color(0xFF003153), // Prussian blue active track
-                    inactiveTrackColor = Color(0xFF003153).copy(alpha = 0.3f), // Light Prussian blue inactive track
-                    activeTickColor = Color.Transparent,
-                    inactiveTickColor = Color.Transparent
-                )
-            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "3h (Casual)",
-                    fontSize = 12.sp,
-                    color = WEEKLY_GOAL_SUPPORT_COLOR,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Start
-                )
-                Text(
-                    text = "15h (Balanced)",
-                    fontSize = 12.sp,
-                    color = WEEKLY_GOAL_SUPPORT_COLOR,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "35h (Intensive)",
-                    fontSize = 12.sp,
-                    color = WEEKLY_GOAL_SUPPORT_COLOR,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
+
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(WEEKLY_GOAL_INACTIVE_TRACK.copy(alpha = 0.35f))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(sliderProgressFraction)
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(WEEKLY_GOAL_ACTIVE_TRACK)
+                    )
+                    Slider(
+                        value = selectedGoalHours.toFloat(),
+                        onValueChange = { rawValue ->
+                            val rounded = rawValue.roundToInt().coerceIn(WEEKLY_GOAL_MIN, WEEKLY_GOAL_MAX)
+                            if (rounded != selectedGoalHours) {
+                                onGoalChange(rounded)
+                            }
+                        },
+                        valueRange = WEEKLY_GOAL_MIN.toFloat()..WEEKLY_GOAL_MAX.toFloat(),
+                        steps = WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White,
+                            activeTrackColor = Color.Transparent,
+                            inactiveTrackColor = Color.Transparent,
+                            activeTickColor = Color.Transparent,
+                            inactiveTickColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "3h (Casual)",
+                        fontSize = 12.sp,
+                        color = WEEKLY_GOAL_SUPPORT_COLOR,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Text(
+                        text = "15h (Balanced)",
+                        fontSize = 12.sp,
+                        color = WEEKLY_GOAL_SUPPORT_COLOR,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "35h (Intensive)",
+                        fontSize = 12.sp,
+                        color = WEEKLY_GOAL_SUPPORT_COLOR,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End
+                    )
+                }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (showSavedMessage && !hasPendingChanges) {
+            if (showSavedMessage && !hasPendingChanges) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     SavedGoalChip(savedGoalHours)
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = onSave,
-                    enabled = hasPendingChanges && !isSaving,
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = WEEKLY_GOAL_VALUE_COLOR,
-                        contentColor = Color.White,
-                        disabledContainerColor = WEEKLY_GOAL_VALUE_COLOR.copy(alpha = 0.4f),
-                        disabledContentColor = Color.White.copy(alpha = 0.7f)
-                    )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp,
-                            color = Color.White
+                    Button(
+                        onClick = onSave,
+                        enabled = hasPendingChanges && !isSaving,
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = WEEKLY_GOAL_VALUE_COLOR,
+                            contentColor = Color.White,
+                            disabledContainerColor = WEEKLY_GOAL_VALUE_COLOR.copy(alpha = 0.3f),
+                            disabledContentColor = Color.White.copy(alpha = 0.7f)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(text = stringResource(id = R.string.save))
                     }
-                    Text(text = stringResource(id = R.string.save))
                 }
             }
-        }
         }
     }
 }
@@ -1091,35 +1108,35 @@ private fun SavedGoalChip(savedGoalHours: Int) {
     Surface(
         color = WEEKLY_GOAL_SAVED_BACKGROUND,
         shape = RoundedCornerShape(50),
-        border = BorderStroke(1.dp, WEEKLY_GOAL_SAVED_BORDER)
+        border = BorderStroke(1.dp, WEEKLY_GOAL_SAVED_BORDER),
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Text(
             text = "Goal Saved: ${savedGoalHours}h/week",
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
             color = WEEKLY_GOAL_SAVED_TEXT,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
         )
     }
 }
-
-
 private const val WEEKLY_GOAL_MIN = 3
 private const val WEEKLY_GOAL_MAX = 35
 private const val WEEKLY_GOAL_LOG_TAG = "WeeklyGoalCard"
 
-private val WEEKLY_GOAL_CARD_COLOR = Color(0xFFFFF4F0)
-private val WEEKLY_GOAL_BORDER_COLOR = Color(0xFFE8D5FF) // Soft lavender border to complement gradient
-private val WEEKLY_GOAL_TITLE_COLOR = Color(0xFF3F3F4F)
-private val WEEKLY_GOAL_VALUE_COLOR = Color(0xFFFF8F6B)
-private val WEEKLY_GOAL_SUPPORT_COLOR = Color(0xFF6F7184)
-private val WEEKLY_GOAL_ACTIVE_TRACK = Color(0xFF6FC3FF)
-private val WEEKLY_GOAL_INACTIVE_TRACK = Color(0xFF8FD58A)
-private val WEEKLY_GOAL_ICON_BACKGROUND = Color(0xFFFFE3D9)
-private val WEEKLY_GOAL_ICON_TINT = Color(0xFFFF8F6B)
-private val WEEKLY_GOAL_SAVED_BACKGROUND = Color(0xFFF0F0F0)
-private val WEEKLY_GOAL_SAVED_BORDER = Color(0xFFBEE4C3)
-private val WEEKLY_GOAL_SAVED_TEXT = Color(0xFF4F9D63)
+private val WEEKLY_GOAL_CARD_COLOR = Color(0xFFFFF3EF)
+private val WEEKLY_GOAL_BORDER_COLOR = Color(0xFFFFE1D5) // Warm peach border framing the card
+private val WEEKLY_GOAL_TITLE_COLOR = Color(0xFF45465A)
+private val WEEKLY_GOAL_VALUE_COLOR = Color(0xFFFF8864)
+private val WEEKLY_GOAL_SUPPORT_COLOR = Color(0xFF75768C)
+private val WEEKLY_GOAL_ACTIVE_TRACK = Color(0xFF6EC8FF)
+private val WEEKLY_GOAL_INACTIVE_TRACK = Color(0xFF9AD993)
+private val WEEKLY_GOAL_ICON_BACKGROUND = Color(0xFFFFE8DD)
+private val WEEKLY_GOAL_ICON_TINT = Color(0xFFFF8864)
+private val WEEKLY_GOAL_SAVED_BACKGROUND = Color(0xFFEAF6EC)
+private val WEEKLY_GOAL_SAVED_BORDER = Color(0xFFBFDCC7)
+private val WEEKLY_GOAL_SAVED_TEXT = Color(0xFF4C8F63)
 
 @Composable
 private fun SettingToggleItem(
@@ -1189,4 +1206,5 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
+
 

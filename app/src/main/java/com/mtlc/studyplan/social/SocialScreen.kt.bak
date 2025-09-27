@@ -187,7 +187,7 @@ fun SocialScreen(
                                 socialRepository.updateUsername(pendingUsername.trim())
                                 showUsernameDialog = false
                                 snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.social_username_set_success, pendingUsername.trim()),
+                                    message = context.getString(R.string.social_username_set_success).replace("{username}", pendingUsername.trim()),
                                     duration = SnackbarDuration.Short
                                 )
                             }
@@ -248,7 +248,7 @@ fun SocialScreen(
                         onUsernameSave = { username ->
                             scope.launch {
                                 socialRepository.updateUsername(username)
-                                val msg = context.getString(R.string.social_username_set_success, username)
+                                val msg = context.getString(R.string.social_username_set_success).replace("{username}", username)
                             snackbarHostState.showSnackbar(message = msg, duration = SnackbarDuration.Short)
                         }
                     }
@@ -650,5 +650,6 @@ private fun SocialScreenPreview() {
         SocialScreen(repository = FakeSocialRepository())
     }
 }
+
 
 

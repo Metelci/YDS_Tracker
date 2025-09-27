@@ -10,11 +10,7 @@ import com.mtlc.studyplan.settings.data.ThemeMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
-
-@Singleton
-class ThemeManager @Inject constructor(
+class ThemeManager(
     private val context: Context
 ) {
 

@@ -365,7 +365,7 @@ private fun PlanTab(
 
         // This Week's Study Plan
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface)) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = DesignTokens.Primary)
@@ -403,7 +403,7 @@ private fun PlanTab(
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Upcoming Days", fontWeight = FontWeight.SemiBold)
-                        Surface(shape = RoundedCornerShape(16.dp), color = DesignTokens.SurfaceVariant) {
+                        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
                             Text("Planned", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
                         }
                     }
@@ -450,7 +450,7 @@ private fun ManagementTile(title: String, icon: androidx.compose.ui.graphics.vec
     Surface(
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 0.dp,
-        color = DesignTokens.Surface,
+        color = MaterialTheme.colorScheme.surface,
         modifier = modifier.clickable { }
     ) {
         Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -484,7 +484,7 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                     val dateLabel = monday.plusDays(idx.toLong()).format(fmt)
                     val isToday = LocalDate.now() == monday.plusDays(idx.toLong())
                     Text(if (isToday) "${day.day}, $dateLabel (Today)" else "${day.day}, $dateLabel", fontWeight = FontWeight.SemiBold)
-                    Surface(shape = RoundedCornerShape(16.dp), color = DesignTokens.SurfaceVariant) {
+                    Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
                         Text(if (isToday) "In Progress" else "Completed", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
                     }
                 }
@@ -759,7 +759,7 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
 @Composable
 private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -819,7 +819,7 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
 @Composable
 private fun StudyUnitItem(unit: StudyUnit) {
     Surface(
-        color = if (unit.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else DesignTokens.SurfaceVariant,
+        color = if (unit.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp)
     ) {
         Row(
@@ -861,7 +861,7 @@ private fun StudyUnitItem(unit: StudyUnit) {
 @Composable
 private fun DailyTasksSection(tasks: List<DailyTask>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -894,7 +894,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
 @Composable
 private fun DailyTaskItem(task: DailyTask) {
     Surface(
-        color = if (task.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else DesignTokens.SurfaceVariant,
+        color = if (task.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp)
     ) {
         Row(
@@ -951,7 +951,7 @@ private fun DailyTaskItem(task: DailyTask) {
 @Composable
 private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -984,7 +984,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
 @Composable
 private fun StudyMaterialItem(material: StudyMaterial) {
     Surface(
-        color = DesignTokens.SurfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier.clickable { /* Handle material click */ }
     ) {

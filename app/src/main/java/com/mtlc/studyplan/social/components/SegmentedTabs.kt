@@ -35,7 +35,7 @@ fun SocialSegmentedTabs(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(28.dp),
-        color = DesignTokens.Surface,
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 1.dp
     ) {
         Row(
@@ -48,12 +48,12 @@ fun SocialSegmentedTabs(
             SOCIAL_TABS.forEach { tab ->
                 val isSelected = tab == selected
                 val background by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.PrimaryContainer else Color.Transparent,
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
                     animationSpec = tween(200),
                     label = "segmented_background"
                 )
                 val contentColor by animateColorAsState(
-                    targetValue = if (isSelected) DesignTokens.PrimaryContainerForeground else MaterialTheme.colorScheme.onSurface,
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                     animationSpec = tween(200),
                     label = "segmented_content"
                 )

@@ -22,6 +22,7 @@ class CompositeSettingsViewModelFactory(
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(MainSettingsViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
                 MainSettingsViewModel(
                     settingsRepository,
                     deepLinkHandler,
@@ -30,6 +31,7 @@ class CompositeSettingsViewModelFactory(
                 ) as T
             }
             modelClass.isAssignableFrom(SettingsBackupViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
                 SettingsBackupViewModel(
                     backupManager,
                     accessibilityManager,
@@ -37,6 +39,7 @@ class CompositeSettingsViewModelFactory(
                 ) as T
             }
             modelClass.isAssignableFrom(AdvancedToggleViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
                 AdvancedToggleViewModel(
                     settingsRepository,
                     accessibilityManager,
@@ -44,12 +47,14 @@ class CompositeSettingsViewModelFactory(
                 ) as T
             }
             modelClass.isAssignableFrom(AccessibilityViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
                 AccessibilityViewModel(
                     accessibilityManager,
                     settingsRepository
                 ) as T
             }
             modelClass.isAssignableFrom(PerformanceViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
                 PerformanceViewModel(
                     performanceMonitor,
                     settingsRepository,

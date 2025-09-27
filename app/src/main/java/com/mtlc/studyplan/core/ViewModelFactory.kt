@@ -23,6 +23,7 @@ abstract class ViewModelFactory<T : ViewModel>(
     final override fun <VM : ViewModel> create(modelClass: Class<VM>): VM {
         return when {
             modelClass.isInstance(viewModelInstance) -> {
+                @Suppress("UNCHECKED_CAST")
                 viewModelInstance as VM
             }
             else -> {
@@ -46,6 +47,7 @@ abstract class SimpleViewModelFactory<T : ViewModel>(
     final override fun <VM : ViewModel> create(modelClass: Class<VM>): VM {
         return when {
             modelClass.isAssignableFrom(viewModelClass) -> {
+                @Suppress("UNCHECKED_CAST")
                 creator() as VM
             }
             else -> {
@@ -68,6 +70,7 @@ inline fun <reified T : ViewModel> viewModelFactory(
         override fun <VM : ViewModel> create(modelClass: Class<VM>): VM {
             return when {
                 modelClass.isAssignableFrom(T::class.java) -> {
+                    @Suppress("UNCHECKED_CAST")
                     creator() as VM
                 }
                 else -> {

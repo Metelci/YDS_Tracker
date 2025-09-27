@@ -37,18 +37,24 @@ data class Friend(
     val streak: Int
 )
 
-enum class AwardRarity { Rare, Epic, Legendary }
+enum class AwardRarity { Common, Rare, Epic, Legendary }
 
 data class Award(
     val id: String,
     val title: String,
     val description: String,
     val rarity: AwardRarity,
+    val points: Int,
+    val iconType: AwardIconType,
     val tags: List<String> = emptyList(),
     val unlockedBy: List<String>,
     val isUnlocked: Boolean = false,
     val unlockedDate: String? = null
 )
+
+enum class AwardIconType {
+    Target, Shield, Crown, Book, Diamond, Lightbulb
+}
 
 data class AvatarOption(
     val id: String,

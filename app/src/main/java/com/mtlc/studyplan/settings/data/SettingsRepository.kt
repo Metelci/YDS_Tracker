@@ -1241,7 +1241,7 @@ private object defaultValues {
                 Int::class -> (value as? Int ?: defaultValue) as T
                 Float::class -> (value as? Float ?: defaultValue) as T
                 String::class -> (value as? String ?: defaultValue) as T
-                Set::class -> (value as? Set<String> ?: defaultValue as Set<String>) as T
+                Set::class -> @Suppress("UNCHECKED_CAST") (value as? Set<String> ?: defaultValue as Set<String>) as T
                 else -> defaultValue
             }
         } catch (e: ClassCastException) {

@@ -61,6 +61,10 @@ fun AwardNotification(
             Color(0xFF2196F3), // Blue
             Color(0xFF3F51B5)  // Indigo
         )
+        AwardRarity.Common -> listOf(
+            Color(0xFF4CAF50), // Green
+            Color(0xFF8BC34A)  // Light Green
+        )
     }
 
     Card(
