@@ -436,10 +436,10 @@ class SettingsErrorHandler(
 
         return try {
             when (storedValue) {
-                is Boolean -> if (explicitFallback is Boolean?) @Suppress("UNCHECKED_CAST") storedValue as T else null
-                is String -> if (explicitFallback is String?) @Suppress("UNCHECKED_CAST") storedValue as T else null
-                is Int -> if (explicitFallback is Int?) @Suppress("UNCHECKED_CAST") storedValue as T else null
-                is Float -> if (explicitFallback is Float?) @Suppress("UNCHECKED_CAST") storedValue as T else null
+                is Boolean -> @Suppress("UNCHECKED_CAST") storedValue as? T
+                is String -> @Suppress("UNCHECKED_CAST") storedValue as? T
+                is Int -> @Suppress("UNCHECKED_CAST") storedValue as? T
+                is Float -> @Suppress("UNCHECKED_CAST") storedValue as? T
                 else -> storedValue as? T
             }
         } catch (e: ClassCastException) {

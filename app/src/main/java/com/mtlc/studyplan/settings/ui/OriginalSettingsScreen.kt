@@ -152,7 +152,7 @@ fun OriginalSettingsScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -211,7 +211,7 @@ fun OriginalSettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     // First row: Navigation, Notifications, Gamification
                     Row(
@@ -250,7 +250,7 @@ fun OriginalSettingsScreen(
             item {
                 when (selectedTab) {
                     "tasks" -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             WeeklyGoalCard(
                                 selectedGoalHours = weeklyGoalSelection,
                                 savedGoalHours = savedWeeklyGoalHours,
@@ -303,7 +303,7 @@ fun OriginalSettingsScreen(
             item {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     // Removed: Reset All Notifications button per requirement
 
@@ -327,7 +327,7 @@ fun OriginalSettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(28.dp)) }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
 
             // Footer
             item {
@@ -547,7 +547,7 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
         icon = Icons.Outlined.Navigation
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Navigation,
@@ -581,7 +581,7 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
         icon = Icons.Outlined.Notifications
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Notifications,
@@ -633,7 +633,7 @@ private fun GamificationSettingsContent() {
         icon = Icons.Outlined.EmojiEvents
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Star,
@@ -663,7 +663,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
         icon = Icons.Outlined.People
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.People,
@@ -707,7 +707,7 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
         icon = Icons.Outlined.Lock
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Profile Visibility selection moved here from Social page
             Surface(
@@ -715,7 +715,7 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
                         text = "Profile Visibility",
                         fontSize = 14.sp,
@@ -832,7 +832,7 @@ private fun ColorfulTasksCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -883,7 +883,7 @@ private fun SettingsCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -939,8 +939,8 @@ private fun WeeklyGoalCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -993,24 +993,24 @@ private fun WeeklyGoalCard(
 
 
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(28.dp),
+                        .height(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(8.dp)
+                            .height(6.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(WEEKLY_GOAL_INACTIVE_TRACK.copy(alpha = 0.35f))
                     )
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(sliderProgressFraction)
-                            .height(8.dp)
+                            .height(6.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(WEEKLY_GOAL_ACTIVE_TRACK)
                     )
@@ -1154,7 +1154,7 @@ private fun SettingToggleItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -1206,5 +1206,6 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
+
 
 
