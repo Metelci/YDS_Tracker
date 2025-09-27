@@ -1,55 +1,21 @@
 package com.mtlc.studyplan.di
 
-import com.mtlc.studyplan.database.dao.*
-import com.mtlc.studyplan.repository.*
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.mtlc.studyplan.database.dao.AchievementDao
+import com.mtlc.studyplan.database.dao.SocialDao
+import com.mtlc.studyplan.database.dao.StreakDao
+import com.mtlc.studyplan.database.dao.TaskDao
+import com.mtlc.studyplan.database.dao.UserSettingsDao
+import com.mtlc.studyplan.repository.AchievementRepository
+import com.mtlc.studyplan.repository.SocialRepository
+import com.mtlc.studyplan.repository.StreakRepository
+import com.mtlc.studyplan.repository.TaskRepository
+import com.mtlc.studyplan.repository.UserSettingsRepository
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object RepositoryModule {
-
-    @Provides
-    @Singleton
-    fun provideTaskRepository(
-        taskDao: TaskDao
-    ): TaskRepository {
-        return TaskRepository(taskDao)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideAchievementRepository(
-        achievementDao: AchievementDao
-    ): AchievementRepository {
-        return AchievementRepository(achievementDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideStreakRepository(
-        streakDao: StreakDao
-    ): StreakRepository {
-        return StreakRepository(streakDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserSettingsRepository(
-        userSettingsDao: UserSettingsDao
-    ): UserSettingsRepository {
-        return UserSettingsRepository(userSettingsDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSocialRepository(
-        socialDao: SocialDao
-    ): SocialRepository {
-        return SocialRepository(socialDao)
-    }
+val koinRepositoryModule = module {
+    single { TaskRepository(get<TaskDao>()) }
+    single { AchievementRepository(get<AchievementDao>()) }
+    single { StreakRepository(get<StreakDao>()) }
+    single { UserSettingsRepository(get<UserSettingsDao>()) }
+    single { SocialRepository(get<SocialDao>()) }
 }

@@ -1,62 +1,26 @@
 package com.mtlc.studyplan.di
 
-import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import javax.inject.Qualifier
-import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
+val koinAppModule = module {
+    single<CoroutineDispatcher>(named("IoDispatcher")) { Dispatchers.IO }
+    single<CoroutineDispatcher>(named("MainDispatcher")) { Dispatchers.Main }
+    single<CoroutineDispatcher>(named("DefaultDispatcher")) { Dispatchers.Default }
+    single<CoroutineDispatcher>(named("UnconfinedDispatcher")) { Dispatchers.Unconfined }
 
-    @Provides
-    @IoDispatcher
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    @MainDispatcher
-    fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
-
-    @Provides
-    @DefaultDispatcher
-    fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
-
-    @Provides
-    @UnconfinedDispatcher
-    fun provideUnconfinedDispatcher(): CoroutineDispatcher = Dispatchers.Unconfined
-
-    @Provides
-    @Singleton
-    @ApplicationScope
-    fun provideApplicationScope(
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + defaultDispatcher)
+    single<CoroutineScope>(named("ApplicationScope")) {
+        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named("DefaultDispatcher")))
     }
 
-    @Provides
-    @Singleton
-    fun provideGson(): Gson {
-        return GsonBuilder()
-            .setPrettyPrinting()
-            .create()
-    }
-
-    @Provides
-    @Singleton
-    fun provideContext(@ApplicationContext context: Context): Context {
-        return context
-    }
+    single<Gson> { GsonBuilder().setPrettyPrinting().create() }
 }
 
 // Qualifier annotations for different dispatchers

@@ -3,19 +3,15 @@ package com.mtlc.studyplan.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.hilt.work.HiltWorker
 import com.mtlc.studyplan.data.ExamCalendarDataSource
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.data.isMutedToday
 import com.mtlc.studyplan.data.isQuietNow
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import java.time.LocalDate
 
-@HiltWorker
-class ReminderWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+class ReminderWorker(
+    context: Context,
+    workerParams: WorkerParameters,
     private val notificationManager: NotificationManager
 ) : CoroutineWorker(context, workerParams) {
 

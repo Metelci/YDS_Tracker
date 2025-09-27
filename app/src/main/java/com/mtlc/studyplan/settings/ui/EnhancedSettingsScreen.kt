@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.settings.viewmodel.*
 import com.mtlc.studyplan.settings.data.*
+import kotlinx.coroutines.launch
 
 /**
  * Enhanced settings screen with polished UI and micro-interactions
@@ -129,6 +130,7 @@ fun EnhancedSettingsScreen(
                     SettingsCategory.APPEARANCE -> {
                         item {
                             AppearanceSettings(
+                                settingsRepository = settingsRepository,
                                 onFeedback = ::showFeedback
                             )
                         }
@@ -181,10 +183,12 @@ private fun CategoryButton(
 
 @Composable
 private fun AppearanceSettings(
+    settingsRepository: SettingsRepository,
     onFeedback: (String, Boolean) -> Unit
 ) {
-    // Theme state would be managed by a proper theme manager
-    var isDarkTheme by remember { mutableStateOf(false) }
+    // Get current theme from settings repository
+    val currentThemeMode by settingsRepository.getStringSettingFlow(SettingsKeys.Appearance.THEME_MODE, "system").collectAsState("system")
+    val coroutineScope = rememberCoroutineScope()
     var fontSize by remember { mutableStateOf(1.0f) }
     var animationSpeed by remember { mutableStateOf(1.0f) }
     var reducedMotion by remember { mutableStateOf(false) }
@@ -204,21 +208,16 @@ private fun AppearanceSettings(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("Light", "Dark", "System").forEach { theme ->
-                    val isSelected = when (theme.lowercase()) {
-                        "light" -> !isDarkTheme
-                        "dark" -> isDarkTheme
-                        "system" -> false // System detection would be handled separately
-                        else -> false
-                    }
+                    val themeValue = theme.lowercase()
+                    val isSelected = currentThemeMode == themeValue
 
                     EnhancedSelectionButton(
                         text = theme,
                         isSelected = isSelected,
                         onClick = {
-                            when (theme.lowercase()) {
-                                "light" -> isDarkTheme = false
-                                "dark" -> isDarkTheme = true
-                                "system" -> { /* Handle system theme */ }
+                            // Update theme in settings repository
+                            coroutineScope.launch {
+                                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.THEME_MODE, themeValue))
                             }
                             onFeedback("Theme changed to $theme", false)
                         }

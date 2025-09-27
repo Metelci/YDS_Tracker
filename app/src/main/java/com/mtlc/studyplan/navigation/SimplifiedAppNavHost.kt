@@ -17,17 +17,16 @@ import androidx.navigation.compose.rememberNavController
 import com.mtlc.studyplan.core.WorkingHomeScreen
 import com.mtlc.studyplan.core.WorkingTasksScreen
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import org.koin.core.context.GlobalContext
 
 @Composable
 fun SimplifiedAppNavHost() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Create main AppIntegrationManager for core functionality
+    // Resolve integration manager via Koin
     val mainAppIntegrationManager = remember {
-        AppIntegrationManager(
-            taskRepository = com.mtlc.studyplan.data.TaskRepositoryImpl()
-        )
+        GlobalContext.get().get<AppIntegrationManager>()
     }
 
     // Create StudyProgressRepository for week progression tracking

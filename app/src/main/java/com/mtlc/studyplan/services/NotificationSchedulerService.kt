@@ -5,7 +5,7 @@ import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.workers.DailyStudyReminderWorker
-import dagger.hilt.android.qualifiers.ApplicationContext
+// Plain Context; dependencies provided via Koin
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,7 +15,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class NotificationSchedulerService @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val context: Context,
     private val notificationManager: NotificationManager,
     private val appIntegrationManager: AppIntegrationManager
 ) {

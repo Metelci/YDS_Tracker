@@ -16,9 +16,10 @@ import com.mtlc.studyplan.database.entities.*
         StreakEntity::class,
         UserSettingsEntity::class,
         SocialActivityEntity::class,
-        QuestionEntity::class
+        QuestionEntity::class,
+        AvatarEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -31,6 +32,7 @@ abstract class StudyPlanDatabase : RoomDatabase() {
     abstract fun settingsDao(): UserSettingsDao
     abstract fun socialDao(): SocialDao
     abstract fun questionDao(): QuestionDao
+    abstract fun avatarDao(): AvatarDao
 
     companion object {
         @Volatile

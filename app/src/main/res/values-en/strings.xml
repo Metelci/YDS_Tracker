@@ -279,11 +279,6 @@
     <string name="nav_social">Social</string>
     <string name="nav_settings">Settings</string>
         <!-- Top bar titles -->
-    <string name="topbar_home_title">Home</string>
-    <string name="topbar_review_title">Review &amp; Insights</string>
-    <string name="topbar_focus_mode_title">Focus Mode</string>
-    <string name="topbar_gamification_title">Gamification Settings</string>
-    <string name="topbar_day_plan_title">%1$s Study Plan</string>
     <string name="topbar_tasks_title">Daily Tasks</string>
     <string name="topbar_tasks_subtitle">Complete tasks to build your streak</string>
     <string name="topbar_invite_action">Invite</string>
@@ -351,7 +346,6 @@
     <string name="social_friend_profile_stub">Profile for %1$s opens soon</string>
     <string name="social_add_friend_stub">Friend invitations coming soon</string>
     <string name="social_achievements_title">Community Achievements</string>
-    <string name="social_award_icon_cd">Badge for %1$s</string>
     <string name="social_unlocked_by">Unlocked by:</string>
     <string name="social_rarity_rare">Rare</string>
     <string name="social_rarity_epic">Epic</string>
@@ -374,7 +368,7 @@
     <string name="app_version_format">Version %1$s (%2$s)</string>
     <string name="app_version_unknown">Version unknown</string>
     <string name="settings_error_title">Error</string>
-    <string name="settings_ok">Ok</string>
+    <string name="settings_ok">OK</string>
     <string name="retry">Retry</string>
     <string name="reset_progress_title">Reset Progress</string>
     <string name="reset_progress_warning">This will reset all progress. This action cannot be undone.</string>
@@ -413,7 +407,7 @@
     <string name="create_profile_title">Create Your Study Profile</string>
     <string name="social_choose_username_title">Choose your username</string>
     <string name="social_username_label">Username</string>
-    <string name="social_username_error">Use 3-20 lowercase letters, numbers, or underscore</string>
+    <string name="social_username_error">Use 3&#8211;20 lowercase letters, numbers, or underscore</string>
     <string name="expand_selection">Expand selection</string>
     <string name="settings_category_description">%1$s: %2$s</string>
     <string name="category_active">Active</string>
@@ -422,7 +416,7 @@
     <string name="import_settings">Import settings</string>
     <string name="reset_all_settings">Reset all settings</string>
     <string name="settings_title">Settings</string>
-    <string name="search_settings_hint">Search settings...</string>
+    <string name="search_settings_hint">Search settings&#8230;</string>
     <string name="no_results_found">No results found</string>
     <string name="no_settings_found">No settings found</string>
     <string name="try_different_search">Try a different search term</string>
@@ -430,4 +424,28 @@
     <string name="danger_zone">Danger Zone</string>
     <string name="study_progress">Study Progress</string>
     <string name="performance_metrics">Performance Metrics</string>
+    <string name="start">Start</string>
+    <string name="your_journey">Your Journey</string>
+    <string name="today">Today</string>
+    <string name="earn_points">Earn Points</string>
+    <string name="points_today">Points Today</string>
+    <string name="create_tasks">Create Tasks</string>
+    <string name="tasks_done">Tasks Done</string>
+    <string name="this_week">This Week</string>
+    <string name="start_studying">Start Studying</string>
+    <!-- Settings screen tabs -->
+    <string name="navigation">Navigation</string>
+    <string name="notifications">Notifications</string>
+    <string name="gamification">Gamification</string>
+    <string name="privacy">Privacy</string>
+    <string name="customize_study_experience">Customize your study experience</string>
+
+    <!-- Tasks settings card -->
+    <string name="weekly_goal">Weekly Goal</string>
+    <string name="reset_all_progress">Reset All Progress</string>
+    <string name="reset_everything">Reset Everything</string>
+    <string name="studyplan_version">StudyPlan YDS Tracker\nVersion %1$s</string>
+
+    <!-- Settings content -->
+
 </resources>

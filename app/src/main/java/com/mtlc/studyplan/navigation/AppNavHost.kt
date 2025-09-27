@@ -74,6 +74,7 @@ import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
 import com.mtlc.studyplan.ui.navigation.EnhancedNavigation
 import com.mtlc.studyplan.utils.settingsDataStore
+import org.koin.core.context.GlobalContext
 
 
 @Composable
@@ -87,15 +88,15 @@ fun AppNavHost(
     val hapticsEnabled by settingsIntegration.isHapticFeedbackEnabled().collectAsState(initial = true)
     val bottomBarEnabled by settingsIntegration.isBottomNavigationEnabled().collectAsState(initial = true)
 
-    // Create main AppIntegrationManager for core functionality
+    // Local context
+    val context = LocalContext.current
+
+    // Resolve integration manager via Koin
     val mainAppIntegrationManager = remember {
-        com.mtlc.studyplan.integration.AppIntegrationManager(
-            taskRepository = com.mtlc.studyplan.data.TaskRepositoryImpl()
-        )
+        GlobalContext.get().get<com.mtlc.studyplan.integration.AppIntegrationManager>()
     }
 
     // Create StudyProgressRepository for week progression tracking
-    val context = LocalContext.current
     val studyProgressRepository = remember {
         com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
@@ -383,7 +384,8 @@ fun AppNavHost(
                 }
 
                 com.mtlc.studyplan.settings.ui.OriginalSettingsScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToCategory = { categoryId -> navController.navigate("settings/$categoryId") }
                 )
             }
         }

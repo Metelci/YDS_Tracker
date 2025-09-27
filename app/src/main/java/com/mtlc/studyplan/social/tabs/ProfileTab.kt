@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.social.tabs
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,13 +40,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import coil.compose.rememberAsyncImagePainter
+import android.net.Uri
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import com.mtlc.studyplan.utils.ImageProcessingUtils
+import kotlinx.coroutines.launch
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.AvatarOption
 import com.mtlc.studyplan.data.social.SocialProfile
@@ -91,9 +100,11 @@ private fun ProfileCard(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showInappropriateContentDialog by remember { mutableStateOf(false) }
-    var showCroppingDialog by remember { mutableStateOf(false) }
     var pendingImageProcessing by remember { mutableStateOf(false) }
+    var validationErrorMessage by remember { mutableStateOf<String?>(null) }
     Surface(
         modifier = modifier,
         color = DesignTokens.PrimaryContainer.copy(alpha = 0.45f),
@@ -160,28 +171,14 @@ private fun ProfileCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
 
-            // Enhanced upload button with content detection
+            // Enhanced upload button with real validation
             FilledTonalButton(
                 onClick = {
                     pendingImageProcessing = true
-                    // Simulate content detection process
-                    val hasInappropriateContent = detectInappropriateContent()
-
-                    if (hasInappropriateContent) {
-                        showInappropriateContentDialog = true
-                        pendingImageProcessing = false
-                    } else {
-                        // Check if image needs cropping
-                        val needsCropping = checkIfImageNeedsCropping()
-                        if (needsCropping) {
-                            showCroppingDialog = true
-                            pendingImageProcessing = false
-                        } else {
-                            // Process normally
-                            onUploadAvatarClick()
-                            pendingImageProcessing = false
-                        }
-                    }
+                    validationErrorMessage = null
+                    // Just trigger the upload - validation will happen in the upload process
+                    onUploadAvatarClick()
+                    pendingImageProcessing = false
                 },
                 enabled = !pendingImageProcessing,
                 modifier = Modifier
@@ -214,7 +211,10 @@ private fun ProfileCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(spacing.xs) // Reduced spacing
                 ) {
-                    AvatarPreview(avatarId = profile.selectedAvatarId)
+                    AvatarDisplay(
+                        profile = profile,
+                        size = 36.dp
+                    )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = profile.username,
@@ -266,44 +266,6 @@ private fun ProfileCard(
                 )
             }
 
-            // Auto-Cropping Dialog
-            if (showCroppingDialog) {
-                AlertDialog(
-                    onDismissRequest = { showCroppingDialog = false },
-                    title = {
-                        Text(
-                            text = "Image Auto-Cropped",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = "Your image has been automatically cropped to the appropriate size for a profile photo. The cropped version will be used as your profile picture.",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showCroppingDialog = false
-                                // Apply the cropped image
-                                applyCroppedImage()
-                                onUploadAvatarClick()
-                            }
-                        ) {
-                            Text("Use Cropped Image")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showCroppingDialog = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
         }
     }
 }
@@ -451,6 +413,44 @@ private fun CompactInitialPreview(initial: String) {
 }
 
 @Composable
+private fun AvatarDisplay(
+    profile: SocialProfile,
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 40.dp
+) {
+    if (profile.selectedAvatarId == "custom" && !profile.customAvatarUri.isNullOrEmpty()) {
+        // Display custom uploaded image
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = Uri.parse(profile.customAvatarUri)
+            ),
+            contentDescription = "Custom avatar",
+            modifier = modifier
+                .size(size)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        // Display emoji avatar
+        Surface(
+            modifier = modifier.size(size),
+            shape = CircleShape,
+            color = DesignTokens.PrimaryContainer,
+            tonalElevation = 1.dp
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    text = avatarEmoji(profile.selectedAvatarId),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = DesignTokens.PrimaryContainerForeground
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun AvatarPreview(avatarId: String) {
     Surface(
         modifier = Modifier.size(36.dp),
@@ -480,28 +480,13 @@ private fun avatarEmoji(id: String): String = when (id) {
     "trophy" -> "🏆"
     "puzzle" -> "🧩"
     "sun" -> "🌞"
+    "custom" -> "📷"
     else -> "🙂"
 }
 
 private fun minutesPerDay(hours: Int): Int = (hours * 60) / 7
 private fun hoursPerMonth(hours: Int): Int = hours * 4
 
-// Helper functions for content detection and cropping
-private fun detectInappropriateContent(): Boolean {
-    // Simulate content detection - in real implementation, this would use ML/AI services
-    // For demo purposes, randomly return true ~10% of the time
-    return (1..10).random() == 1
-}
-
-private fun checkIfImageNeedsCropping(): Boolean {
-    // Simulate checking if image dimensions are appropriate
-    // In real implementation, this would analyze actual image dimensions
-    return (1..3).random() == 1 // ~33% chance of needing cropping
-}
-
-private fun applyCroppedImage() {
-    // Simulate applying auto-cropped image
-    // In real implementation, this would perform actual image cropping
-    // using libraries like Coil, Glide, or Android's built-in bitmap utilities
-}
+// Note: Image processing is now handled by ImageProcessingUtils in the repository
+// The upload validation, cropping, and processing happens automatically during upload
 

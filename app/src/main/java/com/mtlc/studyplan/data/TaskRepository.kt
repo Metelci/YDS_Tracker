@@ -25,11 +25,11 @@ interface TaskRepository {
 
 @Singleton
 class TaskRepositoryImpl @Inject constructor(
-    private val databaseTaskRepository: com.mtlc.studyplan.repository.TaskRepository? = null
+    private val databaseTaskRepository: com.mtlc.studyplan.repository.TaskRepository
 ) : TaskRepository {
 
-    // Use database repository if available, otherwise fall back to in-memory storage
-    private val databaseAvailable = databaseTaskRepository != null
+    // Database repository is required via DI; fallback paths remain for future use
+    private val databaseAvailable = true
 
     private val _tasks = MutableStateFlow(if (databaseAvailable) emptyList() else generateSampleTasks())
     private val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()

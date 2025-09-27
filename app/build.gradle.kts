@@ -9,9 +9,6 @@ plugins {
     
     // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
-
-    // Dependency Injection with Hilt
-    id("com.google.dagger.hilt.android") version "2.57.1"
 }
 
 android {
@@ -22,8 +19,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 60
-        versionName = "2.9.9"
+        versionCode = 61
+        versionName = "2.9.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -105,7 +102,6 @@ android {
         if (name.contains("RuntimeClasspathCopy")) {
             isCanBeConsumed = false
         }
-        // Ensure configurations are properly marked for resolution
         if (isCanBeResolved && isCanBeConsumed) {
             if (name.endsWith("ClasspathCopy") || name.contains("RuntimeClasspath")) {
                 isCanBeConsumed = false
@@ -113,6 +109,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
@@ -156,19 +153,22 @@ dependencies {
     // JSON processing
     implementation(libs.gson)
 
+    // Image loading
+    implementation(libs.coil.compose)
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+
     // Room (local database for scalable histories)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     //noinspection UseTomlInstead
     ksp(libs.androidx.room.compiler)
 
-    // Dependency Injection with Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
-    //noinspection UseTomlInstead
-    implementation("androidx.hilt:hilt-work:1.3.0")
-    ksp(libs.androidx.hilt.compiler)
+    // Dependency Injection with Koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+    // JavaPoet will be included automatically by Hilt
 
     // Testing dependencies
     testImplementation(libs.junit)
@@ -177,7 +177,7 @@ dependencies {
     testImplementation(libs.androidx.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation(libs.androidx.arch.core.testing)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -186,6 +186,9 @@ dependencies {
     androidTestImplementation(libs.accessibility.test.framework)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // javax.inject annotations retained for existing @Inject/@Singleton usage
+    implementation(libs.javax.inject)
 }
 
 ksp {

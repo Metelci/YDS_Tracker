@@ -524,7 +524,7 @@ fun WorkingHomeScreen(
                             color = Color(0xFF2E7D32)
                         )
                         Surface(
-                            color = Color(0xFF4CAF50),
+                            color = Color(0xFF6366F1),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
@@ -532,7 +532,7 @@ fun WorkingHomeScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2C2C2C)
+                                color = Color.White
                             )
                         }
                     }

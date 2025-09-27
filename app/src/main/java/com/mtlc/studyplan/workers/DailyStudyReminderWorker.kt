@@ -1,18 +1,12 @@
 package com.mtlc.studyplan.workers
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.mtlc.studyplan.data.isMutedToday
 import com.mtlc.studyplan.data.isQuietNow
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -21,10 +15,9 @@ import java.util.concurrent.TimeUnit
  * Daily Study Reminder Worker - Ensures 100% reliable delivery of personalized study reminders
  * at 6:00 PM local time with motivational content and comprehensive tracking.
  */
-@HiltWorker
-class DailyStudyReminderWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+class DailyStudyReminderWorker(
+    context: Context,
+    workerParams: WorkerParameters,
     private val notificationManager: NotificationManager,
     private val appIntegrationManager: AppIntegrationManager
 ) : CoroutineWorker(context, workerParams) {

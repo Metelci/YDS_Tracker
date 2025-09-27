@@ -34,3 +34,8 @@
 -keep class **_Impl { *; }
 -keep class **_Factory { *; }
 -keep class **_ComponentTreeDeps { *; }
+
+# Explicitly keep StudyPlanApplication and Hilt-generated classes
+-keep class com.mtlc.studyplan.StudyPlanApplication { *; }
+-keep class com.mtlc.studyplan.Hilt_StudyPlanApplication { *; }
+-keep class **_GeneratedInjector { *; }

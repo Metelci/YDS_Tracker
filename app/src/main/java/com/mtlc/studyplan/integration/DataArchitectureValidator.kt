@@ -212,7 +212,7 @@ class DataArchitectureValidator @Inject constructor(
             All core components are properly configured:
             - Room Database Foundation ✅
             - Repository Layer with Reactive Flows ✅
-            - Dependency Injection with Hilt ✅
+            - Dependency Injection with Koin ✅
             - Reactive Event Bus System ✅
             - Enhanced App Integration Manager ✅
             - Integrated ViewModels ✅

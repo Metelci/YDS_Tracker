@@ -3,6 +3,7 @@ package com.mtlc.studyplan.social
 // import androidx.compose.material3.FloatingActionButton
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,18 +50,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+import android.net.Uri
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.PersistentSocialRepository
 import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.data.social.SocialRepository
+import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.shared.StudyStats
@@ -95,7 +101,11 @@ fun SocialScreen(
 
     // Use persistent repository if none provided
     val socialRepository = repository ?: remember {
-        PersistentSocialRepository(context.socialDataStore)
+        PersistentSocialRepository(
+            context = context,
+            dataStore = context.socialDataStore,
+            database = StudyPlanDatabase.getDatabase(context)
+        )
     }
 
     val profile by socialRepository.profile.collectAsState()
@@ -132,15 +142,31 @@ fun SocialScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            // Handle the selected image URI
             scope.launch {
-                // For now, show a success message - in a real app you'd process the image
-                val message = context.getString(R.string.social_avatar_upload_success)
-                snackbarHostState.showSnackbar(
-                    message = message,
-                    duration = SnackbarDuration.Short
-                )
-                showAvatarUploadDialog = false
+                try {
+                    // Upload the custom avatar with validation and processing
+                    socialRepository.uploadCustomAvatar(uri.toString())
+                    val message = context.getString(R.string.social_avatar_upload_success)
+                    snackbarHostState.showSnackbar(
+                        message = message,
+                        duration = SnackbarDuration.Short
+                    )
+                    showAvatarUploadDialog = false
+                } catch (e: Exception) {
+                    // Handle upload errors
+                    val errorMessage = when {
+                        e.message?.contains("2MB") == true -> "Image file must be smaller than 2MB"
+                        e.message?.contains("format") == true -> "Unsupported image format. Please use JPG, PNG, or WebP"
+                        e.message?.contains("dimensions") == true -> "Invalid image dimensions"
+                        e.message?.contains("access") == true -> "Cannot access image file"
+                        else -> "Failed to upload avatar: ${e.message ?: "Unknown error"}"
+                    }
+                    snackbarHostState.showSnackbar(
+                        message = errorMessage,
+                        duration = SnackbarDuration.Long
+                    )
+                    showAvatarUploadDialog = false
+                }
             }
         }
     }
@@ -634,20 +660,10 @@ fun ProfileSection(
                     horizontalArrangement = Arrangement.spacedBy(spacing.sm)
                 ) {
                     // Avatar preview
-                    Surface(
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "🎯", // avatarEmoji(profile.selectedAvatarId).take(2),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                    }
+                    AvatarDisplay(
+                        profile = profile,
+                        size = 40.dp
+                    )
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
@@ -670,6 +686,43 @@ fun ProfileSection(
 
 // Deprecated helper removed
 
+@Composable
+fun AvatarDisplay(
+    profile: SocialProfile,
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 40.dp
+) {
+    if (profile.selectedAvatarId == "custom" && !profile.customAvatarUri.isNullOrEmpty()) {
+        // Display custom uploaded image
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = Uri.parse(profile.customAvatarUri)
+            ),
+            contentDescription = "Custom avatar",
+            modifier = modifier
+                .size(size)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        // Display emoji avatar
+        Surface(
+            modifier = modifier.size(size),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    text = avatarEmoji(profile.selectedAvatarId),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+    }
+}
+
 fun avatarEmoji(id: String): String = when (id) {
     "target" -> "🎯"
     "rocket" -> "🚀"
@@ -679,6 +732,7 @@ fun avatarEmoji(id: String): String = when (id) {
     "trophy" -> "🏆"
     "puzzle" -> "🧩"
     "sun" -> "🌞"
+    "custom" -> "📷"
     else -> "🙂"
 }
 

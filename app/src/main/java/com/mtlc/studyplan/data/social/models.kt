@@ -62,7 +62,8 @@ data class SocialProfile(
     val studyLevel: String,
     val weeklyGoalHours: Int,
     val goalRange: IntRange,
-    val privacyEnabled: Boolean
+    val privacyEnabled: Boolean,
+    val customAvatarUri: String? = null
 )
 
 /**

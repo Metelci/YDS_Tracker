@@ -1,9 +1,14 @@
 package com.mtlc.studyplan.data.social
 
+import android.content.Context
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.mtlc.studyplan.database.StudyPlanDatabase
+import com.mtlc.studyplan.database.entities.AvatarEntity
+import com.mtlc.studyplan.utils.ImageProcessingUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -13,19 +18,25 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
- * Persistent implementation of SocialRepository using DataStore for username storage.
- * Provides the same interface as FakeSocialRepository but persists username across app restarts.
+ * Persistent implementation of SocialRepository using DataStore for username storage
+ * and Room database for avatar storage with proper file management.
  */
 class PersistentSocialRepository(
-    private val dataStore: DataStore<Preferences>
+    private val context: Context,
+    private val dataStore: DataStore<Preferences>,
+    private val database: StudyPlanDatabase
 ) : SocialRepository {
 
     companion object {
         private val USERNAME_KEY = stringPreferencesKey("social_username")
         private val SELECTED_AVATAR_KEY = stringPreferencesKey("selected_avatar")
+        private val CUSTOM_AVATAR_URI_KEY = stringPreferencesKey("custom_avatar_uri")
     }
+
+    private val currentUserId = "default_user" // In a real app, this would come from authentication
 
     private val profileState = MutableStateFlow(
         SocialProfile(
@@ -392,16 +403,21 @@ class PersistentSocialRepository(
     }
 
     private fun loadPersistedData() {
-        // Load username and avatar from DataStore
+        // Load username and avatar from DataStore and database
         CoroutineScope(Dispatchers.IO).launch {
             val preferences = dataStore.data.first()
             val savedUsername = preferences[USERNAME_KEY] ?: ""
             val savedAvatar = preferences[SELECTED_AVATAR_KEY] ?: "target"
 
+            // Load active avatar from database
+            val activeAvatar = database.avatarDao().getActiveAvatar(currentUserId).first()
+            val customAvatarUri = activeAvatar?.let { "file://${it.filePath}" }
+
             profileState.update { currentProfile ->
                 currentProfile.copy(
                     username = savedUsername,
-                    selectedAvatarId = savedAvatar
+                    selectedAvatarId = if (activeAvatar != null) "custom" else savedAvatar,
+                    customAvatarUri = customAvatarUri
                 )
             }
         }
@@ -466,6 +482,63 @@ class PersistentSocialRepository(
             }
         }
         return unlockedAward
+    }
+
+    override suspend fun uploadCustomAvatar(uri: String) {
+        try {
+            val sourceUri = Uri.parse(uri)
+
+            // Process and save image using ImageProcessingUtils
+            val result = ImageProcessingUtils.processAndSaveImage(context, sourceUri, currentUserId)
+
+            result.fold(
+                onSuccess = { processedImage ->
+                    // Create avatar entity
+                    val avatarEntity = AvatarEntity(
+                        id = UUID.randomUUID().toString(),
+                        userId = currentUserId,
+                        fileName = processedImage.file.name,
+                        filePath = processedImage.file.absolutePath,
+                        originalUri = uri,
+                        fileSize = processedImage.fileSize,
+                        width = processedImage.width,
+                        height = processedImage.height,
+                        mimeType = processedImage.mimeType,
+                        uploadedAt = System.currentTimeMillis(),
+                        isActive = true
+                    )
+
+                    // Deactivate all previous avatars
+                    database.avatarDao().deactivateAllAvatars(currentUserId)
+
+                    // Insert new avatar
+                    database.avatarDao().insertAvatar(avatarEntity)
+
+                    // Update profile state
+                    profileState.update { profile ->
+                        profile.copy(
+                            customAvatarUri = "file://${processedImage.file.absolutePath}",
+                            selectedAvatarId = "custom"
+                        )
+                    }
+
+                    // Update DataStore
+                    dataStore.edit { preferences ->
+                        preferences[SELECTED_AVATAR_KEY] = "custom"
+                        preferences.remove(CUSTOM_AVATAR_URI_KEY) // Remove old URI storage
+                    }
+
+                    // Cleanup old files
+                    ImageProcessingUtils.cleanupOldAvatars(context, currentUserId, keepCount = 3)
+                },
+                onFailure = { exception ->
+                    // Handle error - in a real app, you might want to throw this or handle it differently
+                    throw exception
+                }
+            )
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     private fun getCurrentDate(): String {

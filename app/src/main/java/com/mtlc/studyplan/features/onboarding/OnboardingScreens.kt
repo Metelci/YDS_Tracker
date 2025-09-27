@@ -395,6 +395,14 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 
     val finalEndDate = if (selectedMode == "duration") calculatedEndDate else examDate
 
+    val datePickerHeight = remember(deviceProfile, adaptiveSizing) {
+        if (deviceProfile.isLandscape) {
+            (adaptiveSizing.datePicker + 80.dp).coerceAtLeast(340.dp)
+        } else {
+            (adaptiveSizing.datePicker + 80.dp).coerceAtLeast(440.dp)
+        }
+    }
+
     ResponsiveLazyColumn {
         item {
             ResponsiveContainer {
@@ -505,11 +513,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                     title = null,
                     showModeToggle = false,
                     modifier = Modifier
-                        .height(
-                            if (deviceProfile.isLandscape)
-                                minOf(adaptiveSizing.datePicker, 280.dp)
-                            else maxOf(adaptiveSizing.datePicker, 380.dp)
-                        )
+                        .height(datePickerHeight)
                         .padding(top = 8.dp)
                 )
 
@@ -556,11 +560,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         title = null,
                         showModeToggle = false,
                         modifier = Modifier
-                            .height(
-                                if (deviceProfile.isLandscape)
-                                    minOf(adaptiveSizing.datePicker, 280.dp)
-                                else maxOf(adaptiveSizing.datePicker, 380.dp)
-                            )
+                            .height(datePickerHeight)
                             .padding(top = 8.dp)
                     )
 

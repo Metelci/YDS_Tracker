@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.TrackChanges
@@ -100,14 +101,15 @@ import kotlin.math.roundToInt
 
 data class SettingsTab(
     val id: String,
-    val name: String,
+    val title: String,
     val icon: ImageVector
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OriginalSettingsScreen(
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToCategory: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val activity = context as? android.app.Activity
@@ -134,12 +136,12 @@ fun OriginalSettingsScreen(
 
 
     val tabs = listOf(
-        SettingsTab(stringResource(R.string.navigation), "navigation", Icons.Outlined.Navigation),
-        SettingsTab(stringResource(R.string.notifications), "notifications", Icons.Outlined.Notifications),
-        SettingsTab(stringResource(R.string.gamification), "gamification", Icons.Outlined.EmojiEvents),
-        SettingsTab(stringResource(R.string.nav_social), "social", Icons.Outlined.People),
-        SettingsTab(stringResource(R.string.privacy), "privacy", Icons.Outlined.Lock),
-        SettingsTab(stringResource(R.string.nav_tasks), "tasks", Icons.Outlined.TaskAlt)
+        SettingsTab("navigation", stringResource(R.string.navigation).capitalizeFirst(), Icons.Outlined.Navigation),
+        SettingsTab("notifications", stringResource(R.string.notifications).capitalizeFirst(), Icons.Outlined.Notifications),
+        SettingsTab("gamification", stringResource(R.string.gamification).capitalizeFirst(), Icons.Outlined.EmojiEvents),
+        SettingsTab("social", stringResource(R.string.nav_social).capitalizeFirst(), Icons.Outlined.People),
+        SettingsTab("privacy", stringResource(R.string.privacy).capitalizeFirst(), Icons.Outlined.Lock),
+        SettingsTab("tasks", stringResource(R.string.nav_tasks).capitalizeFirst(), Icons.Outlined.TaskAlt)
     )
 
     Box(
@@ -292,9 +294,9 @@ fun OriginalSettingsScreen(
                         }
                     }
                     "navigation" -> NavigationSettingsContent(settingsManager)
-                    "notifications" -> NotificationsSettingsContent()
+                    "notifications" -> NotificationsSettingsContent(settingsManager)
                     "gamification" -> GamificationSettingsContent(settingsManager)
-                    "social" -> SocialSettingsContent()
+                    "social" -> SocialSettingsContent(settingsManager)
                     "privacy" -> PrivacySettingsContent(settingsManager)
                 }
             }
@@ -409,28 +411,28 @@ private fun TabButton(
     modifier: Modifier = Modifier
 ) {
     // Light pastel colors for each tab
-    val pastelColors = when (tab.id) {
-        "Navigation" -> Pair(
+    val pastelColors = when (tab.id.lowercase(Locale.getDefault())) {
+        "navigation" -> Pair(
             Color(0xFFF3E8FF), // Soft lavender background
             Color(0xFF7C3AED)   // Lavender content
         )
-        "Notifications" -> Pair(
+        "notifications" -> Pair(
             Color(0xFFE8F5E8), // Mint green background
             Color(0xFF059669)   // Green content
         )
-        "Gamification" -> Pair(
+        "gamification" -> Pair(
             Color(0xFFFFF4E6), // Soft peach background
             Color(0xFFEA580C)   // Orange content
         )
-        "Social" -> Pair(
+        "social" -> Pair(
             Color(0xFFEFF6FF), // Light sky blue background
             Color(0xFF0284C7)   // Blue content
         )
-        "Privacy" -> Pair(
+        "privacy" -> Pair(
             Color(0xFFFDF2F8), // Soft pink background
             Color(0xFFBE185D)   // Pink content
         )
-        "Tasks" -> Pair(
+        "tasks" -> Pair(
             Color(0xFFF0FDF4), // Soft mint background
             Color(0xFF16A34A)   // Green content
         )
@@ -455,11 +457,11 @@ private fun TabButton(
             .clip(RoundedCornerShape(16.dp))
             .clickable(
                 role = Role.Tab,
-                onClickLabel = "Select ${tab.name} settings"
+                onClickLabel = "Select ${tab.title} settings"
             ) { onClick() }
             .heightIn(min = 48.dp) // Ensure minimum touch target
             .semantics {
-                contentDescription = "${tab.name} settings tab" +
+                contentDescription = "${tab.title} settings tab" +
                     if (isSelected) ", currently selected" else ""
             },
         color = backgroundColor,
@@ -482,7 +484,7 @@ private fun TabButton(
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = tab.name,
+                text = tab.title,
                 color = contentColor,
                 fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
@@ -575,7 +577,9 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
 }
 
 @Composable
-private fun NotificationsSettingsContent() {
+private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesManager) {
+    val notificationSettings by settingsManager.notificationSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.NotificationSettings())
+
     SettingsCard(
         title = "Notifications",
         icon = Icons.Outlined.Notifications
@@ -587,16 +591,40 @@ private fun NotificationsSettingsContent() {
                 icon = Icons.Outlined.Notifications,
                 title = "Push Notifications",
                 description = "Allow notifications from this app",
-                checked = true,
-                onCheckedChange = { }
+                checked = notificationSettings.pushNotifications,
+                onCheckedChange = { checked ->
+                    settingsManager.updateNotificationSettings(notificationSettings.copy(pushNotifications = checked))
+                }
             )
 
             SettingToggleItem(
                 icon = Icons.Outlined.Schedule,
                 title = "Study Reminders",
                 description = "Daily reminders to study",
-                checked = true,
-                onCheckedChange = { }
+                checked = notificationSettings.studyReminders,
+                onCheckedChange = { checked ->
+                    settingsManager.updateNotificationSettings(notificationSettings.copy(studyReminders = checked))
+                }
+            )
+
+            SettingToggleItem(
+                icon = Icons.Outlined.EmojiEvents,
+                title = "Achievement Alerts",
+                description = "Notifications for completed goals and achievements",
+                checked = notificationSettings.achievementAlerts,
+                onCheckedChange = { checked ->
+                    settingsManager.updateNotificationSettings(notificationSettings.copy(achievementAlerts = checked))
+                }
+            )
+
+            SettingToggleItem(
+                icon = Icons.Outlined.Assessment,
+                title = "Email Summaries",
+                description = "Weekly progress summaries via email",
+                checked = notificationSettings.emailSummaries,
+                onCheckedChange = { checked ->
+                    settingsManager.updateNotificationSettings(notificationSettings.copy(emailSummaries = checked))
+                }
             )
         }
     }
@@ -631,7 +659,9 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
 }
 
 @Composable
-private fun SocialSettingsContent() {
+private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
+    val socialSettings by settingsManager.socialSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.SocialSettings())
+
     SettingsCard(
         title = "Social",
         icon = Icons.Outlined.People
@@ -640,11 +670,33 @@ private fun SocialSettingsContent() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             SettingToggleItem(
-                icon = Icons.Outlined.Share,
-                title = "Share Progress",
-                description = "Share your achievements with friends",
-                checked = false,
-                onCheckedChange = { }
+                icon = Icons.Outlined.People,
+                title = "Social Features",
+                description = "Enable social features and interactions",
+                checked = socialSettings.socialFeatures,
+                onCheckedChange = { checked ->
+                    settingsManager.updateSocialSettings(socialSettings.copy(socialFeatures = checked))
+                }
+            )
+
+            SettingToggleItem(
+                icon = Icons.Outlined.Star,
+                title = "Leaderboards",
+                description = "Participate in leaderboards and competitions",
+                checked = socialSettings.leaderboards,
+                onCheckedChange = { checked ->
+                    settingsManager.updateSocialSettings(socialSettings.copy(leaderboards = checked))
+                }
+            )
+
+            SettingToggleItem(
+                icon = Icons.Outlined.Group,
+                title = "Study Groups",
+                description = "Join and create study groups with others",
+                checked = socialSettings.studyGroups,
+                onCheckedChange = { checked ->
+                    settingsManager.updateSocialSettings(socialSettings.copy(studyGroups = checked))
+                }
             )
         }
     }
@@ -1132,4 +1184,9 @@ private fun SettingToggleItem(
         }
     }
 }
+
+private fun String.capitalizeFirst(): String =
+    replaceFirstChar { char ->
+        if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
+    }
 

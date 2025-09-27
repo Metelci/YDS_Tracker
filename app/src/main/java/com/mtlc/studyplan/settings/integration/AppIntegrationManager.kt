@@ -6,10 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.gamification.GamificationManager
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.settings.data.SettingsRepository
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import org.koin.core.context.GlobalContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -261,17 +258,8 @@ data class GamificationConfig(
 /**
  * ViewModel for app-wide integration management
  */
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface NotificationManagerEntryPoint {
-    fun notificationManager(): NotificationManager
-}
-
 private fun resolveNotificationManager(context: Context): NotificationManager {
-    return EntryPointAccessors.fromApplication(
-        context.applicationContext,
-        NotificationManagerEntryPoint::class.java
-    ).notificationManager()
+    return GlobalContext.get().get()
 }
 
 class AppIntegrationViewModel(
