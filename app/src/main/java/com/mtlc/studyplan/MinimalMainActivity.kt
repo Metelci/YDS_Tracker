@@ -17,9 +17,13 @@ import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.data.PlanDataSource
 import com.mtlc.studyplan.ui.base.LocaleAwareActivity
-import com.mtlc.studyplan.ui.theme.StudyPlanTheme
+import com.mtlc.studyplan.theme.StudyPlanTheme
+import com.mtlc.studyplan.theme.ThemeManager
+import org.koin.android.ext.android.inject
 
 class MinimalMainActivity : LocaleAwareActivity() {
+
+    private val themeManager: ThemeManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +40,12 @@ class MinimalMainActivity : LocaleAwareActivity() {
         PlanDataSource.initialize(this)
 
         setContent {
-            StudyPlanTheme {
+            StudyPlanTheme(themeManager = themeManager) {
                 GradientBackground {
                     val sharedViewModel: SharedAppViewModel = viewModel()
                     AppNavHost(
-                        sharedViewModel = sharedViewModel
+                        sharedViewModel = sharedViewModel,
+                        themeManager = themeManager
                     )
                 }
             }

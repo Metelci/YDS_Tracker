@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.12] - 2025-01-14
+
+### ✨ **Theme Switcher & UI Enhancements**
+
+#### **New Features**
+- **Dark/Light Theme Switcher**: Added theme switcher button to home page top-right corner
+  - Cycles through Light → Dark → System themes with haptic feedback
+  - Integrated with existing `ThemeManager` system using Koin dependency injection
+  - Fully accessible with proper semantic descriptions and role-based button behavior
+  - Smooth scale animation on press (96% scale with 150ms transition)
+  - Uses Material Design icons: `LightMode`, `DarkMode`, `Brightness6`
+
+#### **Award Cards Visual Polish**
+- **Pixel-Perfect Design**: Redesigned award cards to match reference screenshot exactly
+  - Subtle vertical gradients with authentic color schemes per rarity
+  - Proper typography: dark text on light backgrounds for optimal readability
+  - Removed "LOCKED" badges from locked cards (clean muted appearance)
+  - Refined spacing, icon sizing, and completion indicators
+  - Enhanced interaction states with haptic feedback and accessibility support
+
+#### **Technical Improvements**
+- Enhanced theme state management throughout navigation hierarchy
+- Fixed compilation warnings and deprecated icon usage
+- Improved code architecture for theme switching with proper dependency flow
+
+#### **Build Information**
+- Version: 2.9.12
+- Build: 62
+- Platform: Android API 34+
+
 ## [2.9.11] - 2024-12-19
 
 ### 🔧 **Settings System Fixes & Core Feature Completion**

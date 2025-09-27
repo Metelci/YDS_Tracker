@@ -4,15 +4,20 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.PointF
+import android.media.FaceDetector
 import android.net.Uri
-import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.UUID
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 data class ImageValidationResult(
     val isValid: Boolean,
@@ -31,14 +36,32 @@ data class ProcessedImage(
     val mimeType: String
 )
 
+data class AvatarPreview(
+    val bitmap: Bitmap,
+    val width: Int,
+    val height: Int,
+    val estimatedFileSize: Long,
+    val mimeType: String
+)
+
 object ImageProcessingUtils {
 
     private const val MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
     private const val MAX_DIMENSION = 512
     private const val TARGET_SIZE = 256
     private const val JPEG_QUALITY = 85
+    private const val MAX_FACES = 5
+    private const val MIN_FACE_DETECTION_SIZE = 64
+    private const val FACE_FRAME_MULTIPLIER = 4f
+    private const val FACE_FRAME_MIN_RATIO = 0.5f
 
-    private val SUPPORTED_FORMATS = setOf("image/jpeg", "image/jpg", "image/png", "image/webp")
+    private val SUPPORTED_FORMATS = setOf(
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/gif"
+    )
 
     /**
      * Validates an image from URI
@@ -60,7 +83,7 @@ object ImageProcessingUtils {
             val mimeType = contentResolver.getType(uri) ?: ""
             if (!SUPPORTED_FORMATS.contains(mimeType.lowercase())) {
                 inputStream.close()
-                return@withContext ImageValidationResult(false, "Unsupported image format. Please use JPG, PNG, or WebP")
+                return@withContext ImageValidationResult(false, "Unsupported image format. Please use JPG, PNG, WebP, or GIF")
             }
 
             // Get image dimensions
@@ -93,7 +116,7 @@ object ImageProcessingUtils {
      */
     fun needsCropping(width: Int, height: Int): Boolean {
         val aspectRatio = width.toFloat() / height.toFloat()
-        return kotlin.math.abs(aspectRatio - 1.0f) > 0.1f // Allow 10% tolerance
+        return abs(aspectRatio - 1.0f) > 0.1f // Allow 10% tolerance
     }
 
     /**
@@ -144,6 +167,46 @@ object ImageProcessingUtils {
                 )
             )
 
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Generates a processed avatar preview without saving it to disk.
+     */
+    suspend fun generatePreviewImage(
+        context: Context,
+        sourceUri: Uri
+    ): Result<AvatarPreview> = withContext(Dispatchers.IO) {
+        try {
+            val validation = validateImage(context, sourceUri)
+            if (!validation.isValid) {
+                return@withContext Result.failure(Exception(validation.errorMessage ?: "Invalid image"))
+            }
+
+            val bitmap = loadBitmapFromUri(context, sourceUri)
+                ?: return@withContext Result.failure(Exception("Failed to load image"))
+
+            val processedBitmap = processBitmap(bitmap)
+            if (bitmap != processedBitmap) {
+                bitmap.recycle()
+            }
+
+            val byteStream = ByteArrayOutputStream()
+            processedBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, byteStream)
+            val estimatedSize = byteStream.size().toLong()
+            byteStream.close()
+
+            Result.success(
+                AvatarPreview(
+                    bitmap = processedBitmap,
+                    width = processedBitmap.width,
+                    height = processedBitmap.height,
+                    estimatedFileSize = estimatedSize,
+                    mimeType = "image/jpeg"
+                )
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -211,41 +274,162 @@ object ImageProcessingUtils {
     }
 
     /**
-     * Processes bitmap: crops to square and resizes to target size
+     * Processes bitmap: crops to square (face-aware) and resizes to target size
      */
     private fun processBitmap(bitmap: Bitmap): Bitmap {
-        // Crop to square
-        val squareBitmap = cropToSquare(bitmap)
-
-        // Resize to target size
-        val resizedBitmap = if (squareBitmap.width != TARGET_SIZE || squareBitmap.height != TARGET_SIZE) {
-            Bitmap.createScaledBitmap(squareBitmap, TARGET_SIZE, TARGET_SIZE, true)
+        val cropped = cropToSquareWithFaceFocus(bitmap)
+        val resized = if (cropped.width != TARGET_SIZE || cropped.height != TARGET_SIZE) {
+            Bitmap.createScaledBitmap(cropped, TARGET_SIZE, TARGET_SIZE, true)
         } else {
-            squareBitmap
+            cropped
         }
 
-        // Clean up intermediate bitmap if different
-        if (squareBitmap != bitmap && squareBitmap != resizedBitmap) {
-            squareBitmap.recycle()
+        if (cropped !== bitmap && cropped !== resized) {
+            cropped.recycle()
         }
 
-        return resizedBitmap
+        return resized
     }
 
     /**
-     * Crops bitmap to square (center crop)
+     * Attempts face-aware square cropping, falling back to a centered crop when necessary.
      */
-    private fun cropToSquare(bitmap: Bitmap): Bitmap {
-        val size = kotlin.math.min(bitmap.width, bitmap.height)
+    private fun cropToSquareWithFaceFocus(bitmap: Bitmap): Bitmap {
+        val detection = detectPrimaryFace(bitmap)
+        if (detection == null) {
+            return centerCropSquare(bitmap)
+        }
+
+        val safeDimension = min(bitmap.width, bitmap.height).toFloat()
+        val desiredSize = max(
+            detection.eyeDistance * FACE_FRAME_MULTIPLIER,
+            safeDimension * FACE_FRAME_MIN_RATIO
+        ).coerceAtMost(safeDimension)
+
+        val halfSize = desiredSize / 2f
+        var left = detection.centerX - halfSize
+        var top = detection.centerY - halfSize
+        var right = detection.centerX + halfSize
+        var bottom = detection.centerY + halfSize
+
+        if (left < 0f) {
+            right -= left
+            left = 0f
+        }
+        if (top < 0f) {
+            bottom -= top
+            top = 0f
+        }
+        if (right > bitmap.width) {
+            val diff = right - bitmap.width
+            left -= diff
+            right = bitmap.width.toFloat()
+        }
+        if (bottom > bitmap.height) {
+            val diff = bottom - bitmap.height
+            top -= diff
+            bottom = bitmap.height.toFloat()
+        }
+
+        left = left.coerceAtLeast(0f)
+        top = top.coerceAtLeast(0f)
+        right = right.coerceAtMost(bitmap.width.toFloat())
+        bottom = bottom.coerceAtMost(bitmap.height.toFloat())
+
+        var width = right - left
+        var height = bottom - top
+        val size = min(width, height)
+        if (size <= 0f) {
+            return centerCropSquare(bitmap)
+        }
+
+        val horizontalExcess = width - size
+        val verticalExcess = height - size
+        left += horizontalExcess / 2f
+        right -= horizontalExcess / 2f
+        top += verticalExcess / 2f
+        bottom -= verticalExcess / 2f
+
+        val intSize = min(size.roundToInt(), min(bitmap.width, bitmap.height))
+        if (intSize <= 0) {
+            return centerCropSquare(bitmap)
+        }
+
+        val intLeft = left.roundToInt().coerceIn(0, max(0, bitmap.width - intSize))
+        val intTop = top.roundToInt().coerceIn(0, max(0, bitmap.height - intSize))
+
+        return Bitmap.createBitmap(bitmap, intLeft, intTop, intSize, intSize)
+    }
+
+    /**
+     * Simple centered square crop fallback.
+     */
+    private fun centerCropSquare(bitmap: Bitmap): Bitmap {
+        val size = min(bitmap.width, bitmap.height)
         val x = (bitmap.width - size) / 2
         val y = (bitmap.height - size) / 2
 
         return if (x == 0 && y == 0 && bitmap.width == size && bitmap.height == size) {
-            bitmap // Already square
+            bitmap
         } else {
             Bitmap.createBitmap(bitmap, x, y, size, size)
         }
     }
+
+        @Suppress("DEPRECATION")
+    private fun detectPrimaryFace(bitmap: Bitmap): FaceDetectionResult? {
+        if (bitmap.width < MIN_FACE_DETECTION_SIZE || bitmap.height < MIN_FACE_DETECTION_SIZE) {
+            return null
+        }
+
+        var detectionBitmap = bitmap
+
+        if (detectionBitmap.config != Bitmap.Config.RGB_565) {
+            detectionBitmap = bitmap.copy(Bitmap.Config.RGB_565, false)
+        }
+
+        if (detectionBitmap.width % 2 != 0) {
+            val trimmed = Bitmap.createBitmap(detectionBitmap, 0, 0, detectionBitmap.width - 1, detectionBitmap.height)
+            if (detectionBitmap !== bitmap) {
+                detectionBitmap.recycle()
+            }
+            detectionBitmap = trimmed
+        }
+
+        val detectionWidth = detectionBitmap.width
+        val detectionHeight = detectionBitmap.height
+
+        val detector = FaceDetector(detectionWidth, detectionHeight, MAX_FACES)
+        val faces = arrayOfNulls<FaceDetector.Face>(MAX_FACES)
+        val count = detector.findFaces(detectionBitmap, faces)
+
+        if (detectionBitmap !== bitmap) {
+            detectionBitmap.recycle()
+        }
+
+        if (count <= 0) {
+            return null
+        }
+
+        val primary = faces.filterNotNull().maxByOrNull { it.eyesDistance() } ?: return null
+        val midPoint = PointF()
+        primary.getMidPoint(midPoint)
+
+        val widthRatio = bitmap.width.toFloat() / detectionWidth.toFloat()
+        val heightRatio = bitmap.height.toFloat() / detectionHeight.toFloat()
+        val scale = (widthRatio + heightRatio) / 2f
+
+        return FaceDetectionResult(
+            centerX = midPoint.x * widthRatio,
+            centerY = midPoint.y * heightRatio,
+            eyeDistance = primary.eyesDistance() * scale
+        )
+    }
+private data class FaceDetectionResult(
+        val centerX: Float,
+        val centerY: Float,
+        val eyeDistance: Float
+    )
 
     /**
      * Saves bitmap to internal storage
@@ -326,3 +510,4 @@ object ImageProcessingUtils {
         }
     }
 }
+

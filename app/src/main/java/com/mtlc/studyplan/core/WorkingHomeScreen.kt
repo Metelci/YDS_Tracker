@@ -59,11 +59,14 @@ import com.mtlc.studyplan.data.TodayStats
 import com.mtlc.studyplan.data.WeekDay
 import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.ui.components.ThemeSwitcher
+import com.mtlc.studyplan.settings.data.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkingHomeScreen(
     appIntegrationManager: AppIntegrationManager,
+    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null,
     onNavigateToTasks: () -> Unit = {},
     onNavigateToWeeklyPlan: () -> Unit = {},
     onNavigateToDaily: (String) -> Unit = {},
@@ -72,6 +75,9 @@ fun WorkingHomeScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    // Theme state
+    val currentTheme by themeManager?.currentTheme?.collectAsState() ?: remember { mutableStateOf(ThemeMode.SYSTEM) }
 
     // Collect data from AppIntegrationManager
     val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
@@ -157,6 +163,16 @@ fun WorkingHomeScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
+            // Theme switcher in top right corner
+            if (themeManager != null) {
+                ThemeSwitcher(
+                    currentTheme = currentTheme,
+                    onThemeChange = { newTheme ->
+                        themeManager.setTheme(newTheme)
+                    },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

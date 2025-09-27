@@ -80,7 +80,8 @@ import org.koin.core.context.GlobalContext
 @Composable
 fun AppNavHost(
     appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null,
-    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
+    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null
 ) {
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
@@ -235,6 +236,7 @@ fun AppNavHost(
             ) { _ ->
                 com.mtlc.studyplan.core.WorkingHomeScreen(
                     appIntegrationManager = mainAppIntegrationManager,
+                    themeManager = themeManager,
                     onNavigateToTasks = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("tasks")
