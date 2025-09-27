@@ -100,6 +100,7 @@ class SettingsPreferencesManager(context: Context) {
         with(prefs.edit()) {
             putBoolean(KEY_BOTTOM_NAVIGATION, settings.bottomNavigation)
             putBoolean(KEY_HAPTIC_FEEDBACK, settings.hapticFeedback)
+            putBoolean(KEY_DARK_MODE, settings.darkMode)
             apply()
         }
         _navigationSettings.value = settings
@@ -108,7 +109,8 @@ class SettingsPreferencesManager(context: Context) {
     private fun getNavigationSettings(): NavigationSettings {
         return NavigationSettings(
             bottomNavigation = prefs.getBoolean(KEY_BOTTOM_NAVIGATION, true),
-            hapticFeedback = prefs.getBoolean(KEY_HAPTIC_FEEDBACK, true)
+            hapticFeedback = prefs.getBoolean(KEY_HAPTIC_FEEDBACK, true),
+            darkMode = prefs.getBoolean(KEY_DARK_MODE, false)
         )
     }
 
@@ -175,6 +177,7 @@ class SettingsPreferencesManager(context: Context) {
         // Navigation keys
         private const val KEY_BOTTOM_NAVIGATION = "bottom_navigation"
         private const val KEY_HAPTIC_FEEDBACK = "haptic_feedback"
+        private const val KEY_DARK_MODE = "dark_mode"
 
         // Gamification keys
         private const val KEY_STREAK_TRACKING = "streak_tracking"
@@ -212,7 +215,8 @@ data class TaskSettings(
 
 data class NavigationSettings(
     val bottomNavigation: Boolean = true,
-    val hapticFeedback: Boolean = true
+    val hapticFeedback: Boolean = true,
+    val darkMode: Boolean = false
 )
 
 data class GamificationSettings(

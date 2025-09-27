@@ -153,9 +153,10 @@ dependencies {
     // JSON processing
     implementation(libs.gson)
 
-    // Image loading
+    // Image loading and processing for avatar upload
     implementation(libs.coil.compose)
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation("androidx.activity:activity-compose:1.9.3")
 
     // Room (local database for scalable histories)
     implementation(libs.androidx.room.runtime)

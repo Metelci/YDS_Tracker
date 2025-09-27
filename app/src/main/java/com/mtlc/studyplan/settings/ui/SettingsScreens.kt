@@ -2,6 +2,7 @@ package com.mtlc.studyplan.settings.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -210,6 +211,7 @@ private fun CategoryPill(
         modifier = Modifier
             .padding(vertical = 6.dp)
             .width(110.dp)
+            .clickable { onClick(label) }
     ) {
         Row(
             modifier = Modifier

@@ -16,6 +16,7 @@ interface SocialRepository {
     suspend fun toggleGroupMembership(groupId: String)
     suspend fun shareGroup(groupId: String)
     suspend fun selectAvatar(avatarId: String)
+    suspend fun updateCustomAvatar(imagePath: String)
     suspend fun updateWeeklyGoal(hours: Int)
     suspend fun updateUsername(username: String)
     suspend fun unlockAward(awardId: String): Award?

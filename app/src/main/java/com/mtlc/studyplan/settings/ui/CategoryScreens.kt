@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,8 +47,13 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.StudyProgressRepository
+import com.mtlc.studyplan.settings.data.NavigationSettings
+import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
@@ -57,11 +63,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationSettingsScreen(onBack: () -> Unit) {
-    SettingsCategoryScaffold(title = "Settings", subtitle = "Customize your study experience", onBack = onBack) {
+    SettingsCategoryScaffold(title = "Navigation", subtitle = "Customize navigation experience", onBack = onBack) {
         NavigationCategoryCard()
-        Spacer(Modifier.height(12.dp))
-        ActionButtons()
-        Footer()
     }
 }
 
@@ -69,8 +72,14 @@ fun NavigationSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun PrivacySettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Privacy", subtitle = "Data and privacy controls", onBack = onBack) {
-        // Placeholder card
-        CategoryCardHeader("Privacy", Icons.Filled.Shield)
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryCardHeader("Privacy", Icons.Filled.Shield)
+                SettingRowToggle(title = "Analytics", description = "Help improve the app with usage data", checked = true) { }
+                SettingRowToggle(title = "Secure Storage", description = "Encrypt sensitive data", checked = true) { }
+                SettingRowToggle(title = "Data Sharing", description = "Share anonymized data for research", checked = false) { }
+            }
+        }
     }
 }
 
@@ -78,7 +87,14 @@ fun PrivacySettingsScreen(onBack: () -> Unit) {
 @Composable
 fun NotificationSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Notifications", subtitle = "Manage notifications and alerts", onBack = onBack) {
-        CategoryCardHeader("Notifications", Icons.Filled.Notifications)
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryCardHeader("Notifications", Icons.Filled.Notifications)
+                SettingRowToggle(title = "Push Notifications", description = "Allow notifications from this app", checked = true) { }
+                SettingRowToggle(title = "Study Reminders", description = "Daily reminders to study", checked = true) { }
+                SettingRowToggle(title = "Achievement Alerts", description = "Get notified when you earn achievements", checked = false) { }
+            }
+        }
     }
 }
 
@@ -86,7 +102,15 @@ fun NotificationSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun GamificationSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Gamification", subtitle = "Achievements and rewards", onBack = onBack) {
-        CategoryCardHeader("Gamification", Icons.Filled.Celebration)
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryCardHeader("Gamification", Icons.Filled.Celebration)
+                SettingRowToggle(title = "Point System", description = "Earn points for completing tasks", checked = true) { }
+                SettingRowToggle(title = "Achievements", description = "Unlock achievements and badges", checked = true) { }
+                SettingRowToggle(title = "Streak Counter", description = "Track daily study streaks", checked = true) { }
+                SettingRowToggle(title = "Level System", description = "Gain XP and level up", checked = false) { }
+            }
+        }
     }
 }
 
@@ -94,7 +118,14 @@ fun GamificationSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun SocialSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Social", subtitle = "Connect with other learners", onBack = onBack) {
-        CategoryCardHeader("Social", Icons.Filled.People)
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryCardHeader("Social", Icons.Filled.People)
+                SettingRowToggle(title = "Share Progress", description = "Share your achievements with friends", checked = false) { }
+                SettingRowToggle(title = "Public Profile", description = "Make your profile visible to others", checked = true) { }
+                SettingRowToggle(title = "Friend Requests", description = "Allow others to send friend requests", checked = true) { }
+            }
+        }
     }
 }
 
@@ -102,7 +133,15 @@ fun SocialSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun TaskSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Tasks", subtitle = "Study planning and scheduling", onBack = onBack) {
-        CategoryCardHeader("Tasks", Icons.AutoMirrored.Filled.Send)
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryCardHeader("Tasks", Icons.AutoMirrored.Filled.Send)
+                SettingRowToggle(title = "Smart Scheduling", description = "AI-powered study session recommendations", checked = true) { }
+                SettingRowToggle(title = "Auto Difficulty", description = "Automatically adjust task difficulty", checked = false) { }
+                SettingRowToggle(title = "Daily Reminders", description = "Remind me of my daily study goals", checked = true) { }
+                SettingRowToggle(title = "Progress Tracking", description = "Track time spent on tasks", checked = true) { }
+            }
+        }
     }
 }
 
@@ -134,14 +173,34 @@ private fun SettingsCategoryScaffold(title: String, subtitle: String, onBack: ()
 
 @Composable
 private fun NavigationCategoryCard() {
-    val bottomNav = remember { mutableStateOf(true) }
-    val haptics = remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    val settingsManager = remember { SettingsPreferencesManager(context) }
+    val navSettings by settingsManager.navigationSettings.collectAsState(initial = NavigationSettings())
 
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CategoryCardHeader("Navigation", Icons.AutoMirrored.Filled.Send)
-            SettingRowToggle(title = "Bottom Navigation", description = "Show navigation at bottom of screen", checked = bottomNav.value) { bottomNav.value = it }
-            SettingRowToggle(title = "Haptic Feedback", description = "Vibrate on button taps and interactions", checked = haptics.value) { haptics.value = it }
+            SettingRowToggle(
+                title = "Bottom Navigation",
+                description = "Show navigation at bottom of screen",
+                checked = navSettings.bottomNavigation
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(bottomNavigation = it))
+            }
+            SettingRowToggle(
+                title = "Haptic Feedback",
+                description = "Vibrate on button taps and interactions",
+                checked = navSettings.hapticFeedback
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(hapticFeedback = it))
+            }
+            SettingRowToggle(
+                title = "Dark Mode",
+                description = "Use dark theme throughout the app",
+                checked = navSettings.darkMode
+            ) {
+                settingsManager.updateNavigationSettings(navSettings.copy(darkMode = it))
+            }
         }
     }
 }
@@ -166,84 +225,4 @@ private fun SettingRowToggle(title: String, description: String, checked: Boolea
     }
 }
 
-@Composable
-private fun ActionButtons() {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    var showResetDialog by remember { mutableStateOf(false) }
-
-    // Removed: Reset All Notifications button per requirement
-
-    // Reset progress danger
-    OutlinedButton(
-        onClick = { showResetDialog = true },
-        modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-    ) {
-        Icon(Icons.Filled.Celebration, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-        Spacer(Modifier.width(8.dp))
-        Text("Reset Progress (Danger)", color = MaterialTheme.colorScheme.error)
-    }
-
-    // Reset Progress Confirmation Dialog
-    if (showResetDialog) {
-        AlertDialog(
-            onDismissRequest = { showResetDialog = false },
-            title = { Text("Reset All Progress") },
-            text = {
-                Text("This will permanently delete all your study progress, achievements, and statistics. You will return to the welcome screen to start fresh. This action cannot be undone.")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showResetDialog = false
-                        coroutineScope.launch {
-                            try {
-                                // Reset all progress data
-                                val progressRepo = StudyProgressRepository(context)
-                                val onboardingRepo = OnboardingRepository(context.dataStore)
-
-                                progressRepo.resetProgress()
-                                onboardingRepo.resetOnboarding()
-
-                                // Restart the app by finishing the current activity and navigating to onboarding
-                                if (context is Activity) {
-                                    context.finishAffinity()
-                                    // The app will restart and show onboarding due to resetOnboarding()
-                                }
-                            } catch (_: Exception) {
-                                // Handle error silently - user will see the reset didn't work
-                            }
-                        }
-                    }
-                ) {
-                    Text("Reset Everything", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showResetDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun Footer() {
-    val context = LocalContext.current
-    val versionName = remember(context) {
-        try {
-            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "Unknown"
-        } catch (e: Exception) {
-            "Unknown"
-        }
-    }
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Text("StudyPlan YDS Tracker", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Version $versionName", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
 
