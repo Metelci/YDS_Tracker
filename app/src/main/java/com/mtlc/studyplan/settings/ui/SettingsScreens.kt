@@ -1,6 +1,8 @@
 package com.mtlc.studyplan.settings.ui
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +55,7 @@ import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.pm.PackageInfoCompat
 import com.mtlc.studyplan.settings.data.NavigationSettings
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -158,18 +161,27 @@ fun SettingsScreen(
 
             // Footer
             Spacer(Modifier.width(4.dp))
-            val context = LocalContext.current
-            val versionName = remember(context) {
-                try {
-                    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                    packageInfo.versionName ?: "Unknown"
-                } catch (e: Exception) {
-                    "Unknown"
+            val packageInfo = runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    context.packageManager.getPackageInfo(
+                        context.packageName,
+                        PackageManager.PackageInfoFlags.of(0)
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    context.packageManager.getPackageInfo(context.packageName, 0)
                 }
-            }
+            }.getOrNull()
+            val versionName = packageInfo?.versionName?.takeIf { it.isNotBlank() } ?: "Unknown"
+            val versionCode = packageInfo?.let { PackageInfoCompat.getLongVersionCode(it) } ?: -1L
 
             Text(
-                text = "StudyPlan YDS Tracker\nVersion $versionName",
+                text = buildString {
+                    append("StudyPlan YDS Tracker\nVersion $versionName")
+                    if (versionCode >= 0) {
+                        append(" (Build $versionCode)")
+                    }
+                },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,

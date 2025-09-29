@@ -137,53 +137,6 @@ class NotificationSettingsViewModel(
                 sortOrder = 4
             ),
 
-            // Email Summaries Toggle
-            ToggleSetting(
-                id = "email_summaries",
-                title = "Email Summaries",
-                description = "Receive progress summaries via email",
-                value = notificationData.emailSummaries,
-                key = SettingsKeys.Notifications.EMAIL_SUMMARIES,
-                defaultValue = false,
-                isEnabled = true,
-                category = "notifications",
-                sortOrder = 5
-            ),
-
-            // Email Frequency Selection
-            SelectionSetting(
-                id = "email_frequency",
-                title = "Email Frequency",
-                description = "How often to receive email summaries",
-                options = listOf(
-                    SelectionOption(
-                        value = EmailFrequency.DAILY,
-                        display = "Daily",
-                        description = "Receive daily progress updates"
-                    ),
-                    SelectionOption(
-                        value = EmailFrequency.WEEKLY,
-                        display = "Weekly",
-                        description = "Receive weekly progress summaries"
-                    ),
-                    SelectionOption(
-                        value = EmailFrequency.MONTHLY,
-                        display = "Monthly",
-                        description = "Receive monthly progress reports"
-                    ),
-                    SelectionOption(
-                        value = EmailFrequency.NEVER,
-                        display = "Never",
-                        description = "Don't send email summaries"
-                    )
-                ),
-                currentValue = notificationData.emailFrequency,
-                key = SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY,
-                isEnabled = notificationData.emailSummaries,
-                category = "notifications",
-                sortOrder = 6
-            ),
-
             // Test Notification Action
             ActionSetting(
                 id = "notification_test",
@@ -194,7 +147,7 @@ class NotificationSettingsViewModel(
                 actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY,
                 isEnabled = notificationData.pushNotifications,
                 category = "notifications",
-                sortOrder = 7
+                sortOrder = 5
             )
         )
     }

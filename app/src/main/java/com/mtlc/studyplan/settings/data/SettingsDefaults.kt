@@ -238,15 +238,6 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                ToggleSetting(
-                    id = "email_summaries",
-                    title = "Email Summaries",
-                    description = "Receive weekly progress summaries via email",
-                    category = SettingsCategory.NOTIFICATIONS_ID,
-                    key = SettingsKeys.Notifications.EMAIL_SUMMARIES,
-                    defaultValue = false,
-                    sortOrder = 2
-                )
             ),
             sortOrder = 3
         )
@@ -654,4 +645,3 @@ object SettingsDefaults {
         )
     )
 }
-

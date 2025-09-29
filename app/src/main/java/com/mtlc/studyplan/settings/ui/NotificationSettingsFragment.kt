@@ -69,17 +69,6 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
                     viewModel.updateAchievementAlerts(newValue)
                 }
             }
-            "email_summaries" -> {
-                if (newValue is Boolean) {
-                    viewModel.updateEmailSummaries(newValue)
-                }
-            }
-            "email_frequency" -> {
-                when (newValue) {
-                    is EmailFrequency -> viewModel.updateEmailFrequency(newValue)
-                    is String -> viewModel.updateEmailFrequency(EmailFrequency.valueOf(newValue))
-                }
-            }
             "notification_test" -> {
                 handleTestNotification()
             }
@@ -105,17 +94,8 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
                 }
                 showSettingFeedback(message)
             }
-            "email_summaries" -> {
-                val message = if (newValue == true) {
-                    "Email summaries enabled. You'll receive weekly progress reports."
-                } else {
-                    "Email summaries disabled."
-                }
-                showSettingFeedback(message)
-            }
         }
     }
-
     override fun onRetryRequested() {
         viewModel.retry()
     }
@@ -125,8 +105,7 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
     override fun isImportantSetting(setting: SettingItem): Boolean {
         return when (setting.id) {
             "push_notifications",
-            "study_reminders",
-            "email_summaries" -> true
+            "study_reminders" -> true
             else -> false
         }
     }
@@ -142,11 +121,6 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
                 "Study reminders enabled"
             } else {
                 "Study reminders disabled"
-            }
-            "email_summaries" -> if (newValue == true) {
-                "Email summaries enabled"
-            } else {
-                "Email summaries disabled"
             }
             else -> "${setting.title} updated"
         }
@@ -196,7 +170,4 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
     override fun getEmptyStateMessage(): String =
         "Notification settings are not available at the moment. Please try again later."
 }
-
-
-
 

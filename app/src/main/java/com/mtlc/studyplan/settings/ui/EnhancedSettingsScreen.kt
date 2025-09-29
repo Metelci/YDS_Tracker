@@ -373,33 +373,6 @@ private fun NotificationSettings(
             )
         }
 
-        // Quiet hours
-        EnhancedSettingsCard(
-            title = "Email Summaries",
-            description = "Weekly progress summaries via email",
-            icon = Icons.Filled.Email,
-            isEnabled = notificationState.pushNotifications
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                EnhancedToggleSwitch(
-                    checked = notificationState.emailSummaries,
-                    onCheckedChange = {
-                        notificationViewModel.updateEmailSummaries(it)
-                        onFeedback("Email summaries ${if (it) "enabled" else "disabled"}", false)
-                    },
-                    label = "Enable Email Summaries",
-                    enabled = notificationState.pushNotifications
-                )
-
-                if (notificationState.emailSummaries) {
-                    Text(
-                        text = "Frequency: ${notificationState.emailFrequency}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
-            }
-        }
     }
 }
 

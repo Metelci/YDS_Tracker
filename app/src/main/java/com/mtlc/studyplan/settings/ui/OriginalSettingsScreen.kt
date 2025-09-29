@@ -636,15 +636,6 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
                 }
             )
 
-            SettingToggleItem(
-                icon = Icons.Outlined.Assessment,
-                title = "Email Summaries",
-                description = "Weekly progress summaries via email",
-                checked = notificationSettings.emailSummaries,
-                onCheckedChange = { checked ->
-                    settingsManager.updateNotificationSettings(notificationSettings.copy(emailSummaries = checked))
-                }
-            )
         }
     }
 }
@@ -1203,6 +1194,3 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
-
-
-
