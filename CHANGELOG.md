@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Removed
+- Eliminated the Email Summaries toggle and frequency picker from all notification settings UIs (legacy fragment, Compose screens, and defaults) to streamline the tab.
+
+### Fixed
+- Settings footer now reads version name/code directly from the installed package so build info stays accurate after updates.
+
 ## [2.9.20] - 2025-09-30
 
 ### 🔥 **Hotfix Release**
