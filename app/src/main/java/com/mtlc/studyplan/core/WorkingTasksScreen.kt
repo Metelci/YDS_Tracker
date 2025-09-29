@@ -20,6 +20,12 @@ import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.FormatQuote
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material3.*
@@ -40,13 +46,13 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
-import java.text.Normalizer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.mtlc.studyplan.data.CompleteMurphyBookData
+import com.mtlc.studyplan.data.MurphyTaskInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +83,7 @@ fun WorkingTasksScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DesignTokens.Background)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -124,8 +130,8 @@ private fun SegmentedControl(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = DesignTokens.SegmentedRail,
-        border = BorderStroke(1.dp, DesignTokens.SegmentedBorder)
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
     ) {
         // Sliding indicator layout
         BoxWithConstraints(Modifier.padding(4.dp)) {
@@ -145,8 +151,8 @@ private fun SegmentedControl(
                     .width(segWidth)
                     .height(heights.button)
                     .clip(RoundedCornerShape(20.dp)),
-                color = DesignTokens.SegmentedPill,
-                contentColor = DesignTokens.Foreground,
+                color = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ) {}
 
             // Hit targets and labels
@@ -157,7 +163,7 @@ private fun SegmentedControl(
                 segments.forEachIndexed { index, label ->
                     val selected = index == selectedIndex
                     val textColor by animateColorAsState(
-                        targetValue = if (selected) DesignTokens.Foreground else DesignTokens.MutedForeground,
+                        targetValue = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         label = "seg_text_$index"
                     )
                     Box(
@@ -202,9 +208,9 @@ private fun TasksGradientTopBar(
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFE8F4F8), // Light blue
-                            Color(0xFFF0F8E8), // Light green
-                            Color(0xFFFFF0F8)  // Light pink
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
@@ -224,7 +230,7 @@ private fun TasksGradientTopBar(
                     Icon(
                         imageVector = Icons.Outlined.Task,
                         contentDescription = null,
-                        tint = Color(0xFF2E3A2E),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         modifier = Modifier.size(24.dp)
                     )
                     Column {
@@ -232,12 +238,12 @@ private fun TasksGradientTopBar(
                             text = "Daily Tasks",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E3A2E)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = if (isFirstTimeUser) "Create your first task to get started!" else "Complete tasks to build your streak",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF4A6741)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -250,8 +256,8 @@ private fun TasksGradientTopBar(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFFE8F5E8), // Light pastel green (top)
-                                    Color(0xFFE1F5FE)  // Light pastel blue (bottom)
+                                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
                                 )
                             ),
                             shape = RoundedCornerShape(20.dp)
@@ -265,14 +271,14 @@ private fun TasksGradientTopBar(
                         Icon(
                             Icons.Outlined.Bolt,
                             contentDescription = null,
-                            tint = Color(0xFF2E7D32),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             if (isFirstTimeUser) "0 XP" else "$totalXP XP",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1976D2)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -283,9 +289,9 @@ private fun TasksGradientTopBar(
 
 @Composable
 private fun XpButton(xp: Int) {
-    Surface(color = DesignTokens.SecondaryContainer, contentColor = DesignTokens.SecondaryContainerForeground, shape = RoundedCornerShape(24.dp)) {
+    Surface(color = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer, shape = RoundedCornerShape(24.dp)) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Star, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(16.dp))
+            Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("${xp} XP", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
         }
@@ -316,7 +322,7 @@ private fun PlanTab(
         item {
             Card(
                 shape = cardShape,
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4)), // Light yellow
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onNavigateToStudyPlan() }
@@ -335,7 +341,7 @@ private fun PlanTab(
                         Icon(
                             imageVector = Icons.Filled.EditCalendar,
                             contentDescription = null,
-                            tint = Color(0xFF795548), // Brown color for better contrast on yellow
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(Modifier.width(12.dp))
@@ -344,19 +350,19 @@ private fun PlanTab(
                                 text = "View Full Study Plan",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 16.sp,
-                                color = Color(0xFF795548) // Brown color for better contrast on yellow
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Comprehensive YDS preparation schedule",
                                 fontSize = 13.sp,
-                                color = Color(0xFF795548).copy(alpha = 0.8f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
                         }
                     }
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
                         contentDescription = "Navigate to full study plan",
-                        tint = Color(0xFF795548), // Brown color for better contrast on yellow
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -368,7 +374,7 @@ private fun PlanTab(
             Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = DesignTokens.Primary)
+                        Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(8.dp))
                         Text("This Week's Study Plan", fontWeight = FontWeight.SemiBold)
                     }
@@ -377,7 +383,7 @@ private fun PlanTab(
                     Spacer(Modifier.height(12.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Week Progress", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("${(weeklyProgressPct * 100).toInt()}%", color = DesignTokens.Success, fontWeight = FontWeight.SemiBold)
+                        Text("${(weeklyProgressPct * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(Modifier.height(6.dp))
                     LinearProgressIndicator(
@@ -386,8 +392,8 @@ private fun PlanTab(
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        color = DesignTokens.Success,
-                        trackColor = DesignTokens.PrimaryContainer
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                     Spacer(Modifier.height(12.dp))
                     Text("Daily Schedule", fontWeight = FontWeight.SemiBold)
@@ -399,7 +405,7 @@ private fun PlanTab(
 
         // Upcoming Days
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.SecondaryContainer.copy(alpha = 0.35f))) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Upcoming Days", fontWeight = FontWeight.SemiBold)
@@ -417,7 +423,7 @@ private fun PlanTab(
 
         // Plan Management
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = DesignTokens.PrimaryContainer.copy(alpha = 0.35f))) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Plan Management", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(12.dp))
@@ -435,9 +441,9 @@ private fun PlanTab(
                     }
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { }) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = DesignTokens.Primary)
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(6.dp))
-                        Text("View Planning Analytics", color = DesignTokens.Primary)
+                        Text("View Planning Analytics", color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -454,7 +460,7 @@ private fun ManagementTile(title: String, icon: androidx.compose.ui.graphics.vec
         modifier = modifier.clickable { }
     ) {
         Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(icon, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(24.dp))
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
             Spacer(Modifier.height(8.dp))
             Text(title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 14.sp)
         }
@@ -472,7 +478,7 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
     week.days.forEachIndexed { idx, day ->
         Surface(
             shape = RoundedCornerShape(12.dp),
-            color = DesignTokens.SecondaryContainer.copy(alpha = 0.25f),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
             tonalElevation = 0.dp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -494,7 +500,7 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = DesignTokens.Success, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
                         Text(
                             text = t.desc,
@@ -511,6 +517,384 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                         )
                     }
                     Spacer(Modifier.height(4.dp))
+                }
+            }
+        }
+    }
+}
+
+// Enhanced Task Detail Modal with Murphy Book Information
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TaskDetailModal(
+    task: PlanTask?,
+    onDismiss: () -> Unit
+) {
+    if (task == null) return
+
+    val murphyTaskInfo = CompleteMurphyBookData.parseMurphyTask(task.details)
+    val isGrammarTask = task.desc.contains("Gramer Konulari", true)
+    val showMurphyDetails = isGrammarTask && murphyTaskInfo != null
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = { BottomSheetDefaults.DragHandle() }
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Task Header
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            text = task.desc,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (task.details != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = task.details,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Murphy Book Information (if this is a grammar task)
+            if (showMurphyDetails) {
+                // Book Header
+                val info = murphyTaskInfo!!
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = info.book.color.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Surface(
+                                    color = info.book.color,
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.size(56.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = info.book.name.first().toString(),
+                                            color = Color.White,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = info.book.name,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = info.book.color
+                                    )
+                                    Text(
+                                        text = info.book.level,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Units Information
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Units ${info.unitRange}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = info.book.color
+                                )
+
+                                Surface(
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = "${info.units.size} units",
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Display individual units
+                            info.units.take(3).forEach { unit ->
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(12.dp)
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                text = "Unit ${unit.unitNumber}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                            Text(
+                                                text = "Pages ${unit.pages}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        Text(
+                                            text = unit.title,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (info.units.size > 3) {
+                                Text(
+                                    text = "...and ${info.units.size - 3} more units",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Study Instructions
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Study Instructions",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = info.book.studyMethodology,
+                                style = MaterialTheme.typography.bodyMedium,
+                                lineHeight = 20.sp
+                            )
+                        }
+                    }
+                }
+
+                // Sample Unit Details (show first unit)
+                if (info.units.isNotEmpty()) {
+                    val sampleUnit = info.units.first()
+
+                    // Key Grammar Points
+                    if (sampleUnit.keyPoints.isNotEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Star,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Key Points (Sample from Unit ${sampleUnit.unitNumber})",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    sampleUnit.keyPoints.forEach { point ->
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Circle,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(8.dp).padding(top = 8.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Text(
+                                                text = point,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Example Sentences
+                    if (sampleUnit.exampleSentences.isNotEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.FormatQuote,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Example Sentences (Unit ${sampleUnit.unitNumber})",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    sampleUnit.exampleSentences.forEach { example ->
+                                        Surface(
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                                            shape = RoundedCornerShape(8.dp)
+                                        ) {
+                                            Text(
+                                                text = example,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(12.dp),
+                                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Non-grammar task - show basic task details
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Assignment,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Study Task",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = "Complete this study task according to your plan. Check off when finished.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -545,18 +929,18 @@ private fun DailyTab(selectedDay: DayPlan?, currentWeek: Int = 1, onBackToPlan: 
                     imageVector = Icons.Filled.CalendarToday,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = DesignTokens.MutedForeground
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "Select a Day from the Plan",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "Click on any day in the Plan tab to view detailed study materials and tasks",
                     fontSize = 14.sp,
-                    color = DesignTokens.MutedForeground,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 32.dp)
                 )
@@ -585,7 +969,7 @@ private fun DailyTab(selectedDay: DayPlan?, currentWeek: Int = 1, onBackToPlan: 
                 Text(
                     text = "Loading ${selectedDay.day} Study Plan...",
                     fontSize = 16.sp,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -646,12 +1030,13 @@ data class DailyStudyInfo(
 data class StudyBook(
     val name: String,
     val color: Color,
-    val description: String
+    val description: String,
+    val murphyBook: MurphyBook? = null
 ) {
     companion object {
-        val RED_BOOK = StudyBook("Red Book - Essential Grammar in Use", Color(0xFFE53935), "Foundation Level Grammar")
-        val BLUE_BOOK = StudyBook("Blue Book - English Grammar in Use", Color(0xFF1976D2), "Intermediate Level Grammar")
-        val GREEN_BOOK = StudyBook("Green Book - Advanced Grammar in Use", Color(0xFF388E3C), "Advanced Level Grammar")
+        val RED_BOOK = StudyBook("Red Book - Essential Grammar in Use", Color(0xFFE53935), "Foundation Level Grammar", CompleteMurphyBookData.RED_BOOK)
+        val BLUE_BOOK = StudyBook("Blue Book - English Grammar in Use", Color(0xFF1976D2), "Intermediate Level Grammar", CompleteMurphyBookData.BLUE_BOOK)
+        val GREEN_BOOK = StudyBook("Green Book - Advanced Grammar in Use", Color(0xFF388E3C), "Advanced Level Grammar", CompleteMurphyBookData.GREEN_BOOK)
     }
 }
 
@@ -660,7 +1045,8 @@ data class StudyUnit(
     val unitNumber: Int,
     val pages: String,
     val exercises: List<String>,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val murphyUnit: MurphyUnit? = null
 )
 
 data class DailyTask(
@@ -708,12 +1094,12 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
                     Text(
                         text = studyInfo.date,
                         fontSize = 16.sp,
-                        color = DesignTokens.MutedForeground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = studyInfo.weekTitle,
                         fontSize = 14.sp,
-                        color = DesignTokens.MutedForeground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -732,14 +1118,14 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
                 Text(
                     text = "Estimated Time: ${studyInfo.estimatedTime}",
                     fontSize = 14.sp,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Surface(
                     color = when {
-                        studyInfo.completionPercentage >= 100 -> DesignTokens.Success
+                        studyInfo.completionPercentage >= 100 -> MaterialTheme.colorScheme.primary
                         studyInfo.completionPercentage > 0 -> Color(0xFFFF9800)
-                        else -> DesignTokens.MutedForeground
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     },
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -758,6 +1144,8 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
 
 @Composable
 private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
+    var selectedUnit by remember { mutableStateOf<StudyUnit?>(null) }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp)
@@ -793,7 +1181,7 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
                     Text(
                         text = book.description,
                         fontSize = 14.sp,
-                        color = DesignTokens.MutedForeground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -808,19 +1196,26 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 units.forEach { unit ->
-                    StudyUnitItem(unit)
+                    StudyUnitItem(
+                        unit = unit,
+                        onClick = { selectedUnit = unit }
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
+
+        // TODO: Integrate with real Murphy task system
+        // Task detail modal removed - will be integrated with real PlanTask system
     }
 }
 
 @Composable
-private fun StudyUnitItem(unit: StudyUnit) {
+private fun StudyUnitItem(unit: StudyUnit, onClick: () -> Unit = {}) {
     Surface(
-        color = if (unit.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(8.dp)
+        color = if (unit.isCompleted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -829,7 +1224,7 @@ private fun StudyUnitItem(unit: StudyUnit) {
             Icon(
                 imageVector = if (unit.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
                 contentDescription = null,
-                tint = if (unit.isCompleted) DesignTokens.Success else DesignTokens.MutedForeground,
+                tint = if (unit.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -844,13 +1239,13 @@ private fun StudyUnitItem(unit: StudyUnit) {
                 Text(
                     text = "Pages ${unit.pages}",
                     fontSize = 12.sp,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (unit.exercises.isNotEmpty()) {
                     Text(
                         text = "Exercises: ${unit.exercises.joinToString(", ")}",
                         fontSize = 12.sp,
-                        color = DesignTokens.MutedForeground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -877,7 +1272,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
                 Text(
                     text = "No specific tasks for today. Focus on your study units!",
                     fontSize = 14.sp,
-                    color = DesignTokens.MutedForeground,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -894,7 +1289,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
 @Composable
 private fun DailyTaskItem(task: DailyTask) {
     Surface(
-        color = if (task.isCompleted) DesignTokens.Success.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
+        color = if (task.isCompleted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp)
     ) {
         Row(
@@ -904,7 +1299,7 @@ private fun DailyTaskItem(task: DailyTask) {
             Icon(
                 imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
                 contentDescription = null,
-                tint = if (task.isCompleted) DesignTokens.Success else DesignTokens.MutedForeground,
+                tint = if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -919,12 +1314,12 @@ private fun DailyTaskItem(task: DailyTask) {
                 Text(
                     text = task.description,
                     fontSize = 12.sp,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "Duration: ${task.estimatedDuration}",
                     fontSize = 12.sp,
-                    color = DesignTokens.MutedForeground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -932,7 +1327,7 @@ private fun DailyTaskItem(task: DailyTask) {
                 color = when (task.priority) {
                     Priority.HIGH -> Color(0xFFE53935)
                     Priority.MEDIUM -> Color(0xFFFF9800)
-                    Priority.LOW -> DesignTokens.Success
+                    Priority.LOW -> MaterialTheme.colorScheme.primary
                 },
                 shape = RoundedCornerShape(4.dp)
             ) {
@@ -967,7 +1362,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
                 Text(
                     text = "No additional materials for today. Focus on your textbook units!",
                     fontSize = 14.sp,
-                    color = DesignTokens.MutedForeground,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1002,7 +1397,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                     MaterialType.READING -> Icons.Filled.Star
                 },
                 contentDescription = null,
-                tint = DesignTokens.Primary,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -1018,7 +1413,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                     Text(
                         text = material.description,
                         fontSize = 12.sp,
-                        color = DesignTokens.MutedForeground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -1026,7 +1421,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
             Text(
                 text = material.type.name,
                 fontSize = 10.sp,
-                color = DesignTokens.Primary,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -1084,80 +1479,125 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
         else -> StudyBook.RED_BOOK         // Weeks 27-30: Exam Camp (mixed/review - default to Red for now)
     }
 
-    // Create realistic units based on the curriculum and book progression
+    // Create units using actual Murphy book data
     val units = when {
-        // Red Book: Units 1-115 across 8 weeks
+        // Red Book: Units 1-114 across 8 weeks
         book == StudyBook.RED_BOOK -> {
-            val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1 // Roughly 14 units per week
-            listOf(
-                StudyUnit(
-                    title = when (baseUnitNumber % 10) {
-                        0 -> "Present Simple and Continuous"
-                        1 -> "Past Simple and Continuous"
-                        2 -> "Present Perfect"
-                        3 -> "Modal Verbs"
-                        4 -> "Future Forms"
-                        5 -> "Conditionals"
-                        6 -> "Passive Voice"
-                        7 -> "Reported Speech"
-                        8 -> "Gerunds and Infinitives"
-                        else -> "Questions and Negatives"
-                    },
-                    unitNumber = minOf(baseUnitNumber, 115),
-                    pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
-                    exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
-                    isCompleted = dayIndex < 3
+            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
+            if (murphyUnits.isNotEmpty()) {
+                murphyUnits.map { unit ->
+                    StudyUnit(
+                        title = unit.title,
+                        unitNumber = unit.unitNumber,
+                        pages = unit.pages,
+                        exercises = unit.exercises,
+                        isCompleted = dayIndex < 3,
+                        murphyUnit = unit
+                    )
+                }
+            } else {
+                // Fallback to basic unit if Murphy unit not found
+                val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1
+                listOf(
+                    StudyUnit(
+                        title = when (baseUnitNumber % 10) {
+                            0 -> "Present Simple and Continuous"
+                            1 -> "Past Simple and Continuous"
+                            2 -> "Present Perfect"
+                            3 -> "Modal Verbs"
+                            4 -> "Future Forms"
+                            5 -> "Conditionals"
+                            6 -> "Passive Voice"
+                            7 -> "Reported Speech"
+                            8 -> "Gerunds and Infinitives"
+                            else -> "Questions and Negatives"
+                        },
+                        unitNumber = minOf(baseUnitNumber, 114),
+                        pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
+                        exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
+                        isCompleted = dayIndex < 3
+                    )
                 )
-            )
+            }
         }
 
         // Blue Book: Intermediate level topics
         book == StudyBook.BLUE_BOOK -> {
-            val weekInBlueBook = currentWeek - 8 // Blue book starts at week 9
-            listOf(
-                StudyUnit(
-                    title = when (weekInBlueBook) {
-                        1 -> "Tenses Review (All Tenses Comparison)"
-                        2 -> "Future in Detail (Continuous/Perfect)"
-                        3 -> "Modals 1 (Ability, Permission, Advice)"
-                        4 -> "Modals 2 (Deduction, Obligation, Regret)"
-                        5 -> "Conditionals & Wish (All Types)"
-                        6 -> "Passive Voice (All Tenses) & 'have something done'"
-                        7 -> "Reported Speech (Questions, Commands, Advanced)"
-                        8 -> "Noun Clauses & Relative Clauses"
-                        9 -> "Gerunds & Infinitives (Advanced patterns)"
-                        10 -> "Conjunctions & Connectors"
-                        else -> "Advanced Grammar Review"
-                    },
-                    unitNumber = weekInBlueBook * 10 + dayIndex,
-                    pages = "${weekInBlueBook * 8}-${weekInBlueBook * 8 + 7}",
-                    exercises = listOf("${weekInBlueBook}.1", "${weekInBlueBook}.2", "${weekInBlueBook}.3"),
-                    isCompleted = dayIndex < 3
+            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
+            if (murphyUnits.isNotEmpty()) {
+                murphyUnits.map { unit ->
+                    StudyUnit(
+                        title = unit.title,
+                        unitNumber = unit.unitNumber,
+                        pages = unit.pages,
+                        exercises = unit.exercises,
+                        isCompleted = dayIndex < 3,
+                        murphyUnit = unit
+                    )
+                }
+            } else {
+                // Fallback for Blue Book
+                val weekInBlueBook = currentWeek - 8
+                listOf(
+                    StudyUnit(
+                        title = when (weekInBlueBook) {
+                            1 -> "Tenses Review (All Tenses Comparison)"
+                            2 -> "Future in Detail (Continuous/Perfect)"
+                            3 -> "Modals 1 (Ability, Permission, Advice)"
+                            4 -> "Modals 2 (Deduction, Obligation, Regret)"
+                            5 -> "Conditionals & Wish (All Types)"
+                            6 -> "Passive Voice (All Tenses) & 'have something done'"
+                            7 -> "Reported Speech (Questions, Commands, Advanced)"
+                            8 -> "Noun Clauses & Relative Clauses"
+                            9 -> "Gerunds & Infinitives (Advanced patterns)"
+                            10 -> "Conjunctions & Connectors"
+                            else -> "Advanced Grammar Review"
+                        },
+                        unitNumber = weekInBlueBook * 10 + dayIndex,
+                        pages = "${weekInBlueBook * 8}-${weekInBlueBook * 8 + 7}",
+                        exercises = listOf("${weekInBlueBook}.1", "${weekInBlueBook}.2", "${weekInBlueBook}.3"),
+                        isCompleted = dayIndex < 3
+                    )
                 )
-            )
+            }
         }
 
         // Green Book: Advanced level topics
         book == StudyBook.GREEN_BOOK -> {
-            val weekInGreenBook = currentWeek - 18 // Green book starts at week 19
-            listOf(
-                StudyUnit(
-                    title = when (weekInGreenBook) {
-                        1 -> "Advanced Tense Nuances & Narrative Tenses"
-                        2 -> "Inversion & Emphasis (Not only, Hardly...)"
-                        3 -> "Advanced Modals (Speculation, Hypothetical)"
-                        4 -> "Participle Clauses (-ing and -ed clauses)"
-                        5 -> "Advanced Connectors & Discourse Markers"
-                        6 -> "Hypothetical Meaning & Subjunctives"
-                        7 -> "Adjectives & Adverbs (Advanced Uses)"
-                        else -> "Prepositions & Phrasal Verbs (Advanced)"
-                    },
-                    unitNumber = weekInGreenBook * 5 + dayIndex,
-                    pages = "${weekInGreenBook * 6}-${weekInGreenBook * 6 + 5}",
-                    exercises = listOf("${weekInGreenBook}.1", "${weekInGreenBook}.2"),
-                    isCompleted = dayIndex < 2
+            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
+            if (murphyUnits.isNotEmpty()) {
+                murphyUnits.map { unit ->
+                    StudyUnit(
+                        title = unit.title,
+                        unitNumber = unit.unitNumber,
+                        pages = unit.pages,
+                        exercises = unit.exercises,
+                        isCompleted = dayIndex < 2,
+                        murphyUnit = unit
+                    )
+                }
+            } else {
+                // Fallback for Green Book
+                val weekInGreenBook = currentWeek - 18
+                listOf(
+                    StudyUnit(
+                        title = when (weekInGreenBook) {
+                            1 -> "Advanced Tense Nuances & Narrative Tenses"
+                            2 -> "Inversion & Emphasis (Not only, Hardly...)"
+                            3 -> "Advanced Modals (Speculation, Hypothetical)"
+                            4 -> "Participle Clauses (-ing and -ed clauses)"
+                            5 -> "Advanced Connectors & Discourse Markers"
+                            6 -> "Hypothetical Meaning & Subjunctives"
+                            7 -> "Adjectives & Adverbs (Advanced Uses)"
+                            else -> "Prepositions & Phrasal Verbs (Advanced)"
+                        },
+                        unitNumber = weekInGreenBook * 5 + dayIndex,
+                        pages = "${weekInGreenBook * 6}-${weekInGreenBook * 6 + 5}",
+                        exercises = listOf("${weekInGreenBook}.1", "${weekInGreenBook}.2"),
+                        isCompleted = dayIndex < 2
+                    )
                 )
-            )
+            }
         }
 
         else -> emptyList()
