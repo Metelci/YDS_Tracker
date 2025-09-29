@@ -1,10 +1,13 @@
 package com.mtlc.studyplan.social.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
@@ -12,17 +15,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,10 +43,24 @@ fun AwardCard(
     compact: Boolean = true,
     onClick: ((Award) -> Unit)? = null
 ) {
-    val colors = if (award.isUnlocked) getRarityColors(award.rarity) else getLockedColors()
+    val colorScheme = MaterialTheme.colorScheme
+    val isDarkTheme = isSystemInDarkTheme()
+    val gradientColors = if (award.isUnlocked) getRarityColors(award.rarity) else getLockedColors()
     val isLocked = !award.isUnlocked
     val hapticFeedback = LocalHapticFeedback.current
-    val context = LocalContext.current
+
+    val primaryContentColor = when {
+        isLocked -> colorScheme.onSurface
+        isDarkTheme -> Color.White
+        else -> Color(0xFF1C1C1E)
+    }
+    val secondaryContentColor = if (isLocked) colorScheme.onSurfaceVariant else primaryContentColor.copy(alpha = 0.82f)
+    val metaContentColor = if (isLocked) colorScheme.onSurfaceVariant else primaryContentColor.copy(alpha = 0.55f)
+    val iconContainerColor = if (isLocked) colorScheme.surfaceVariant.copy(alpha = if (isDarkTheme) 0.6f else 1f) else primaryContentColor.copy(alpha = if (isDarkTheme) 0.25f else 0.12f)
+    val iconTintColor = if (isLocked) colorScheme.onSurfaceVariant else primaryContentColor
+    val progressAccentColor = if (isDarkTheme) Color(0xFFFFD54F) else Color(0xFFFFB000)
+    val badgeBackgroundColor = if (isLocked) colorScheme.surfaceVariant else colorScheme.secondary
+    val badgeContentColor = if (isLocked) colorScheme.onSurfaceVariant else colorScheme.onSecondary
 
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -60,6 +73,7 @@ fun AwardCard(
             .fillMaxWidth()
             .height(80.dp)
             .scale(scale)
+            .border(BorderStroke(1.dp, Color(0xFF0D47A1)), RoundedCornerShape(12.dp))
             .semantics {
                 contentDescription = if (isLocked) {
                     "Locked award: ${award.title}. ${award.description}"
@@ -92,7 +106,7 @@ fun AwardCard(
                 .clip(RoundedCornerShape(12.dp))
                 .background(
                     Brush.verticalGradient(
-                        colors = colors,
+                        colors = gradientColors,
                         startY = 0f,
                         endY = Float.POSITIVE_INFINITY
                     )
@@ -111,19 +125,14 @@ fun AwardCard(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (isLocked)
-                                Color(0xFFE0E0E0)
-                            else
-                                Color(0xFF1C1C1E).copy(alpha = 0.1f)
-                        ),
+                        .background(iconContainerColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = getAwardIcon(award.iconType),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        tint = if (isLocked) Color(0xFF9E9E9E) else Color(0xFF1C1C1E)
+                        tint = iconTintColor
                     )
                 }
 
@@ -142,7 +151,7 @@ fun AwardCard(
                             text = award.title,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (isLocked) Color(0xFF424242) else Color(0xFF1C1C1E),
+                            color = if (isLocked) colorScheme.onSurface else primaryContentColor,
                             modifier = Modifier.weight(1f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -170,7 +179,7 @@ fun AwardCard(
                     Text(
                         text = award.description,
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isLocked) Color(0xFF757575) else Color(0xFF424242),
+                        color = secondaryContentColor,
                         fontSize = 11.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -181,7 +190,7 @@ fun AwardCard(
                         Text(
                             text = "Earned ${award.unlockedDate}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF757575),
+                            color = metaContentColor,
                             fontSize = 9.sp
                         )
                     } else {
@@ -204,13 +213,13 @@ fun AwardCard(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = null,
                                 modifier = Modifier.size(12.dp),
-                                tint = Color(0xFFFFB000)
+                                tint = progressAccentColor
                             )
                             Text(
                                 text = "+${award.points}",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1C1C1E),
+                                color = primaryContentColor,
                                 fontSize = 11.sp
                             )
                         }
@@ -219,7 +228,7 @@ fun AwardCard(
                     // Completed badge - only shown for unlocked awards
                     if (award.isUnlocked) {
                         Surface(
-                            color = Color(0xFF4CAF50),
+                            color = badgeBackgroundColor,
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Row(
@@ -231,12 +240,12 @@ fun AwardCard(
                                     modifier = Modifier
                                         .size(5.dp)
                                         .clip(CircleShape)
-                                        .background(Color.White)
+                                        .background(badgeContentColor)
                                 )
                                 Text(
                                     text = "COMPLETED",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color.White,
+                                    color = badgeContentColor,
                                     fontSize = 8.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -260,15 +269,40 @@ private fun getAwardIcon(iconType: AwardIconType): ImageVector = when (iconType)
 }
 
 @Composable
-private fun getRarityColors(rarity: AwardRarity): List<Color> = when (rarity) {
-    AwardRarity.Common -> listOf(Color(0xFFFFD4B3), Color(0xFFFFB388)) // Subtle orange gradient like "First Steps"
-    AwardRarity.Rare -> listOf(Color(0xFFB3D9FF), Color(0xFF87CEEB)) // Subtle blue gradient like "Week Warrior"
-    AwardRarity.Epic -> listOf(Color(0xFFE1BEE7), Color(0xFFD1C4E9)) // Subtle purple gradient like "Study Streak Champion"
-    AwardRarity.Legendary -> listOf(Color(0xFFFFE0B2), Color(0xFFFFCC80)) // Subtle gold gradient
+private fun getRarityColors(rarity: AwardRarity): List<Color> {
+    val isDark = isSystemInDarkTheme()
+    return when (rarity) {
+        AwardRarity.Common -> if (!isDark) {
+            listOf(Color(0xFFFFD4B3), Color(0xFFFFB388))
+        } else {
+            listOf(Color(0xFF4A2E1C), Color(0xFF8C4B24))
+        }
+        AwardRarity.Rare -> if (!isDark) {
+            listOf(Color(0xFFB3D9FF), Color(0xFF87CEEB))
+        } else {
+            listOf(Color(0xFF1F3A6F), Color(0xFF2F5EA7))
+        }
+        AwardRarity.Epic -> if (!isDark) {
+            listOf(Color(0xFFE1BEE7), Color(0xFFD1C4E9))
+        } else {
+            listOf(Color(0xFF39225F), Color(0xFF5C3A89))
+        }
+        AwardRarity.Legendary -> if (!isDark) {
+            listOf(Color(0xFFFFE0B2), Color(0xFFFFCC80))
+        } else {
+            listOf(Color(0xFF4C3505), Color(0xFF8F6C0A))
+        }
+    }
 }
 
 @Composable
-private fun getLockedColors(): List<Color> = listOf(Color(0xFFF8F9FA), Color(0xFFF1F3F4))
+private fun getLockedColors(): List<Color> {
+    return if (!isSystemInDarkTheme()) {
+        listOf(Color(0xFFF8F9FA), Color(0xFFF1F3F4))
+    } else {
+        listOf(Color(0xFF2C2C2C), Color(0xFF1A1A1A))
+    }
+}
 
 @Composable
 private fun getRarityBadgeColor(rarity: AwardRarity): Color = when (rarity) {

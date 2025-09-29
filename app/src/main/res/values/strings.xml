@@ -525,7 +525,9 @@
     <string name="social_avatar_use_default">Use Default</string>
     <string name="social_avatar_cancel">Cancel</string>
     <string name="social_avatar_preview_cd">Preview of processed profile photo</string>
-    <string name="social_avatar_undo_success">Reverted to previous profile photo</string>    <string name="social_avatar_redo_success">Reapplied profile photo</string>
+    <string name="social_avatar_undo_success">Reverted to previous profile photo</string>
+    <string name="social_avatar_redo_success">Reapplied profile photo</string>
 </resources>
+
 
 

@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.20] - 2025-09-30
+
+### 🔥 **Hotfix Release**
+
+#### **Maintenance**
+- Bumped StudyPlan to version 2.9.20 for the emergency Play Store rollout
+- Captured the hotfix release metadata so stores stay in sync with shipped binaries
+
+#### **Build Information**
+- Version: 2.9.20
+- Platform: Android API 34+
+
 ## [2.9.13] - 2025-01-14
 
 ### 🌙 **Dark Theme Hotfix & UI Improvements**

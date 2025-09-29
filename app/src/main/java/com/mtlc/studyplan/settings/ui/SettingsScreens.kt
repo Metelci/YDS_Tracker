@@ -55,14 +55,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.mtlc.studyplan.settings.data.NavigationSettings
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mtlc.studyplan.data.StudyProgressRepository
+import com.mtlc.studyplan.data.OnboardingRepository
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import android.content.Intent
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     onNavigateToCategory: (String) -> Unit = {},
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    studyProgressRepository: StudyProgressRepository? = null,
+    onboardingRepository: OnboardingRepository? = null
 ) {
     val s = LocalSpacing.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -177,7 +188,34 @@ fun SettingsScreen(
                         TextButton(
                             onClick = {
                                 showResetDialog = false
-                                // Reset functionality would go here
+                                scope.launch {
+                                    // Clear all study progress
+                                    studyProgressRepository?.resetProgress()
+
+                                    // Clear onboarding state
+                                    onboardingRepository?.resetOnboarding()
+
+                                    // Clear all settings
+                                    context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE)
+                                        .edit()
+                                        .clear()
+                                        .apply()
+
+                                    // Clear DataStore preferences
+                                    context.getSharedPreferences("study_progress", android.content.Context.MODE_PRIVATE)
+                                        .edit()
+                                        .clear()
+                                        .apply()
+
+                                    // Restart the app
+                                    val packageManager = context.packageManager
+                                    val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+                                    intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+
+                                    // Kill the current process to ensure clean restart
+                                    android.os.Process.killProcess(android.os.Process.myPid())
+                                }
                             }
                         ) {
                             Text("Reset Everything", color = MaterialTheme.colorScheme.error)
@@ -201,13 +239,15 @@ private fun CategoryPill(
     selected: Boolean,
     onClick: (String) -> Unit,
 ) {
-    val bg = if (selected) DesignTokens.PrimaryContainer else DesignTokens.Surface
-    val fg = if (selected) DesignTokens.PrimaryContainerForeground else MaterialTheme.colorScheme.onSurfaceVariant
+    val colorScheme = MaterialTheme.colorScheme
+    val backgroundColor = if (selected) colorScheme.primaryContainer else colorScheme.surface
+    val contentColor = if (selected) colorScheme.onPrimaryContainer else colorScheme.onSurface
+    val borderColor = if (selected) colorScheme.primary else colorScheme.outline
     Surface(
-        color = bg,
+        color = backgroundColor,
         shape = RoundedCornerShape(16.dp),
-        tonalElevation = 0.dp,
-        border = BorderStroke(1.dp, if (selected) DesignTokens.Primary.copy(alpha = 0.25f) else DesignTokens.Border),
+        tonalElevation = if (selected) 0.dp else 2.dp,
+        border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
             .padding(vertical = 6.dp)
             .width(110.dp)
@@ -220,9 +260,9 @@ private fun CategoryPill(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(icon, contentDescription = label, tint = fg, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = label, tint = contentColor, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text(label, color = fg, fontSize = 14.sp)
+            Text(label, color = contentColor, fontSize = 14.sp)
         }
     }
 }

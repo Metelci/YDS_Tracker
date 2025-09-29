@@ -92,6 +92,7 @@ import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.TaskSettings
 import com.mtlc.studyplan.ui.components.LanguageSwitcher
 import com.mtlc.studyplan.ui.theme.DesignTokens
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -368,18 +369,50 @@ fun OriginalSettingsScreen(
                                 try {
                                     // Reset all progress data
                                     val progressRepo = StudyProgressRepository(context)
-                                    val onboardingRepo = OnboardingRepository(context.dataStore)
+                                    val onboardingRepo = OnboardingRepository(context.settingsDataStore)
 
                                     progressRepo.resetProgress()
                                     onboardingRepo.resetOnboarding()
 
-                                    // Restart the app by finishing the current activity and navigating to onboarding
-                                    if (context is Activity) {
-                                        context.finishAffinity()
-                                        // The app will restart and show onboarding due to resetOnboarding()
+                                    // Clear all SharedPreferences
+                                    context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE)
+                                        .edit()
+                                        .clear()
+                                        .commit()
+
+                                    // Clear database if exists
+                                    try {
+                                        val database = StudyPlanDatabase.getDatabase(context)
+                                        database.clearAllTables()
+                                    } catch (e: Exception) {
+                                        Log.e("SettingsReset", "Failed to clear database", e)
                                     }
-                                } catch (_: Exception) {
-                                    // Handle error silently - user will see the reset didn't work
+
+                                    // Small delay to ensure all data is written
+                                    kotlinx.coroutines.delay(200)
+
+                                    // Restart the app to initial state
+                                    val packageManager = context.packageManager
+                                    val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+                                    intent?.let {
+                                        it.addFlags(
+                                            android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        )
+                                        context.startActivity(it)
+
+                                        // Small delay before killing process
+                                        kotlinx.coroutines.delay(100)
+
+                                        // Exit the app properly
+                                        if (context is Activity) {
+                                            context.finishAffinity()
+                                        }
+                                        android.os.Process.killProcess(android.os.Process.myPid())
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("SettingsReset", "Failed to reset app", e)
+                                    Toast.makeText(context, "Failed to reset. Please try again.", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -511,16 +544,6 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
                 checked = taskSettings.smartScheduling,
                 onCheckedChange = { checked ->
                     settingsManager.updateTaskSettings(taskSettings.copy(smartScheduling = checked))
-                }
-            )
-
-            SettingToggleItem(
-                icon = Icons.Outlined.Tune,
-                title = "Auto Difficulty Adjustment",
-                description = "Automatically adjust task difficulty",
-                checked = taskSettings.autoDifficultyAdjustment,
-                onCheckedChange = { checked ->
-                    settingsManager.updateTaskSettings(taskSettings.copy(autoDifficultyAdjustment = checked))
                 }
             )
 
@@ -709,36 +732,6 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Profile Visibility selection moved here from Social page
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        text = "Profile Visibility",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        VisibilityChip(
-                            label = "Public",
-                            selected = privacySettings.profileVisibility == ProfileVisibility.PUBLIC
-                        ) { settingsManager.updatePrivacySettings(privacySettings.copy(profileVisibility = ProfileVisibility.PUBLIC)) }
-                        VisibilityChip(
-                            label = "Friends Only",
-                            selected = privacySettings.profileVisibility == ProfileVisibility.FRIENDS_ONLY
-                        ) { settingsManager.updatePrivacySettings(privacySettings.copy(profileVisibility = ProfileVisibility.FRIENDS_ONLY)) }
-                        VisibilityChip(
-                            label = "Private",
-                            selected = privacySettings.profileVisibility == ProfileVisibility.PRIVATE
-                        ) { settingsManager.updatePrivacySettings(privacySettings.copy(profileVisibility = ProfileVisibility.PRIVATE)) }
-                    }
-                }
-            }
-
             SettingToggleItem(
                 icon = Icons.Outlined.Assessment,
                 title = "Analytics",
@@ -939,8 +932,8 @@ private fun WeeklyGoalCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -993,27 +986,31 @@ private fun WeeklyGoalCard(
 
 
 
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
+                    // Background track (inactive)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(6.dp)
+                            .height(8.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(WEEKLY_GOAL_INACTIVE_TRACK.copy(alpha = 0.35f))
+                            .background(WEEKLY_GOAL_INACTIVE_TRACK.copy(alpha = 0.5f))
                     )
+                    // Active track (progress)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(sliderProgressFraction)
-                            .height(6.dp)
+                            .height(8.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(WEEKLY_GOAL_ACTIVE_TRACK)
+                            .align(Alignment.CenterStart)
                     )
+                    // Slider with visible thumb
                     Slider(
                         value = selectedGoalHours.toFloat(),
                         onValueChange = { rawValue ->
@@ -1025,7 +1022,7 @@ private fun WeeklyGoalCard(
                         valueRange = WEEKLY_GOAL_MIN.toFloat()..WEEKLY_GOAL_MAX.toFloat(),
                         steps = WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN,
                         colors = SliderDefaults.colors(
-                            thumbColor = Color.White,
+                            thumbColor = WEEKLY_GOAL_VALUE_COLOR,
                             activeTrackColor = Color.Transparent,
                             inactiveTrackColor = Color.Transparent,
                             activeTickColor = Color.Transparent,
@@ -1041,21 +1038,21 @@ private fun WeeklyGoalCard(
                 ) {
                     Text(
                         text = "3h (Casual)",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
                     )
                     Text(
                         text = "15h (Balanced)",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "35h (Intensive)",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.End

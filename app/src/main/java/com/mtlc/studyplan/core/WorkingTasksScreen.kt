@@ -25,9 +25,11 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.runtime.*
@@ -53,6 +55,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.mtlc.studyplan.data.CompleteMurphyBookData
 import com.mtlc.studyplan.data.MurphyTaskInfo
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,8 +71,12 @@ fun WorkingTasksScreen(
 
     val plan = remember { PlanDataSource.planData }
 
-    var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan, 3: Custom
+    var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
     var selectedDay by remember { mutableStateOf<DayPlan?>(null) }
+    var showModifyWeekDialog by remember { mutableStateOf(false) }
+    var showGenerateWeekDialog by remember { mutableStateOf(false) }
+    var showAnalyticsDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Get the week that corresponds to user's current progress
     val thisWeek = remember(currentWeek) {
@@ -94,13 +101,20 @@ fun WorkingTasksScreen(
         TasksGradientTopBar(appIntegrationManager)
         Spacer(Modifier.height(8.dp))
         SegmentedControl(
-            segments = listOf("Daily", "Weekly", "Plan", "Custom"),
+            segments = listOf("Daily", "Weekly", "Plan"),
             selectedIndex = selectedTab,
             onSelect = { selectedTab = it }
         )
         Spacer(Modifier.height(8.dp))
         when (selectedTab) {
             0 -> DailyTab(selectedDay, currentWeek = currentWeek, onBackToPlan = { selectedTab = 2 })
+            1 -> WeeklyTab(
+                thisWeek = thisWeek,
+                currentWeek = currentWeek,
+                studyProgressRepository = studyProgressRepository,
+                onNavigateToPlan = { selectedTab = 2 },
+                onNavigateToStudyPlan = onNavigateToStudyPlan
+            )
             2 -> PlanTab(
                 thisWeek = thisWeek,
                 weeklyProgressPct = weeklyProgressPct,
@@ -108,12 +122,120 @@ fun WorkingTasksScreen(
                     selectedDay = day
                     selectedTab = 0  // Switch to Daily tab
                 },
-                onNavigateToStudyPlan = onNavigateToStudyPlan
+                onNavigateToStudyPlan = onNavigateToStudyPlan,
+                onModifyWeek = { showModifyWeekDialog = true },
+                onGenerateWeek = { showGenerateWeekDialog = true },
+                onViewAnalytics = { showAnalyticsDialog = true }
             )
-            else -> PlaceholderTab()
         }
         }
 
+        // Dialogs
+        if (showModifyWeekDialog) {
+            AlertDialog(
+                onDismissRequest = { showModifyWeekDialog = false },
+                title = { Text("Modify This Week") },
+                text = {
+                    Column {
+                        Text("Customize your current week's study plan. You can:")
+                        Spacer(Modifier.height(8.dp))
+                        Text("• Add or remove tasks")
+                        Text("• Adjust task durations")
+                        Text("• Reorder tasks")
+                        Text("• Mark tasks as complete")
+                        Spacer(Modifier.height(8.dp))
+                        Text("Tap on any day in the Plan tab to edit tasks.", fontWeight = FontWeight.SemiBold)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showModifyWeekDialog = false
+                        selectedTab = 2 // Switch to Plan tab
+                    }) {
+                        Text("Go to Plan")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showModifyWeekDialog = false }) {
+                        Text("Close")
+                    }
+                }
+            )
+        }
+
+        if (showGenerateWeekDialog) {
+            AlertDialog(
+                onDismissRequest = { showGenerateWeekDialog = false },
+                title = { Text("Generate Next Week") },
+                text = {
+                    Column {
+                        Text("Current Week: $currentWeek")
+                        Spacer(Modifier.height(12.dp))
+                        Text("This will advance you to Week ${currentWeek + 1}.")
+                        Spacer(Modifier.height(8.dp))
+                        if (currentWeek < 30) {
+                            Text("The next week's plan includes:")
+                            Spacer(Modifier.height(4.dp))
+                            val nextWeek = plan.getOrNull(currentWeek)
+                            if (nextWeek != null) {
+                                Text("• ${nextWeek.days.sumOf { it.tasks.size }} tasks across 7 days")
+                                Text("• Focus: ${nextWeek.days.firstOrNull()?.tasks?.firstOrNull()?.desc ?: "Various topics"}")
+                            } else {
+                                Text("You've completed all 30 weeks! 🎉")
+                            }
+                        } else {
+                            Text("Congratulations! You've completed all 30 weeks of study.", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (currentWeek < 30) {
+                        TextButton(onClick = {
+                            showGenerateWeekDialog = false
+                            coroutineScope.launch {
+                                studyProgressRepository.advanceToNextWeek()
+                            }
+                        }) {
+                            Text("Advance to Week ${currentWeek + 1}")
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showGenerateWeekDialog = false }) {
+                        Text(if (currentWeek >= 30) "Close" else "Cancel")
+                    }
+                }
+            )
+        }
+
+        if (showAnalyticsDialog) {
+            AlertDialog(
+                onDismissRequest = { showAnalyticsDialog = false },
+                title = { Text("Planning Analytics") },
+                text = {
+                    Column {
+                        Text("Study Progress Overview", fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(12.dp))
+                        Text("Current Week: $currentWeek of 30")
+                        Text("Progress: ${(currentWeek * 100 / 30)}%")
+                        Spacer(Modifier.height(12.dp))
+                        val totalWeekTasks = thisWeek?.days?.sumOf { it.tasks.size } ?: 0
+                        Text("This Week:", fontWeight = FontWeight.SemiBold)
+                        Text("• Total tasks: $totalWeekTasks")
+                        Text("• Days remaining: ${7 - java.time.LocalDate.now().dayOfWeek.value}")
+                        Spacer(Modifier.height(12.dp))
+                        Text("Remaining Weeks: ${30 - currentWeek}")
+                        Spacer(Modifier.height(8.dp))
+                        Text("Keep up the great work! 📚", color = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAnalyticsDialog = false }) {
+                        Text("Close")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -299,9 +421,442 @@ private fun XpButton(xp: Int) {
 }
 
 @Composable
-private fun PlaceholderTab() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Coming soon", color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun WeeklyTab(
+    thisWeek: WeekPlan?,
+    currentWeek: Int,
+    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    onNavigateToPlan: () -> Unit = {},
+    onNavigateToStudyPlan: () -> Unit = {}
+) {
+    val scope = rememberCoroutineScope()
+    val cardShape = RoundedCornerShape(16.dp)
+
+    // Calculate weekly stats from real plan data
+    val totalTasks = remember(thisWeek) {
+        thisWeek?.days?.sumOf { it.tasks.size } ?: 0
+    }
+
+    // For initial use: Show 0 completed tasks (user starts fresh)
+    // This will be updated when task completion tracking is integrated
+    val completedTasks = 0
+
+    val weekProgress = remember(completedTasks, totalTasks) {
+        if (totalTasks > 0) completedTasks.toFloat() / totalTasks else 0f
+    }
+
+    val currentDayOfWeek = remember { java.time.LocalDate.now().dayOfWeek.value }
+    val daysCompleted = remember(currentDayOfWeek) {
+        currentDayOfWeek.coerceIn(1, 7) // Monday=1, Sunday=7
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 28.dp)
+    ) {
+        // Week Header Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = cardShape,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "Week $currentWeek of 30",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Day $daysCompleted of 7",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            )
+                        }
+
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(64.dp)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    "${(weekProgress * 100).toInt()}%",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Progress bar
+                    Column {
+                        LinearProgressIndicator(
+                            progress = weekProgress,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "$completedTasks of $totalTasks tasks completed",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Week Navigation
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = cardShape
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            if (currentWeek > 1) {
+                                scope.launch {
+                                    studyProgressRepository.setManualWeekOverride(currentWeek - 1)
+                                }
+                            }
+                        },
+                        enabled = currentWeek > 1,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Previous Week",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Previous")
+                    }
+
+                    Text(
+                        "Week $currentWeek",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    OutlinedButton(
+                        onClick = {
+                            if (currentWeek < 30) {
+                                scope.launch {
+                                    studyProgressRepository.setManualWeekOverride(currentWeek + 1)
+                                }
+                            }
+                        },
+                        enabled = currentWeek < 30,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Next")
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Next Week",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Daily Summary
+        item {
+            Text(
+                "This Week's Schedule",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
+
+        // Days of the week
+        thisWeek?.days?.forEachIndexed { index, day ->
+            item {
+                WeeklyDayCard(
+                    day = day,
+                    dayNumber = index + 1,
+                    isToday = index + 1 == currentDayOfWeek,
+                    onClick = onNavigateToPlan
+                )
+            }
+        }
+
+        // Quick Actions
+        item {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Quick Actions",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Card(
+                    modifier = Modifier.weight(1f),
+                    shape = cardShape,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onNavigateToPlan() }
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Filled.CalendarToday,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "View Plan",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.weight(1f),
+                    shape = cardShape,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onNavigateToStudyPlan() }
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Filled.School,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Study Plan",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            }
+        }
+
+        // Week Stats Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = cardShape,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "Week Statistics",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        WeekStatItem(
+                            icon = Icons.Filled.CheckCircle,
+                            label = "Completed",
+                            value = "$completedTasks",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        WeekStatItem(
+                            icon = Icons.Filled.Circle,
+                            label = "Remaining",
+                            value = "${totalTasks - completedTasks}",
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        WeekStatItem(
+                            icon = Icons.AutoMirrored.Filled.MenuBook,
+                            label = "Total",
+                            value = "$totalTasks",
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeeklyDayCard(
+    day: DayPlan,
+    dayNumber: Int,
+    isToday: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = if (isToday) {
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        } else {
+            CardDefaults.cardColors()
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = if (isToday) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        dayNumber.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isToday) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        day.day,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    if (isToday) {
+                        Spacer(Modifier.width(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        ) {
+                            Text(
+                                "TODAY",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "${day.tasks.size} tasks",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Icon(
+                Icons.Filled.ChevronRight,
+                contentDescription = "View",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeekStatItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String,
+    color: Color
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(28.dp)
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            value,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            label,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -310,7 +865,10 @@ private fun PlanTab(
     thisWeek: WeekPlan?,
     weeklyProgressPct: Float,
     onDayClick: (DayPlan) -> Unit = {},
-    onNavigateToStudyPlan: () -> Unit = {}
+    onNavigateToStudyPlan: () -> Unit = {},
+    onModifyWeek: () -> Unit = {},
+    onGenerateWeek: () -> Unit = {},
+    onViewAnalytics: () -> Unit = {}
 ) {
     val cardShape = RoundedCornerShape(16.dp)
     LazyColumn(
@@ -431,16 +989,18 @@ private fun PlanTab(
                         ManagementTile(
                             title = "Modify\nThis Week",
                             icon = Icons.Filled.EditCalendar,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = onModifyWeek
                         )
                         ManagementTile(
                             title = "Generate\nNext Week",
                             icon = Icons.Filled.Quiz,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = onGenerateWeek
                         )
                     }
                     Spacer(Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { }) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onViewAnalytics() }) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(6.dp))
                         Text("View Planning Analytics", color = MaterialTheme.colorScheme.primary)
@@ -452,12 +1012,17 @@ private fun PlanTab(
 }
 
 @Composable
-private fun ManagementTile(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
+private fun ManagementTile(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Surface(
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 0.dp,
         color = MaterialTheme.colorScheme.surface,
-        modifier = modifier.clickable { }
+        modifier = modifier.clickable { onClick() }
     ) {
         Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
@@ -1378,10 +1943,16 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
 
 @Composable
 private fun StudyMaterialItem(material: StudyMaterial) {
+    val context = LocalContext.current
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.clickable { /* Handle material click */ }
+        modifier = Modifier.clickable {
+            if (material.url.isNotEmpty()) {
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(material.url))
+                context.startActivity(intent)
+            }
+        }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -1407,7 +1978,8 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                 Text(
                     text = material.title,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 if (material.description.isNotEmpty()) {
                     Text(
@@ -1418,11 +1990,11 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                 }
             }
 
-            Text(
-                text = material.type.name,
-                fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium
+            Icon(
+                imageVector = Icons.Filled.ChevronRight,
+                contentDescription = "Open link",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
@@ -1619,24 +2191,39 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
             isCompleted = index == 0 && dayIndex < 3
         )
     }
-    // Create sample materials
+    // Real study materials from trusted platforms
     val materials = listOf(
         StudyMaterial(
-            title = "Grammar Video Lesson",
+            title = "British Council LearnEnglish",
             type = MaterialType.VIDEO,
-            description = "Interactive video explaining today's grammar concepts"
+            url = "https://learnenglish.britishcouncil.org/",
+            description = "Grammar lessons, vocabulary and pronunciation exercises"
         ),
         StudyMaterial(
-            title = "Practice Worksheet",
-            type = MaterialType.PDF,
-            description = "Additional practice exercises"
+            title = "Cambridge English Practice",
+            type = MaterialType.EXERCISE,
+            url = "https://www.cambridgeenglish.org/learning-english/",
+            description = "Official Cambridge exam practice materials"
         ),
         StudyMaterial(
-            title = "Interactive Quiz",
+            title = "BBC Learning English",
+            type = MaterialType.AUDIO,
+            url = "https://www.bbc.co.uk/learningenglish/",
+            description = "Daily English lessons with audio and video content"
+        ),
+        StudyMaterial(
+            title = "Duolingo English Test Prep",
             type = MaterialType.QUIZ,
-            description = "Test your understanding of today's lesson"
+            url = "https://englishtest.duolingo.com/prepare",
+            description = "Interactive practice tests and quizzes"
+        ),
+        StudyMaterial(
+            title = "Oxford Online English",
+            type = MaterialType.VIDEO,
+            url = "https://www.youtube.com/@OxfordOnlineEnglish",
+            description = "Free video lessons covering grammar, vocabulary, and more"
         )
-    ).take(2 + dayIndex % 2)
+    ).take(3 + dayIndex % 2)
 
     // Create notes based on the day
     val notes = when (dayIndex) {

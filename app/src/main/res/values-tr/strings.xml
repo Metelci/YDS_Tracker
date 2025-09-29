@@ -490,11 +490,40 @@
     <string name="reset_everything">Her Şeyi Sıfırla</string>
     <string name="cancel">İptal</string>
     <string name="studyplan_version">StudyPlan YDS Takipçisi\nSürüm %1$s</string>
-
-    <!-- Settings content -->
+    <string name="social_profile_photo_label">Profil Fotografi</string>
+    <string name="social_avatar_supported_formats_hint">Desteklenen formatlar: JPG, PNG, GIF, WebP (en fazla 2 MB)</string>
+    <string name="social_avatar_action_in_progress">Uygulaniyor.</string>
+    <string name="social_upload_avatar_button">Profil Fotografi Yukle</string>
+    <string name="social_avatar_upload_icon_cd">Profil fotografi yukle</string>
+    <string name="social_avatar_custom_cd">Ozel avatar</string>
+    <string name="social_avatar_undo_cd">Avatar degisligini geri al</string>
+    <string name="social_avatar_redo_cd">Avatar degisligini yeniden uygula</string>
+    <string name="social_avatar_error_size">Gorsel dosyasi 2 MB veya daha kucuk olmali</string>
+    <string name="social_avatar_error_format">Desteklenmeyen gorsel formati. Lutfen JPG, PNG, GIF veya WebP kullanin</string>
+    <string name="social_avatar_error_dimensions">Gorsel boyutlari gecersiz</string>
+    <string name="social_avatar_error_access">Gorsel dosyasina erisilemiyor</string>
+    <string name="social_avatar_error_generic">Avatar islenemedi: %1$s</string>
+    <string name="social_avatar_error_generic_fallback">Bilinmeyen hata</string>
+    <string name="social_avatar_preview_title">Profil fotografini onizle</string>
+    <string name="social_avatar_preview_loading">Fotografiniz hazirlaniyor.</string>
+    <string name="social_avatar_retry">Tekrar Dene</string>
+    <string name="social_avatar_preview_hint">Bu onizleme profil fotografinizin nasil gorunecegini gosterir.</string>
+    <string name="social_avatar_size_mb">%1$.1f MB</string>
+    <string name="social_avatar_size_kb">%1$d KB</string>
+    <string name="social_avatar_size_unknown">Dosya boyutu kullanilamiyor</string>
+    <string name="social_avatar_resolution">%1$d x %2$d px</string>
+    <string name="social_avatar_resolution_unknown">Cozunurluk kullanilamiyor</string>
+    <string name="social_avatar_no_preview">Onizleme kullanilamiyor.</string>
+    <string name="social_avatar_apply">Uygula</string>
+    <string name="social_avatar_use_default">Varsayilani Kullan</string>
+    <string name="social_avatar_cancel">Iptal</string>
+    <string name="social_avatar_preview_cd">Islenmis profil fotografi onizlemesi</string>
+    <string name="social_avatar_undo_success">Onceki profil fotografina donuldu</string>
+    <string name="social_avatar_redo_success">Profil fotografi yeniden uygulandi</string>
     <string name="topbar_tasks_title">Günlük Görevler</string>
     <string name="topbar_tasks_subtitle">Görevleri tamamlayarak serinizi sürdürün</string>
 
 </resources>
+
 
 

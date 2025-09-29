@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Celebration
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -117,13 +120,48 @@ fun GamificationSettingsScreen(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialSettingsScreen(onBack: () -> Unit) {
-    SettingsCategoryScaffold(title = "Social", subtitle = "Connect with other learners", onBack = onBack) {
+    SettingsCategoryScaffold(title = "Social", subtitle = "Friends, rankings, and stats", onBack = onBack) {
         Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Social", Icons.Filled.People)
-                SettingRowToggle(title = "Share Progress", description = "Share your achievements with friends", checked = false) { }
-                SettingRowToggle(title = "Public Profile", description = "Make your profile visible to others", checked = true) { }
-                SettingRowToggle(title = "Friend Requests", description = "Allow others to send friend requests", checked = true) { }
+                SettingRowToggle(title = "Share Stats with Friends", description = "Allow friends to see your XP and streak", checked = true) { }
+                SettingRowToggle(title = "Show in Leaderboards", description = "Appear in friend leaderboards", checked = true) { }
+                SettingRowToggle(title = "Award Notifications", description = "Notify friends when you unlock awards", checked = true) { }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Privacy",
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "• Friends connect via email only\n" +
+                    "• No messaging or chat features\n" +
+                    "• Only stats, rankings, and awards are shared\n" +
+                    "• Your email is never shared with others",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             }
         }
     }
@@ -137,7 +175,6 @@ fun TaskSettingsScreen(onBack: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Tasks", Icons.AutoMirrored.Filled.Send)
                 SettingRowToggle(title = "Smart Scheduling", description = "AI-powered study session recommendations", checked = true) { }
-                SettingRowToggle(title = "Auto Difficulty", description = "Automatically adjust task difficulty", checked = false) { }
                 SettingRowToggle(title = "Daily Reminders", description = "Remind me of my daily study goals", checked = true) { }
                 SettingRowToggle(title = "Progress Tracking", description = "Track time spent on tasks", checked = true) { }
             }
