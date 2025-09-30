@@ -1,17 +1,36 @@
 package com.mtlc.studyplan.core
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.selection.selectable
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
@@ -19,47 +38,60 @@ import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.FormatQuote
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mtlc.studyplan.data.*
-import com.mtlc.studyplan.R
+import com.mtlc.studyplan.data.CompleteMurphyBookData
+import com.mtlc.studyplan.data.DayPlan
+import com.mtlc.studyplan.data.MurphyBook
+import com.mtlc.studyplan.data.MurphyUnit
+import com.mtlc.studyplan.data.PlanDataSource
+import com.mtlc.studyplan.data.PlanTaskLocalizer
+import com.mtlc.studyplan.data.Task
+import com.mtlc.studyplan.data.TaskPriority
+import com.mtlc.studyplan.data.TaskRepository
+import com.mtlc.studyplan.data.WeekPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import com.mtlc.studyplan.data.CompleteMurphyBookData
-import com.mtlc.studyplan.data.MurphyTaskInfo
-import com.mtlc.studyplan.shared.SharedAppViewModel
-import android.widget.Toast
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +100,6 @@ fun WorkingTasksScreen(
     studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
     taskRepository: TaskRepository,
     sharedViewModel: SharedAppViewModel,
-    onNavigateBack: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -234,7 +265,7 @@ fun WorkingTasksScreen(
                         val totalWeekTasks = thisWeek?.days?.sumOf { it.tasks.size } ?: 0
                         Text("This Week:", fontWeight = FontWeight.SemiBold)
                         Text("• Total tasks: $totalWeekTasks")
-                        Text("• Days remaining: ${7 - java.time.LocalDate.now().dayOfWeek.value}")
+                        Text("• Days remaining: ${7 - LocalDate.now().dayOfWeek.value}")
                         Spacer(Modifier.height(12.dp))
                         Text("Remaining Weeks: ${30 - currentWeek}")
                         Spacer(Modifier.height(8.dp))
@@ -259,7 +290,7 @@ private fun SegmentedControl(
     modifier: Modifier = Modifier
 ) {
     val heights = responsiveHeights()
-    val touchTarget = touchTargetSize()
+    touchTargetSize()
     // Rail
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -422,17 +453,6 @@ private fun TasksGradientTopBar(
 }
 
 @Composable
-private fun XpButton(xp: Int) {
-    Surface(color = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer, shape = RoundedCornerShape(24.dp)) {
-        Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("${xp} XP", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-        }
-    }
-}
-
-@Composable
 private fun WeeklyTab(
     thisWeek: WeekPlan?,
     currentWeek: Int,
@@ -456,7 +476,7 @@ private fun WeeklyTab(
         if (totalTasks > 0) completedTasks.toFloat() / totalTasks else 0f
     }
 
-    val currentDayOfWeek = remember { java.time.LocalDate.now().dayOfWeek.value }
+    val currentDayOfWeek = remember { LocalDate.now().dayOfWeek.value }
     val daysCompleted = remember(currentDayOfWeek) {
         currentDayOfWeek.coerceIn(1, 7) // Monday=1, Sunday=7
     }
@@ -1100,384 +1120,6 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
     }
 }
 
-// Enhanced Task Detail Modal with Murphy Book Information
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TaskDetailModal(
-    task: PlanTask?,
-    onDismiss: () -> Unit
-) {
-    if (task == null) return
-
-    val murphyTaskInfo = CompleteMurphyBookData.parseMurphyTask(task.details)
-    val isGrammarTask = task.desc.contains("Gramer Konulari", true)
-    val showMurphyDetails = isGrammarTask && murphyTaskInfo != null
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        dragHandle = { BottomSheetDefaults.DragHandle() }
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Task Header
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-                        Text(
-                            text = task.desc,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (task.details != null) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = task.details,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Murphy Book Information (if this is a grammar task)
-            if (showMurphyDetails) {
-                // Book Header
-                val info = murphyTaskInfo!!
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = info.book.color.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Surface(
-                                    color = info.book.color,
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier.size(56.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(
-                                            text = info.book.name.first().toString(),
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = info.book.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = info.book.color
-                                    )
-                                    Text(
-                                        text = info.book.level,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Units Information
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Units ${info.unitRange}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = info.book.color
-                                )
-
-                                Surface(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Text(
-                                        text = "${info.units.size} units",
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            // Display individual units
-                            info.units.take(3).forEach { unit ->
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(12.dp)
-                                    ) {
-                                        Row(
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text(
-                                                text = "Unit ${unit.unitNumber}",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                            Text(
-                                                text = "Pages ${unit.pages}",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                        Text(
-                                            text = unit.title,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-
-                            if (info.units.size > 3) {
-                                Text(
-                                    text = "...and ${info.units.size - 3} more units",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Study Instructions
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Study Instructions",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(
-                                text = info.book.studyMethodology,
-                                style = MaterialTheme.typography.bodyMedium,
-                                lineHeight = 20.sp
-                            )
-                        }
-                    }
-                }
-
-                // Sample Unit Details (show first unit)
-                if (info.units.isNotEmpty()) {
-                    val sampleUnit = info.units.first()
-
-                    // Key Grammar Points
-                    if (sampleUnit.keyPoints.isNotEmpty()) {
-                        item {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
-                                )
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(20.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Star,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "Key Points (Sample from Unit ${sampleUnit.unitNumber})",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    sampleUnit.keyPoints.forEach { point ->
-                                        Row(
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Circle,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.size(8.dp).padding(top = 8.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = point,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Example Sentences
-                    if (sampleUnit.exampleSentences.isNotEmpty()) {
-                        item {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
-                                )
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(20.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.FormatQuote,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "Example Sentences (Unit ${sampleUnit.unitNumber})",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    sampleUnit.exampleSentences.forEach { example ->
-                                        Surface(
-                                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                            shape = RoundedCornerShape(8.dp)
-                                        ) {
-                                            Text(
-                                                text = example,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(12.dp),
-                                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Non-grammar task - show basic task details
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Assignment,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Study Task",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(
-                                text = "Complete this study task according to your plan. Check off when finished.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 // Daily Tab Implementation
 @Composable
 private fun DailyTab(
@@ -1800,18 +1442,23 @@ private fun StudyBookCard(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Create stable callback using remember
+                val onUnitClick = remember<(StudyUnit) -> Unit> { { unit ->
+                    selectedUnit = unit
+                    val taskId = generateMurphyTaskId(book, unit)
+                    val isCompleted = murphyTaskIds.contains(taskId)
+                    if (!isCompleted && !isCreatingTask) {
+                        isCreatingTask = true
+                    }
+                }}
+
                 units.forEach { unit ->
                     val taskId = generateMurphyTaskId(book, unit)
                     val isCompleted = murphyTaskIds.contains(taskId)
 
                     StudyUnitItem(
                         unit = unit.copy(isCompleted = isCompleted),
-                        onClick = {
-                            selectedUnit = unit
-                            if (!isCompleted && !isCreatingTask) {
-                                isCreatingTask = true
-                            }
-                        }
+                        onClick = { onUnitClick(unit) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -1925,6 +1572,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
+                // Use forEach for now since we're not in a LazyColumn context
                 tasks.forEach { task ->
                     DailyTaskItem(task)
                     Spacer(modifier = Modifier.height(8.dp))

@@ -2,6 +2,7 @@ package com.mtlc.studyplan.security
 
 import android.content.Context
 import android.annotation.SuppressLint
+import android.content.pm.ApplicationInfo
 import com.mtlc.studyplan.utils.SecurityUtils
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,6 +18,9 @@ import javax.net.ssl.*
  */
 class NetworkSecurityManager(private val context: Context) {
 
+    private val isDebugBuild: Boolean
+        get() = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
     private val certificatePinner: CertificatePinner by lazy {
         CertificatePinner.Builder()
             // OSYM API certificate pinning - temporarily using constants (to be moved to BuildConfig)
@@ -31,17 +35,21 @@ class NetworkSecurityManager(private val context: Context) {
      */
     fun createSecureOkHttpClient(apiKey: String? = null): OkHttpClient {
         return try {
-            OkHttpClient.Builder()
+            val builder = OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor(createAuthInterceptor(apiKey))
                 .addInterceptor(createSecurityHeadersInterceptor())
-                .addInterceptor(createLoggingInterceptor())
                 .certificatePinner(certificatePinner)
                 .sslSocketFactory(createSecureSSLSocketFactory(), getTrustManager())
                 .hostnameVerifier(createHostnameVerifier())
-                .build()
+
+            if (isDebugBuild) {
+                builder.addInterceptor(createLoggingInterceptor())
+            }
+
+            builder.build()
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Failed to create secure OkHttpClient: ${e.message}",
@@ -123,8 +131,9 @@ class NetworkSecurityManager(private val context: Context) {
      */
     private fun createSecureSSLSocketFactory(): SSLSocketFactory {
         return try {
-            val sslContext = SSLContext.getInstance("TLSv1.3")
-            sslContext.init(null, arrayOf(getTrustManager()), java.security.SecureRandom())
+            val sslContext = SSLContext.getInstance("TLS")
+            val trustManager = getTrustManager()
+            sslContext.init(null, arrayOf(trustManager), java.security.SecureRandom())
             sslContext.socketFactory
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
@@ -144,145 +153,14 @@ class NetworkSecurityManager(private val context: Context) {
             trustManagerFactory.init(null as java.security.KeyStore?)
 
             val trustManagers = trustManagerFactory.trustManagers
-            trustManagers.filterIsInstance<X509TrustManager>().first()
+            trustManagers.filterIsInstance<X509TrustManager>().firstOrNull()
+                ?: throw IllegalStateException("No X509TrustManager available")
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Trust Manager creation failed: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
-            // Fallback trust manager
-            object : X509TrustManager {
-                @Throws(CertificateException::class)
-                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-                    // Enhanced client certificate validation
-                    if (chain.isEmpty()) {
-                        throw CertificateException("Client certificate chain is empty")
-                    }
-                    
-                    // Validate certificate chain
-                    for ((index, cert) in chain.withIndex()) {
-                        try {
-                            // Check certificate validity period
-                            cert.checkValidity()
-                            
-                            // Verify certificate chain integrity
-                            if (index < chain.size - 1) {
-                                val nextCert = chain[index + 1]
-                                try {
-                                    cert.verify(nextCert.publicKey)
-                                } catch (e: Exception) {
-                                    throw CertificateException("Certificate chain verification failed at index $index", e)
-                                }
-                            }
-                            
-                            // Additional client certificate checks
-                            val basicConstraints = cert.basicConstraints
-                            if (basicConstraints != -1 && basicConstraints > 0) {
-                                // This is a CA certificate - validate it's appropriate for client auth
-                                val keyUsage = cert.keyUsage
-                                if (keyUsage != null && !keyUsage[5]) { // keyCertSign
-                                    SecurityUtils.SecurityLogger.logSecurityEvent(
-                                        "Client CA certificate lacks required keyCertSign usage",
-                                        SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
-                                    )
-                                }
-                            }
-                            
-                        } catch (e: Exception) {
-                            SecurityUtils.SecurityLogger.logSecurityEvent(
-                                "Client certificate validation failed: ${e.message}",
-                                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
-                            )
-                            throw CertificateException("Client certificate validation failed", e)
-                        }
-                    }
-                    
-                    SecurityUtils.SecurityLogger.logSecurityEvent(
-                        "Client certificate validation successful for authType: $authType"
-                    )
-                }
-
-                @Throws(CertificateException::class)
-                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
-                    // Enhanced server certificate validation
-                    if (chain.isEmpty()) {
-                        throw CertificateException("Server certificate chain is empty")
-                    }
-
-                    // Validate certificate chain
-                    for ((index, cert) in chain.withIndex()) {
-                        try {
-                            // Check certificate validity period
-                            cert.checkValidity()
-                            
-                            // Verify certificate chain integrity
-                            if (index < chain.size - 1) {
-                                val nextCert = chain[index + 1]
-                                try {
-                                    cert.verify(nextCert.publicKey)
-                                } catch (e: Exception) {
-                                    throw CertificateException("Server certificate chain verification failed at index $index", e)
-                                }
-                            }
-                            
-                            // Check key usage for server certificates
-                            if (index == 0) { // Leaf certificate
-                                val keyUsage = cert.keyUsage
-                                if (keyUsage != null) {
-                                    // Check for digital signature and key encipherment
-                                    if (!keyUsage[0] && !keyUsage[2]) { // digitalSignature || keyEncipherment
-                                        SecurityUtils.SecurityLogger.logSecurityEvent(
-                                            "Server certificate lacks required key usage",
-                                            SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
-                                        )
-                                    }
-                                }
-                                
-                                // Check extended key usage
-                                try {
-                                    val extKeyUsage = cert.extendedKeyUsage
-                                    if (extKeyUsage != null && !extKeyUsage.contains("1.3.6.1.5.5.7.3.1")) { // serverAuth
-                                        SecurityUtils.SecurityLogger.logSecurityEvent(
-                                            "Server certificate lacks serverAuth extended key usage",
-                                            SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
-                                        )
-                                    }
-                                } catch (e: Exception) {
-                                    // Extended key usage extension may not be present
-                                }
-                            }
-                            
-                        } catch (e: Exception) {
-                            SecurityUtils.SecurityLogger.logSecurityEvent(
-                                "Server certificate validation failed: ${e.message}",
-                                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
-                            )
-                            throw CertificateException("Server certificate validation failed", e)
-                        }
-                    }
-                    
-                    SecurityUtils.SecurityLogger.logSecurityEvent(
-                        "Server certificate validation successful for authType: $authType"
-                    )
-                }
-
-                override fun getAcceptedIssuers(): Array<X509Certificate> {
-                    // Return known trusted root CAs
-                    return try {
-                        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                        trustManagerFactory.init(null as java.security.KeyStore?)
-                        val defaultTrustManager = trustManagerFactory.trustManagers
-                            .first { it is X509TrustManager } as X509TrustManager
-                        defaultTrustManager.acceptedIssuers
-                    } catch (e: Exception) {
-                        SecurityUtils.SecurityLogger.logSecurityEvent(
-                            "Failed to get accepted issuers: ${e.message}",
-                            SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
-                        )
-                        emptyArray()
-                    }
-                }
-            }
+            throw SecurityException("Unable to obtain default trust manager", e)
         }
     }
 

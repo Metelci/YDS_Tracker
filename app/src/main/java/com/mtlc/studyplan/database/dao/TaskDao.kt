@@ -24,10 +24,10 @@ interface TaskDao {
     @Query("""
         SELECT * FROM tasks
         WHERE isActive = 1
-        AND (dueDate IS NULL OR DATE(dueDate/1000, 'unixepoch') = DATE('now'))
+        AND (dueDate IS NULL OR (dueDate >= :startOfDay AND dueDate < :endOfDay))
         ORDER BY priority DESC, createdAt ASC
     """)
-    fun getTodayTasks(): Flow<List<TaskEntity>>
+    fun getTodayTasks(startOfDay: Long, endOfDay: Long): Flow<List<TaskEntity>>
 
     @Query("""
         SELECT * FROM tasks
@@ -173,6 +173,25 @@ interface TaskDao {
     suspend fun reorderTasks(tasks: List<TaskEntity>) {
         tasks.forEachIndexed { index, task ->
             updateTask(task.copy(orderIndex = index, lastModified = System.currentTimeMillis()))
+        }
+    }
+
+    // Batch operations for better performance
+    @Transaction
+    suspend fun updateTasksBatch(tasks: List<TaskEntity>) {
+        tasks.forEach { task ->
+            updateTask(task)
+        }
+    }
+
+    @Query("UPDATE tasks SET priority = :priority, lastModified = :lastModified WHERE id = :taskId")
+    suspend fun updateTaskPriority(taskId: String, priority: TaskPriority, lastModified: Long = System.currentTimeMillis())
+
+    @Transaction
+    suspend fun updateTaskPriorities(updates: Map<String, TaskPriority>) {
+        val currentTime = System.currentTimeMillis()
+        updates.forEach { (taskId, priority) ->
+            updateTaskPriority(taskId, priority, currentTime)
         }
     }
 }

@@ -1,13 +1,24 @@
 package com.mtlc.studyplan.database.entities
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.mtlc.studyplan.shared.TaskCategory
 import com.mtlc.studyplan.shared.TaskDifficulty
 import com.mtlc.studyplan.shared.TaskPriority
 import java.util.UUID
 
-@Entity(tableName = "tasks")
+@Entity(
+    tableName = "tasks",
+    indices = [
+        Index(value = ["category", "isCompleted"], name = "idx_tasks_category_completed"),
+        Index(value = ["dueDate"], name = "idx_tasks_due_date"),
+        Index(value = ["createdAt"], name = "idx_tasks_created_at"),
+        Index(value = ["priority", "isCompleted"], name = "idx_tasks_priority_completed"),
+        Index(value = ["isCompleted", "completedAt"], name = "idx_tasks_completed_time"),
+        Index(value = ["parentTaskId"], name = "idx_tasks_parent_id")
+    ]
+)
 data class TaskEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val title: String,

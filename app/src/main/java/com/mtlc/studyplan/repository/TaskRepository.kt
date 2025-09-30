@@ -26,7 +26,14 @@ class TaskRepository @Inject constructor(
     val allTasks: Flow<List<TaskEntity>> = taskDao.getAllTasks()
     val pendingTasks: Flow<List<TaskEntity>> = taskDao.getPendingTasks()
     val completedTasks: Flow<List<TaskEntity>> = taskDao.getCompletedTasks()
-    val todayTasks: Flow<List<TaskEntity>> = taskDao.getTodayTasks()
+    // Updated to use optimized query with parameters
+    val todayTasks: Flow<List<TaskEntity>> = run {
+        val startOfDay = System.currentTimeMillis().let { now ->
+            now - (now % 86400000) // Start of current day
+        }
+        val endOfDay = startOfDay + 86400000 // End of current day
+        taskDao.getTodayTasks(startOfDay, endOfDay)
+    }
     val tomorrowTasks: Flow<List<TaskEntity>> = taskDao.getTomorrowTasks()
     val upcomingTasks: Flow<List<TaskEntity>> = taskDao.getUpcomingTasks()
     val overdueTasks: Flow<List<TaskEntity>> = taskDao.getOverdueTasks()
@@ -256,5 +263,58 @@ class TaskRepository @Inject constructor(
 
     enum class TaskSortBy {
         PRIORITY, DUE_DATE, CREATED_DATE, TITLE, CATEGORY
+    }
+
+    // Simple LRU Cache for frequently accessed data
+    private class LruCache<K, V>(private val maxSize: Int) {
+        private val cache = LinkedHashMap<K, V>(16, 0.75f, true)
+
+        fun get(key: K): V? = cache[key]
+
+        fun put(key: K, value: V): V? {
+            if (cache.size >= maxSize && !cache.containsKey(key)) {
+                val firstKey = cache.keys.iterator().next()
+                cache.remove(firstKey)
+            }
+            return cache.put(key, value)
+        }
+
+        fun remove(key: K): V? = cache.remove(key)
+        fun clear() = cache.clear()
+    }
+
+    // Cache for task statistics and frequently accessed data
+    private val taskStatsCache = LruCache<String, Any>(50)
+    private var lastCacheUpdate = 0L
+    private val cacheValidityMs = 60_000L // 1 minute
+
+    private fun isCacheValid(): Boolean {
+        return (System.currentTimeMillis() - lastCacheUpdate) < cacheValidityMs
+    }
+
+    suspend fun getCachedTaskStats(key: String, provider: suspend () -> Any): Any {
+        if (!isCacheValid()) {
+            taskStatsCache.clear()
+            lastCacheUpdate = System.currentTimeMillis()
+        }
+
+        return taskStatsCache.get(key) ?: run {
+            val result = provider()
+            taskStatsCache.put(key, result)
+            result
+        }
+    }
+
+    // Optimized task statistics with caching
+    suspend fun getCachedTodayCompletedCount(): Int {
+        return getCachedTaskStats("today_completed") {
+            taskDao.getTodayCompletedCount()
+        } as Int
+    }
+
+    suspend fun getCachedPendingTasksCount(): Int {
+        return getCachedTaskStats("pending_count") {
+            taskDao.getPendingTasksCount()
+        } as Int
     }
 }

@@ -1,11 +1,21 @@
 package com.mtlc.studyplan.database.entities
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.mtlc.studyplan.database.Converters
 
-@Entity(tableName = "questions")
+@Entity(
+    tableName = "questions",
+    indices = [
+        Index(value = ["examType", "difficulty"], name = "idx_questions_exam_difficulty"),
+        Index(value = ["questionType"], name = "idx_questions_type"),
+        Index(value = ["difficulty"], name = "idx_questions_difficulty"),
+        Index(value = ["isDownloaded"], name = "idx_questions_downloaded"),
+        Index(value = ["examType", "questionType"], name = "idx_questions_exam_type")
+    ]
+)
 @TypeConverters(Converters::class)
 data class QuestionEntity(
     @PrimaryKey

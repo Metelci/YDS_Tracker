@@ -3,6 +3,7 @@ package com.mtlc.studyplan.utils
 import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
+import android.app.KeyguardManager
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.annotation.SuppressLint
@@ -22,6 +23,12 @@ import javax.crypto.spec.SecretKeySpec
  */
 object SecurityUtils {
 
+
+    private fun isDeviceSecure(context: Context): Boolean {
+        val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+        return keyguardManager?.isDeviceSecure == true
+    }
+
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val AES_MODE = "AES/GCM/NoPadding"
     private const val AES_KEY_ALIAS = "StudyPlanAESKey"
@@ -33,10 +40,16 @@ object SecurityUtils {
      * Uygulama için Master Key oluşturur
      */
     fun createMasterKey(context: Context): MasterKey {
-        return MasterKey.Builder(context)
+        val builder = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .setUserAuthenticationRequired(false)
-            .build()
+
+        if (isDeviceSecure(context)) {
+            builder.setUserAuthenticationRequired(true)
+        } else {
+            SecurityLogger.logSecurityEvent("Device lacks secure lock screen; using master key without authentication", SecurityLogger.SecuritySeverity.WARNING)
+        }
+
+        return builder.build()
     }
 
     /**
@@ -57,21 +70,36 @@ object SecurityUtils {
     /**
      * AES anahtarı oluşturur ve Android Keystore'da saklar
      */
-    private fun generateAESKey(): SecretKey {
+    private fun generateAESKey(requireAuthentication: Boolean = true): SecretKey {
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
 
-        val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+        val specBuilder = KeyGenParameterSpec.Builder(
             AES_KEY_ALIAS,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setKeySize(256)
-            .setRandomizedEncryptionRequired(false)
-            .build()
+            .setRandomizedEncryptionRequired(true)
 
-        keyGenerator.init(keyGenParameterSpec)
-        return keyGenerator.generateKey()
+        if (requireAuthentication) {
+            specBuilder.setUserAuthenticationRequired(true)
+        }
+
+        return try {
+            keyGenerator.init(specBuilder.build())
+            keyGenerator.generateKey()
+        } catch (e: Exception) {
+            if (requireAuthentication) {
+                SecurityLogger.logSecurityEvent(
+                    "Failed to create authentication-bound key: ${e.message}. Falling back to device-protected key.",
+                    SecurityLogger.SecuritySeverity.WARNING
+                )
+                generateAESKey(requireAuthentication = false)
+            } else {
+                throw e
+            }
+        }
     }
 
     /**

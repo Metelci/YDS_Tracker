@@ -69,7 +69,10 @@ import org.koin.core.context.GlobalContext
 fun AppNavHost(
     appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null,
     sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
-    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null
+    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null,
+    mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null,
+    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null,
+    taskRepository: com.mtlc.studyplan.data.TaskRepository? = null
 ) {
     val navController = rememberNavController()
     val haptics = LocalHapticFeedback.current
@@ -80,18 +83,16 @@ fun AppNavHost(
     // Local context
     val context = LocalContext.current
 
-    // Resolve integration manager via Koin
-    val mainAppIntegrationManager = remember {
+    // Use provided dependencies or fallback to Koin with proper lifecycle management
+    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: remember {
         GlobalContext.get().get<com.mtlc.studyplan.integration.AppIntegrationManager>()
     }
 
-    // Create StudyProgressRepository for week progression tracking
-    val studyProgressRepository = remember {
+    val resolvedStudyProgressRepository = studyProgressRepository ?: remember {
         com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
 
-    // Create TaskRepository for Murphy task integration
-    val taskRepository = remember {
+    val resolvedTaskRepository = taskRepository ?: remember {
         GlobalContext.get().get<com.mtlc.studyplan.data.TaskRepository>()
     }
 
@@ -228,7 +229,7 @@ fun AppNavHost(
                 label = "home_animation"
             ) { _ ->
                 com.mtlc.studyplan.core.WorkingHomeScreen(
-                    appIntegrationManager = mainAppIntegrationManager,
+                    appIntegrationManager = resolvedMainAppIntegrationManager,
                     themeManager = themeManager,
                     onNavigateToTasks = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -276,14 +277,10 @@ fun AppNavHost(
                 label = "tasks_animation"
             ) { _ ->
                 com.mtlc.studyplan.core.WorkingTasksScreen(
-                    appIntegrationManager = mainAppIntegrationManager,
-                    studyProgressRepository = studyProgressRepository,
-                    taskRepository = taskRepository,
+                    appIntegrationManager = resolvedMainAppIntegrationManager,
+                    studyProgressRepository = resolvedStudyProgressRepository,
+                    taskRepository = resolvedTaskRepository,
                     sharedViewModel = sharedViewModel!!,
-                    onNavigateBack = {
-                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        navController.popBackStack()
-                    },
                     onNavigateToStudyPlan = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("study-plan-overview")
@@ -473,8 +470,8 @@ fun AppNavHost(
         // Study Plan Overview route
         composable("study-plan-overview") {
             com.mtlc.studyplan.studyplan.StudyPlanOverviewScreen(
-                appIntegrationManager = mainAppIntegrationManager,
-                studyProgressRepository = studyProgressRepository,
+                appIntegrationManager = resolvedMainAppIntegrationManager,
+                studyProgressRepository = resolvedStudyProgressRepository,
                 onNavigateBack = {
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     navController.popBackStack()

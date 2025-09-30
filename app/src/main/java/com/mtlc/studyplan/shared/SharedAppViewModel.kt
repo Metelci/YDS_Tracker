@@ -35,15 +35,30 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
 
     // ============ SHARED STATE FLOWS ============
 
-    // Tasks and plan data
+    // Tasks and plan data - consolidated for better performance
     val planFlow = planRepository.planFlow
-    val todayTasks = planFlow.map { plan ->
-        getTodayTasksFromPlan(plan)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val allTasks = planFlow.map { plan ->
-        getAllTasksFromPlan(plan)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    // Create a consolidated state that combines all plan-derived data
+    data class TaskState(
+        val todayTasks: List<AppTask> = emptyList(),
+        val allTasks: List<AppTask> = emptyList()
+    )
+
+    val taskState = planFlow.map { plan ->
+        TaskState(
+            todayTasks = getTodayTasksFromPlan(plan),
+            allTasks = getAllTasksFromPlan(plan)
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskState())
+
+    // Derived flows for compatibility
+    val todayTasks = taskState.map { it.todayTasks }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allTasks = taskState.map { it.allTasks }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // Study statistics (simplified without progress tracking)
     val studyStats = MutableStateFlow(StudyStats())
@@ -51,9 +66,27 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
     val achievements = MutableStateFlow(emptyList<String>())
 
     // Settings state
-    val appSettings = settingsRepository.settingsState
-        .map { AppSettings() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
+    private val notificationsEnabledFlow = settingsRepository.getSettingFlow("notifications_enabled", true)
+    private val gamificationEnabledFlow = settingsRepository.getSettingFlow("gamification_enabled", true)
+    private val themeModeFlow = settingsRepository.getSettingFlow("theme_mode", "system")
+    private val autoAdjustDifficultyFlow = settingsRepository.getSettingFlow("difficulty_auto_adjust", true)
+    private val dailyGoalTasksFlow = settingsRepository.getSettingFlow("daily_goal_tasks", 5)
+
+    val appSettings = combine(
+        notificationsEnabledFlow,
+        gamificationEnabledFlow,
+        themeModeFlow,
+        autoAdjustDifficultyFlow,
+        dailyGoalTasksFlow
+    ) { notificationsEnabled, gamificationEnabled, themeMode, autoAdjustDifficulty, dailyGoalTasks ->
+        AppSettings(
+            notificationsEnabled = notificationsEnabled,
+            gamificationEnabled = gamificationEnabled,
+            themeMode = themeMode,
+            autoAdjustDifficulty = autoAdjustDifficulty,
+            dailyGoalTasks = dailyGoalTasks
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
     // Navigation events
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()

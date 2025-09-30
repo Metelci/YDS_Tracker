@@ -3,14 +3,12 @@ package com.mtlc.studyplan.navigation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import android.annotation.SuppressLint
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,27 +18,29 @@ import com.mtlc.studyplan.integration.AppIntegrationManager
 import org.koin.core.context.GlobalContext
 
 @Composable
-fun SimplifiedAppNavHost() {
+fun SimplifiedAppNavHost(
+    mainAppIntegrationManager: AppIntegrationManager? = null,
+    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null,
+    taskRepository: com.mtlc.studyplan.data.TaskRepository? = null,
+    sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Resolve integration manager via Koin
-    val mainAppIntegrationManager = remember {
+    // Use provided dependencies or fallback to Koin with proper lifecycle management
+    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: remember {
         GlobalContext.get().get<AppIntegrationManager>()
     }
 
-    // Create StudyProgressRepository for week progression tracking
-    val studyProgressRepository = remember {
+    val resolvedStudyProgressRepository = studyProgressRepository ?: remember {
         com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
 
-    // Create TaskRepository for Murphy task integration
-    val taskRepository = remember {
+    val resolvedTaskRepository = taskRepository ?: remember {
         GlobalContext.get().get<com.mtlc.studyplan.data.TaskRepository>()
     }
 
-    // Create SharedViewModel for task completion
-    val sharedViewModel = remember {
+    val resolvedSharedViewModel = sharedViewModel ?: remember {
         GlobalContext.get().get<com.mtlc.studyplan.shared.SharedAppViewModel>()
     }
 
@@ -54,7 +54,7 @@ fun SimplifiedAppNavHost() {
                 label = "home_animation"
             ) { _ ->
                 WorkingHomeScreen(
-                    appIntegrationManager = mainAppIntegrationManager,
+                    appIntegrationManager = resolvedMainAppIntegrationManager,
                     onNavigateToTasks = {
                         navController.navigate("tasks")
                     }
@@ -68,14 +68,11 @@ fun SimplifiedAppNavHost() {
                 label = "tasks_animation"
             ) { _ ->
                 WorkingTasksScreen(
-                    appIntegrationManager = mainAppIntegrationManager,
-                    studyProgressRepository = studyProgressRepository,
-                    taskRepository = taskRepository,
-                    sharedViewModel = sharedViewModel,
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    }
-                    )
+                    appIntegrationManager = resolvedMainAppIntegrationManager,
+                    studyProgressRepository = resolvedStudyProgressRepository,
+                    taskRepository = resolvedTaskRepository,
+                    sharedViewModel = resolvedSharedViewModel
+                )
             }
         }
         

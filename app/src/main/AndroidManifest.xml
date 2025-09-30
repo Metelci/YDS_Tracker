@@ -54,7 +54,7 @@
 
         <receiver
             android:name=".notifications.NotificationActionReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.mtlc.studyplan.action.SNOOZE_30M" />
                 <action android:name="com.mtlc.studyplan.action.MUTE_TODAY" />
