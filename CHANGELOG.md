@@ -12,6 +12,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Settings footer now reads version name/code directly from the installed package so build info stays accurate after updates.
 
+## [2.9.29] - 2025-10-01
+
+### Fixed
+- Fixed a Room startup crash by bumping `StudyPlanDatabase` to v4 and migrating existing `tasks` rows without destructive wipes.
+- Updated login/logout settings actions to use auto-mirrored Material icons, clearing deprecated vector warnings in lint.
+
+### Quality
+- Verified `./gradlew :app:lintDebug` to ensure schema and icon warnings are resolved before submission.
+
+## [2.9.28] - 2025-09-30
+
+### Added
+- Introduced an in-memory LRU cache for frequently requested task statistics in `TaskRepository` to reduce Room hits.
+- Added Robolectric coverage for `NetworkSecurityManager` to verify debug logging flags and SSL socket handling.
+
+### Changed
+- Updated `TaskDao` queries to use explicit day boundaries and added batch/priority helpers for large updates.
+- Refined `AppNavHost` and `SimplifiedAppNavHost` to accept injected dependencies for better lifecycle control and testing.
+
+### Fixed
+- Hardened `NetworkSecurityManager` so debug logging only attaches in debuggable builds while ensuring the system trust store is reused.
+
+### Build
+- Bumped `versionCode` to 65 and `versionName` to 2.9.28.
+
 ## [2.9.20] - 2025-09-30
 
 ### 🔥 **Hotfix Release**
@@ -1208,6 +1233,9 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
+
+
 
 
 

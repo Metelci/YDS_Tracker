@@ -27,8 +27,8 @@ import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Login
-import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.People
@@ -380,7 +380,7 @@ fun OriginalSettingsScreen(
                                     context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE)
                                         .edit()
                                         .clear()
-                                        .commit()
+                                        .apply()
 
                                     // Clear database if exists
                                     try {
@@ -760,7 +760,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Logout,
+                                imageVector = Icons.AutoMirrored.Outlined.Logout,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -772,7 +772,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             onClick = { showLoginDialog = true }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Login,
+                                imageVector = Icons.AutoMirrored.Outlined.Login,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -1410,3 +1410,6 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
+
+
+
