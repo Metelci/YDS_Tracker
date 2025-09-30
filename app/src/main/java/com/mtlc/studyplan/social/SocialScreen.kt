@@ -89,6 +89,8 @@ import com.mtlc.studyplan.utils.ImageProcessingUtils
 import com.mtlc.studyplan.utils.socialDataStore
 import kotlinx.coroutines.launch
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
+import com.mtlc.studyplan.auth.AuthRepository
+import com.mtlc.studyplan.auth.FriendsRepository
 
 // import com.mtlc.studyplan.social.components.AwardNotification
 
@@ -126,11 +128,16 @@ fun SocialScreen(
         )
     }
 
+    // Initialize auth repositories for friend invite
+    val authRepository = remember { AuthRepository(context) }
+    val friendsRepository = remember { FriendsRepository(context) }
+
     val profile by socialRepository.profile.collectAsState()
     val ranks by socialRepository.ranks.collectAsState()
     val groups by socialRepository.groups.collectAsState()
     val friends by socialRepository.friends.collectAsState()
     val awards by socialRepository.awards.collectAsState()
+    val currentAuthUser by authRepository.currentUser.collectAsState(initial = null)
 
     val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState()
         ?: remember { mutableStateOf(null) }
@@ -139,6 +146,12 @@ fun SocialScreen(
     var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
     var pendingUsername by rememberSaveable { mutableStateOf("") }
     var usernameError by remember { mutableStateOf<String?>(null) }
+
+    // Friend invite dialog state
+    var showInviteFriendDialog by remember { mutableStateOf(false) }
+    var friendEmail by remember { mutableStateOf("") }
+    var friendEmailError by remember { mutableStateOf<String?>(null) }
+    var isInviting by remember { mutableStateOf(false) }
 
         // Avatar upload + preview state
     var showAvatarUploadDialog by remember { mutableStateOf(false) }
@@ -440,10 +453,7 @@ fun SocialScreen(
                 // Fixed Social Hub Top Bar
                 SocialHubTopBar(
                     onInviteClick = {
-                        scope.launch {
-                            val message = context.getString(R.string.social_invite_stub)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
+                        showInviteFriendDialog = true
                     }
                 )
 
@@ -523,10 +533,7 @@ fun SocialScreen(
                     friends = friends,
                     onFriendSelected = { /* friend -> showFriendProfileSnackbar(friend, snackbarHostState, scope, context) */ },
                     onAddFriend = {
-                        scope.launch {
-                            val message = context.getString(R.string.social_add_friend_stub)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
+                        showInviteFriendDialog = true
                     }
                 )
                 SocialTab.Awards -> AwardsTab(awards = awards)
@@ -537,6 +544,122 @@ fun SocialScreen(
             }
 
         }
+    }
+
+    // Invite Friend Dialog
+    if (showInviteFriendDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showInviteFriendDialog = false
+                friendEmail = ""
+                friendEmailError = null
+            },
+            title = { Text("Invite Friend") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Enter your friend's email address to send them a friend request.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    OutlinedTextField(
+                        value = friendEmail,
+                        onValueChange = {
+                            friendEmail = it
+                            friendEmailError = null
+                        },
+                        label = { Text("Friend's Email") },
+                        isError = friendEmailError != null,
+                        supportingText = friendEmailError?.let { { Text(it) } },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        enabled = !isInviting
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // Validate email
+                        if (friendEmail.isBlank()) {
+                            friendEmailError = "Email is required"
+                            return@TextButton
+                        }
+                        if (!AuthRepository.isValidEmail(friendEmail)) {
+                            friendEmailError = "Please enter a valid email address"
+                            return@TextButton
+                        }
+
+                        isInviting = true
+                        scope.launch {
+                            try {
+                                // Check if user is logged in
+                                val user = currentAuthUser
+                                if (user == null) {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Please log in via Settings → Social to send friend requests",
+                                        duration = SnackbarDuration.Long
+                                    )
+                                    isInviting = false
+                                    showInviteFriendDialog = false
+                                    return@launch
+                                }
+
+                                // Send friend request
+                                val result = friendsRepository.sendFriendRequest(
+                                    currentUserId = user.id,
+                                    currentUserEmail = user.email,
+                                    currentUsername = user.username,
+                                    friendEmail = friendEmail
+                                )
+
+                                if (result.isSuccess) {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Friend request sent to $friendEmail!",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                    showInviteFriendDialog = false
+                                    friendEmail = ""
+                                } else {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Failed to send friend request: ${result.exceptionOrNull()?.message}",
+                                        duration = SnackbarDuration.Long
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    message = "Error: ${e.message}",
+                                    duration = SnackbarDuration.Long
+                                )
+                            } finally {
+                                isInviting = false
+                            }
+                        }
+                    },
+                    enabled = !isInviting
+                ) {
+                    if (isInviting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Send Invite")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showInviteFriendDialog = false
+                        friendEmail = ""
+                        friendEmailError = null
+                    },
+                    enabled = !isInviting
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 

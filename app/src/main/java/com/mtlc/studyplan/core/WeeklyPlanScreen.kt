@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.data.*
@@ -110,15 +111,23 @@ fun WeeklyPlanScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
+                val isDarkTheme = isSystemInDarkTheme()
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
                             brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFFBE9E7), // Light pastel red/pink
-                                    Color(0xFFE3F2FD)  // Light pastel blue
-                                ),
+                                colors = if (isDarkTheme) {
+                                    listOf(
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                        MaterialTheme.colorScheme.surface
+                                    )
+                                } else {
+                                    listOf(
+                                        Color(0xFFFBE9E7), // Light pastel red/pink
+                                        Color(0xFFE3F2FD)  // Light pastel blue
+                                    )
+                                },
                                 start = Offset.Zero,
                                 end = Offset.Infinite
                             ),
@@ -136,7 +145,7 @@ fun WeeklyPlanScreen(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back",
-                                    tint = Color(0xFF424242)
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp))
@@ -147,12 +156,12 @@ fun WeeklyPlanScreen(
                                     text = "Weekly Study Plan",
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF424242)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Track your progress week by week",
                                     fontSize = 14.sp,
-                                    color = Color(0xFF616161)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }

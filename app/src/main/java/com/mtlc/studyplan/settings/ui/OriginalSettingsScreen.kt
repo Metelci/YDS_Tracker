@@ -22,10 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Login
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.People
@@ -35,7 +38,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.TrackChanges
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -47,6 +49,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
@@ -81,13 +84,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.localization.rememberLanguageManager
 import com.mtlc.studyplan.repository.UserSettingsRepository
-import com.mtlc.studyplan.settings.data.PrivacySettings
-import com.mtlc.studyplan.settings.data.ProfileVisibility
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.TaskSettings
 import com.mtlc.studyplan.ui.components.LanguageSwitcher
@@ -670,7 +672,19 @@ private fun GamificationSettingsContent() {
 
 @Composable
 private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
+    val context = LocalContext.current
+    val authRepository = remember { AuthRepository(context) }
+    val coroutineScope = rememberCoroutineScope()
+
     val socialSettings by settingsManager.socialSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.SocialSettings())
+    val currentUser by authRepository.currentUser.collectAsState(initial = null)
+
+    var showLoginDialog by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var isLoggingIn by remember { mutableStateOf(false) }
 
     SettingsCard(
         title = "Social",
@@ -679,6 +693,96 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            // Login/Account Section
+            val user = currentUser
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (user != null) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    }
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.AccountCircle,
+                            contentDescription = null,
+                            tint = if (user != null) {
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Column {
+                            Text(
+                                text = user?.username ?: "Not logged in",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (user != null) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                            Text(
+                                text = user?.email ?: "Log in to invite friends",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (user != null) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                }
+                            )
+                        }
+                    }
+
+                    if (user != null) {
+                        OutlinedButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    authRepository.logout()
+                                    Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Logout,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Logout")
+                        }
+                    } else {
+                        Button(
+                            onClick = { showLoginDialog = true }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Login,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Login")
+                        }
+                    }
+                }
+            }
+
             SettingToggleItem(
                 icon = Icons.Outlined.People,
                 title = "Social Features",
@@ -710,11 +814,123 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
             )
         }
     }
+
+    // Login Dialog
+    if (showLoginDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showLoginDialog = false
+                email = ""
+                username = ""
+                emailError = null
+                usernameError = null
+            },
+            title = { Text("Login to Social Features") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        "Log in with your email to invite friends and access social features.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = {
+                            email = it
+                            emailError = null
+                        },
+                        label = { Text("Email") },
+                        isError = emailError != null,
+                        supportingText = emailError?.let { { Text(it) } },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        enabled = !isLoggingIn
+                    )
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {
+                            username = it
+                            usernameError = null
+                        },
+                        label = { Text("Username") },
+                        isError = usernameError != null,
+                        supportingText = usernameError?.let { { Text(it) } } ?: {
+                            Text("3+ characters, letters, numbers, and underscore only")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        enabled = !isLoggingIn
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // Validate
+                        if (email.isBlank()) {
+                            emailError = "Email is required"
+                            return@TextButton
+                        }
+                        if (!AuthRepository.isValidEmail(email)) {
+                            emailError = "Please enter a valid email address"
+                            return@TextButton
+                        }
+                        if (username.isBlank()) {
+                            usernameError = "Username is required"
+                            return@TextButton
+                        }
+                        if (!AuthRepository.isValidUsername(username)) {
+                            usernameError = "Username must be 3+ characters (letters, numbers, underscore)"
+                            return@TextButton
+                        }
+
+                        isLoggingIn = true
+                        coroutineScope.launch {
+                            val result = authRepository.login(email, username)
+                            if (result.isSuccess) {
+                                Toast.makeText(context, "Logged in successfully!", Toast.LENGTH_SHORT).show()
+                                showLoginDialog = false
+                                email = ""
+                                username = ""
+                            } else {
+                                Toast.makeText(context, "Login failed: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                            }
+                            isLoggingIn = false
+                        }
+                    },
+                    enabled = !isLoggingIn
+                ) {
+                    if (isLoggingIn) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Login")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showLoginDialog = false
+                        email = ""
+                        username = ""
+                        emailError = null
+                        usernameError = null
+                    },
+                    enabled = !isLoggingIn
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
 
 @Composable
 private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) {
-    val privacySettings by settingsManager.privacySettings.collectAsState(initial = PrivacySettings())
 
     SettingsCard(
         title = "Privacy",

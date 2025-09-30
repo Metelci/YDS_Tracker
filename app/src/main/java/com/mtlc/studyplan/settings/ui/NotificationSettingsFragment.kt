@@ -1,10 +1,7 @@
 package com.mtlc.studyplan.settings.ui
 
-import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import com.mtlc.studyplan.settings.data.*
 import com.mtlc.studyplan.settings.viewmodel.NotificationSettingsViewModel
 import com.mtlc.studyplan.settings.viewmodel.NotificationSettingsViewModelFactory
@@ -124,28 +121,6 @@ class NotificationSettingsFragment : BaseSettingsFragment<NotificationSettingsVi
             }
             else -> "${setting.title} updated"
         }
-    }
-
-    /**
-     * Show time picker for study reminder time
-     */
-    fun showTimePicker(currentTime: TimeValue, onTimeSelected: (TimeValue) -> Unit) {
-        val timePicker = MaterialTimePicker.Builder()
-            .setTimeFormat(TimeFormat.CLOCK_12H)
-            .setHour(currentTime.hour)
-            .setMinute(currentTime.minute)
-            .setTitleText("Select reminder time")
-            .build()
-
-        timePicker.addOnPositiveButtonClickListener {
-            val newTime = TimeValue(timePicker.hour, timePicker.minute)
-            onTimeSelected(newTime)
-
-            val timeString = newTime.formatTime()
-            showSettingFeedback("Reminder time set to $timeString")
-        }
-
-        timePicker.show(parentFragmentManager, "time_picker")
     }
 
     /**

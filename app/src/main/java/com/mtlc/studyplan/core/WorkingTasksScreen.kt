@@ -2003,7 +2003,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
 @Composable
 private fun NotesSection(notes: String) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -2011,14 +2011,15 @@ private fun NotesSection(notes: String) {
                 Icon(
                     imageVector = Icons.Filled.EditCalendar,
                     contentDescription = null,
-                    tint = Color(0xFFFF8F00),
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Study Notes",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
 
@@ -2027,6 +2028,7 @@ private fun NotesSection(notes: String) {
             Text(
                 text = notes,
                 fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 lineHeight = 20.sp
             )
         }
