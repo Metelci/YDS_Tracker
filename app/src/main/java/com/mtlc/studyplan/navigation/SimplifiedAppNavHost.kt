@@ -34,6 +34,16 @@ fun SimplifiedAppNavHost() {
         com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
 
+    // Create TaskRepository for Murphy task integration
+    val taskRepository = remember {
+        GlobalContext.get().get<com.mtlc.studyplan.data.TaskRepository>()
+    }
+
+    // Create SharedViewModel for task completion
+    val sharedViewModel = remember {
+        GlobalContext.get().get<com.mtlc.studyplan.shared.SharedAppViewModel>()
+    }
+
     NavHost(
         navController = navController,
         startDestination = "home"
@@ -60,6 +70,8 @@ fun SimplifiedAppNavHost() {
                 WorkingTasksScreen(
                     appIntegrationManager = mainAppIntegrationManager,
                     studyProgressRepository = studyProgressRepository,
+                    taskRepository = taskRepository,
+                    sharedViewModel = sharedViewModel,
                     onNavigateBack = {
                         navController.popBackStack()
                     }

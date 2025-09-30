@@ -90,6 +90,11 @@ fun AppNavHost(
         com.mtlc.studyplan.data.StudyProgressRepository(context)
     }
 
+    // Create TaskRepository for Murphy task integration
+    val taskRepository = remember {
+        GlobalContext.get().get<com.mtlc.studyplan.data.TaskRepository>()
+    }
+
     // Handle navigation events from SharedViewModel
     sharedViewModel?.let { viewModel ->
         LaunchedEffect(navController) {
@@ -273,6 +278,8 @@ fun AppNavHost(
                 com.mtlc.studyplan.core.WorkingTasksScreen(
                     appIntegrationManager = mainAppIntegrationManager,
                     studyProgressRepository = studyProgressRepository,
+                    taskRepository = taskRepository,
+                    sharedViewModel = sharedViewModel!!,
                     onNavigateBack = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.popBackStack()

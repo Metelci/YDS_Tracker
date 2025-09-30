@@ -55,6 +55,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.mtlc.studyplan.data.CompleteMurphyBookData
 import com.mtlc.studyplan.data.MurphyTaskInfo
+import com.mtlc.studyplan.shared.SharedAppViewModel
+import android.widget.Toast
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +66,8 @@ import kotlinx.coroutines.launch
 fun WorkingTasksScreen(
     appIntegrationManager: AppIntegrationManager,
     studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    taskRepository: TaskRepository,
+    sharedViewModel: SharedAppViewModel,
     onNavigateBack: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -107,7 +113,13 @@ fun WorkingTasksScreen(
         )
         Spacer(Modifier.height(8.dp))
         when (selectedTab) {
-            0 -> DailyTab(selectedDay, currentWeek = currentWeek, onBackToPlan = { selectedTab = 2 })
+            0 -> DailyTab(
+                selectedDay = selectedDay,
+                currentWeek = currentWeek,
+                taskRepository = taskRepository,
+                sharedViewModel = sharedViewModel,
+                onBackToPlan = { selectedTab = 2 }
+            )
             1 -> WeeklyTab(
                 thisWeek = thisWeek,
                 currentWeek = currentWeek,
@@ -1468,7 +1480,13 @@ private fun TaskDetailModal(
 
 // Daily Tab Implementation
 @Composable
-private fun DailyTab(selectedDay: DayPlan?, currentWeek: Int = 1, onBackToPlan: () -> Unit) {
+private fun DailyTab(
+    selectedDay: DayPlan?,
+    currentWeek: Int = 1,
+    taskRepository: TaskRepository,
+    sharedViewModel: SharedAppViewModel,
+    onBackToPlan: () -> Unit
+) {
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(false) }
 
@@ -1556,7 +1574,12 @@ private fun DailyTab(selectedDay: DayPlan?, currentWeek: Int = 1, onBackToPlan: 
 
         // Study Book
         item {
-            StudyBookCard(studyInfo.book, studyInfo.units)
+            StudyBookCard(
+                book = studyInfo.book,
+                units = studyInfo.units,
+                taskRepository = taskRepository,
+                sharedViewModel = sharedViewModel
+            )
         }
 
         // Daily Tasks
@@ -1611,6 +1634,9 @@ data class StudyUnit(
     val pages: String,
     val exercises: List<String>,
     val isCompleted: Boolean = false,
+    val estimatedMinutes: Int = 30,
+    val vocabulary: List<String> = emptyList(),
+    val grammarTopic: String = "",
     val murphyUnit: MurphyUnit? = null
 )
 
@@ -1708,8 +1734,22 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
 }
 
 @Composable
-private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
+private fun StudyBookCard(
+    book: StudyBook,
+    units: List<StudyUnit>,
+    taskRepository: TaskRepository,
+    sharedViewModel: SharedAppViewModel
+) {
     var selectedUnit by remember { mutableStateOf<StudyUnit?>(null) }
+    var isCreatingTask by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // Track completed Murphy tasks
+    val completedTasks by taskRepository.getAllTasks().collectAsState(initial = emptyList())
+    val murphyTaskIds = completedTasks
+        .filter { it.category == "Murphy Grammar" && it.isCompleted }
+        .map { it.id }
+        .toSet()
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -1761,17 +1801,60 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 units.forEach { unit ->
+                    val taskId = generateMurphyTaskId(book, unit)
+                    val isCompleted = murphyTaskIds.contains(taskId)
+
                     StudyUnitItem(
-                        unit = unit,
-                        onClick = { selectedUnit = unit }
+                        unit = unit.copy(isCompleted = isCompleted),
+                        onClick = {
+                            selectedUnit = unit
+                            if (!isCompleted && !isCreatingTask) {
+                                isCreatingTask = true
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
+    }
 
-        // TODO: Integrate with real Murphy task system
-        // Task detail modal removed - will be integrated with real PlanTask system
+    // Handle task creation and completion
+    LaunchedEffect(selectedUnit, isCreatingTask) {
+        if (selectedUnit != null && isCreatingTask) {
+            val unit = selectedUnit!!
+            val taskId = generateMurphyTaskId(book, unit)
+
+            // Check if task already exists
+            val existingTask = taskRepository.getTaskById(taskId)
+
+            if (existingTask == null) {
+                // Create new Murphy task
+                val murphyTask = createMurphyTask(book, unit)
+                taskRepository.insertTask(murphyTask)
+
+                // Complete the task immediately (Murphy units are practice-based)
+                val completedTask = murphyTask.copy(
+                    isCompleted = true,
+                    completedAt = System.currentTimeMillis(),
+                    actualMinutes = unit.estimatedMinutes
+                )
+                taskRepository.updateTask(completedTask)
+
+                // Trigger gamification and progress tracking
+                sharedViewModel.completeTask(taskId)
+
+                // Show completion feedback
+                Toast.makeText(
+                    context,
+                    "Completed: ${unit.title}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            isCreatingTask = false
+            selectedUnit = null
+        }
     }
 }
 
@@ -2066,6 +2149,9 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
                         pages = unit.pages,
                         exercises = unit.exercises,
                         isCompleted = dayIndex < 3,
+                        estimatedMinutes = parseEstimatedMinutes(unit.estimatedTime),
+                        vocabulary = unit.keyPoints.take(5), // Use keyPoints as vocabulary
+                        grammarTopic = unit.title, // Use title as grammar topic
                         murphyUnit = unit
                     )
                 }
@@ -2089,7 +2175,10 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
                         unitNumber = minOf(baseUnitNumber, 114),
                         pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
                         exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
-                        isCompleted = dayIndex < 3
+                        isCompleted = dayIndex < 3,
+                        estimatedMinutes = 30,
+                        vocabulary = listOf("essential", "basic", "fundamental"),
+                        grammarTopic = "Essential Grammar"
                     )
                 )
             }
@@ -2106,6 +2195,9 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
                         pages = unit.pages,
                         exercises = unit.exercises,
                         isCompleted = dayIndex < 3,
+                        estimatedMinutes = parseEstimatedMinutes(unit.estimatedTime),
+                        vocabulary = unit.keyPoints.take(5), // Use keyPoints as vocabulary
+                        grammarTopic = unit.title, // Use title as grammar topic
                         murphyUnit = unit
                     )
                 }
@@ -2251,5 +2343,103 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
         completionPercentage = if (dayIndex < 3) 100 else if (dayIndex < 5) 50 else 0,
         notes = notes
     )
+}
+
+/**
+ * Murphy Task Integration Helper Functions
+ * These functions handle the conversion between Murphy units and PlanTasks
+ */
+
+/**
+ * Generate a unique task ID for a Murphy unit
+ */
+private fun generateMurphyTaskId(book: StudyBook, unit: StudyUnit): String {
+    return "murphy_${book.name.replace(" ", "_").lowercase()}_unit_${unit.unitNumber}"
+}
+
+/**
+ * Create a Task from a Murphy unit
+ */
+private fun createMurphyTask(book: StudyBook, unit: StudyUnit): Task {
+    return Task(
+        id = generateMurphyTaskId(book, unit),
+        title = "${book.name} - Unit ${unit.unitNumber}: ${unit.title}",
+        description = buildMurphyTaskDescription(book, unit),
+        category = "Murphy Grammar",
+        priority = TaskPriority.MEDIUM,
+        dueDate = System.currentTimeMillis() + (24 * 60 * 60 * 1000), // Due tomorrow
+        estimatedMinutes = unit.estimatedMinutes,
+        tags = listOf("murphy", "grammar", book.name.lowercase(), "unit${unit.unitNumber}"),
+        pointsValue = calculateMurphyTaskPoints(unit)
+    )
+}
+
+/**
+ * Build detailed description for Murphy task
+ */
+private fun buildMurphyTaskDescription(book: StudyBook, unit: StudyUnit): String {
+    val description = StringBuilder()
+    description.append("📖 ${book.name}\n")
+    description.append("📄 Pages: ${unit.pages}\n")
+    description.append("⏱️ Estimated time: ${unit.estimatedMinutes} minutes\n\n")
+
+    if (unit.exercises.isNotEmpty()) {
+        description.append("📝 Exercises:\n")
+        unit.exercises.forEach { exercise ->
+            description.append("• $exercise\n")
+        }
+        description.append("\n")
+    }
+
+    if (unit.vocabulary.isNotEmpty()) {
+        description.append("📚 Key Vocabulary:\n")
+        unit.vocabulary.take(5).forEach { vocab ->
+            description.append("• $vocab\n")
+        }
+        if (unit.vocabulary.size > 5) {
+            description.append("• ... and ${unit.vocabulary.size - 5} more words\n")
+        }
+        description.append("\n")
+    }
+
+    description.append("🎯 Grammar Focus: ${unit.grammarTopic}\n")
+    description.append("📝 Practice completing the exercises and reviewing key concepts.")
+
+    return description.toString()
+}
+
+/**
+ * Calculate points value for Murphy task based on difficulty and content
+ */
+private fun calculateMurphyTaskPoints(unit: StudyUnit): Int {
+    var points = 15 // Base points for grammar tasks
+
+    // Add points for exercises
+    points += unit.exercises.size * 2
+
+    // Add points for vocabulary
+    points += (unit.vocabulary.size / 5) * 3
+
+    // Bonus for longer estimated time
+    if (unit.estimatedMinutes > 30) points += 5
+    if (unit.estimatedMinutes > 45) points += 5
+
+    return points.coerceAtMost(35) // Cap at 35 points
+}
+
+/**
+ * Parse estimated time string to minutes
+ */
+private fun parseEstimatedMinutes(estimatedTime: String): Int {
+    return when {
+        estimatedTime.contains("min", ignoreCase = true) -> {
+            estimatedTime.filter { it.isDigit() }.toIntOrNull() ?: 30
+        }
+        estimatedTime.contains("hour", ignoreCase = true) -> {
+            val hours = estimatedTime.filter { it.isDigit() }.toIntOrNull() ?: 1
+            hours * 60
+        }
+        else -> 30 // Default 30 minutes
+    }
 }
 
