@@ -83,14 +83,7 @@ class SecureStorageManager(private val context: Context) {
                         null
                     }
                 }
-            }.let {
-                // Flow'dan değeri almak için collect kullanılır
-                var result: String? = null
-                kotlinx.coroutines.runBlocking {
-                    it.collect { value -> result = value }
-                }
-                result
-            }
+            }.first()
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Secure data retrieval failed: ${e.message}",
@@ -240,11 +233,7 @@ class SecureStorageManager(private val context: Context) {
                         allData[key.name] = value
                     }
                 }
-            }.let {
-                kotlinx.coroutines.runBlocking {
-                    it.collect { }
-                }
-            }
+            }.first()
 
             // Simple JSON-like string format
             val jsonData = allData.entries.joinToString(",") { "\"${it.key}\":\"${it.value}\"" }

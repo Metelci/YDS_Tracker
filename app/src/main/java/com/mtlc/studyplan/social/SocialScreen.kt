@@ -91,6 +91,7 @@ import kotlinx.coroutines.launch
 import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.auth.FriendsRepository
+import android.content.Intent
 
 // import com.mtlc.studyplan.social.components.AwardNotification
 
@@ -106,6 +107,64 @@ private data class PendingAvatarPreview(
     val preview: AvatarPreview
 )
 
+/**
+ * Sends a friend invitation email using the device's email app
+ */
+private fun sendFriendInviteEmail(
+    context: android.content.Context,
+    friendEmail: String,
+    senderUsername: String,
+    senderEmail: String
+) {
+    val appName = context.getString(R.string.app_name)
+    val subject = "$senderUsername invited you to join $appName!"
+    val body = """
+        Hi there!
+
+        $senderUsername ($senderEmail) has invited you to join them on $appName - a study planning app to help you achieve your academic goals!
+
+        Download the app and start studying together:
+
+        📱 Get Started:
+        1. Download $appName from the Play Store
+        2. Create your account with this email: $friendEmail
+        3. Connect with $senderUsername to share progress and compete on leaderboards!
+
+        Features you'll love:
+        • Personalized study plans
+        • Progress tracking
+        • Friend leaderboards
+        • Achievement system
+        • Study reminders
+
+        See you in the app!
+
+        ---
+        This invitation was sent through $appName
+    """.trimIndent()
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "message/rfc822" // Email-only apps
+        putExtra(Intent.EXTRA_EMAIL, arrayOf(friendEmail))
+        putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, body)
+    }
+
+    try {
+        val chooserIntent = Intent.createChooser(intent, "Send friend invite via email")
+        chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooserIntent)
+    } catch (e: Exception) {
+        // If no email app is available, fallback to generic share
+        val fallbackIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, "Send this invite to $friendEmail:\n\n$body")
+        }
+        val fallbackChooser = Intent.createChooser(fallbackIntent, "Share invite")
+        fallbackChooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(fallbackChooser)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -589,22 +648,17 @@ fun SocialScreen(
                             return@TextButton
                         }
 
+                        // Check if user is logged in
+                        val user = currentAuthUser
+                        if (user == null) {
+                            friendEmailError = "Please log in via Settings → Social to send invites"
+                            return@TextButton
+                        }
+
                         isInviting = true
                         scope.launch {
                             try {
-                                // Check if user is logged in
-                                val user = currentAuthUser
-                                if (user == null) {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Please log in via Settings → Social to send friend requests",
-                                        duration = SnackbarDuration.Long
-                                    )
-                                    isInviting = false
-                                    showInviteFriendDialog = false
-                                    return@launch
-                                }
-
-                                // Send friend request
+                                // Save friend request locally
                                 val result = friendsRepository.sendFriendRequest(
                                     currentUserId = user.id,
                                     currentUserEmail = user.email,
@@ -613,15 +667,23 @@ fun SocialScreen(
                                 )
 
                                 if (result.isSuccess) {
+                                    // Open email app to send the actual invite
+                                    sendFriendInviteEmail(
+                                        context = context,
+                                        friendEmail = friendEmail,
+                                        senderUsername = user.username,
+                                        senderEmail = user.email
+                                    )
+
                                     snackbarHostState.showSnackbar(
-                                        message = "Friend request sent to $friendEmail!",
+                                        message = "Opening email app to send invite to $friendEmail",
                                         duration = SnackbarDuration.Short
                                     )
                                     showInviteFriendDialog = false
                                     friendEmail = ""
                                 } else {
                                     snackbarHostState.showSnackbar(
-                                        message = "Failed to send friend request: ${result.exceptionOrNull()?.message}",
+                                        message = "Failed to create friend request: ${result.exceptionOrNull()?.message}",
                                         duration = SnackbarDuration.Long
                                     )
                                 }

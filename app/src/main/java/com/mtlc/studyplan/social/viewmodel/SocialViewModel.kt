@@ -97,53 +97,27 @@ class SocialViewModel(
 
     private fun observeDataChanges() {
         viewModelScope.launch {
-            // Observe repository changes and update UI state
-            repository.profile.collect { profile ->
-                try {
-                    _uiState.value = _uiState.value.copy(profile = profile)
-                } catch (e: Exception) {
-                    handleError(ErrorMapper.mapThrowable(e))
+            try {
+                // Combine all repository flows into a single efficient collector
+                kotlinx.coroutines.flow.combine(
+                    repository.profile,
+                    repository.ranks,
+                    repository.groups,
+                    repository.friends,
+                    repository.awards
+                ) { profile, ranks, groups, friends, awards ->
+                    _uiState.value.copy(
+                        profile = profile,
+                        ranks = ranks,
+                        groups = groups,
+                        friends = friends,
+                        awards = awards
+                    )
+                }.collect { newState ->
+                    _uiState.value = newState
                 }
-            }
-        }
-
-        viewModelScope.launch {
-            repository.ranks.collect { ranks ->
-                try {
-                    _uiState.value = _uiState.value.copy(ranks = ranks)
-                } catch (e: Exception) {
-                    handleError(ErrorMapper.mapThrowable(e))
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            repository.groups.collect { groups ->
-                try {
-                    _uiState.value = _uiState.value.copy(groups = groups)
-                } catch (e: Exception) {
-                    handleError(ErrorMapper.mapThrowable(e))
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            repository.friends.collect { friends ->
-                try {
-                    _uiState.value = _uiState.value.copy(friends = friends)
-                } catch (e: Exception) {
-                    handleError(ErrorMapper.mapThrowable(e))
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            repository.awards.collect { awards ->
-                try {
-                    _uiState.value = _uiState.value.copy(awards = awards)
-                } catch (e: Exception) {
-                    handleError(ErrorMapper.mapThrowable(e))
-                }
+            } catch (e: Exception) {
+                handleError(ErrorMapper.mapThrowable(e))
             }
         }
     }

@@ -30,13 +30,13 @@ class NetworkSecurityManager(private val context: Context) {
     /**
      * Creates a secure OkHttpClient with comprehensive error handling
      */
-    fun createSecureOkHttpClient(): OkHttpClient {
+    fun createSecureOkHttpClient(apiKey: String? = null): OkHttpClient {
         return try {
             OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(createAuthInterceptor())
+                .addInterceptor(createAuthInterceptor(apiKey))
                 .addInterceptor(createSecurityHeadersInterceptor())
                 .addInterceptor(createLoggingInterceptor())
                 .certificatePinner(certificatePinner)
@@ -55,17 +55,9 @@ class NetworkSecurityManager(private val context: Context) {
     /**
      * Authorization interceptor - API key and token management
      */
-    private fun createAuthInterceptor(): Interceptor {
+    private fun createAuthInterceptor(apiKey: String? = null): Interceptor {
         return Interceptor { chain ->
             val original = chain.request()
-
-            // API anahtarını güvenli depolamadan al
-            val secureStorage = SecureStorageManager(context)
-            val apiKey = runCatching {
-                kotlinx.coroutines.runBlocking {
-                    secureStorage.getApiKey()
-                }
-            }.getOrNull()
 
             val requestBuilder = original.newBuilder()
                 .header("User-Agent", "StudyPlan/1.5.1 (Android)")

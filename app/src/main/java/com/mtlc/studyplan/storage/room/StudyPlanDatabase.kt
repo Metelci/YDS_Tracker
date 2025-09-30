@@ -32,11 +32,20 @@ abstract class StudyPlanDatabase : RoomDatabase() {
         @Volatile private var INSTANCE: StudyPlanDatabase? = null
 
         fun get(context: Context): StudyPlanDatabase = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: Room.databaseBuilder(
-                context.applicationContext,
-                StudyPlanDatabase::class.java,
-                "studyplan.db"
-            ).fallbackToDestructiveMigration(true).build().also { INSTANCE = it }
+            INSTANCE ?: run {
+                val builder = Room.databaseBuilder(
+                    context.applicationContext,
+                    StudyPlanDatabase::class.java,
+                    "studyplan.db"
+                )
+
+                // Only use destructive migration in debug builds
+                if (com.mtlc.studyplan.BuildConfig.DEBUG) {
+                    builder.fallbackToDestructiveMigration()
+                }
+
+                builder.build().also { INSTANCE = it }
+            }
         }
     }
 }
