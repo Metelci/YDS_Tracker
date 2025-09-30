@@ -35,8 +35,8 @@ class TaskRepositoryImpl @Inject constructor(
     private val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
     // Reactive flow that combines database and in-memory data
-    private val combinedTasksFlow = if (databaseAvailable) {
-        databaseTaskRepository!!.allTasks.map { entities ->
+    private val combinedTasksFlow = if (databaseAvailable && databaseTaskRepository != null) {
+        databaseTaskRepository.allTasks.map { entities ->
             entities.map { entity -> entity.toTask() }
         }
     } else {

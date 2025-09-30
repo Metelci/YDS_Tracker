@@ -40,10 +40,18 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 )
 
                 // Only use destructive migration in debug builds
-                // TODO: Enable this once BuildConfig is properly configured
-                // if (com.mtlc.studyplan.BuildConfig.DEBUG) {
+                try {
+                    val debugClass = Class.forName("com.mtlc.studyplan.BuildConfig")
+                    val debugField = debugClass.getField("DEBUG")
+                    val isDebug = debugField.getBoolean(null)
+
+                    if (isDebug) {
+                        builder.fallbackToDestructiveMigration()
+                    }
+                } catch (e: Exception) {
+                    // If BuildConfig is not available, assume debug
                     builder.fallbackToDestructiveMigration()
-                // }
+                }
 
                 builder.build().also { INSTANCE = it }
             }

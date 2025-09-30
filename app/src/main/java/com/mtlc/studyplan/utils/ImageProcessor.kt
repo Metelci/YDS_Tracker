@@ -105,8 +105,8 @@ object ImageProcessor {
     /**
      * Save avatar bitmap to app's internal storage
      */
-    private fun saveAvatarToStorage(context: Context, bitmap: Bitmap): String? {
-        return try {
+    private suspend fun saveAvatarToStorage(context: Context, bitmap: Bitmap): String? = withContext(Dispatchers.IO) {
+        try {
             val avatarsDir = File(context.filesDir, "avatars")
             if (!avatarsDir.exists()) {
                 avatarsDir.mkdirs()
