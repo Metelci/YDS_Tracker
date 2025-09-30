@@ -19,10 +19,10 @@ class NetworkSecurityManager(private val context: Context) {
 
     private val certificatePinner: CertificatePinner by lazy {
         CertificatePinner.Builder()
-            // OSYM API certificate pinning - configured via BuildConfig for security
-            .add(com.mtlc.studyplan.BuildConfig.OSYM_HOST,
-                com.mtlc.studyplan.BuildConfig.OSYM_PRIMARY_PIN, // Primary pin
-                com.mtlc.studyplan.BuildConfig.OSYM_BACKUP_PIN)  // Backup pin
+            // OSYM API certificate pinning - temporarily using constants (to be moved to BuildConfig)
+            .add("ais.osym.gov.tr",
+                "sha256/4a6cPehI7JG923Nwvzn0EoBtcGGqs3oQmWKWSF+gKD4=", // Primary pin
+                "sha256/Y9mvm0exBkEOvvaZgNEqy1wx1LXiOgtwT0M8LfKOtmI=")  // Backup pin
             .build()
     }
 

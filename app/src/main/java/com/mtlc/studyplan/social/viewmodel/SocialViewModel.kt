@@ -1,5 +1,6 @@
 package com.mtlc.studyplan.social.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -35,8 +36,10 @@ data class SocialUiState(
  */
 class SocialViewModel(
     private val repository: SocialRepository,
-    private val errorHandler: ErrorHandler
+    private val application: Application
 ) : ViewModel() {
+
+    private val errorHandler = ErrorHandler(ErrorLogger(application))
 
     private val _uiState = MutableStateFlow(SocialUiState())
     val uiState: StateFlow<SocialUiState> = _uiState.asStateFlow()
@@ -346,5 +349,5 @@ class SocialViewModel(
  */
 class SocialViewModelFactory(
     private val repository: SocialRepository,
-    private val context: Context
-) : ViewModelFactory<SocialViewModel>({ SocialViewModel(repository, context) })
+    private val application: Application
+) : ViewModelFactory<SocialViewModel>({ SocialViewModel(repository, application) })

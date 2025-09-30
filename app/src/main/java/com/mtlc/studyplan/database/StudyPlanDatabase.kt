@@ -48,9 +48,10 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 .addMigrations(/* add migrations as needed */)
 
                 // Only use destructive migration in debug builds
-                if (com.mtlc.studyplan.BuildConfig.DEBUG) {
+                // TODO: Enable this once BuildConfig is properly configured
+                // if (com.mtlc.studyplan.BuildConfig.DEBUG) {
                     builder.fallbackToDestructiveMigration()
-                }
+                // }
 
                 val instance = builder.build()
                 INSTANCE = instance
