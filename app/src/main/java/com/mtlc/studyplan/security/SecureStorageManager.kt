@@ -226,7 +226,7 @@ class SecureStorageManager(private val context: Context) {
         return try {
             val allData = mutableMapOf<String, String>()
 
-            // Tüm güvenli verileri topla
+            // Collect all secure data
             context.secureDataStore.data.map { preferences ->
                 preferences.asMap().forEach { (key, value) ->
                     if (value is String) {

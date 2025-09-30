@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Temel ağ güvenliği yapılandırması -->
+    <!-- Basic network security configuration -->
 
-    <!-- Ana domain güvenliği -->
+    <!-- Main domain security -->
     <domain-config cleartextTrafficPermitted="false">
-        <!-- OSYM API güvenliği -->
+        <!-- OSYM API security -->
         <domain includeSubdomains="true">ais.osym.gov.tr</domain>
         <domain includeSubdomains="true">www.osym.gov.tr</domain>
 
-        <!-- Güvenilir CDN'ler -->
+        <!-- Trusted CDNs -->
         <domain includeSubdomains="true">cdn.jsdelivr.net</domain>
         <domain includeSubdomains="true">fonts.googleapis.com</domain>
         <domain includeSubdomains="true">fonts.gstatic.com</domain>
 
-        <!-- Pin sertifika hash'leri (güncellenmiş tarih ve gerçek pin ile) -->
+        <!-- Pin certificate hashes (updated with real pins and expiration) -->
         <pin-set expiration="2026-12-31">
-            <!-- OSYM sertifika pin'i - gerçek hash ile güncellendi -->
+            <!-- OSYM certificate pin - updated with real hash -->
             <pin digest="SHA-256">4a6cPehI7JG923Nwvzn0EoBtcGGqs3oQmWKWSF+gKD4=</pin>
-            <!-- Backup pin - sertifika rotasyonu için kritik -->
+            <!-- Backup pin - critical for certificate rotation -->
             <pin digest="SHA-256">Y9mvm0exBkEOvvaZgNEqy1wx1LXiOgtwT0M8LfKOtmI=</pin>
         </pin-set>
     </domain-config>
 
-    <!-- Debug yapılandırması - sadece development'ta aktif -->
+    <!-- Debug configuration - active only in development -->
     <debug-overrides>
         <trust-anchors>
-            <!-- Development için user certificates'ları güven -->
+            <!-- Trust user certificates for development -->
             <certificates src="user" />
-            <!-- System certificates'ları güven -->
+            <!-- Trust system certificates -->
             <certificates src="system" />
         </trust-anchors>
     </debug-overrides>
 
-    <!-- Base configuration - tüm bağlantılar için (production güvenliği) -->
+    <!-- Base configuration - for all connections (production security) -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
-            <!-- Sadece sistem güvenilen sertifika yetkilileri -->
+            <!-- Only system trusted certificate authorities -->
             <certificates src="system" />
-            <!-- User certificates production'da güvenlik riski oluşturur - kaldırıldı -->
+            <!-- User certificates pose security risk in production - removed -->
         </trust-anchors>
     </base-config>
 
