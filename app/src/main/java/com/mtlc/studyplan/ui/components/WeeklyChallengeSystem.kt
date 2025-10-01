@@ -578,7 +578,7 @@ object WeeklyChallengeGenerator {
 
         // Generate 3-5 challenges per week
         val challengeCount = Random.nextInt(3, 6)
-        val selectedTypes = WeeklyChallengeType.values().toList().shuffled().take(challengeCount)
+        val selectedTypes = WeeklyChallengeType.entries.toList().shuffled().take(challengeCount)
 
         selectedTypes.forEach { type ->
             val challenge = generateChallengeForType(type, currentWeek, userProgress)
@@ -624,7 +624,7 @@ object WeeklyChallengeGenerator {
             )
 
             WeeklyChallengeType.CATEGORY_FOCUS -> {
-                val category = TaskCategory.values().random()
+                val category = TaskCategory.entries.random()
                 WeeklyChallenge(
                     id = "weekly_${type.name.lowercase()}_${weekStart}",
                     weekStart = weekStart,

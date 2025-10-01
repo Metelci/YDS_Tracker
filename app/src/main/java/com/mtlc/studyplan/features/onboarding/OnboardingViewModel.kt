@@ -29,7 +29,7 @@ class OnboardingViewModel(
     val examDate: StateFlow<LocalDate> = _examDate
 
     private val _availability = MutableStateFlow(
-        DayOfWeek.values().associateWith { day ->
+        DayOfWeek.entries.associateWith { day ->
             when (day) {
                 DayOfWeek.SATURDAY, DayOfWeek.SUNDAY -> 120
                 else -> 60

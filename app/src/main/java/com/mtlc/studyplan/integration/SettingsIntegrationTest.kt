@@ -111,7 +111,7 @@ class SettingsIntegrationValidator {
 
     fun validateThemeIntegration(): Boolean {
         // Test that all theme modes are properly defined
-        val theModes = ThemeMode.values()
+        val theModes = ThemeMode.entries
         return theModes.contains(ThemeMode.LIGHT) &&
                theModes.contains(ThemeMode.DARK) &&
                theModes.contains(ThemeMode.SYSTEM)

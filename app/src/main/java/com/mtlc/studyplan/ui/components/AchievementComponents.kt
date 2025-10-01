@@ -158,7 +158,7 @@ fun AchievementCategoryCard(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
-                items(AchievementTier.values()) { tier ->
+                items(AchievementTier.entries) { tier ->
                     TierBadge(
                         tier = tier,
                         isUnlocked = categoryProgress.achievements.any {

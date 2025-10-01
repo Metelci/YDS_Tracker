@@ -41,7 +41,7 @@ class LanguageManager(private val context: Context) {
      */
     val currentLanguage: Flow<Language> = dataStore.data.map { preferences ->
         val languageCode = preferences[LANGUAGE_KEY] ?: Language.ENGLISH.code
-        Language.values().find { it.code == languageCode } ?: Language.ENGLISH
+        Language.entries.find { it.code == languageCode } ?: Language.ENGLISH
     }
 
     /**
@@ -76,7 +76,7 @@ class LanguageManager(private val context: Context) {
             val savedLanguageCode = sharedPrefs.getString("language_code", null)
 
             if (savedLanguageCode != null) {
-                Language.values().find { it.code == savedLanguageCode } ?: Language.ENGLISH
+                Language.entries.find { it.code == savedLanguageCode } ?: Language.ENGLISH
             } else {
                 // Fall back to system locale
                 val locale = Locale.getDefault()

@@ -16,6 +16,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,8 +68,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.core.viewModelFactory
@@ -105,6 +109,19 @@ fun OnboardingRoute(onDone: () -> Unit) {
     val haptics = LocalHapticFeedback.current
     val isGeneratingPlan by vm.isGeneratingPlan.collectAsState()
 
+    val colorScheme = MaterialTheme.colorScheme
+    val isDarkTheme = isSystemInDarkTheme()
+    val topBarGradientColors = remember(colorScheme, isDarkTheme) {
+        listOf(
+            colorScheme.primaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f),
+            colorScheme.secondaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f),
+            colorScheme.tertiaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f)
+        )
+    }
+    val topBarTitleColor = colorScheme.onPrimaryContainer
+    val topBarSubtitleColor = colorScheme.onSurfaceVariant
+    val indicatorColor = colorScheme.onPrimaryContainer
+
     // Enhanced device compatibility
     rememberDeviceProfile()
     val safeAreaInsets = rememberSafeAreaInsets()
@@ -124,10 +141,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
                         .fillMaxWidth()
                         .background(
                             brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFFBE9E7), // Light pastel red/pink
-                                    Color(0xFFE3F2FD)  // Light pastel blue
-                                ),
+                                colors = topBarGradientColors,
                                 start = Offset.Zero,
                                 end = Offset.Infinite
                             ),
@@ -147,12 +161,12 @@ fun OnboardingRoute(onDone: () -> Unit) {
                                 text = "Personalize Your Plan",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF424242)
+                                color = topBarTitleColor
                             )
                             Text(
                                 text = "Set up your study preferences",
                                 fontSize = 14.sp,
-                                color = Color(0xFF616161)
+                                color = topBarSubtitleColor
                             )
                         }
 
@@ -190,7 +204,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
                                         .scale(scale)
                                         .graphicsLayer { this.alpha = alpha }
                                         .background(
-                                            color = Color(0xFF424242),
+                                            color = indicatorColor,
                                             shape = CircleShape
                                         )
                                 )
@@ -783,9 +797,11 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
     val availability by vm.availability.collectAsState()
     val typography = responsiveOnboardingTypography()
     val heights = responsiveHeights()
+    val cardColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+    val sliderHeight = (heights.slider - 8.dp).coerceAtLeast(24.dp)
 
     ResponsiveCard(
-        containerColor = Color(0xFFC8E6C9) // Pastel light green
+        containerColor = cardColor
     ) {
         Text(
             stringResource(R.string.availability_title),
@@ -802,7 +818,7 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
                 value = value.toFloat(),
                 onValueChange = { vm.setAvailability(day, it.toInt()) },
                 valueRange = 0f..180f,
-                modifier = Modifier.height(heights.slider)
+                modifier = Modifier.height(sliderHeight)
             )
         }
     }
@@ -813,9 +829,11 @@ private fun OnboardingStepSkills(vm: OnboardingViewModel) {
     val weights by vm.skillWeights.collectAsState()
     val typography = responsiveOnboardingTypography()
     val heights = responsiveHeights()
+    val cardColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+    val sliderHeight = (heights.slider - 8.dp).coerceAtLeast(24.dp)
 
     ResponsiveCard(
-        containerColor = Color(0xFFC8E6C9) // Pastel light green
+        containerColor = cardColor
     ) {
         Text(
             stringResource(R.string.skills_title),
@@ -826,28 +844,28 @@ private fun OnboardingStepSkills(vm: OnboardingViewModel) {
             value = weights.grammar,
             onChange = { vm.setSkillWeights(weights.copy(grammar = it)) },
             typography = typography,
-            heights = heights
+            sliderHeight = sliderHeight
         )
         SkillRow(
             label = stringResource(R.string.skill_reading),
             value = weights.reading,
             onChange = { vm.setSkillWeights(weights.copy(reading = it)) },
             typography = typography,
-            heights = heights
+            sliderHeight = sliderHeight
         )
         SkillRow(
             label = stringResource(R.string.skill_listening),
             value = weights.listening,
             onChange = { vm.setSkillWeights(weights.copy(listening = it)) },
             typography = typography,
-            heights = heights
+            sliderHeight = sliderHeight
         )
         SkillRow(
             label = stringResource(R.string.skill_vocab),
             value = weights.vocab,
             onChange = { vm.setSkillWeights(weights.copy(vocab = it)) },
             typography = typography,
-            heights = heights
+            sliderHeight = sliderHeight
         )
         Text(
             stringResource(R.string.weekly_plan_preview, 5),
@@ -862,7 +880,7 @@ private fun SkillRow(
     value: Float,
     onChange: (Float) -> Unit,
     typography: OnboardingTypography,
-    heights: ResponsiveHeights
+    sliderHeight: Dp
 ) {
     Text(
         "$label: ${"%.1f".format(value)}x",
@@ -873,6 +891,6 @@ private fun SkillRow(
         onValueChange = onChange,
         valueRange = 0.5f..1.5f,
         steps = 10,
-        modifier = Modifier.height(heights.slider)
+        modifier = Modifier.height(sliderHeight)
     )
 }

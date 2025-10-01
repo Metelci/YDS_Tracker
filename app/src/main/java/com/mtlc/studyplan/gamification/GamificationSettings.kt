@@ -692,7 +692,7 @@ private fun IntensitySelector(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            CelebrationIntensity.values().forEach { intensity ->
+            CelebrationIntensity.entries.forEach { intensity ->
                 IntensityOption(
                     intensity = intensity,
                     isSelected = intensity == currentIntensity,

@@ -292,6 +292,7 @@ object EnhancedLoadingComponents {
     fun SmartPlaceholder(
         width: Dp,
         height: Dp,
+        isLoading: Boolean = true,
         configuration: LoadingConfiguration = LoadingConfiguration(),
         modifier: Modifier = Modifier
     ) {
@@ -300,7 +301,7 @@ object EnhancedLoadingComponents {
         when (configuration.pattern) {
             LoadingPattern.PULSE -> {
                 val scale by StudyPlanMicroInteractions.breathingScale(
-                    isLoading = true,
+                    isLoading = isLoading,
                     baseScale = 1f,
                     amplitude = 0.03f
                 )
@@ -321,7 +322,7 @@ object EnhancedLoadingComponents {
             LoadingPattern.SHIMMER -> {
                 if (!isReducedMotion) {
                     AdaptiveShimmer(
-                        isLoading = true,
+                        isLoading = isLoading,
                         configuration = configuration
                     ) {
                         Box(

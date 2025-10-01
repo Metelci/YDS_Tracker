@@ -118,7 +118,7 @@ fun AnalyticsScreen(
                 )
             }
         ) {
-            AnalyticsTab.values().forEach { tab ->
+            AnalyticsTab.entries.forEach { tab ->
                 Tab(
                     selected = selectedTab == tab,
                     onClick = { viewModel.selectTab(tab) },
@@ -198,7 +198,7 @@ fun TimeframeSelector(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(AnalyticsTimeframe.values()) { timeframe ->
+            items(AnalyticsTimeframe.entries) { timeframe ->
                 FilterChip(
                     onClick = {
                         isFiltering = true

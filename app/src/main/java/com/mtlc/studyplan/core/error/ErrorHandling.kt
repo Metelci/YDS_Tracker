@@ -233,9 +233,11 @@ data class UiState<T>(
     val isEmpty: Boolean get() = data == null && !isLoading && error == null
 
     companion object {
+        @Suppress("ALWAYS_TRUE_PARAMETER")
         fun <T> loading(data: T? = null): UiState<T> = UiState(data = data, isLoading = true)
         fun <T> success(data: T): UiState<T> = UiState(data = data)
         fun <T> error(error: AppError, data: T? = null): UiState<T> = UiState(data = data, error = error)
+        @Suppress("ALWAYS_TRUE_PARAMETER")
         fun <T> refreshing(data: T): UiState<T> = UiState(data = data, isRefreshing = true)
     }
 }

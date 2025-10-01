@@ -230,7 +230,7 @@ object CategorizedAchievementDataSource {
             category = category,
             totalAchievements = achievements.size,
             totalPossiblePoints = totalPoints,
-            tiers = AchievementTier.values().toList()
+            tiers = AchievementTier.entries.toList()
         )
     }
 

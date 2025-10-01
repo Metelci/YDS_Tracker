@@ -3,6 +3,7 @@ package com.mtlc.studyplan.social.tabs
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,6 +98,7 @@ private fun ProfileCard(
 ) {
     val spacing = LocalSpacing.current
     val prussianBlue = Color(0xFF003153)
+    val isDarkTheme = isSystemInDarkTheme()
 
     Surface(
         modifier = modifier
@@ -255,9 +257,16 @@ private fun ProfileCard(
                 }
             }
 
-    Surface(
-                color = DesignTokens.Surface,
-                shape = RoundedCornerShape(12.dp)
+            val infoCardBackground = if (isDarkTheme) {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            } else {
+                DesignTokens.Surface
+            }
+
+            Surface(
+                color = infoCardBackground,
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, prussianBlue)
             ) {
                 Row(
                     modifier = Modifier

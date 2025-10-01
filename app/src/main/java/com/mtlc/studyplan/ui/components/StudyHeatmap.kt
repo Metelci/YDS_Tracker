@@ -78,7 +78,7 @@ fun StudyHeatmap(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         weeks.forEachIndexed { weekIndex, weekStart ->
             Column(verticalArrangement = Arrangement.spacedBy(gap)) {
-                DayOfWeek.values().forEachIndexed { dayIndex, dow ->
+                DayOfWeek.entries.forEachIndexed { dayIndex, dow ->
                     // Compose DayOfWeek enum is Mon=1..Sun=7; match grid order Mon..Sun
                     val date = weekStart.plusDays((dow.value - DayOfWeek.MONDAY.value).toLong())
                     val count = entries[date] ?: 0

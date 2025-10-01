@@ -296,7 +296,7 @@ fun OriginalSettingsScreen(
                     "notifications" -> NotificationsSettingsContent(settingsManager)
                     "gamification" -> GamificationSettingsContent()
                     "social" -> SocialSettingsContent(settingsManager)
-                    "privacy" -> PrivacySettingsContent(settingsManager)
+                    "privacy" -> PrivacySettingsContent()
                 }
             }
 
@@ -533,7 +533,7 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
     val taskSettings by settingsManager.taskSettings.collectAsState(initial = TaskSettings())
 
     ColorfulTasksCard(
-        title = "Tasks",
+        title = stringResource(R.string.nav_tasks),
         icon = Icons.Outlined.TaskAlt
     ) {
         Column(
@@ -930,7 +930,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
 }
 
 @Composable
-private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) {
+private fun PrivacySettingsContent() {
 
     SettingsCard(
         title = "Privacy",
@@ -955,62 +955,6 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
                 onCheckedChange = { }
             )
         }
-    }
-}
-
-@Composable
-private fun VisibilityChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    // Light pastel colors for visibility options
-    val chipColors = when (label.lowercase()) {
-        "public" -> Pair(
-            Color(0xFFE8F5E8), // Mint green background
-            Color(0xFF059669)   // Green content
-        )
-        "friends only" -> Pair(
-            Color(0xFFFFF4E6), // Soft peach background
-            Color(0xFFEA580C)   // Orange content
-        )
-        "private" -> Pair(
-            Color(0xFFF3E8FF), // Soft lavender background
-            Color(0xFF7C3AED)   // Lavender content
-        )
-        else -> Pair(
-            Color(0xFFF8FAFC), // Default light gray
-            Color(0xFF475569)   // Default gray content
-        )
-    }
-
-    val backgroundColor = if (selected)
-        chipColors.first
-    else
-        Color(0xFFF0F0F0)
-
-    val contentColor = if (selected)
-        chipColors.second
-    else
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-
-    val borderColor = if (selected)
-        chipColors.second.copy(alpha = 0.3f)
-    else
-        MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-
-    Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = backgroundColor,
-        tonalElevation = if (selected) 1.dp else 0.dp,
-        border = BorderStroke(1.dp, borderColor),
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .clickable { onClick() }
-    ) {
-        Text(
-            text = label,
-            color = contentColor,
-            fontSize = 12.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-        )
     }
 }
 

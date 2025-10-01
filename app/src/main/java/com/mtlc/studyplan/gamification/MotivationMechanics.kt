@@ -173,7 +173,7 @@ data class LevelSystem(
 object ChallengeGenerator {
 
     fun generateDailyChallenge(userProgress: UserProgress, taskLogs: List<TaskLog>): DailyChallenge {
-        val challengeTypes = ChallengeType.values()
+        val challengeTypes = ChallengeType.entries
         val selectedType = challengeTypes[Random.nextInt(challengeTypes.size)]
 
         val difficulty = calculateRecommendedDifficulty(userProgress, taskLogs)
@@ -265,7 +265,7 @@ object ChallengeGenerator {
     }
 
     private fun createCategoryFocusChallenge(difficulty: ChallengeDifficulty, userProgress: UserProgress): DailyChallenge {
-        val categories = TaskCategory.values()
+        val categories = TaskCategory.entries
         val focusCategory = categories[Random.nextInt(categories.size)]
         val taskCount = when (difficulty) {
             ChallengeDifficulty.EASY -> 3
@@ -397,7 +397,7 @@ object StudyBuddySystem {
 
     fun generateComparison(userProgress: UserProgress): StudyBuddyComparison {
         // Simulate anonymous comparison data
-        val categoryComparisons = AchievementCategory.values().associate { category ->
+        val categoryComparisons = AchievementCategory.entries.associate { category ->
             category.name to generateCategoryComparison(category, userProgress)
         }
 

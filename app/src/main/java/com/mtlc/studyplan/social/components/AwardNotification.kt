@@ -2,6 +2,7 @@ package com.mtlc.studyplan.social.components
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,7 @@ fun AwardNotification(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    val prussianBlue = Color(0xFF003153)
 
     // Auto-dismiss after 5 seconds
     LaunchedEffect(award.id) {
@@ -76,6 +78,7 @@ fun AwardNotification(
                 scaleY = scale
             },
         shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, prussianBlue),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(

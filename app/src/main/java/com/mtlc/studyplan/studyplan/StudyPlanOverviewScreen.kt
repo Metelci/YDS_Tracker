@@ -1,11 +1,8 @@
 package com.mtlc.studyplan.studyplan
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -45,7 +43,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun StudyPlanOverviewScreen(
     appIntegrationManager: AppIntegrationManager,
-    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    studyProgressRepository: StudyProgressRepository,
     onNavigateBack: () -> Unit = {},
     initialTab: StudyPlanTab = StudyPlanTab.WEEKLY
 ) {
@@ -162,7 +160,6 @@ fun StudyPlanOverviewScreen(
                 )
                 StudyPlanTab.PROGRESS -> ProgressOverview(
                     taskStats = taskStats,
-                    weeklyPlan = weeklyPlan,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -181,7 +178,7 @@ private fun StudyPlanTabRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 4.dp)
     ) {
-        items(StudyPlanTab.values()) { tab ->
+        items(StudyPlanTab.entries) { tab ->
             StudyPlanTabChip(
                 tab = tab,
                 isSelected = selectedTab == tab,
@@ -253,7 +250,6 @@ private fun WeeklyScheduleView(
         // Current Week Overview
         item {
             CurrentWeekCard(
-                weeklyPlan = weeklyPlan,
                 taskStats = taskStats
             )
         }
@@ -288,7 +284,6 @@ private fun WeeklyScheduleView(
 @Composable
 private fun ProgressOverview(
     taskStats: TaskStats,
-    weeklyPlan: WeeklyStudyPlan,
     modifier: Modifier = Modifier
 ) {
     val hasStarted = taskStats.totalTasks > 0 && taskStats.completedTasks > 0
@@ -334,7 +329,6 @@ private fun ProgressOverview(
 
 @Composable
 private fun CurrentWeekCard(
-    weeklyPlan: WeeklyStudyPlan,
     taskStats: TaskStats
 ) {
     Card(
@@ -503,16 +497,6 @@ data class StudyGoal(
 
 enum class Priority { HIGH, MEDIUM, LOW }
 
-// Helper functions
-private fun getStudyPhase(currentWeek: Int): String {
-    return when (currentWeek) {
-        in 1..8 -> "Foundation"
-        in 9..18 -> "Intermediate"
-        in 19..26 -> "Advanced"
-        else -> "Exam Prep"
-    }
-}
-
 private fun createStudyScheduleData(): StudyScheduleData {
     // Generate current week dates for labels only
     val today = LocalDate.now()
@@ -560,9 +544,9 @@ private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int 
     }
 
     // Create realistic units based on the curriculum and book progression
-    val units = when {
-        // Red Book: Units 1-115 across 8 weeks
-        book == StudyBook.RED_BOOK -> {
+    val units = when (// Red Book: Units 1-115 across 8 weeks
+        book) {
+        StudyBook.RED_BOOK -> {
             val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1 // Roughly 14 units per week
             listOf(
                 StudyUnit(
@@ -587,7 +571,7 @@ private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int 
         }
 
         // Blue Book: Intermediate level topics
-        book == StudyBook.BLUE_BOOK -> {
+        StudyBook.BLUE_BOOK -> {
             val weekInBlueBook = currentWeek - 8 // Blue book starts at week 9
             listOf(
                 StudyUnit(
@@ -613,7 +597,7 @@ private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int 
         }
 
         // Green Book: Advanced level topics
-        book == StudyBook.GREEN_BOOK -> {
+        StudyBook.GREEN_BOOK -> {
             val weekInGreenBook = currentWeek - 18 // Green book starts at week 19
             listOf(
                 StudyUnit(
@@ -634,7 +618,6 @@ private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int 
                 )
             )
         }
-
         else -> emptyList()
     }
 
@@ -846,7 +829,7 @@ private fun SubjectProgressCard(taskStats: TaskStats) {
 
             // Initial implementation: reflect real overall progress uniformly per subject
             val baseProgress = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
-            val subjects = listOf(
+            listOf(
                 "Grammar" to (MaterialTheme.colorScheme.primary to baseProgress),
                 "Reading" to (MaterialTheme.colorScheme.secondary to baseProgress),
                 "Vocabulary" to (MaterialTheme.colorScheme.tertiary to baseProgress),
@@ -860,130 +843,6 @@ private fun SubjectProgressCard(taskStats: TaskStats) {
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.padding(vertical = 16.dp)
             )
-        }
-    }
-}
-
-@Composable
-private fun WeeklyProgressChart(weeklyPlan: WeeklyStudyPlan) {
-    val chartColors = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.secondary,
-        MaterialTheme.colorScheme.tertiary,
-        MaterialTheme.colorScheme.primaryContainer,
-        MaterialTheme.colorScheme.secondaryContainer,
-        MaterialTheme.colorScheme.tertiaryContainer,
-        MaterialTheme.colorScheme.outline
-    )
-
-    val backgroundBrush = Brush.radialGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.05f)
-        ),
-        radius = 300f
-    )
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(brush = backgroundBrush)
-                .padding(10.dp)
-        ) {
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "This Week",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                        )
-                    }
-                    // Hide week/total display for initial use without data
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    // Remove fabricated/random progress: default to zeros until real data exists
-                    val weekData = List(7) { 0 }
-                    val dayLabels = listOf("M", "T", "W", "T", "F", "S", "S")
-
-                    weekData.forEachIndexed { index, height ->
-                        val animatedHeight by animateFloatAsState(
-                            targetValue = height.toFloat(),
-                            animationSpec = tween(
-                                durationMillis = 600 + index * 100,
-                                easing = FastOutSlowInEasing
-                            ),
-                            label = "bar_height_$index"
-                        )
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(14.dp)
-                                    .height((animatedHeight * 0.4).dp)
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(
-                                                chartColors[index].copy(alpha = 0.7f),
-                                                chartColors[index],
-                                                chartColors[index].copy(alpha = 0.8f)
-                                            )
-                                        ),
-                                        shape = RoundedCornerShape(
-                                            topStart = 6.dp,
-                                            topEnd = 6.dp,
-                                            bottomStart = 2.dp,
-                                            bottomEnd = 2.dp
-                                        )
-                                    )
-                                    .animateContentSize(
-                                        animationSpec = spring(
-                                            dampingRatio = Spring.DampingRatioMediumBouncy
-                                        )
-                                    )
-                            )
-                            Spacer(modifier = Modifier.height(3.dp))
-                            Text(
-                                text = dayLabels[index],
-                                fontSize = 9.sp,
-                                color = chartColors[index].copy(alpha = 0.8f),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

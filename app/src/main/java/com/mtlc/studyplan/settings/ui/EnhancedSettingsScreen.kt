@@ -102,7 +102,7 @@ fun EnhancedSettingsScreen(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(SettingsCategory.values()) { category ->
+                items(SettingsCategory.entries) { category ->
                     CategoryButton(
                         category = category,
                         isSelected = selectedCategory == category,

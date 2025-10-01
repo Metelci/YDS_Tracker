@@ -397,7 +397,7 @@ class PointEconomyManager(
             val now = System.currentTimeMillis()
             val updatedData = mutableMapOf<String, LeaderboardEntry>()
 
-            LeaderboardPeriod.values().forEach { period ->
+            LeaderboardPeriod.entries.forEach { period ->
                 val key = "${period.name}_${getPeriodKey(now, period)}"
                 val existing = currentData[key]
                 val newPoints = (existing?.points ?: 0) + pointsEarned
