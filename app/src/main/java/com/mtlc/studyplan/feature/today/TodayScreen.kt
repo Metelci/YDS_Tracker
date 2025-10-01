@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +65,13 @@ import com.mtlc.studyplan.ui.components.ErrorState
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.ui.theme.Elevations
+import com.mtlc.studyplan.ui.theme.DesignTokens
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
+import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -270,7 +278,16 @@ private fun SessionCard(
     onReschedule: (LocalDateTime) -> Unit = {},
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    Card(shape = MaterialTheme.shapes.large, elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = Elevations.level1)) {
+    val dark = isSystemInDarkTheme()
+    // Rotate through pastel palette for visual variety while keeping contrast
+    // Use inferred feature from package for stability across moves
+    val container = inferredFeaturePastelContainer("com.mtlc.studyplan.feature.today", s.id)
+
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = container),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevations.level1)
+    ) {
         Column(Modifier.fillMaxWidth().padding(LocalSpacing.current.md)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(

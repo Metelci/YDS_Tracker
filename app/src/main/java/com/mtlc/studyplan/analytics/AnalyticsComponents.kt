@@ -12,6 +12,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
+import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +42,10 @@ fun TimeDistributionCard(
     patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.analytics", "Study Time Distribution"))
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Study Time Distribution",
@@ -159,7 +165,7 @@ fun ProductivityInsightsCard(
     insights: ProductivityInsights,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Productivity Insights",
@@ -269,7 +275,7 @@ fun BestStudyTimesCard(
     patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Best Study Times",
@@ -356,7 +362,7 @@ fun RecommendationsCard(
     recommendations: List<Recommendation>,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -465,7 +471,7 @@ fun StudyHabitsCard(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Study Habits Analysis",
@@ -534,7 +540,7 @@ fun GoalProgressCard(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Goal Progress",
@@ -626,7 +632,7 @@ fun PerformanceTrendsChart(
         return
     }
 
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Performance Trends",
@@ -731,7 +737,7 @@ fun RecentAchievementsCard(
     achievements: List<String>,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -779,7 +785,7 @@ fun QuickStatsCard(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Quick Stats",

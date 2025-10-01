@@ -4,13 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [2.9.32] - 2025-10-01 (hotfix)
 
-### Removed
-- Eliminated the Email Summaries toggle and frequency picker from all notification settings UIs (legacy fragment, Compose screens, and defaults) to streamline the tab.
+### UI
+- Apply pastel color scheme to home cards; extend across app.
+- Per-feature pastel palettes with dark/light compositing.
+- Reduced green dominance on Tasks; warmer Today, higher-contrast Analytics.
 
-### Fixed
-- Settings footer now reads version name/code directly from the installed package so build info stays accurate after updates.
+### Dev
+- Added `PastelPeach` token and centralized pastel helpers.
+- Package→FeatureKey mapper for automatic palette selection.
 
 ## [2.9.31] - 2025-10-01
 

@@ -60,6 +60,8 @@ import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.components.ThemeSwitcher
 import com.mtlc.studyplan.settings.data.ThemeMode
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,12 +80,12 @@ fun WorkingHomeScreen(
     val prussianBlue = Color(0xFF003153)
 
     // Pastel card colors
-    val pastelPink = Color(0xFFFFDAE0)      // Today Progress Card
-    val pastelBlue = Color(0xFFD0E8FF)      // Days to Exam Card
-    val pastelMint = Color(0xFFD1F5E8)      // Points Today Card
-    val pastelLavender = Color(0xFFE8DCFF) // Tasks Done Card
-    val pastelPeach = Color(0xFFFFE5D4)     // Weekly Study Plan Card
-    val pastelYellow = Color(0xFFFFF4CC)    // YDS Exam Card
+    val pastelPink = featurePastelContainer(FeatureKey.TODAY, "today_progress")
+    val pastelBlue = featurePastelContainer(FeatureKey.TODAY, "days_to_exam")
+    val pastelMint = featurePastelContainer(FeatureKey.TODAY, "points_today")
+    val pastelLavender = featurePastelContainer(FeatureKey.TODAY, "tasks_done")
+    val pastelPeach = featurePastelContainer(FeatureKey.TODAY, "weekly_study_plan")
+    val pastelYellow = featurePastelContainer(FeatureKey.TODAY, "exam_card")
 
     // Theme state
     val currentTheme by themeManager?.currentTheme?.collectAsState() ?: remember { mutableStateOf(ThemeMode.SYSTEM) }

@@ -81,6 +81,18 @@ object DesignTokens {
     val BottomNavItemSelected = PrimaryContainer // tile background
     val BottomNavIconHighlight = Color(0xFFB3E5FC) // circle behind selected icon
 
+    // Pastel palette for cards (light + dark aware usage)
+    // These are low-chroma, high-luma backgrounds to keep contrast with text tokens.
+    val PastelLightGray = Color(0xFFF2F2F2)
+    val PastelLavender = Color(0xFFEDE7F6) // light lavender
+    val PastelPrussia = Color(0xFFE3F2FD) // light prussian blue tint (soft blue)
+    val PastelMint = Color(0xFFE8F5E9) // light mint
+    val PastelYellow = Color(0xFFFFF9C4) // light yellow
+    val PastelRed = Color(0xFFFFEBEE) // light red/rose
+    val PastelPeach = Color(0xFFFFE5D4) // soft peach
+
+    // For dark theme, we will slightly deepen via alpha overlays in usage sites.
+
     // Dark mode variants (approximate mapping)
     object Dark {
         val Background = Color(0xFF121212)

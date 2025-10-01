@@ -59,6 +59,8 @@ import com.mtlc.studyplan.settings.data.NavigationSettings
 import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -75,7 +77,7 @@ fun NavigationSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun PrivacySettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Privacy", subtitle = "Data and privacy controls", onBack = onBack) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Privacy"))) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Privacy", Icons.Filled.Shield)
                 SettingRowToggle(title = "Analytics", description = "Help improve the app with usage data", checked = true) { }
@@ -90,7 +92,7 @@ fun PrivacySettingsScreen(onBack: () -> Unit) {
 @Composable
 fun NotificationSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Notifications", subtitle = "Manage notifications and alerts", onBack = onBack) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Notifications"))) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Notifications", Icons.Filled.Notifications)
                 SettingRowToggle(title = "Push Notifications", description = "Allow notifications from this app", checked = true) { }
@@ -105,7 +107,7 @@ fun NotificationSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun GamificationSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Gamification", subtitle = "Achievements and rewards", onBack = onBack) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Tasks"))) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Gamification", Icons.Filled.Celebration)
                 SettingRowToggle(title = "Point System", description = "Earn points for completing tasks", checked = true) { }
@@ -214,7 +216,7 @@ private fun NavigationCategoryCard() {
     val settingsManager = remember { SettingsPreferencesManager(context) }
     val navSettings by settingsManager.navigationSettings.collectAsState(initial = NavigationSettings())
 
-    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Navigation"))) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CategoryCardHeader("Navigation", Icons.AutoMirrored.Filled.Send)
             SettingRowToggle(

@@ -45,6 +45,8 @@ import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -961,7 +963,7 @@ private fun PlanTab(
 
         // This Week's Study Plan
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_surface_block"))) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
@@ -995,7 +997,7 @@ private fun PlanTab(
 
         // Upcoming Days
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_secondary_block"))) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Upcoming Days", fontWeight = FontWeight.SemiBold)
@@ -1013,7 +1015,7 @@ private fun PlanTab(
 
         // Plan Management
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))) {
+            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_primary_block"))) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Plan Management", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(12.dp))
@@ -1394,7 +1396,7 @@ private fun StudyBookCard(
         .toSet()
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_1")),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -1551,7 +1553,7 @@ private fun StudyUnitItem(unit: StudyUnit, onClick: () -> Unit = {}) {
 @Composable
 private fun DailyTasksSection(tasks: List<DailyTask>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_2")),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -1642,7 +1644,7 @@ private fun DailyTaskItem(task: DailyTask) {
 @Composable
 private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_3")),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -1734,7 +1736,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
 @Composable
 private fun NotesSection(notes: String) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+        colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_4")),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
