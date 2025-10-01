@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.33] - 2025-10-02 (hotfix)
+
+### Fixed
+- **Dark Mode Status Bar Visibility**: Fixed critical issue where notification/status bar was invisible in dark mode
+  - Implemented dynamic status bar icon colors that adapt to theme (light icons in dark mode, dark icons in light mode)
+  - Added themed status bar colors with 95% opacity for subtle separation
+  - Fixed navigation bar to match status bar styling for consistency
+  - Updated background gradient to properly support dark mode
+  - Added safe initial values to prevent crashes during theme changes
+
+### Removed
+- **Plan Management Card**: Removed "Plan Management" card from Tasks page including:
+  - "Modify This Week" and "Generate Next Week" buttons
+  - "View Planning Analytics" option
+  - All related dialogs and handlers
+  - Cleaned up orphaned imports and unused code
+
+- **Study Groups Setting**: Removed "Study Groups" option from Settings page including:
+  - Study Groups toggle from Social settings
+  - All related data structures and handlers
+  - Database and repository references
+
+- **Social Page Top Bar Border**: Removed blue border from Social page top bar for cleaner appearance
+
+### Code Quality
+- **Orphaned Code Cleanup**: Identified and removed orphaned imports and unused code from:
+  - Settings page (unused Group icon import)
+  - Tasks page (unused TextButton import)
+  - All files verified to have no remaining orphaned code
+
+### Technical Improvements
+- Enhanced theme observation with proper StateFlow integration
+- Improved system bar handling using WindowCompat API
+- Added comprehensive edge case handling for theme changes
+- Ensured compatibility across all Android versions and manufacturers
+
 ## [2.9.32] - 2025-10-01 (hotfix)
 
 ### UI

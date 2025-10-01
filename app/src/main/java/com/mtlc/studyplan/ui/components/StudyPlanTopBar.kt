@@ -199,7 +199,7 @@ fun StudyPlanTopBar(
         }
         Box(
             modifier = bgModifier
-                .border(1.dp, borderColor, capsuleShape)
+                .border(2.dp, Color(0xFF0066FF), capsuleShape)
         ) {
             Row(
                 modifier = Modifier
@@ -354,7 +354,7 @@ fun StudyPlanTopBar(
                         Box(
                             modifier = Modifier
                                 .background(gradient, capsuleShape)
-                                .border(1.dp, Color.Black.copy(alpha = 0.05f), capsuleShape)
+                                .border(2.dp, Color(0xFF0066FF), capsuleShape)
                                 .drawBehind {
                                     // Primary blur circle
                                     drawCircle(
@@ -509,7 +509,7 @@ fun TasksHeaderTopBar(
         }
         Box(
             modifier = bg
-                .border(1.dp, Color.Black.copy(alpha = 0.05f), capsuleShape)
+                .border(2.dp, Color(0xFF0066FF), capsuleShape)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
@@ -605,7 +605,7 @@ fun SocialHeaderTopBar(cards: List<TopBarCard>, modifier: Modifier = Modifier) {
             Modifier.background(appearance.brush!!, capsuleShape)
         } else { Modifier.background(baseBackground, capsuleShape) }
         Row(
-            modifier = bg.border(1.dp, Color.Black.copy(alpha = 0.05f), capsuleShape)
+            modifier = bg.border(2.dp, Color(0xFF0066FF), capsuleShape)
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically

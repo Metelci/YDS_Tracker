@@ -42,7 +42,6 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Task
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import com.mtlc.studyplan.ui.theme.FeatureKey
@@ -55,7 +54,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -112,10 +110,6 @@ fun WorkingTasksScreen(
 
     var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
     var selectedDay by remember { mutableStateOf<DayPlan?>(null) }
-    var showModifyWeekDialog by remember { mutableStateOf(false) }
-    var showGenerateWeekDialog by remember { mutableStateOf(false) }
-    var showAnalyticsDialog by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
 
     // Get the week that corresponds to user's current progress
     val thisWeek = remember(currentWeek) {
@@ -167,119 +161,9 @@ fun WorkingTasksScreen(
                     selectedDay = day
                     selectedTab = 0  // Switch to Daily tab
                 },
-                onNavigateToStudyPlan = onNavigateToStudyPlan,
-                onModifyWeek = { showModifyWeekDialog = true },
-                onGenerateWeek = { showGenerateWeekDialog = true },
-                onViewAnalytics = { showAnalyticsDialog = true }
+                onNavigateToStudyPlan = onNavigateToStudyPlan
             )
         }
-        }
-
-        // Dialogs
-        if (showModifyWeekDialog) {
-            AlertDialog(
-                onDismissRequest = { showModifyWeekDialog = false },
-                title = { Text("Modify This Week") },
-                text = {
-                    Column {
-                        Text("Customize your current week's study plan. You can:")
-                        Spacer(Modifier.height(8.dp))
-                        Text("• Add or remove tasks")
-                        Text("• Adjust task durations")
-                        Text("• Reorder tasks")
-                        Text("• Mark tasks as complete")
-                        Spacer(Modifier.height(8.dp))
-                        Text("Tap on any day in the Plan tab to edit tasks.", fontWeight = FontWeight.SemiBold)
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showModifyWeekDialog = false
-                        selectedTab = 2 // Switch to Plan tab
-                    }) {
-                        Text("Go to Plan")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showModifyWeekDialog = false }) {
-                        Text("Close")
-                    }
-                }
-            )
-        }
-
-        if (showGenerateWeekDialog) {
-            AlertDialog(
-                onDismissRequest = { showGenerateWeekDialog = false },
-                title = { Text("Generate Next Week") },
-                text = {
-                    Column {
-                        Text("Current Week: $currentWeek")
-                        Spacer(Modifier.height(12.dp))
-                        Text("This will advance you to Week ${currentWeek + 1}.")
-                        Spacer(Modifier.height(8.dp))
-                        if (currentWeek < 30) {
-                            Text("The next week's plan includes:")
-                            Spacer(Modifier.height(4.dp))
-                            val nextWeek = plan.getOrNull(currentWeek)
-                            if (nextWeek != null) {
-                                Text("• ${nextWeek.days.sumOf { it.tasks.size }} tasks across 7 days")
-                                Text("• Focus: ${nextWeek.days.firstOrNull()?.tasks?.firstOrNull()?.desc ?: "Various topics"}")
-                            } else {
-                                Text("You've completed all 30 weeks! 🎉")
-                            }
-                        } else {
-                            Text("Congratulations! You've completed all 30 weeks of study.", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                },
-                confirmButton = {
-                    if (currentWeek < 30) {
-                        TextButton(onClick = {
-                            showGenerateWeekDialog = false
-                            coroutineScope.launch {
-                                studyProgressRepository.advanceToNextWeek()
-                            }
-                        }) {
-                            Text("Advance to Week ${currentWeek + 1}")
-                        }
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showGenerateWeekDialog = false }) {
-                        Text(if (currentWeek >= 30) "Close" else "Cancel")
-                    }
-                }
-            )
-        }
-
-        if (showAnalyticsDialog) {
-            AlertDialog(
-                onDismissRequest = { showAnalyticsDialog = false },
-                title = { Text("Planning Analytics") },
-                text = {
-                    Column {
-                        Text("Study Progress Overview", fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.height(12.dp))
-                        Text("Current Week: $currentWeek of 30")
-                        Text("Progress: ${(currentWeek * 100 / 30)}%")
-                        Spacer(Modifier.height(12.dp))
-                        val totalWeekTasks = thisWeek?.days?.sumOf { it.tasks.size } ?: 0
-                        Text("This Week:", fontWeight = FontWeight.SemiBold)
-                        Text("• Total tasks: $totalWeekTasks")
-                        Text("• Days remaining: ${7 - LocalDate.now().dayOfWeek.value}")
-                        Spacer(Modifier.height(12.dp))
-                        Text("Remaining Weeks: ${30 - currentWeek}")
-                        Spacer(Modifier.height(8.dp))
-                        Text("Keep up the great work! 📚", color = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showAnalyticsDialog = false }) {
-                        Text("Close")
-                    }
-                }
-            )
         }
     }
 }
@@ -899,10 +783,7 @@ private fun PlanTab(
     thisWeek: WeekPlan?,
     weeklyProgressPct: Float,
     onDayClick: (DayPlan) -> Unit = {},
-    onNavigateToStudyPlan: () -> Unit = {},
-    onModifyWeek: () -> Unit = {},
-    onGenerateWeek: () -> Unit = {},
-    onViewAnalytics: () -> Unit = {}
+    onNavigateToStudyPlan: () -> Unit = {}
 ) {
     val cardShape = RoundedCornerShape(16.dp)
     LazyColumn(
@@ -1013,56 +894,6 @@ private fun PlanTab(
             }
         }
 
-        // Plan Management
-        item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_primary_block"))) {
-                Column(Modifier.padding(16.dp)) {
-                    Text("Plan Management", fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                        ManagementTile(
-                            title = "Modify\nThis Week",
-                            icon = Icons.Filled.EditCalendar,
-                            modifier = Modifier.weight(1f),
-                            onClick = onModifyWeek
-                        )
-                        ManagementTile(
-                            title = "Generate\nNext Week",
-                            icon = Icons.Filled.Quiz,
-                            modifier = Modifier.weight(1f),
-                            onClick = onGenerateWeek
-                        )
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onViewAnalytics() }) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.width(6.dp))
-                        Text("View Planning Analytics", color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ManagementTile(
-    title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
-) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 0.dp,
-        color = MaterialTheme.colorScheme.surface,
-        modifier = modifier.clickable { onClick() }
-    ) {
-        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.height(8.dp))
-            Text(title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 14.sp)
-        }
     }
 }
 

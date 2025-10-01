@@ -1169,7 +1169,6 @@ private object defaultValues {
         SettingsKeys.Social.GROUP_NOTIFICATIONS to true,
         SettingsKeys.Social.LEADERBOARD_PARTICIPATION to false,
         SettingsKeys.Social.FRIEND_REQUESTS to true,
-        SettingsKeys.Social.STUDY_GROUPS to false,
         SettingsKeys.Social.ACHIEVEMENT_SHARING to true,
         SettingsKeys.Social.PROGRESS_COMPARISON to false,
         SettingsKeys.Social.COLLABORATIVE_LEARNING to false,

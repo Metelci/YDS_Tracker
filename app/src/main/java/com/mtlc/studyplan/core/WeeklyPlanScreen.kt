@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.core
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.geometry.Offset
@@ -136,6 +137,7 @@ fun WeeklyPlanScreen(
                             ),
                             shape = RoundedCornerShape(24.dp)
                         )
+                        .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     Row(

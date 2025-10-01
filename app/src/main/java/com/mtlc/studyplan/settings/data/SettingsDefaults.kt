@@ -444,22 +444,13 @@ object SettingsDefaults {
                     sortOrder = 1
                 ),
                 ToggleSetting(
-                    id = "study_groups",
-                    title = "Study Groups",
-                    description = "Join or create study groups",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.STUDY_GROUPS,
-                    defaultValue = false,
-                    sortOrder = 2
-                ),
-                ToggleSetting(
                     id = "leaderboard_participation",
                     title = "Leaderboard Participation",
                     description = "Participate in community leaderboards",
                     category = SettingsCategory.SOCIAL_ID,
                     key = SettingsKeys.Social.LEADERBOARD_PARTICIPATION,
                     defaultValue = false,
-                    sortOrder = 3
+                    sortOrder = 2
                 )
             ),
             sortOrder = 1

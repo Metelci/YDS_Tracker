@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.outlined.EventNote
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -803,15 +802,6 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                 }
             )
 
-            SettingToggleItem(
-                icon = Icons.Outlined.Group,
-                title = "Study Groups",
-                description = "Join and create study groups with others",
-                checked = socialSettings.studyGroups,
-                onCheckedChange = { checked ->
-                    settingsManager.updateSocialSettings(socialSettings.copy(studyGroups = checked))
-                }
-            )
         }
     }
 

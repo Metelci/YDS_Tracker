@@ -19,8 +19,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 68
-        versionName = "2.9.32"
+        versionCode = 69
+        versionName = "2.9.33"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -156,7 +156,6 @@ dependencies {
     // Image loading and processing for avatar upload
     implementation(libs.coil.compose)
     implementation("androidx.exifinterface:exifinterface:1.3.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
 
     // Room (local database for scalable histories)
     implementation(libs.androidx.room.runtime)

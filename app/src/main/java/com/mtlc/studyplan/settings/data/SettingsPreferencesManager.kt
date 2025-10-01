@@ -140,7 +140,6 @@ class SettingsPreferencesManager(context: Context) {
         with(prefs.edit()) {
             putBoolean(KEY_SOCIAL_FEATURES, settings.socialFeatures)
             putBoolean(KEY_LEADERBOARDS, settings.leaderboards)
-            putBoolean(KEY_STUDY_GROUPS, settings.studyGroups)
             apply()
         }
         _socialSettings.value = settings
@@ -149,8 +148,7 @@ class SettingsPreferencesManager(context: Context) {
     private fun getSocialSettings(): SocialSettings {
         return SocialSettings(
             socialFeatures = prefs.getBoolean(KEY_SOCIAL_FEATURES, true),
-            leaderboards = prefs.getBoolean(KEY_LEADERBOARDS, true),
-            studyGroups = prefs.getBoolean(KEY_STUDY_GROUPS, true)
+            leaderboards = prefs.getBoolean(KEY_LEADERBOARDS, true)
         )
     }
 
@@ -188,7 +186,6 @@ class SettingsPreferencesManager(context: Context) {
         // Social keys
         private const val KEY_SOCIAL_FEATURES = "social_features"
         private const val KEY_LEADERBOARDS = "leaderboards"
-        private const val KEY_STUDY_GROUPS = "study_groups"
     }
 }
 
@@ -228,8 +225,7 @@ data class GamificationSettings(
 
 data class SocialSettings(
     val socialFeatures: Boolean = true,
-    val leaderboards: Boolean = true,
-    val studyGroups: Boolean = true
+    val leaderboards: Boolean = true
 )
 
 enum class ProfileVisibility {

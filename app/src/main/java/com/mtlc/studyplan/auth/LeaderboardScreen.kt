@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -69,14 +70,20 @@ fun LeaderboardScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Leaderboard") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.Close, "Back")
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color(0xFF0066FF))
+            ) {
+                TopAppBar(
+                    title = { Text("Leaderboard") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.Close, "Back")
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         LazyColumn(

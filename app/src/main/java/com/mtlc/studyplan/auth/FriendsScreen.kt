@@ -1,5 +1,6 @@
 package com.mtlc.studyplan.auth
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,19 +40,25 @@ fun FriendsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Friends") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.Close, "Back")
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color(0xFF0066FF))
+            ) {
+                TopAppBar(
+                    title = { Text("Friends") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.Close, "Back")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showInviteDialog = true }) {
+                            Icon(Icons.Default.Add, "Invite Friend")
+                        }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { showInviteDialog = true }) {
-                        Icon(Icons.Default.Add, "Invite Friend")
-                    }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         LazyColumn(

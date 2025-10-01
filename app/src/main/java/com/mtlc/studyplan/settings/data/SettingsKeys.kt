@@ -104,7 +104,6 @@ object SettingsKeys {
         const val GROUP_NOTIFICATIONS = "social_group_notifications"
         const val LEADERBOARD_PARTICIPATION = "social_leaderboard_participation"
         const val FRIEND_REQUESTS = "social_friend_requests"
-        const val STUDY_GROUPS = "social_study_groups"
         const val ACHIEVEMENT_SHARING = "social_achievement_sharing"
         const val PROGRESS_COMPARISON = "social_progress_comparison"
         const val COLLABORATIVE_LEARNING = "social_collaborative_learning"
@@ -262,7 +261,7 @@ private fun SettingsKeys.Navigation.getAllKeys(): List<String> = listOf(
 
 private fun SettingsKeys.Social.getAllKeys(): List<String> = listOf(
     STUDY_BUDDY_MATCHING, SHARE_ACTIVITY, GROUP_NOTIFICATIONS, LEADERBOARD_PARTICIPATION,
-    FRIEND_REQUESTS, STUDY_GROUPS, ACHIEVEMENT_SHARING, PROGRESS_COMPARISON,
+    FRIEND_REQUESTS, ACHIEVEMENT_SHARING, PROGRESS_COMPARISON,
     COLLABORATIVE_LEARNING, PEER_CHALLENGES
 )
 

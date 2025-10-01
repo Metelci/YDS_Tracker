@@ -715,8 +715,7 @@ fun SocialHubTopBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = spacing.md, vertical = spacing.sm)
-            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp)),
+            .padding(horizontal = spacing.md, vertical = spacing.sm),
         shape = RoundedCornerShape(16.dp),
         color = Color.Transparent
     ) {
