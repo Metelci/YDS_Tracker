@@ -540,7 +540,7 @@ private fun WeeklyTab(
                     // Progress bar
                     Column {
                         LinearProgressIndicator(
-                            progress = weekProgress,
+                            progress = { weekProgress },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
@@ -2090,4 +2090,5 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
+
 

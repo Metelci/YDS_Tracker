@@ -17,10 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Fixed a Room startup crash by bumping `StudyPlanDatabase` to v4 and migrating existing `tasks` rows without destructive wipes.
 - Updated login/logout settings actions to use auto-mirrored Material icons, clearing deprecated vector warnings in lint.
+- Updated dashboard progress bars to the new `LinearProgressIndicator` API to future-proof Compose builds.
+
+### Maintenance
+- Trimmed the legacy in-memory fallback from `TaskRepositoryImpl` so Room-backed flows remain the single source of truth.
+- Switched debug-only destructive migrations to the new `fallbackToDestructiveMigration(dropAllTables = true)` overload across Room databases.
 
 ### Quality
-- Verified `./gradlew :app:lintDebug` to ensure schema and icon warnings are resolved before submission.
-
+- Verified `./gradlew :app:lintDebug` and `./gradlew :app:testDebugUnitTest` to ensure the hotfix ships warning-free.
 ## [2.9.28] - 2025-09-30
 
 ### Added
@@ -1233,6 +1237,9 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
+
+
 
 
 
