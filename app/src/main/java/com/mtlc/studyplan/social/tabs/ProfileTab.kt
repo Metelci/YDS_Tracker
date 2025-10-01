@@ -1,6 +1,8 @@
 package com.mtlc.studyplan.social.tabs
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,9 +96,11 @@ private fun ProfileCard(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    val prussianBlue = Color(0xFF003153)
 
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(12.dp)),
         color = DesignTokens.PrimaryContainer.copy(alpha = 0.45f),
         shape = RoundedCornerShape(12.dp)
     ) {

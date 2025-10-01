@@ -13,13 +13,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -33,9 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,11 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import com.mtlc.studyplan.ui.components.StudyPlanTopBar
-import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,12 +49,10 @@ fun StudyPlanOverviewScreen(
     onNavigateBack: () -> Unit = {},
     initialTab: StudyPlanTab = StudyPlanTab.WEEKLY
 ) {
-    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(initialTab) }
     var selectedDay by remember { mutableStateOf<DailyStudyInfo?>(null) }
 
     // Collect data from AppIntegrationManager
-    val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
     val taskStats by appIntegrationManager.getTaskStatsFlow().collectAsState(
         initial = TaskStats(0, 0, 0, 0)
     )
@@ -173,11 +163,6 @@ fun StudyPlanOverviewScreen(
                 StudyPlanTab.PROGRESS -> ProgressOverview(
                     taskStats = taskStats,
                     weeklyPlan = weeklyPlan,
-                    modifier = Modifier.weight(1f)
-                )
-                StudyPlanTab.UPCOMING -> UpcomingTasksView(
-                    allTasks = allTasks,
-                    studySchedule = studySchedule,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -346,38 +331,6 @@ private fun ProgressOverview(
     }
 }
 
-@Composable
-private fun UpcomingTasksView(
-    allTasks: List<Task>,
-    studySchedule: StudyScheduleData,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
-    ) {
-        // Today's Tasks
-        item {
-            TaskSectionHeader("Today's Tasks")
-        }
-
-        items(studySchedule.todayTasks) { task ->
-            UpcomingTaskCard(task = task)
-        }
-
-        // Tomorrow's Tasks
-        item {
-            TaskSectionHeader("Tomorrow's Tasks")
-        }
-
-        items(studySchedule.tomorrowTasks) { task ->
-            UpcomingTaskCard(task = task)
-        }
-
-        // Removed Week Targets section for Upcoming tab (no mock targets)
-    }
-}
 
 @Composable
 private fun CurrentWeekCard(
@@ -524,15 +477,11 @@ private fun DailyScheduleCard(
 enum class StudyPlanTab(val title: String, val icon: ImageVector) {
     WEEKLY("Weekly", Icons.Filled.CalendarToday),
     DAILY("Daily", Icons.Filled.DateRange),
-    PROGRESS("Progress", Icons.AutoMirrored.Filled.TrendingUp),
-    UPCOMING("Upcoming", Icons.AutoMirrored.Filled.Assignment)
+    PROGRESS("Progress", Icons.AutoMirrored.Filled.TrendingUp)
 }
 
 data class StudyScheduleData(
     val dailySchedules: List<DailySchedule>,
-    val todayTasks: List<UpcomingTask>,
-    val tomorrowTasks: List<UpcomingTask>,
-    val weekTargets: List<WeekTarget>,
     val weeklyGoals: List<StudyGoal>
 )
 
@@ -543,21 +492,6 @@ data class DailySchedule(
     val estimatedTime: String,
     val completionPercentage: Int,
     val isToday: Boolean = false
-)
-
-data class UpcomingTask(
-    val title: String,
-    val subject: String,
-    val dueTime: String,
-    val priority: Priority,
-    val estimatedDuration: String
-)
-
-data class WeekTarget(
-    val title: String,
-    val progress: Int,
-    val target: Int,
-    val category: String
 )
 
 data class StudyGoal(
@@ -596,16 +530,10 @@ private fun createStudyScheduleData(): StudyScheduleData {
         DailySchedule("Sunday", startOfWeek.plusDays(6).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 7)
     )
 
-    // No pre-filled upcoming tasks; ready for initial use without placeholders
-    val todayTasks = emptyList<UpcomingTask>()
-    val tomorrowTasks = emptyList<UpcomingTask>()
-
-    // No pre-filled targets/goals until there is real data
-    val weekTargets = emptyList<WeekTarget>()
-
+    // No pre-filled goals until there is real data
     val weeklyGoals = emptyList<StudyGoal>()
 
-    return StudyScheduleData(dailySchedules, todayTasks, tomorrowTasks, weekTargets, weeklyGoals)
+    return StudyScheduleData(dailySchedules, weeklyGoals)
 }
 
 // Helper function to create DailyStudyInfo from DailySchedule
@@ -734,97 +662,6 @@ private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int 
 }
 
 // Additional composables for other sections...
-@Composable
-private fun TaskSectionHeader(title: String) {
-    Text(
-        text = title,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.padding(vertical = 4.dp)
-    )
-}
-
-@Composable
-private fun UpcomingTaskCard(task: UpcomingTask) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = task.title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "${task.subject} • ${task.estimatedDuration}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                text = task.dueTime,
-                fontSize = 12.sp,
-                color = when (task.priority) {
-                    Priority.HIGH -> MaterialTheme.colorScheme.error
-                    Priority.MEDIUM -> MaterialTheme.colorScheme.tertiary
-                    Priority.LOW -> MaterialTheme.colorScheme.primary
-                }
-            )
-        }
-    }
-}
-
-@Composable
-private fun WeekTargetCard(target: WeekTarget) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = target.title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "${target.progress}/${target.target}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            LinearProgressIndicator(
-                progress = { target.progress.toFloat() / target.target },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp)),
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
 
 @Composable
 private fun StudyGoalsCard(goals: List<StudyGoal>) {

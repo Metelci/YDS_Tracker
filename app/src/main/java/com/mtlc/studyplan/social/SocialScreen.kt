@@ -6,6 +6,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -78,7 +80,6 @@ import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.social.components.SocialSegmentedTabs
 import com.mtlc.studyplan.social.tabs.AwardsTab
 import com.mtlc.studyplan.social.tabs.FriendsTab
-import com.mtlc.studyplan.social.tabs.GroupsTab
 import com.mtlc.studyplan.social.tabs.ProfileTab
 import com.mtlc.studyplan.social.tabs.RanksTab
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -193,7 +194,6 @@ fun SocialScreen(
 
     val profile by socialRepository.profile.collectAsState()
     val ranks by socialRepository.ranks.collectAsState()
-    val groups by socialRepository.groups.collectAsState()
     val friends by socialRepository.friends.collectAsState()
     val awards by socialRepository.awards.collectAsState()
     val currentAuthUser by authRepository.currentUser.collectAsState(initial = null)
@@ -564,30 +564,6 @@ fun SocialScreen(
 
                 }
                 SocialTab.Ranks -> RanksTab(ranks = ranks)
-                SocialTab.Groups -> GroupsTab(
-                    groups = groups,
-                    onToggleJoin = { group ->
-                        scope.launch {
-                            socialRepository.toggleGroupMembership(group.id)
-                            val messageRes = if (group.joined) R.string.social_left_group else R.string.social_joined_group
-                            val message = context.getString(messageRes, group.name)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
-                    },
-                    onShare = { group ->
-                        scope.launch {
-                            socialRepository.shareGroup(group.id)
-                            val message = context.getString(R.string.social_shared_group, group.name)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
-                    },
-                    onCreateGroup = {
-                        scope.launch {
-                            val message = context.getString(R.string.social_create_group_stub)
-                            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
-                        }
-                    }
-                )
                 SocialTab.Friends -> FriendsTab(
                     friends = friends,
                     onFriendSelected = { /* friend -> showFriendProfileSnackbar(friend, snackbarHostState, scope, context) */ },
@@ -734,11 +710,13 @@ fun SocialHubTopBar(
     val title = stringResource(R.string.social_hub_title)
     val subtitle = stringResource(R.string.social_hub_subtitle)
     val inviteLabel = stringResource(R.string.topbar_invite_action)
+    val prussianBlue = Color(0xFF003153)
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = spacing.md, vertical = spacing.sm),
+            .padding(horizontal = spacing.md, vertical = spacing.sm)
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         color = Color.Transparent
     ) {
@@ -818,11 +796,13 @@ fun showFriendProfileSnackbar(
 
 @Composable
 fun HighlightChip(label: String, value: String, modifier: Modifier = Modifier) {
+    val prussianBlue = Color(0xFF003153)
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = DesignTokens.SurfaceContainer,
         tonalElevation = 1.dp,
         modifier = modifier
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(12.dp))
     ) {
         Column(
             modifier = Modifier
@@ -848,10 +828,13 @@ fun ProfileSection(
     onUploadAvatarClick: () -> Unit
 ) {
     val spacing = LocalSpacing.current
+    val prussianBlue = Color(0xFF003153)
 
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp))
     ) {
         Column(
             modifier = Modifier
@@ -933,7 +916,9 @@ fun ProfileSection(
                 } else {
                     Surface(
                         color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .border(BorderStroke(1.dp, Color(0xFF003153)), RoundedCornerShape(8.dp))
                     ) {
                         Text(
                             text = profile.username,
@@ -1042,7 +1027,9 @@ fun ProfileSection(
             // Preview section
             Surface(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .border(BorderStroke(1.dp, Color(0xFF003153)), RoundedCornerShape(12.dp))
             ) {
                 Row(
                     modifier = Modifier

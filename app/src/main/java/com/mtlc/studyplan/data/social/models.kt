@@ -16,16 +16,6 @@ data class RankEntry(
     val isYou: Boolean = false
 )
 
-data class Group(
-    val id: String,
-    val name: String,
-    val members: Int,
-    val tags: List<String>,
-    val activity: String,
-    val description: String,
-    val joined: Boolean = false
-)
-
 enum class FriendStatus { Online, Offline, Studying }
 
 data class Friend(

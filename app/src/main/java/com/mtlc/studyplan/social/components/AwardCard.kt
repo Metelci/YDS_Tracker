@@ -61,6 +61,8 @@ fun AwardCard(
     val progressAccentColor = if (isDarkTheme) Color(0xFFFFD54F) else Color(0xFFFFB000)
     val badgeBackgroundColor = if (isLocked) colorScheme.surfaceVariant else colorScheme.secondary
     val badgeContentColor = if (isLocked) colorScheme.onSurfaceVariant else colorScheme.onSecondary
+    val prussianBlue = Color(0xFF003153)
+    val borderColor = prussianBlue
 
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -73,7 +75,7 @@ fun AwardCard(
             .fillMaxWidth()
             .height(80.dp)
             .scale(scale)
-            .border(BorderStroke(1.dp, Color(0xFF0D47A1)), RoundedCornerShape(12.dp))
+            .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(12.dp))
             .semantics {
                 contentDescription = if (isLocked) {
                     "Locked award: ${award.title}. ${award.description}"

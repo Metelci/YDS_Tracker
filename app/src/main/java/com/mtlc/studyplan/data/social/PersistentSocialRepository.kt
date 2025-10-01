@@ -60,36 +60,6 @@ class PersistentSocialRepository(
 
     private val ranksState = MutableStateFlow(emptyList<RankEntry>())
 
-    private val groupsState = MutableStateFlow(
-        listOf(
-            Group(
-                id = "g1",
-                name = "YDS Warriors",
-                members = 24,
-                tags = listOf("General YDS", "High Activity"),
-                activity = "Daily practice sessions",
-                description = "Daily practice sessions",
-                joined = true
-            ),
-            Group(
-                id = "g2",
-                name = "Vocabulary Masters",
-                members = 18,
-                tags = listOf("Vocabulary", "Medium Activity"),
-                activity = "Focus on word building",
-                description = "Focus on word building"
-            ),
-            Group(
-                id = "g3",
-                name = "Grammar Experts",
-                members = 31,
-                tags = listOf("Grammar", "High Activity"),
-                activity = "Advanced grammar practice",
-                description = "Advanced grammar practice"
-            )
-        )
-    )
-
     private val friendsState = MutableStateFlow(emptyList<Friend>())
 
     private val awardsState = MutableStateFlow(
@@ -166,7 +136,6 @@ class PersistentSocialRepository(
 
     override val profile: StateFlow<SocialProfile> = profileState
     override val ranks: StateFlow<List<RankEntry>> = ranksState
-    override val groups: StateFlow<List<Group>> = groupsState
     override val friends: StateFlow<List<Friend>> = friendsState
     override val awards: StateFlow<List<Award>> = awardsState
 
@@ -196,18 +165,6 @@ class PersistentSocialRepository(
         }
     }
 
-    override suspend fun toggleGroupMembership(groupId: String) {
-        groupsState.update { groups ->
-            groups.map { group ->
-                if (group.id == groupId) group.copy(joined = !group.joined) else group
-            }
-        }
-    }
-
-    override suspend fun shareGroup(groupId: String) {
-        // Stub: keeping structure for future analytics/logging.
-        delay(120)
-    }
 
     override suspend fun selectAvatar(avatarId: String) {
         // Update state

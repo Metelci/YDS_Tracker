@@ -1,5 +1,7 @@
 package com.mtlc.studyplan.social.components
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.RankEntry
 import com.mtlc.studyplan.ui.theme.DesignTokens
@@ -36,9 +39,11 @@ fun LeaderboardRow(
     val spacing = LocalSpacing.current
     val background = if (entry.isYou) DesignTokens.PrimaryContainer.copy(alpha = 0.55f) else DesignTokens.Surface
     val contentColor = if (entry.isYou) DesignTokens.PrimaryContainerForeground else MaterialTheme.colorScheme.onSurface
+    val prussianBlue = Color(0xFF003153)
 
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp)),
         color = background,
         contentColor = contentColor,
         shape = RoundedCornerShape(16.dp),

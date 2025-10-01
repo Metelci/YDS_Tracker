@@ -1,5 +1,6 @@
 package com.mtlc.studyplan.core
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,7 +56,6 @@ import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.StreakInfo
 import com.mtlc.studyplan.data.TaskStats
 import com.mtlc.studyplan.data.TodayStats
-import com.mtlc.studyplan.data.WeekDay
 import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.components.ThemeSwitcher
@@ -70,12 +68,22 @@ fun WorkingHomeScreen(
     themeManager: com.mtlc.studyplan.theme.ThemeManager? = null,
     onNavigateToTasks: () -> Unit = {},
     onNavigateToWeeklyPlan: () -> Unit = {},
-    onNavigateToDaily: (String) -> Unit = {},
     onNavigateToExamDetails: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    // Prussian blue color for card borders
+    val prussianBlue = Color(0xFF003153)
+
+    // Pastel card colors
+    val pastelPink = Color(0xFFFFDAE0)      // Today Progress Card
+    val pastelBlue = Color(0xFFD0E8FF)      // Days to Exam Card
+    val pastelMint = Color(0xFFD1F5E8)      // Points Today Card
+    val pastelLavender = Color(0xFFE8DCFF) // Tasks Done Card
+    val pastelPeach = Color(0xFFFFE5D4)     // Weekly Study Plan Card
+    val pastelYellow = Color(0xFFFFF4CC)    // YDS Exam Card
 
     // Theme state
     val currentTheme by themeManager?.currentTheme?.collectAsState() ?: remember { mutableStateOf(ThemeMode.SYSTEM) }
@@ -237,9 +245,10 @@ fun WorkingHomeScreen(
                         .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToStudyPlan() },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = pastelPink
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, prussianBlue)
                 ) {
                     Column(
                         modifier = Modifier
@@ -253,12 +262,12 @@ fun WorkingHomeScreen(
                                 text = stringResource(R.string.start),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.your_journey),
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(3.dp))
@@ -266,26 +275,26 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.PlayArrow,
                                 contentDescription = stringResource(R.string.start_studying),
                                 modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                tint = Color(0xFF2C2C2C)
                             )
                         } else {
                             Text(
                                 text = "${todayProgress}%",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.today),
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color(0xFF424242)
                             )
                             Spacer(modifier = Modifier.height(3.dp))
                             CircularProgressIndicator(
                                 progress = { todayProgress / 100f },
                                 modifier = Modifier.size(28.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                trackColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f),
+                                color = Color(0xFF2C2C2C),
+                                trackColor = Color(0xFF2C2C2C).copy(alpha = 0.3f),
                                 strokeWidth = 2.5.dp
                             )
                         }
@@ -299,9 +308,10 @@ fun WorkingHomeScreen(
                         .height(104.dp) // Reduced by 20% (130 * 0.8 = 104)
                         .clickable { onNavigateToExamDetails() },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        containerColor = pastelBlue
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, prussianBlue)
                 ) {
                     Column(
                         modifier = Modifier
@@ -314,19 +324,19 @@ fun WorkingHomeScreen(
                             text = "${examTracker.daysToExam}",
                             fontSize = 24.sp, // Reduced font size
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = Color(0xFF2C2C2C)
                         )
                         Text(
                             text = "Days to YDS",
                             fontSize = 12.sp, // Reduced font size
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = Color(0xFF424242),
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(1.dp)) // Reduced spacing
                         Text(
                             text = examTracker.statusMessage,
                             fontSize = 9.sp, // Reduced font size
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            color = Color(0xFF424242).copy(alpha = 0.7f),
                             textAlign = TextAlign.Center,
                             maxLines = 1
                         )
@@ -348,9 +358,10 @@ fun WorkingHomeScreen(
                         .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { /* Progress feature removed */ },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        containerColor = pastelMint
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, prussianBlue)
                 ) {
                     Column(
                         modifier = Modifier
@@ -364,12 +375,12 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.Star,
                                 contentDescription = stringResource(R.string.earn_points),
                                 modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                tint = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.earn_points),
                                 fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         } else {
@@ -378,12 +389,12 @@ fun WorkingHomeScreen(
                                 text = "$pointsFromToday",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.points_today),
                                 fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -397,9 +408,10 @@ fun WorkingHomeScreen(
                         .height(80.dp) // Reduced by 20% (100 * 0.8 = 80)
                         .clickable { onNavigateToTasks() },
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        containerColor = pastelLavender
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, prussianBlue)
                 ) {
                     Column(
                         modifier = Modifier
@@ -413,12 +425,12 @@ fun WorkingHomeScreen(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = stringResource(R.string.create_tasks),
                                 modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                tint = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.create_tasks),
                                 fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         } else {
@@ -426,12 +438,12 @@ fun WorkingHomeScreen(
                                 text = "${completedTodayTasks.size}/${todayTasks.size}",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                                color = Color(0xFF2C2C2C)
                             )
                             Text(
                                 text = stringResource(R.string.tasks_done),
                                 fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                color = Color(0xFF424242),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -451,7 +463,8 @@ fun WorkingHomeScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = Color.Transparent
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, prussianBlue)
                 ) {
                     Box(
                         modifier = Modifier
@@ -531,9 +544,10 @@ fun WorkingHomeScreen(
                     .fillMaxWidth()
                     .clickable { onNavigateToWeeklyPlan() },
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = pastelPeach
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, prussianBlue)
             ) {
                 Column(
                     modifier = Modifier.padding(14.dp)
@@ -547,10 +561,10 @@ fun WorkingHomeScreen(
                             text = "📅 Weekly Study Plan",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = Color(0xFF2C2C2C)
                         )
                         Surface(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = prussianBlue,
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
@@ -558,7 +572,7 @@ fun WorkingHomeScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary
+                                color = Color.White
                             )
                         }
                     }
@@ -566,7 +580,7 @@ fun WorkingHomeScreen(
                     Text(
                         text = weeklyPlan.title,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = Color(0xFF424242),
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
@@ -578,8 +592,8 @@ fun WorkingHomeScreen(
                             .fillMaxWidth()
                             .height(6.dp)
                             .clip(RoundedCornerShape(3.dp)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        color = prussianBlue,
+                        trackColor = prussianBlue.copy(alpha = 0.2f)
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -587,54 +601,12 @@ fun WorkingHomeScreen(
                     Text(
                         text = "Week Progress • ${weeklyPlan.weekProgressText}",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = Color(0xFF424242).copy(alpha = 0.7f)
                     )
                 }
             }
         }
 
-        // This Week Section
-        item {
-            Column {
-                Text(
-                    text = stringResource(R.string.this_week),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(weeklyPlan.days) { day ->
-                        DayProgressCard(
-                            day = day,
-                            onClick = { onNavigateToDaily(day.dayName) }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = onNavigateToWeeklyPlan
-                    ) {
-                        Text(stringResource(R.string.view_full_week))
-                    }
-                    TextButton(
-                        onClick = onNavigateToWeeklyPlan
-                    ) {
-                        Text(stringResource(R.string.modify_plan))
-                    }
-                }
-            }
-        }
 
         // YDS Exam 2024 Section
         item {
@@ -643,9 +615,10 @@ fun WorkingHomeScreen(
                     .fillMaxWidth()
                     .clickable { onNavigateToExamDetails() },
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = pastelYellow
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, prussianBlue)
             ) {
                 Row(
                     modifier = Modifier
@@ -654,7 +627,7 @@ fun WorkingHomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                        color = prussianBlue.copy(alpha = 0.2f),
                         shape = CircleShape,
                         modifier = Modifier.size(40.dp)
                     ) {
@@ -676,12 +649,12 @@ fun WorkingHomeScreen(
                             text = "e-YDS 2025/10",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = Color(0xFF2C2C2C)
                         )
                         Text(
                             text = examTracker.statusMessage,
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                            color = Color(0xFF424242).copy(alpha = 0.8f)
                         )
 
                         Spacer(modifier = Modifier.height(4.dp))
@@ -689,7 +662,7 @@ fun WorkingHomeScreen(
                         Text(
                             text = "🕒 ${examTracker.examDateFormatted}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            color = Color(0xFF424242).copy(alpha = 0.7f)
                         )
                     }
 
@@ -697,7 +670,7 @@ fun WorkingHomeScreen(
                         text = "${examTracker.daysToExam}d",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Color(0xFF2C2C2C)
                     )
                 }
             }
@@ -711,53 +684,4 @@ fun WorkingHomeScreen(
     }
 }
 
-@Composable
-fun DayProgressCard(
-    day: WeekDay,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .width(80.dp)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = if (day.isCompleted) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            }
-        ),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = day.dayName,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (day.isCompleted) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = day.displayText,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (day.isCompleted) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        }
-    }
-}
 

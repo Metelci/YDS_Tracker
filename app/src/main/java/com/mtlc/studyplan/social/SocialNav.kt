@@ -10,7 +10,6 @@ import com.mtlc.studyplan.R
 enum class SocialTab(@StringRes val labelRes: Int) {
     Profile(R.string.social_tab_profile),
     Ranks(R.string.social_tab_ranks),
-    Groups(R.string.social_tab_groups),
     Friends(R.string.social_tab_friends),
     Awards(R.string.social_tab_awards)
 }
@@ -18,7 +17,6 @@ enum class SocialTab(@StringRes val labelRes: Int) {
 val SOCIAL_TABS = listOf(
     SocialTab.Profile,
     SocialTab.Ranks,
-    SocialTab.Groups,
     SocialTab.Friends,
     SocialTab.Awards
 )

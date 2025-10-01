@@ -1,6 +1,8 @@
 package com.mtlc.studyplan.social.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,10 +43,12 @@ fun FriendRow(
 ) {
     val spacing = LocalSpacing.current
     val background = DesignTokens.PrimaryContainer.copy(alpha = 0.35f)
+    val prussianBlue = Color(0xFF003153)
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
+            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp))
             .clickable(role = Role.Button, onClick = { onClick(friend) }),
         color = background,
         contentColor = MaterialTheme.colorScheme.onSurface

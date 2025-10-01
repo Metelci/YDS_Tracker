@@ -12,6 +12,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Settings footer now reads version name/code directly from the installed package so build info stays accurate after updates.
 
+## [2.9.30] - 2025-10-01
+
+### 🎨 **UI/UX Hotfixes**
+
+#### **Home Page Visual Improvements**
+- **Pastel Color Scheme**: Updated all home page cards to use distinct pastel light colors for better visual appeal
+  - Today Progress Card: Soft pink background (#FFDAE0)
+  - Days to Exam Card: Light blue background (#D0E8FF)
+  - Points Today Card: Mint green background (#D1F5E8)
+  - Tasks Done Card: Lavender background (#E8DCFF)
+  - Weekly Study Plan Card: Peach background (#FFE5D4)
+  - YDS Exam Card: Soft yellow background (#FFF4CC)
+- **Text Color Updates**: All card text now uses consistent dark colors for optimal readability
+- **Border Styling**: Maintained Prussian blue borders (#003153) for unified visual identity
+- **Theme Independence**: Cards now use fixed colors instead of theme-dependent colors for consistent appearance
+
+#### **Social Page Improvements**
+- **Award Cards**: Fixed border visibility in light theme with theme-aware color calculations
+- **Friends Tab**: Enhanced button visibility in dark theme for "Add Friend" and "Invite Friends" buttons
+- **Groups Tab Removal**: Completely removed Groups tab and all related functionality
+  - Deleted GroupsTab.kt and GroupCard.kt components
+  - Removed Group data model and repository methods
+  - Cleaned up all group-related fake data and state management
+
+#### **Study Plan Streamlining**
+- **Upcoming Tab Removal**: Removed Upcoming tab from study plan overview page
+  - Simplified data models by removing todayTasks, tomorrowTasks, and weekTargets
+  - Cleaned up UpcomingTasksView and related helper composables
+  - Streamlined navigation with fewer tabs
+
+#### **Home Page Cleanup**
+- **Weekly Navigation Removal**: Removed "This Week" card section with pill-style day navigation buttons
+  - Simplified home page layout
+  - Removed DayProgressCard composable
+  - Updated navigation flow throughout the app
+
+### Technical Improvements
+- Enhanced Material 3 color system integration
+- Improved code organization with removal of unused components
+- Better separation of concerns in social features
+- Streamlined data models for improved performance
+
 ## [2.9.29] - 2025-10-01
 
 ### Fixed

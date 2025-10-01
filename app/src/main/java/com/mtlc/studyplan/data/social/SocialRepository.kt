@@ -9,12 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 interface SocialRepository {
     val profile: StateFlow<SocialProfile>
     val ranks: StateFlow<List<RankEntry>>
-    val groups: StateFlow<List<Group>>
     val friends: StateFlow<List<Friend>>
     val awards: StateFlow<List<Award>>
 
-    suspend fun toggleGroupMembership(groupId: String)
-    suspend fun shareGroup(groupId: String)
     suspend fun selectAvatar(avatarId: String)
     suspend fun updateCustomAvatar(imagePath: String)
     suspend fun updateWeeklyGoal(hours: Int)

@@ -67,7 +67,8 @@
       "Bash(.gradlew.bat --stop)",
       "Bash(Select-String -Pattern \"FAILED|ERROR|WARN\")",
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\data\\MurphyBookData.kt\")",
-      "Bash(Select-Object -First 20)"
+      "Bash(Select-Object -First 20)",
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\social\\tabs\\GroupsTab.kt\")"
     ],
     "deny": [],
     "ask": []

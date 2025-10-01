@@ -1,5 +1,6 @@
 package com.mtlc.studyplan.social.tabs
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +38,20 @@ fun FriendsTab(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    val isDarkTheme = isSystemInDarkTheme()
+
+    // Theme-aware button colors
+    val buttonContainerColor = if (isDarkTheme) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.secondaryContainer
+    }
+    val buttonContentColor = if (isDarkTheme) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    }
+
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -51,7 +67,8 @@ fun FriendsTab(
                 onClick = onAddFriend,
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = DesignTokens.Surface
+                    containerColor = buttonContainerColor,
+                    contentColor = buttonContentColor
                 )
             ) {
                 Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
@@ -86,7 +103,8 @@ fun FriendsTab(
                     onClick = onAddFriend,
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = DesignTokens.Surface
+                        containerColor = buttonContainerColor,
+                        contentColor = buttonContentColor
                     )
                 ) {
                     Icon(imageVector = Icons.Outlined.Add, contentDescription = null)

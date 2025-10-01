@@ -239,10 +239,6 @@ fun AppNavHost(
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("weekly-plan")
                     },
-                    onNavigateToDaily = { day ->
-                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        navController.navigate("daily/$day")
-                    },
                     onNavigateToExamDetails = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("exam-details")
