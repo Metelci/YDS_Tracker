@@ -6,6 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -68,6 +71,27 @@ fun HomeScreen() {
 
     val coroutineScope = rememberCoroutineScope()
 
+    val colorScheme = MaterialTheme.colorScheme
+    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
+    val pastelPalette = remember {
+        listOf(
+            Color(0xFFFFF4F8), // blush pink
+            Color(0xFFE8F4FF), // powder blue
+            Color(0xFFEFFBF2), // mint
+            Color(0xFFFFF6E8), // soft peach
+            Color(0xFFEDE8FF)  // lavender
+        )
+    }
+    val cardColors = remember(colorScheme, isDarkTheme) {
+        pastelPalette.map { pastel ->
+            if (isDarkTheme) {
+                lerp(pastel, colorScheme.surface, 0.55f)
+            } else {
+                lerp(pastel, Color.White, 0.15f)
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             StudyPlanTopBar(
@@ -91,7 +115,10 @@ fun HomeScreen() {
                 val currentStreak = todayStats.streak
                 val ratio = if (plannedTasks > 0) (completedTasks.toFloat() / plannedTasks).coerceIn(0f, 1f) else 0f
 
-                Card(Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = cardColors[0 % cardColors.size])
+                ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -140,7 +167,10 @@ fun HomeScreen() {
                 if (nextExam != null) {
                     val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
                     val registrationStatus = YdsExamService.getRegistrationStatus()
-                    Card(Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = cardColors[1 % cardColors.size])
+                    ) {
                         Column(Modifier.padding(12.dp)) {
                             Text("Next Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
                             Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
@@ -176,7 +206,10 @@ fun HomeScreen() {
             item {
                 // Study statistics - using real progress data
                 if (totalTasks > 0 || progress.totalXp > 0) {
-                    Card(Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = cardColors[2 % cardColors.size])
+                    ) {
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Study Progress", style = MaterialTheme.typography.titleSmall)
                             LinearProgressIndicator(

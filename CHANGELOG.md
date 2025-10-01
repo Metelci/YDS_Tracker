@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Settings footer now reads version name/code directly from the installed package so build info stays accurate after updates.
 
+## [2.9.31] - 2025-10-01
+
+### Changed
+- Wrapped the settings category pill grid in a Prussian blue outlined card to mirror the Tasks reference styling.
+- Refreshed all Home screen summary cards with a light pastel palette that adapts for dark mode.
+
+### Fixed
+- Increased Home top bar gradient, border, and fallback contrast so the capsule remains legible in dark theme.
+
 ## [2.9.30] - 2025-10-01
 
 ### 🎨 **UI/UX Hotfixes**

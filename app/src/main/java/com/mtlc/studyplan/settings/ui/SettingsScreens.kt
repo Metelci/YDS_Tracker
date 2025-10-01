@@ -65,6 +65,8 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import android.content.Intent
 
+private val PrussianBlue = Color(0xFF003153)
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
@@ -96,13 +98,27 @@ fun SettingsScreen(
             // Category grid (2 rows x 3)
             var selected by remember { mutableStateOf("Navigation") }
             var showResetDialog by remember { mutableStateOf(false) }
-            FlowRow(maxItemsInEachRow = 3, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                CategoryPill(label = "Navigation", icon = Icons.AutoMirrored.Outlined.Send, selected = selected=="Navigation") { selected = it; onNavigateToCategory(it) }
-                CategoryPill(label = "Notifications", icon = Icons.Outlined.Notifications, selected = selected=="Notifications") { selected = it; onNavigateToCategory(it) }
-                CategoryPill(label = "Gamification", icon = Icons.Outlined.Celebration, selected = selected=="Gamification") { selected = it; onNavigateToCategory(it) }
-                CategoryPill(label = "Social", icon = Icons.Outlined.Image, selected = selected=="Social") { selected = it; onNavigateToCategory(it) }
-                CategoryPill(label = "Privacy", icon = Icons.Outlined.Lock, selected = selected=="Privacy") { selected = it; onNavigateToCategory(it) }
-                CategoryPill(label = "Tasks", icon = Icons.Outlined.TaskAlt, selected = selected=="Tasks") { selected = it; onNavigateToCategory(it) }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = DesignTokens.Surface),
+                border = BorderStroke(1.dp, PrussianBlue)
+            ) {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    maxItemsInEachRow = 3,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    CategoryPill(label = "Navigation", icon = Icons.AutoMirrored.Outlined.Send, selected = selected=="Navigation") { selected = it; onNavigateToCategory(it) }
+                    CategoryPill(label = "Notifications", icon = Icons.Outlined.Notifications, selected = selected=="Notifications") { selected = it; onNavigateToCategory(it) }
+                    CategoryPill(label = "Gamification", icon = Icons.Outlined.Celebration, selected = selected=="Gamification") { selected = it; onNavigateToCategory(it) }
+                    CategoryPill(label = "Social", icon = Icons.Outlined.Image, selected = selected=="Social") { selected = it; onNavigateToCategory(it) }
+                    CategoryPill(label = "Privacy", icon = Icons.Outlined.Lock, selected = selected=="Privacy") { selected = it; onNavigateToCategory(it) }
+                    CategoryPill(label = "Tasks", icon = Icons.Outlined.TaskAlt, selected = selected=="Tasks") { selected = it; onNavigateToCategory(it) }
+                }
             }
 
             // Navigation section card

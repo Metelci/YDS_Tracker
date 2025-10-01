@@ -1,4 +1,4 @@
- package com.mtlc.studyplan.ui.components
+package com.mtlc.studyplan.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,18 +14,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.GpsFixed
-import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -37,8 +30,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -111,21 +105,37 @@ private fun topBarStops(style: StudyPlanTopBarStyle): List<Pair<Color, Float>>? 
 
 @Composable
 internal fun rememberTopBarAppearance(style: StudyPlanTopBarStyle): StudyPlanTopBarAppearance {
-    val subtitleColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
-    val baseOnSurface = MaterialTheme.colorScheme.onSurface
-    // Titles use deep navy on light capsules, fall back to onSurface for Default
-    val titleColor = if (style == StudyPlanTopBarStyle.Default) baseOnSurface else TitleDark
+    val colorScheme = MaterialTheme.colorScheme
+    val baseOnSurface = colorScheme.onSurface
+    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
+    val subtitleBase = colorScheme.onSurfaceVariant
+    val subtitleColor = if (isDarkTheme) subtitleBase.copy(alpha = 0.9f) else subtitleBase.copy(alpha = 0.8f)
+    val titleColor = when {
+        style == StudyPlanTopBarStyle.Default -> baseOnSurface
+        isDarkTheme -> colorScheme.onSurface
+        else -> TitleDark
+    }
 
     val stops = remember(style) { topBarStops(style) }
-    val brush = remember(style, stops) {
+    val brush = remember(style, stops, isDarkTheme) {
         stops?.let { gradientStops ->
-            val colors = gradientStops.map { (color, alpha) -> color.copy(alpha = alpha) }
+            val colors = gradientStops.map { (color, alpha) ->
+                if (isDarkTheme) {
+                    val brightened = lerp(color, Color.White, 0.6f)
+                    brightened.copy(alpha = (alpha + 0.55f).coerceIn(0.5f, 0.95f))
+                } else {
+                    color.copy(alpha = alpha)
+                }
+            }
             Brush.horizontalGradient(colors = colors)
         }
     }
 
-    // Icons follow title tint but stay subtle
-    val iconColor = if (style == StudyPlanTopBarStyle.Default) baseOnSurface else TitleDark.copy(alpha = 0.9f)
+    val iconColor = when {
+        style == StudyPlanTopBarStyle.Default -> baseOnSurface
+        isDarkTheme -> colorScheme.onSurface
+        else -> TitleDark.copy(alpha = 0.9f)
+    }
 
     return StudyPlanTopBarAppearance(
         brush = brush,
@@ -157,7 +167,14 @@ fun StudyPlanTopBar(
 
     // Capsule container (rounded with shadow and subtle border) to match screenshots
     val capsuleShape = RoundedCornerShape(20.dp)
-    val baseBackground = MaterialTheme.colorScheme.surface
+    val colorScheme = MaterialTheme.colorScheme
+    val baseBackground = colorScheme.surface
+    val isDarkThemeSurface = baseBackground.luminance() < 0.5f
+    val borderColor = if (isDarkThemeSurface) {
+        Color.White.copy(alpha = 0.2f)
+    } else {
+        Color.Black.copy(alpha = 0.05f)
+    }
 
     Surface(
         modifier = modifier
@@ -170,14 +187,19 @@ fun StudyPlanTopBar(
         tonalElevation = 0.dp
     ) {
         // Draw gradient/background within capsule shape
-        val bg = if (appearance.brush != null) {
-                Modifier.background(appearance.brush!!, capsuleShape)
+        val bgModifier = if (appearance.brush != null) {
+            Modifier.background(appearance.brush!!, capsuleShape)
+        } else {
+            val fallbackBackground = if (isDarkThemeSurface) {
+                lerp(colorScheme.surfaceVariant, Color.White, 0.25f).copy(alpha = 0.9f)
             } else {
-                Modifier.background(baseBackground, capsuleShape)
+                baseBackground
             }
+            Modifier.background(fallbackBackground, capsuleShape)
+        }
         Box(
-            modifier = bg
-                .border(1.dp, Color.Black.copy(alpha = 0.05f), capsuleShape)
+            modifier = bgModifier
+                .border(1.dp, borderColor, capsuleShape)
         ) {
             Row(
                 modifier = Modifier
@@ -559,7 +581,7 @@ fun TasksHeaderTopBar(
 
 // Lightweight cards for Social header (to satisfy imports and provide visuals)
 data class TopBarCard(
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val icon: ImageVector,
     val title: String,
     val subtitle: String,
     val badgeText: String? = null
