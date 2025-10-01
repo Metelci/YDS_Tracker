@@ -75,13 +75,10 @@ fun FixedTopBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .zIndex(100f)
-            .shadow(
-                elevation = 4.dp,
-                ambientColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
-                spotColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-            ),
-        color = Color.Transparent,
+            .zIndex(100f),
+        // Neutral surface using Material3 tonal elevation
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
         contentColor = appearance.iconColor
     ) {
         Column {
@@ -114,10 +111,8 @@ fun FixedTopBar(
                 }
             )
 
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-            )
+            // Remove bottom divider to avoid border appearance
+            // HorizontalDivider(thickness = 1.dp, color = Color.Transparent)
         }
     }
 }

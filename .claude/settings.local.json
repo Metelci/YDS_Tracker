@@ -68,7 +68,17 @@
       "Bash(Select-String -Pattern \"FAILED|ERROR|WARN\")",
       "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\data\\MurphyBookData.kt\")",
       "Bash(Select-Object -First 20)",
-      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\social\\tabs\\GroupsTab.kt\")"
+      "Bash(del \"C:\\Users\\Metelci\\StudioProjects\\StudyPlan\\app\\src\\main\\java\\com\\mtlc\\studyplan\\social\\tabs\\GroupsTab.kt\")",
+      "Bash(comm:*)",
+      "Bash(for key in achievement_notification_description achievement_notification_text analytics_loading_results back_to_plan booster_details cancel daily_goal_complete gamification_achievement_banner gamification_level_up_message gamification_new_achievement_message gamification_points_earned_message gamification_settings go_to_plan modify_plan save streak_expiry_description streak_expiry_notification tooltip_achievements_message tooltip_achievements_title tooltip_customize_plan_message tooltip_customize_plan_title tooltip_plan_settings_message tooltip_plan_settings_title view_full_week)",
+      "Bash(do)",
+      "Bash(echo \"=== $key ===\")",
+      "Bash(done)",
+      "Bash(Select-String -Pattern 'BUILD|FAILED|SUCCESS|error:')",
+      "Bash(Select-Object -Last 5)",
+      "Bash(git log:*)",
+      "Bash(Select-Object -First 50)",
+      "Bash(Select-Object -First 30)"
     ],
     "deny": [],
     "ask": []

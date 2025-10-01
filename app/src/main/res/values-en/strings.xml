@@ -476,6 +476,36 @@
     <string name="social_avatar_undo_success">Reverted to previous profile photo</string>
     <string name="social_avatar_redo_success">Reapplied profile photo</string>
 
+    <!-- Gamification and Achievements -->
+    <string name="achievement_notification_description">Congratulations! You unlocked a new achievement. Great work!</string>
+    <string name="achievement_notification_text">You earned a new achievement!</string>
+    <string name="gamification_achievement_banner">Achievement unlocked: %1$s</string>
+    <string name="gamification_level_up_message">Level %1$d - %2$s</string>
+    <string name="gamification_new_achievement_message">%1$s unlocked</string>
+    <string name="gamification_points_earned_message">+%1$d points earned</string>
+    <string name="gamification_settings">Gamification Settings</string>
+    <string name="daily_goal_complete">Great! You completed your daily study goal</string>
+    <string name="streak_expiry_description">Don\'t break your %1$d day study streak! Complete a task within the next %2$d hours to keep the streak alive.</string>
+    <string name="streak_expiry_notification">Your %1$d day streak expires in %2$d hours</string>
+
+    <!-- Tooltips -->
+    <string name="tooltip_achievements_title">Track Your Progress</string>
+    <string name="tooltip_achievements_message">Tap the achievement badge to see your study milestones and keep your motivation high.</string>
+    <string name="tooltip_customize_plan_title">Customize Your Plan</string>
+    <string name="tooltip_customize_plan_message">Tap the calendar icon to hide, edit, or add your own tasks. All changes are saved on your device.</string>
+    <string name="tooltip_plan_settings_title">Plan Settings</string>
+    <string name="tooltip_plan_settings_message">Adjust your study schedule, start date, and daily time allocations to match your availability.</string>
+
+    <!-- Actions -->
+    <string name="back_to_plan">← Back to Plan</string>
+    <string name="go_to_plan">Go to Plan</string>
+    <string name="view_full_week">View Full Week</string>
+    <string name="modify_plan">▶ Modify Plan</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="booster_details">Improve weak areas with %1$s practice</string>
+    <string name="analytics_loading_results">Loading search results for \"%s\"...</string>
+
 </resources>
 
 

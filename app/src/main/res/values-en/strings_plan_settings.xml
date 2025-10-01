@@ -6,7 +6,6 @@
     <string name="plan_settings_end_date_optional">End date (optional)</string>
     <string name="plan_settings_total_months_optional">Total months (optional)</string>
     <string name="plan_settings_invalid_input">Please enter a valid date (YYYY-MM-DD) and week count.</string>
-    <string name="save">Save</string>
     <string name="plan_settings_availability_title">Study availability (minutes per day)</string>
     <string name="plan_settings_mon_minutes">Monday minutes</string>
     <string name="plan_settings_tue_minutes">Tuesday minutes</string>

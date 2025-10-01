@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.34] - 2025-10-02 (hotfix)
+
+### Fixed
+- **Top Bar Visual Refinement**: Improved FixedTopBar styling for cleaner appearance
+  - Replaced shadow elevation with Material 3 tonal elevation for more subtle depth
+  - Changed background from transparent to Material 3 surface color for better consistency
+  - Removed bottom divider to eliminate unwanted border appearance
+  - Enhanced visual hierarchy with proper surface elevation (2.dp)
+
+### Added
+- **Localization Enhancements**: Added missing English translations
+  - Gamification and achievement notification strings
+  - Tooltip messages for achievements, plan customization, and settings
+  - Action button labels (back to plan, save, cancel, etc.)
+  - Streak expiry warnings and daily goal completion messages
+
+### Technical Improvements
+- Material 3 design system compliance with proper tonal elevation
+- Improved top bar rendering with optimized shadow/elevation system
+- Better accessibility with complete string resources
+
 ## [2.9.33] - 2025-10-02 (hotfix)
 
 ### Fixed
