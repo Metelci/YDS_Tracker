@@ -50,17 +50,18 @@ fun AwardCard(
     val hapticFeedback = LocalHapticFeedback.current
 
     val primaryContentColor = when {
+        isLocked && isDarkTheme -> Color.White
         isLocked -> colorScheme.onSurface
         isDarkTheme -> Color.White
         else -> Color(0xFF1C1C1E)
     }
     val secondaryContentColor = if (isLocked) {
-        colorScheme.onSurface.copy(alpha = 0.85f)
+        if (isDarkTheme) Color.White.copy(alpha = 0.9f) else colorScheme.onSurface.copy(alpha = 0.85f)
     } else {
         primaryContentColor.copy(alpha = if (isDarkTheme) 0.9f else 0.82f)
     }
     val metaContentColor = if (isLocked) {
-        colorScheme.onSurface.copy(alpha = 0.7f)
+        if (isDarkTheme) Color.White.copy(alpha = 0.8f) else colorScheme.onSurface.copy(alpha = 0.7f)
     } else {
         primaryContentColor.copy(alpha = if (isDarkTheme) 0.72f else 0.55f)
     }
@@ -69,7 +70,9 @@ fun AwardCard(
     } else {
         primaryContentColor.copy(alpha = if (isDarkTheme) 0.3f else 0.12f)
     }
-    val iconTintColor = if (isLocked) colorScheme.onSurface.copy(alpha = 0.9f) else primaryContentColor
+    val iconTintColor = if (isLocked) {
+        if (isDarkTheme) Color.White.copy(alpha = 0.9f) else colorScheme.onSurface.copy(alpha = 0.9f)
+    } else primaryContentColor
     val progressAccentColor = if (isDarkTheme) Color(0xFFFFD54F) else Color(0xFFFFB000)
     val badgeBackgroundColor = if (isLocked) colorScheme.surfaceVariant.copy(alpha = if (isDarkTheme) 0.8f else 1f) else colorScheme.secondary
     val badgeContentColor = if (isLocked) colorScheme.onSurface.copy(alpha = 0.8f) else colorScheme.onSecondary
@@ -289,22 +292,22 @@ private fun getRarityColors(rarity: AwardRarity): List<Color> {
         AwardRarity.Common -> if (!isDark) {
             listOf(Color(0xFFFFD4B3), Color(0xFFFFB388))
         } else {
-            listOf(Color(0xFF6A442A), Color(0xFFB96F39))
+            listOf(Color(0xFF8B5A3C), Color(0xFFD4864F))
         }
         AwardRarity.Rare -> if (!isDark) {
             listOf(Color(0xFFB3D9FF), Color(0xFF87CEEB))
         } else {
-            listOf(Color(0xFF2B4F95), Color(0xFF4D7DD5))
+            listOf(Color(0xFF4A6FBF), Color(0xFF6B93E8))
         }
         AwardRarity.Epic -> if (!isDark) {
             listOf(Color(0xFFE1BEE7), Color(0xFFD1C4E9))
         } else {
-            listOf(Color(0xFF4B2F7D), Color(0xFF7751B4))
+            listOf(Color(0xFF6B4A9F), Color(0xFF9971D4))
         }
         AwardRarity.Legendary -> if (!isDark) {
             listOf(Color(0xFFFFE0B2), Color(0xFFFFCC80))
         } else {
-            listOf(Color(0xFF71520F), Color(0xFFB9831A))
+            listOf(Color(0xFF936B1F), Color(0xFFE1A02F))
         }
     }
 }
@@ -314,7 +317,7 @@ private fun getLockedColors(): List<Color> {
     return if (!isSystemInDarkTheme()) {
         listOf(Color(0xFFF8F9FA), Color(0xFFF1F3F4))
     } else {
-        listOf(Color(0xFF3A3D42), Color(0xFF25282D))
+        listOf(Color(0xFF4A4A4A), Color(0xFF3A3A3A))
     }
 }
 
