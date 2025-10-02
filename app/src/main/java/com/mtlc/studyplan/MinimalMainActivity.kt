@@ -53,6 +53,8 @@ class MinimalMainActivity : LocaleAwareActivity() {
                 }
 
                 // Set status bar color with slight transparency for better separation
+                // Note: statusBarColor is deprecated in API 35+, but still works
+                @Suppress("DEPRECATION")
                 window.statusBarColor = if (isDarkTheme) {
                     Color(0xFF1C1B1F).copy(alpha = 0.95f).toArgb()
                 } else {
@@ -60,6 +62,8 @@ class MinimalMainActivity : LocaleAwareActivity() {
                 }
 
                 // Set navigation bar color
+                // Note: navigationBarColor is deprecated in API 35+, but still works
+                @Suppress("DEPRECATION")
                 window.navigationBarColor = if (isDarkTheme) {
                     Color(0xFF1C1B1F).copy(alpha = 0.95f).toArgb()
                 } else {

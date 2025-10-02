@@ -67,11 +67,6 @@
             tools:node="remove"
             tools:ignore="Instantiatable" />
 
-    <meta-data
-            android:name="androidx.work.WorkManagerInitializer"
-            android:value="androidx.startup"
-            tools:node="remove" />
-
         <!-- FileProvider for sharing PDF reports -->
         <provider
             android:name="androidx.core.content.FileProvider"
