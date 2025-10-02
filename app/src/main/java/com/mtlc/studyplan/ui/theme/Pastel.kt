@@ -22,7 +22,7 @@ fun pastelContainerFor(key: String): Color {
     )
     val idx = kotlin.math.abs(key.hashCode()) % palette.size
     val base = palette[idx]
-    return if (dark) base.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) else base
+    return if (dark) base.copy(alpha = 0.4f).compositeOver(MaterialTheme.colorScheme.surface) else base
 }
 
 /** Feature-aware pastel palettes for consistent hues by section. */
@@ -75,7 +75,7 @@ fun featurePastelContainer(feature: FeatureKey, key: String): Color {
     val palette = FeaturePalettes[feature] ?: FeaturePalettes.getValue(FeatureKey.DEFAULT)
     val idx = kotlin.math.abs(key.hashCode()) % palette.size
     val base = palette[idx]
-    return if (dark) base.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) else base
+    return if (dark) base.copy(alpha = 0.4f).compositeOver(MaterialTheme.colorScheme.surface) else base
 }
 
 /** Attempts to infer feature key from the current composition's package name. */

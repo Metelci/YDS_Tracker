@@ -182,8 +182,9 @@ fun WorkingHomeScreen(
                         brush = Brush.linearGradient(
                             colors = if (isDarkTheme) {
                                 listOf(
-                                    MaterialTheme.colorScheme.surfaceVariant,
-                                    MaterialTheme.colorScheme.surface
+                                    Color(0xFF6366F1), // Modern indigo
+                                    Color(0xFF8B5CF6), // Vibrant purple
+                                    Color(0xFFEC4899)  // Bright pink
                                 )
                             } else {
                                 listOf(
@@ -203,14 +204,31 @@ fun WorkingHomeScreen(
                 ) {
                     Text(
                         text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        fontSize = if (isDarkTheme) 28.sp else 24.sp,
+                        fontWeight = if (isDarkTheme) FontWeight.Bold else FontWeight.SemiBold,
+                        color = if (isDarkTheme) prussianBlue else MaterialTheme.colorScheme.onSurface,
+                        style = if (isDarkTheme) {
+                            MaterialTheme.typography.headlineMedium.copy(
+                                letterSpacing = 0.5.sp,
+                                lineHeight = 32.sp
+                            )
+                        } else {
+                            MaterialTheme.typography.headlineSmall
+                        }
                     )
                     Text(
                         text = "Ready to ace your YDS exam?",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontSize = if (isDarkTheme) 16.sp else 14.sp,
+                        fontWeight = if (isDarkTheme) FontWeight.Medium else FontWeight.Normal,
+                        color = if (isDarkTheme) prussianBlue.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = if (isDarkTheme) {
+                            MaterialTheme.typography.bodyLarge.copy(
+                                letterSpacing = 0.25.sp,
+                                lineHeight = 20.sp
+                            )
+                        } else {
+                            MaterialTheme.typography.bodyMedium
+                        }
                     )
                 }
             }

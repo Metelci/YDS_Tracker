@@ -1,9 +1,0 @@
-{
-  "title": "Sample Exam Pack (Placeholder)",
-  "duration_seconds": 10800,
-  "questions": [
-    {"id": 1, "section": "Reading", "text": "Placeholder question 1.", "options": ["A", "B", "C", "D"], "correct_index": 1},
-    {"id": 2, "section": "Grammar",  "text": "Placeholder question 2.", "options": ["A", "B", "C", "D"], "correct_index": 2}
-  ]
-}
-
