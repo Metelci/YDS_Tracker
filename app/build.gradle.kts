@@ -178,9 +178,13 @@ dependencies {
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.arch.core.testing)
 
