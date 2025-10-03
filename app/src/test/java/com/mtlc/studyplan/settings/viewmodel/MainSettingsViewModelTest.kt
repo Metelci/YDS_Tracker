@@ -254,6 +254,30 @@ class MainSettingsViewModelTest {
     }
 
     @Test
+    fun `onCategoryClicked emits NavigateToCategory event`() = runTest {
+        // Given: ViewModel with mocked dependencies
+        whenever(settingsRepository.getAllCategories()).thenReturn(flowOf(emptyList()))
+
+        viewModel = MainSettingsViewModel(
+            settingsRepository,
+            accessibilityManager,
+            animationCoordinator
+        )
+
+        // When: Category is clicked
+        val categoryId = "general"
+
+        viewModel.events.test {
+            viewModel.onCategoryClicked(categoryId)
+
+            // Then: NavigateToCategory event should be emitted
+            val event = awaitItem()
+            assertTrue(event is MainSettingsViewModel.MainSettingsEvent.NavigateToCategory)
+            assertEquals(categoryId, (event as MainSettingsViewModel.MainSettingsEvent.NavigateToCategory).category)
+        }
+    }
+
+    @Test
     fun `onBackupClicked emits NavigateToBackup event`() = runTest {
         // Given: ViewModel with mocked dependencies
         whenever(settingsRepository.getAllCategories()).thenReturn(flowOf(emptyList()))
