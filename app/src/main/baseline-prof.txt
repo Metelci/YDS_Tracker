@@ -29,8 +29,8 @@ HSPLcom/mtlc/studyplan/core/WorkingHomeScreenKt;->WorkingHomeScreen(Lkotlin/jvm/
 
 # Navigation - Critical for app flow
 Lcom/mtlc/studyplan/navigation/NavigationDestination;
-Lcom/mtlc/studyplan/navigation/AppNavigation;
-Lcom/mtlc/studyplan/navigation/AppNavigationKt;
+Lcom/mtlc/studyplan/navigation/AppNavHost;
+Lcom/mtlc/studyplan/navigation/AppNavHostKt;
 
 # Study Plan Overview - Frequently accessed
 Lcom/mtlc/studyplan/studyplan/StudyPlanOverviewScreen;
@@ -51,15 +51,15 @@ Lcom/mtlc/studyplan/exam/ExamDetailsScreenKt;
 # Repository Layer - Data access
 Lcom/mtlc/studyplan/settings/data/SettingsRepository;
 Lcom/mtlc/studyplan/data/TaskRepository;
-Lcom/mtlc/studyplan/data/BookRepository;
+Lcom/mtlc/studyplan/data/PlanRepository;
 
 # ViewModel Layer - UI state management
 Lcom/mtlc/studyplan/settings/viewmodel/MainSettingsViewModel;
-Lcom/mtlc/studyplan/studyplan/viewmodel/StudyPlanViewModel;
+Lcom/mtlc/studyplan/settings/viewmodel/SettingsViewModel;
 
 # Room Database - Data persistence
-Lcom/mtlc/studyplan/data/StudyPlanDatabase;
-Lcom/mtlc/studyplan/data/StudyPlanDatabase_Impl;
+Lcom/mtlc/studyplan/storage/room/StudyPlanDatabase;
+Lcom/mtlc/studyplan/storage/room/StudyPlanDatabase_Impl;
 
 # DataStore - Settings persistence
 Landroidx/datastore/preferences/core/PreferencesFactory;
