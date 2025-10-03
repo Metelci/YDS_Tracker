@@ -93,14 +93,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Check Kotlin code style
-        run: ./gradlew ktlintCheck || true
-
       - name: Run static analysis
         run: ./gradlew lintDebug
 
-      - name: Check for security vulnerabilities
-        run: ./gradlew dependencyCheckAnalyze || true
+      # Future: Add ktlint when configured
+      # - name: Check Kotlin code style
+      #   run: ./gradlew ktlintCheck
+
+      # Future: Add dependency check when configured
+      # - name: Check for security vulnerabilities
+      #   run: ./gradlew dependencyCheckAnalyze
 
   notify:
     name: Notify Build Status
