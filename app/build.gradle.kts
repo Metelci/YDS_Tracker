@@ -172,6 +172,9 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
+    // Baseline Profile for app startup optimization
+    implementation(libs.profileinstaller)
+
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
