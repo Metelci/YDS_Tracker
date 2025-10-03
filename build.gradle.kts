@@ -5,5 +5,3 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
    }
 
-// No additional buildscript classpath needed; Hilt plugin resolved via plugins DSL
-

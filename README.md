@@ -58,7 +58,7 @@
   | **Language** | Kotlin 1.9+ |
   | **UI Framework** | Jetpack Compose with Material 3 |
   | **Architecture** | MVVM with Repository Pattern |
-  | **Dependency Injection** | Hilt |
+  | **Dependency Injection** | Koin |
   | **Local Storage** | Room Database, DataStore Preferences |
   | **Security** | AndroidX Security Crypto, Biometric API |
   | **Background Work** | WorkManager |

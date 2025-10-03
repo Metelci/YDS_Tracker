@@ -2,11 +2,14 @@ plugins {
     // Android application plugins
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    
+
     // Compose and Kotlin plugins
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    
+
+    // Static analysis
+    alias(libs.plugins.detekt)
+
     // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
@@ -169,8 +172,6 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
-    // JavaPoet will be included automatically by Hilt
-
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
@@ -195,6 +196,13 @@ dependencies {
 ksp {
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$projectDir/detekt.yml")
+    baseline = file("$projectDir/detekt-baseline.xml")
 }
 
 // Work around IDE/NetBeans eagerly resolving ASM transform outputs for unit tests.

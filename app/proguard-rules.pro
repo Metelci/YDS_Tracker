@@ -20,25 +20,15 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Hilt ProGuard rules
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
--keep class * extends dagger.hilt.android.HiltAndroidApp { void <init>(); }
--keepclasseswithmembers class * {
-    @dagger.hilt.android.AndroidEntryPoint <methods>;
+# Koin ProGuard rules
+-keep class org.koin.** { *; }
+-keep interface org.koin.** { *; }
+-keepclassmembers class * {
+    @org.koin.core.annotation.* <methods>;
 }
--keep @dagger.hilt.android.AndroidEntryPoint class * {
-    *;
-}
--keep class **_HiltModules* { void <init>(); }
--keep class **_Impl { *; }
--keep class **_Factory { *; }
--keep class **_ComponentTreeDeps { *; }
 
-# Explicitly keep StudyPlanApplication and Hilt-generated classes
+# Keep application class
 -keep class com.mtlc.studyplan.StudyPlanApplication { *; }
--keep class com.mtlc.studyplan.Hilt_StudyPlanApplication { *; }
--keep class **_GeneratedInjector { *; }
 
 # Strip debug and verbose logs from release builds
 -assumenosideeffects class android.util.Log {
