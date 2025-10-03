@@ -82,7 +82,9 @@
       "Bash(.gradlew.bat :app:compileDebugKotlin:*)",
       "Bash(Select-String -Pattern \"UP-TO-DATE|FROM-CACHE|SKIPPED|BUILD\")",
       "Bash(Select-Object -First 5)",
-      "Bash(Select-String -Pattern \"^\\+|^\\-\")"
+      "Bash(Select-String -Pattern \"^\\+|^\\-\")",
+      "Bash(.gradlew.bat :app:lint:*)",
+      "Bash(Select-Object -First 100)"
     ],
     "deny": [],
     "ask": []

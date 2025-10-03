@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.38] - 2025-10-03 (hotfix)
+
+### Code Quality & Performance
+- **Resource Shrinking Enabled**: Automatically removes unused resources in release builds
+  - Eliminates 70+ unused resource warnings
+  - Reduces APK size significantly
+  - Configured in release build type with `isShrinkResources = true`
+
+- **Enhanced ProGuard Rules**: Optimized release build configuration
+  - Strips debug, verbose, and info logs from release builds (`Log.d`, `Log.v`, `Log.i`)
+  - Reduces APK size and improves runtime performance
+  - Keeps source file names and line numbers for better crash reporting
+  - Preserves custom exceptions for error tracking
+
+- **Typography Improvements**: Fixed Unicode ellipsis usage
+  - Replaced "..." with proper Unicode ellipsis character "…" in all strings
+  - Fixed 4 string resources: email_chooser_title, inversion_emphasis_topic, report_generating, analytics_loading_results
+  - Better typography standards compliance
+
+- **Lint Baseline Cleanup**: Removed stale baseline file
+  - Deleted outdated `lint-baseline.xml` with 152 errors + 655 warnings
+  - Removed 175 fixed issues from baseline
+  - Fresh, accurate lint reporting
+
+### Build & Release
+- Release builds now automatically optimized with resource shrinking
+- Debug logs completely removed from production builds
+- Smaller APK size with better performance
+- Improved crash reporting capabilities
+
 ## [2.9.37] - 2025-10-03 (hotfix)
 
 ### Enhanced

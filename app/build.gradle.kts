@@ -19,8 +19,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 73
-        versionName = "2.9.37"
+        versionCode = 74
+        versionName = "2.9.38"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +38,7 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true  // Enable resource shrinking to remove unused resources
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -39,3 +39,16 @@
 -keep class com.mtlc.studyplan.StudyPlanApplication { *; }
 -keep class com.mtlc.studyplan.Hilt_StudyPlanApplication { *; }
 -keep class **_GeneratedInjector { *; }
+
+# Strip debug and verbose logs from release builds
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
+
+# Keep source file names and line numbers for better crash reports
+-keepattributes SourceFile,LineNumberTable
+
+# Keep custom exceptions for crash reporting
+-keep public class * extends java.lang.Exception

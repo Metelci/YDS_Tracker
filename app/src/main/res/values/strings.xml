@@ -3,7 +3,7 @@
     <string name="app_name">Study Plan</string>
     <string name="app_title">Road to YDS</string>
     <string name="email_subject">Road to YDS App Feedback</string>
-    <string name="email_chooser_title">Send email...</string>
+    <string name="email_chooser_title">Send email…</string>
 
     <string name="upcoming_exam">Upcoming Exam:</string>
     <string name="application_deadline">Application Deadline</string>
@@ -242,7 +242,7 @@
 
     <!-- Green book topics continuation -->
     <string name="advanced_tense_nuances_topic">Advanced Tense Nuances and Narrative Tenses</string>
-    <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly...)</string>
+    <string name="inversion_emphasis_topic">Inversion and Emphasis (Not only, Hardly…)</string>
     <string name="advanced_modals_topic">Advanced Modals (Speculation, Hypothetical)</string>
     <string name="participle_clauses_topic">Participle Clauses (-ing and -ed clauses)</string>
 
@@ -318,7 +318,7 @@
     <string name="report_title">Study Progress Report</string>
     <string name="generate_report">Generate Report</string>
     <string name="share_report">Share Report</string>
-    <string name="report_generating">Generating Report...</string>
+    <string name="report_generating">Generating Report…</string>
     <string name="report_success">Report Generated Successfully</string>
     <string name="report_error">Error Generating Report</string>
     <string name="report_share_error">Error Sharing Report</string>
@@ -334,7 +334,7 @@
     <string name="current_streak">Current Streak</string>
     <string name="average_accuracy">Average Accuracy</string>
     <string name="study_analytics">Study Analytics</string>
-    <string name="analytics_loading_results">Loading search results for "%s"...</string>
+    <string name="analytics_loading_results">Loading search results for "%s"…</string>
     <string name="time_by_skill">Time by Skill</string>
     <string name="weekly_study_minutes">Weekly Study Minutes</string>
     <string name="performance_insights">Performance Insights</string>
