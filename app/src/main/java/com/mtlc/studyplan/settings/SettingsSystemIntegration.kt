@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.data.*
-import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.feedback.SettingsFeedbackManager
 import com.mtlc.studyplan.settings.migration.SettingsMigrationManager
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor

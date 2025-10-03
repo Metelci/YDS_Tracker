@@ -76,7 +76,6 @@ import com.mtlc.studyplan.data.social.PersistentSocialRepository
 import com.mtlc.studyplan.data.social.SocialProfile
 import com.mtlc.studyplan.data.social.SocialRepository
 import com.mtlc.studyplan.database.StudyPlanDatabase
-import com.mtlc.studyplan.navigation.StudyPlanNavigationManager
 import com.mtlc.studyplan.social.components.SocialSegmentedTabs
 import com.mtlc.studyplan.social.tabs.AwardsTab
 import com.mtlc.studyplan.social.tabs.FriendsTab
@@ -89,7 +88,6 @@ import com.mtlc.studyplan.utils.AvatarPreview
 import com.mtlc.studyplan.utils.ImageProcessingUtils
 import com.mtlc.studyplan.utils.socialDataStore
 import kotlinx.coroutines.launch
-import com.mtlc.studyplan.navigation.SocialTab as NavSocialTab
 import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.auth.FriendsRepository
 import android.content.Intent
@@ -170,8 +168,7 @@ private fun sendFriendInviteEmail(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
-    repository: SocialRepository? = null,
-    navigationManager: StudyPlanNavigationManager? = null
+    repository: SocialRepository? = null
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
@@ -197,9 +194,6 @@ fun SocialScreen(
     val friends by socialRepository.friends.collectAsState()
     val awards by socialRepository.awards.collectAsState()
     val currentAuthUser by authRepository.currentUser.collectAsState(initial = null)
-
-    val deepLinkParams by navigationManager?.deepLinkParams?.collectAsState()
-        ?: remember { mutableStateOf(null) }
 
     var selectedTab by rememberSaveable { mutableStateOf(SocialTab.Profile) }
     var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
@@ -402,15 +396,9 @@ fun SocialScreen(
     }
     // var notificationAward by remember { mutableStateOf<com.mtlc.studyplan.data.social.Award?>(null) }
 
-    LaunchedEffect(deepLinkParams) {
-        deepLinkParams?.socialTab?.let { tab ->
-            selectedTab = when (tab) {
-                NavSocialTab.FEED -> SocialTab.Profile
-                NavSocialTab.ACHIEVEMENTS -> SocialTab.Awards
-                NavSocialTab.LEADERBOARD -> SocialTab.Ranks
-            }
-        }
-    }
+    // Deep link handling simplified - NavSocialTab removed
+    // If deep links are needed, they can be handled via string parameters
+    // and mapped to SocialTab enum directly
 
     // Enforce username selection if missing
     LaunchedEffect(profile.username) {

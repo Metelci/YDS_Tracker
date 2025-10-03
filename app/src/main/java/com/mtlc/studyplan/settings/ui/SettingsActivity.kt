@@ -238,26 +238,26 @@ class SettingsActivity : AppCompatActivity(), SettingsCategoryAdapter.OnCategory
     }
 
     private fun navigateToCategory(category: SettingsCategory, sharedElement: View? = null) {
+        // TODO: SettingsDetailFragment removed (legacy Fragment approach)
+        // This activity uses XML layouts; consider migrating to Compose-based settings
+        // or use EnhancedSettingsScreen from settings/ui/EnhancedSettingsScreen.kt
+        showSnackbar("Settings detail view temporarily unavailable - use Compose settings")
+        
+        /* Legacy Fragment navigation removed
         val fragment = SettingsDetailFragment.newInstance(category.id)
-
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-
             if (sharedElement != null) {
                 addSharedElement(sharedElement, "settings_category_${category.id}")
             }
-
             replace(R.id.fragment_container, fragment)
             addToBackStack("category_${category.id}")
         }
-
-        // Show fragment container and hide main content
         binding.fragmentContainer.visibility = View.VISIBLE
         binding.mainContent.visibility = View.GONE
-
-        // Update toolbar
         supportActionBar?.title = category.title
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        */
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

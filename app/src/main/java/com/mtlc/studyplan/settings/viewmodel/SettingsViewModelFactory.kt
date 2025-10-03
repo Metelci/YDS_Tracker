@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.core.ViewModelFactory
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
-import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
@@ -13,7 +12,6 @@ import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 class CompositeSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
     private val backupManager: SettingsBackupManager,
-    private val deepLinkHandler: SettingsDeepLinkHandler,
     private val accessibilityManager: AccessibilityManager,
     private val performanceMonitor: SettingsPerformanceMonitor,
     private val animationCoordinator: SettingsAnimationCoordinator
@@ -25,7 +23,6 @@ class CompositeSettingsViewModelFactory(
                 @Suppress("UNCHECKED_CAST")
                 MainSettingsViewModel(
                     settingsRepository,
-                    deepLinkHandler,
                     accessibilityManager,
                     animationCoordinator
                 ) as T

@@ -3,7 +3,6 @@ package com.mtlc.studyplan.settings.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityManager
-import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.data.SettingItem
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
@@ -12,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class MainSettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val deepLinkHandler: SettingsDeepLinkHandler,
     private val accessibilityManager: AccessibilityManager,
     private val animationCoordinator: SettingsAnimationCoordinator
 ) : ViewModel() {

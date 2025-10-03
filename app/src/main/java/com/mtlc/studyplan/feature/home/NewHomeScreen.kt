@@ -14,7 +14,6 @@ import androidx.compose.material3.Surface
 @Composable
 fun NewHomeScreen(
     sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
-    navigationManager: com.mtlc.studyplan.navigation.StudyPlanNavigationManager? = null,
     settingsManager: com.mtlc.studyplan.settings.manager.SettingsManager? = null,
     offlineManager: com.mtlc.studyplan.offline.OfflineManager? = null,
     modifier: Modifier = Modifier

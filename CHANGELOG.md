@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.36] - 2025-10-03 (hotfix)
+
+### Removed
+- **Settings Navigation Components**: Cleaned up legacy navigation code
+  - Removed NavigationBadgeManager.kt
+  - Removed NavigationStateManager.kt
+  - Removed StudyPlanNavigationManager.kt
+  - Removed SettingsDeepLinkHandler.kt
+
+- **Settings Fragments**: Removed unused XML-based settings fragments
+  - BackupSettingsFragment.kt and layout
+  - BaseSettingsFragment.kt and layout
+  - ConflictResolutionFragment.kt
+  - GamificationSettingsFragment.kt
+  - NotificationSettingsFragment.kt
+  - PrivacySettingsFragment.kt
+  - SettingsDetailFragment.kt and layout
+
+### Code Quality
+- Streamlined dependency injection in SettingsDependencyInjection.kt
+- Updated MainSettingsViewModel and SettingsViewModelFactory
+- Migrated settings to Compose-based navigation
+- Removed app-release.aab from version control
+
 ## [2.9.35] - 2025-10-02 (hotfix)
 
 ### Fixed

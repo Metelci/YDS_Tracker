@@ -7,7 +7,6 @@ import com.mtlc.studyplan.accessibility.FontScalingManager
 import com.mtlc.studyplan.accessibility.FocusIndicatorManager
 import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.data.SettingsRepository
-import com.mtlc.studyplan.settings.deeplink.SettingsDeepLinkHandler
 import com.mtlc.studyplan.settings.security.SettingsEncryption
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
@@ -46,11 +45,7 @@ class SettingsDependencyInjection private constructor(
         SettingsBackupManager(context, settingsRepository)
     }
 
-    // Deep linking dependencies
-    // Note: SettingsDeepLinkHandler requires FragmentActivity, will be created when needed
-    fun createDeepLinkHandler(activity: androidx.fragment.app.FragmentActivity): SettingsDeepLinkHandler {
-        return SettingsDeepLinkHandler(activity)
-    }
+    // Deep linking dependencies removed - SettingsDeepLinkHandler was legacy code
 
     // Performance dependencies
     private val settingsPerformanceMonitor: SettingsPerformanceMonitor by lazy {
@@ -63,11 +58,10 @@ class SettingsDependencyInjection private constructor(
     }
 
     // ViewModelFactory
-    fun createCompositeSettingsViewModelFactory(activity: androidx.fragment.app.FragmentActivity): CompositeSettingsViewModelFactory {
+    fun createCompositeSettingsViewModelFactory(): CompositeSettingsViewModelFactory {
         return CompositeSettingsViewModelFactory(
             settingsRepository = settingsRepository,
             backupManager = settingsBackupManager,
-            deepLinkHandler = createDeepLinkHandler(activity),
             accessibilityManager = accessibilityManager,
             performanceMonitor = settingsPerformanceMonitor,
             animationCoordinator = settingsAnimationCoordinator
@@ -77,7 +71,7 @@ class SettingsDependencyInjection private constructor(
     // Public accessors - removed duplicate getters to avoid JVM signature clashes
     // Use properties directly instead
 
-    fun getViewModelFactory(activity: androidx.fragment.app.FragmentActivity): ViewModelProvider.Factory = createCompositeSettingsViewModelFactory(activity)
+    fun getViewModelFactory(): ViewModelProvider.Factory = createCompositeSettingsViewModelFactory()
 
     // Search ViewModel factory removed
 
