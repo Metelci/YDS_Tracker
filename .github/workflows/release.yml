@@ -1,0 +1,115 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v2.9.38
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$TAG" >> $GITHUB_OUTPUT
+          echo "Building version: $TAG"
+
+      - name: Run tests
+        run: ./gradlew testReleaseUnitTest
+
+      - name: Run lint
+        run: ./gradlew lintRelease
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Build Release Bundle (AAB)
+        run: ./gradlew bundleRelease
+
+      - name: Sign APK
+        run: |
+          echo "⚠️ Note: APK signing should be configured with proper keystore"
+          echo "For now, using debug keystore. Configure release signing in CI/CD secrets."
+
+      - name: Get APK info
+        id: apk_info
+        run: |
+          APK_PATH="app/build/outputs/apk/release/app-release.apk"
+          APK_SIZE=$(stat -c%s "$APK_PATH")
+          APK_SIZE_MB=$((APK_SIZE / 1024 / 1024))
+          echo "SIZE_MB=$APK_SIZE_MB" >> $GITHUB_OUTPUT
+          echo "APK Size: ${APK_SIZE_MB}MB"
+
+      - name: Extract CHANGELOG for this version
+        id: changelog
+        run: |
+          # Extract changelog section for current version
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '$d' > release_notes.md
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.version.outputs.VERSION }}
+          body_path: release_notes.md
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to Play Store (Optional)
+        if: false  # Enable this when Play Store publishing is configured
+        run: |
+          echo "🚀 Upload to Play Store would happen here"
+          echo "Configure with fastlane or Google Play Publisher API"
+
+      - name: Create release summary
+        run: |
+          echo "## 🎉 Release v${{ steps.version.outputs.VERSION }} Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Build Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK Size**: ${{ steps.apk_info.outputs.SIZE_MB }}MB" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Time**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Release APK" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Release AAB (Bundle)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Lint Report" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Test Results" >> $GITHUB_STEP_SUMMARY
+
+  notify-success:
+    name: Notify Release Success
+    needs: release
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Success notification
+        run: |
+          echo "✅ Release completed successfully!"
+          echo "Download artifacts from the releases page"

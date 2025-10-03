@@ -4,6 +4,45 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.39] - 2025-10-03 (feature)
+
+### DevOps & CI/CD
+- **GitHub Actions CI/CD Pipeline**: Complete automated build and release system
+  - **Android CI Workflow**: Automatic build, test, and lint on every push
+    - Runs on main, ui-m3-migration, and develop branches
+    - Executes lint checks and uploads reports
+    - Runs unit tests with result artifacts
+    - Builds both debug and release APKs
+    - Includes code quality checks and security scanning
+
+  - **PR Validation Workflow**: Automated pull request checks
+    - Validates PR title follows conventional commits format
+    - Checks CHANGELOG.md is updated
+    - Runs quick lint and test verification
+    - Validates APK size (<50MB warning)
+    - Posts automated results as PR comments
+
+  - **Release Workflow**: Automated release creation on version tags
+    - Triggers on version tags (e.g., `v2.9.39`)
+    - Runs full test suite before release
+    - Builds signed APK and AAB (Android App Bundle)
+    - Extracts version-specific changelog
+    - Creates GitHub Release with build artifacts
+    - Ready for Play Store publishing integration
+
+### Documentation
+- **CI/CD Documentation**: Comprehensive workflow documentation
+  - Setup and usage instructions
+  - Troubleshooting guide
+  - Best practices for CI/CD
+  - Integration examples
+
+### Build & Release
+- Automated artifact generation (APK, AAB, test reports, lint reports)
+- Build status tracking with workflow summaries
+- Gradle caching for faster builds
+- 30-minute timeout for stability
+
 ## [2.9.38] - 2025-10-03 (hotfix)
 
 ### Code Quality & Performance

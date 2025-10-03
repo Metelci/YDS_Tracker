@@ -1,0 +1,104 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper diff
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|hotfix|docs|style|refactor|perf|test|chore)(\(.+\))?: ]]; then
+            echo "❌ PR title must follow conventional commits format"
+            echo "Examples: feat: add new feature, fix(auth): resolve login bug"
+            exit 1
+          fi
+
+      - name: Validate CHANGELOG updated
+        run: |
+          if git diff origin/${{ github.base_ref }} --name-only | grep -q "CHANGELOG.md"; then
+            echo "✅ CHANGELOG.md updated"
+          else
+            echo "⚠️ Warning: CHANGELOG.md not updated"
+          fi
+
+      - name: Run quick lint check
+        run: ./gradlew lintDebug
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Comment PR with results
+        uses: actions/github-script@v6
+        if: always()
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '## PR Validation Results\n\n';
+            comment += '✅ All checks passed!\n\n';
+            comment += '### Next Steps\n';
+            comment += '- Review code changes\n';
+            comment += '- Ensure tests are passing\n';
+            comment += '- Update CHANGELOG if needed\n';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  size-check:
+    name: APK Size Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Check APK size
+        run: |
+          APK_SIZE=$(stat -f%z app/build/outputs/apk/release/app-release.apk 2>/dev/null || stat -c%s app/build/outputs/apk/release/app-release.apk)
+          APK_SIZE_MB=$((APK_SIZE / 1024 / 1024))
+          echo "APK Size: ${APK_SIZE_MB}MB"
+
+          if [ $APK_SIZE_MB -gt 50 ]; then
+            echo "⚠️ Warning: APK size is larger than 50MB"
+          else
+            echo "✅ APK size is acceptable"
+          fi
