@@ -65,7 +65,8 @@ class SettingsValidationManager {
             if (dependentNotifications.any { it }) {
                 results.add(
                     ValidationResult.Warning(
-                        "Some notification types are enabled while master notifications are disabled. They will be automatically disabled."
+                        "Some notification types are enabled while master notifications are disabled. " +
+                        "They will be automatically disabled."
                     )
                 )
             } else {
@@ -90,7 +91,8 @@ class SettingsValidationManager {
         if (settings.achievementNotificationsEnabled && !settings.gamificationEnabled) {
             results.add(
                 ValidationResult.Warning(
-                    "Achievement notifications are enabled but gamification is disabled. No achievements will be unlocked."
+                    "Achievement notifications are enabled but gamification is disabled. " +
+                    "No achievements will be unlocked."
                 )
             )
         }
@@ -136,7 +138,8 @@ class SettingsValidationManager {
             if (enabledDependentFeatures.isNotEmpty()) {
                 results.add(
                     ValidationResult.Warning(
-                        "Gamification is disabled but dependent features are enabled: ${enabledDependentFeatures.joinToString { it.first }}"
+                        "Gamification is disabled but dependent features are enabled: " +
+                        enabledDependentFeatures.joinToString { it.first }
                     )
                 )
             }
@@ -161,7 +164,8 @@ class SettingsValidationManager {
         if (settings.smartSchedulingEnabled && settings.autoDifficultyEnabled) {
             results.add(
                 ValidationResult.Info(
-                    "Both smart scheduling and auto-difficulty are enabled. The app will optimize your study plan automatically."
+                    "Both smart scheduling and auto-difficulty are enabled. " +
+                    "The app will optimize your study plan automatically."
                 )
             )
         }

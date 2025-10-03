@@ -83,7 +83,10 @@ object ImageProcessingUtils {
             val mimeType = contentResolver.getType(uri) ?: ""
             if (!SUPPORTED_FORMATS.contains(mimeType.lowercase())) {
                 inputStream.close()
-                return@withContext ImageValidationResult(false, "Unsupported image format. Please use JPG, PNG, WebP, or GIF")
+                return@withContext ImageValidationResult(
+                    false,
+                    "Unsupported image format. Please use JPG, PNG, WebP, or GIF"
+                )
             }
 
             // Get image dimensions
@@ -242,7 +245,11 @@ object ImageProcessingUtils {
     /**
      * Corrects bitmap orientation based on EXIF data
      */
-    private suspend fun correctBitmapOrientation(context: Context, bitmap: Bitmap, uri: Uri): Bitmap = withContext(Dispatchers.IO) {
+    private suspend fun correctBitmapOrientation(
+        context: Context,
+        bitmap: Bitmap,
+        uri: Uri
+    ): Bitmap = withContext(Dispatchers.IO) {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
             if (inputStream != null) {
@@ -490,7 +497,11 @@ private data class FaceDetectionResult(
     /**
      * Cleans up old avatar files for a user
      */
-    suspend fun cleanupOldAvatars(context: Context, userId: String, keepCount: Int = 3): Boolean = withContext(Dispatchers.IO) {
+    suspend fun cleanupOldAvatars(
+        context: Context,
+        userId: String,
+        keepCount: Int = 3
+    ): Boolean = withContext(Dispatchers.IO) {
         try {
             val avatarsDir = File(context.filesDir, "avatars")
             if (!avatarsDir.exists()) return@withContext true

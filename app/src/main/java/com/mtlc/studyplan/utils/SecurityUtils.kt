@@ -46,7 +46,10 @@ object SecurityUtils {
         if (isDeviceSecure(context)) {
             builder.setUserAuthenticationRequired(true)
         } else {
-            SecurityLogger.logSecurityEvent("Device lacks secure lock screen; using master key without authentication", SecurityLogger.SecuritySeverity.WARNING)
+            SecurityLogger.logSecurityEvent(
+                "Device lacks secure lock screen; using master key without authentication",
+                SecurityLogger.SecuritySeverity.WARNING
+            )
         }
 
         return builder.build()
