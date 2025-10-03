@@ -54,13 +54,22 @@ jobs:
         if: always()
         with:
           script: |
-            const fs = require('fs');
+            const jobStatus = '${{ job.status }}';
             let comment = '## PR Validation Results\n\n';
-            comment += '✅ All checks passed!\n\n';
-            comment += '### Next Steps\n';
-            comment += '- Review code changes\n';
-            comment += '- Ensure tests are passing\n';
-            comment += '- Update CHANGELOG if needed\n';
+
+            if (jobStatus === 'success') {
+              comment += '✅ **All checks passed!**\n\n';
+              comment += '### Next Steps\n';
+              comment += '- Review code changes\n';
+              comment += '- Ensure tests are passing\n';
+              comment += '- Update CHANGELOG if needed\n';
+            } else {
+              comment += '❌ **Some checks failed**\n\n';
+              comment += '### Action Required\n';
+              comment += '- Check the workflow logs for details\n';
+              comment += '- Fix failing tests or lint issues\n';
+              comment += '- Update PR to resolve issues\n';
+            }
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
