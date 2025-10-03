@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -252,6 +253,7 @@ private fun ExamInfoCardWithAction(
 ) {
     val context = LocalContext.current
     val registrationStatus = getRegistrationStatusForExam(examSession)
+    val isDarkTheme = isSystemInDarkTheme()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -302,14 +304,22 @@ private fun ExamInfoCardWithAction(
                     Icon(
                         imageVector = icon,
                         contentDescription = title,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = if (isDarkTheme) {
+                            Color(0xFF64B5F6) // Darker blue for dark theme
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
                         modifier = Modifier.size(24.dp)
                     )
                     Text(
                         text = title,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isDarkTheme) {
+                            Color(0xFFE0E0E0) // Darker white for dark theme
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 }
 
@@ -466,6 +476,8 @@ private fun InfoRow(
     label: String,
     value: String
 ) {
+    val isDarkTheme = isSystemInDarkTheme()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -476,14 +488,22 @@ private fun InfoRow(
         Text(
             text = label,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = if (isDarkTheme) {
+                Color(0xFF9E9E9E) // Darker gray for dark theme
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
             modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = if (isDarkTheme) {
+                Color(0xFFE0E0E0) // Darker white for dark theme
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
             textAlign = TextAlign.End,
             modifier = Modifier.weight(1f)
         )

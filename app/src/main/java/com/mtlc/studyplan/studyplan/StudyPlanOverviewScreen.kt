@@ -658,14 +658,6 @@ private fun StudyGoalsCard(goals: List<StudyGoal>) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = "Weekly Goals",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
             goals.forEach { goal ->
                 GoalItem(goal = goal)
                 if (goal != goals.last()) {

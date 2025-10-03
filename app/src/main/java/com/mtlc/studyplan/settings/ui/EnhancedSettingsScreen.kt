@@ -3,6 +3,7 @@ package com.mtlc.studyplan.settings.ui
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -188,11 +189,12 @@ private fun AppearanceSettings(
 ) {
     // Get current theme from settings repository
     val currentThemeMode by settingsRepository.getStringSettingFlow(SettingsKeys.Appearance.THEME_MODE, "system").collectAsState("system")
+    val fontSize by settingsRepository.getFloatSettingFlow(SettingsKeys.Appearance.FONT_SIZE, 1.0f).collectAsState(1.0f)
+    val animationSpeed by settingsRepository.getFloatSettingFlow(SettingsKeys.Appearance.ANIMATION_SPEED, 1.0f).collectAsState(1.0f)
+    val reducedMotion by settingsRepository.getBooleanSettingFlow(SettingsKeys.Accessibility.REDUCED_MOTION, false).collectAsState(false)
+    val highContrast by settingsRepository.getBooleanSettingFlow(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, false).collectAsState(false)
     val coroutineScope = rememberCoroutineScope()
-    var fontSize by remember { mutableStateOf(1.0f) }
-    var animationSpeed by remember { mutableStateOf(1.0f) }
-    var reducedMotion by remember { mutableStateOf(false) }
-    var highContrast by remember { mutableStateOf(false) }
+
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = "Appearance",
@@ -235,7 +237,9 @@ private fun AppearanceSettings(
             EnhancedSlider(
                 value = fontSize,
                 onValueChange = { newSize ->
-                    fontSize = newSize
+                    coroutineScope.launch {
+                        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateFloat(SettingsKeys.Appearance.FONT_SIZE, newSize))
+                    }
                     onFeedback("Font size updated", false)
                 },
                 valueRange = 0.8f..1.4f,
@@ -253,7 +257,9 @@ private fun AppearanceSettings(
             EnhancedSlider(
                 value = animationSpeed,
                 onValueChange = { newSpeed ->
-                    animationSpeed = newSpeed
+                    coroutineScope.launch {
+                        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateFloat(SettingsKeys.Appearance.ANIMATION_SPEED, newSpeed))
+                    }
                     onFeedback("Animation speed updated", false)
                 },
                 valueRange = 0f..2f,
@@ -279,7 +285,9 @@ private fun AppearanceSettings(
                 EnhancedToggleSwitch(
                     checked = reducedMotion,
                     onCheckedChange = {
-                        reducedMotion = it
+                        coroutineScope.launch {
+                            settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Accessibility.REDUCED_MOTION, it))
+                        }
                         onFeedback("Reduced motion ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "Reduce Motion"
@@ -288,7 +296,9 @@ private fun AppearanceSettings(
                 EnhancedToggleSwitch(
                     checked = highContrast,
                     onCheckedChange = {
-                        highContrast = it
+                        coroutineScope.launch {
+                            settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, it))
+                        }
                         onFeedback("High contrast ${if (it) "enabled" else "disabled"}", false)
                     },
                     label = "High Contrast"
@@ -552,23 +562,40 @@ private fun SettingsGradientTopBar(
     onNavigateBack: () -> Unit,
     isLoading: Boolean = false
 ) {
+    val isDarkTheme = isSystemInDarkTheme()
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFE3F2FD) // Light blue solid color as fallback
+        color = if (isDarkTheme) {
+            MaterialTheme.colorScheme.surface
+        } else {
+            Color(0xFFE3F2FD) // Light blue solid color as fallback
+        }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFFE3F2FD), // Light blue
-                            Color(0xFFFCE4EC)  // Light peach/pink
+                    brush = if (isDarkTheme) {
+                        // Solid color for dark theme
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.surface,
+                                MaterialTheme.colorScheme.surface
+                            )
                         )
-                    ),
+                    } else {
+                        // Gradient for light theme only
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFFE3F2FD), // Light blue
+                                Color(0xFFFCE4EC)  // Light peach/pink
+                            )
+                        )
+                    },
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 20.dp, vertical = 18.dp)
@@ -589,14 +616,22 @@ private fun SettingsGradientTopBar(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                Color.White
+                            },
                             modifier = Modifier.size(24.dp)
                         )
                     }
                     Icon(
                         imageVector = Icons.Outlined.Settings,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = if (isDarkTheme) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            Color.White
+                        },
                         modifier = Modifier.size(24.dp)
                     )
                     Column {
@@ -604,12 +639,20 @@ private fun SettingsGradientTopBar(
                             text = "Settings",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                Color.White
+                            }
                         )
                         Text(
                             text = "Customize your study experience",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.9f)
+                            color = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                Color.White.copy(alpha = 0.9f)
+                            }
                         )
                     }
                 }
@@ -622,7 +665,11 @@ private fun SettingsGradientTopBar(
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 2.dp,
-                            color = Color.White
+                            color = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                Color.White
+                            }
                         )
                     }
                     // Language switcher button
@@ -630,8 +677,16 @@ private fun SettingsGradientTopBar(
                         onClick = { /* Language switcher logic */ },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color(0xFF1976D2)
+                            containerColor = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            } else {
+                                Color.White
+                            },
+                            contentColor = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                Color(0xFF1976D2)
+                            }
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                     ) {

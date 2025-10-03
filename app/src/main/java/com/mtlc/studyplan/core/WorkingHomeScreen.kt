@@ -169,49 +169,69 @@ fun WorkingHomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Header Section with gradient background and theme switcher
+        // Header Section with gradient background and theme switcher (matches Settings page design)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = if (isDarkTheme) {
-                                listOf(
-                                    MaterialTheme.colorScheme.surfaceVariant,
-                                    MaterialTheme.colorScheme.surface
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = if (isDarkTheme) {
+                    MaterialTheme.colorScheme.surface
+                } else {
+                    Color(0xFFE3F2FD) // Light blue solid color as fallback
+                }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = if (isDarkTheme) {
+                                // Solid color for dark theme
+                                Brush.horizontalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surface,
+                                        MaterialTheme.colorScheme.surface
+                                    )
                                 )
                             } else {
-                                listOf(
-                                    Color(0xFFFBE9E7), // Light pastel red/pink
-                                    Color(0xFFE3F2FD)  // Light pastel blue
+                                // Gradient for light theme (matches Settings page)
+                                Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFFE3F2FD), // Light blue
+                                        Color(0xFFFCE4EC)  // Light peach/pink
+                                    )
                                 )
                             },
-                            start = Offset.Zero,
-                            end = Offset.Infinite
-                        ),
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 20.dp, vertical = 18.dp)
                 ) {
-                    Text(
-                        text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Ready to ace your YDS exam?",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                Color.White
+                            }
+                        )
+                        Text(
+                            text = "Ready to ace your YDS exam?",
+                            fontSize = 14.sp,
+                            color = if (isDarkTheme) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                Color.White.copy(alpha = 0.9f)
+                            }
+                        )
+                    }
                 }
             }
 
@@ -222,7 +242,9 @@ fun WorkingHomeScreen(
                     onThemeChange = { newTheme ->
                         themeManager.setTheme(newTheme)
                     },
-                    modifier = Modifier.align(Alignment.TopEnd)
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 18.dp, end = 20.dp)
                 )
             }
         }

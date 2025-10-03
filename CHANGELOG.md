@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.37] - 2025-10-03 (hotfix)
+
+### Enhanced
+- **Home & Settings Page Design Consistency**: Home page now matches Settings page design in dark theme
+  - Dark theme uses MaterialTheme.colorScheme.surface (solid color, no gradient)
+  - Light theme unchanged - retains gradient design (light blue → peach/pink)
+  - Consistent text colors across both pages in dark mode
+
+- **YDS Exam Information Page**: Improved dark theme readability
+  - Updated font colors in Exam Info and Registration Info cards to darker, more readable colors in dark theme
+  - Label text: Color(0xFF9E9E9E) for better contrast
+  - Value text: Color(0xFFE0E0E0) for improved readability
+  - Card title and icon colors adjusted for dark theme
+  - Light theme colors unchanged
+
+- **Settings Page - All Toggles Now Functional**: Made all settings toggles persist correctly
+  - **Appearance Tab**: Font Size slider, Animation Speed slider, Reduce Motion toggle, High Contrast toggle now persist to SharedPreferences
+  - **Notifications Tab**: All toggles already functional (Push Notifications, Study Reminders, Achievement Alerts)
+  - **Gamification Tab**: All toggles already functional (Points & Rewards, Streak Tracking, Celebration Effects, Streak Risk Warnings)
+  - All settings provide user feedback and persist across app restarts
+
+### Improved
+- **Study Plan Overview - Weekly Tab**: Removed "Weekly Goals" subheading for cleaner UI
+  - Goals display directly without redundant heading
+  - Card structure remains intact
+
+### Technical
+- All settings now use proper Flow-based state management with `collectAsState`
+- Settings persist via SettingsRepository with proper coroutine scopes
+- Updated keys to use correct SettingsKeys constants (Accessibility keys for accessibility features)
+
 ## [2.9.36] - 2025-10-03 (hotfix)
 
 ### Removed
