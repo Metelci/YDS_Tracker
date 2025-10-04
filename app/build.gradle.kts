@@ -23,8 +23,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 76
-        versionName = "2.9.40"
+        versionCode = 77
+        versionName = "2.9.41"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
