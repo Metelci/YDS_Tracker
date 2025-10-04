@@ -46,6 +46,7 @@ detekt = "1.23.7"
 profileinstaller = "1.4.1"
 turbine = "1.2.0"
 mockitoKotlin = "5.4.0"
+ksp = "2.0.21-1.0.26"
 
 # Firebase
 firebaseBom = "33.7.0"

@@ -12,7 +12,7 @@ plugins {
     jacoco // Test coverage reporting
 
     // Kotlin Symbol Processing (KSP) for code generation
-    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
+    id("com.google.devtools.ksp") version libs.versions.ksp
 }
 
 android {
