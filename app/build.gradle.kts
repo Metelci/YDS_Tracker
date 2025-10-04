@@ -23,8 +23,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 77
-        versionName = "2.9.41"
+        versionCode = 78
+        versionName = "2.9.43"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -173,6 +173,10 @@ dependencies {
     implementation(libs.coil.compose)
     implementation("androidx.exifinterface:exifinterface:1.3.7")
 
+    // Firebase Cloud Messaging for push notifications
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
     // Room (local database for scalable histories)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -205,6 +209,10 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.accessibility.test.framework)
+    androidTestImplementation(libs.mockito)
+    androidTestImplementation(libs.mockito.kotlin)
+    // WorkManager testing utilities (instrumentation)
+    androidTestImplementation("androidx.work:work-testing:${libs.versions.workRuntimeKtx.get()}")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 

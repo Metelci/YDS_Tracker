@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.43] - 2025-10-04 (hotfix)
+
+### Theme & Appearance
+- Persist theme choice across app restarts
+  - ThemeManager saves `appearance_theme_mode` and restores it on launch
+  - Listens for preference changes to update theme live
+- In-app theme switcher now overrides system theme consistently
+  - Replaced direct `isSystemInDarkTheme()` checks with `MaterialTheme`-based dark detection (luminance) across screens
+  - Ensures gradients, cards, and surfaces render correctly per selected mode
+
+## [2.9.42] - 2025-10-04 (feature)
+
+### Battery Optimization
+- Battery-aware scheduling across background work using WorkManager constraints
+  - `CalendarWorker` now requires `batteryNotLow` and skips heavy sync in Power Saver/Doze
+  - `DailyStudyReminderWorker` avoids running on low battery and respects Power Saver/Doze
+- Added `PowerStateReceiver` to react to battery/power state changes
+  - Triggers catch-up calendar sync when charging resumes or battery is OK
+  - Defers non-critical operations when Power Saver is enabled
+- Manifest updated to register power/battery intents
+- Improves device longevity without sacrificing critical functionality
+
 ## [2.9.41] - 2025-10-04 (hotfix)
 
 ### DevOps & CI/CD
