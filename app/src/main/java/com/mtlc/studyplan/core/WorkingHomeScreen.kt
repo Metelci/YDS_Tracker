@@ -219,7 +219,7 @@ fun WorkingHomeScreen(
                             color = if (isDarkTheme) {
                                 MaterialTheme.colorScheme.onSurface
                             } else {
-                                Color.White
+                                prussianBlue
                             }
                         )
                         Text(
@@ -228,7 +228,7 @@ fun WorkingHomeScreen(
                             color = if (isDarkTheme) {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             } else {
-                                Color.White.copy(alpha = 0.9f)
+                                prussianBlue.copy(alpha = 0.8f)
                             }
                         )
                     }
