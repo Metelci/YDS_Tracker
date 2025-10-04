@@ -25,6 +25,9 @@ class MinimalMainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Initialize PlanDataSource before any repository usage
+        com.mtlc.studyplan.data.PlanDataSource.initialize(this)
+
         setContent {
             val context = LocalContext.current
             val application = context.applicationContext as android.app.Application
