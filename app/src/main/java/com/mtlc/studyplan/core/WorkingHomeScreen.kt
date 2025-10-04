@@ -182,7 +182,21 @@ fun WorkingHomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
+            .background(
+                brush = if (isDarkTheme) {
+                    // Seamless anthracite to light grey gradient for dark theme
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2C2C2C), // Deep anthracite (top)
+                            Color(0xFF3A3A3A), // Medium anthracite
+                            Color(0xFF4A4A4A)  // Light anthracite (bottom)
+                        )
+                    )
+                } else {
+                    // Light theme unchanged
+                    Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
+                }
+            )
     ) {
         // Header Section with gradient background and theme switcher (matches Settings page design)
         Box(
@@ -204,11 +218,11 @@ fun WorkingHomeScreen(
                         .fillMaxWidth()
                         .background(
                             brush = if (isDarkTheme) {
-                                // Solid color for dark theme
+                                // Anthracite gradient for dark theme
                                 Brush.horizontalGradient(
                                     colors = listOf(
-                                        MaterialTheme.colorScheme.surface,
-                                        MaterialTheme.colorScheme.surface
+                                        Color(0xFF3A3A3A), // Medium anthracite
+                                        Color(0xFF4A4A4A)  // Light anthracite
                                     )
                                 )
                             } else {

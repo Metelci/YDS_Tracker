@@ -6,7 +6,12 @@
       "Bash(while read f)",
       "Bash(do echo \"=== $f ===\")",
       "Bash(Select-Object -Last 100)",
-      "Bash(code:*)"
+      "Bash(code:*)",
+      "Bash(git add:*)",
+      "Bash(git log:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(./gradlew:*)"
     ],
     "deny": [],
     "ask": []

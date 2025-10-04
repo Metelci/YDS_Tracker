@@ -82,6 +82,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.data.OnboardingRepository
@@ -131,7 +132,7 @@ fun OriginalSettingsScreen(
     var showResetDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val hasPendingGoalChanges = weeklyGoalSelection != savedWeeklyGoalHours
-
+    val isDarkTheme = isSystemInDarkTheme()
 
     val tabs = listOf(
         SettingsTab("navigation", stringResource(R.string.navigation).capitalizeFirst(), Icons.Outlined.Navigation),
@@ -145,7 +146,21 @@ fun OriginalSettingsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
+            .background(
+                brush = if (isDarkTheme) {
+                    // Seamless anthracite to light grey gradient for dark theme
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2C2C2C), // Deep anthracite (top)
+                            Color(0xFF3A3A3A), // Medium anthracite
+                            Color(0xFF4A4A4A)  // Light anthracite (bottom)
+                        )
+                    )
+                } else {
+                    // Light theme unchanged
+                    Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
+                }
+            )
     ) {
         Column(
             modifier = Modifier.fillMaxSize()

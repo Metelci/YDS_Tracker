@@ -119,7 +119,7 @@ fun StudyPlanTheme(
 @Composable
 fun StudyPlanTheme(
     themeManager: com.mtlc.studyplan.theme.ThemeManager,
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disabled to enforce custom anthracite dark theme
     content: @Composable () -> Unit
 ) {
     val isDarkTheme by themeManager.isDarkTheme.collectAsState(initial = isSystemInDarkTheme())

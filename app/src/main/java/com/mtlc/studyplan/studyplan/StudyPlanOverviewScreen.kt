@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -130,11 +131,26 @@ fun StudyPlanOverviewScreen(
             }
         }
     ) { padding ->
+        val isDarkTheme = isSystemInDarkTheme()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
+                .background(
+                    brush = if (isDarkTheme) {
+                        // Seamless anthracite to light grey gradient for dark theme
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF2C2C2C), // Deep anthracite (top)
+                                Color(0xFF3A3A3A), // Medium anthracite
+                                Color(0xFF4A4A4A)  // Light anthracite (bottom)
+                            )
+                        )
+                    } else {
+                        // Keep original light theme gradient unchanged
+                        Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
+                    }
+                )
         ) {
             // Tab Selector
             StudyPlanTabRow(
