@@ -234,7 +234,7 @@
         errorLine2="        ~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="24"
+            line="25"
             column="9"/>
     </issue>
 
@@ -311,7 +311,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="14"
+            line="15"
             column="43"/>
     </issue>
 
@@ -322,7 +322,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="162"
+            line="163"
             column="20"/>
     </issue>
 
@@ -889,34 +889,34 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.6 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.6&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="76"
+            line="79"
             column="94"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.6 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.6&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="76"
+            line="79"
             column="94"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.6 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.6&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="76"
+            line="79"
             column="94"/>
     </issue>
 
@@ -1182,105 +1182,6 @@
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
             line="41"
             column="18"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-android than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-android than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-android than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-core than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-core than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-core than 3.5.6 is available: 4.1.0"
-        errorLine1="koin = &quot;3.5.6&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="43"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-androidx-compose than 3.5.6 is available: 4.1.0"
-        errorLine1="koinCompose = &quot;3.5.6&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="44"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-androidx-compose than 3.5.6 is available: 4.1.0"
-        errorLine1="koinCompose = &quot;3.5.6&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="44"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of io.insert-koin:koin-androidx-compose than 3.5.6 is available: 4.1.0"
-        errorLine1="koinCompose = &quot;3.5.6&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="44"
-            column="15"/>
     </issue>
 
     <issue
@@ -1323,7 +1224,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="68"
+            line="71"
             column="26"/>
     </issue>
 
@@ -1334,7 +1235,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="68"
+            line="71"
             column="26"/>
     </issue>
 
@@ -1345,7 +1246,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="68"
+            line="71"
             column="26"/>
     </issue>
 
@@ -1356,7 +1257,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="84"
+            line="87"
             column="29"/>
     </issue>
 
@@ -1367,7 +1268,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="84"
+            line="87"
             column="29"/>
     </issue>
 
@@ -1378,7 +1279,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="84"
+            line="87"
             column="29"/>
     </issue>
 
@@ -10394,7 +10295,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="162"
+            line="163"
             column="20"/>
     </issue>
 
