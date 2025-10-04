@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.40] - 2025-10-04 (hotfix)
+
+### Testing & Quality Assurance
+- **AnalyticsViewModel Test Coverage**: Added comprehensive unit tests for analytics functionality
+  - 19 new tests covering all ViewModel behaviors
+  - Initial state verification with LAST_30_DAYS default timeframe
+  - Complete loadAnalytics() testing across all timeframes (7/30/90/MAX days)
+  - Loading state management and exception handling tests
+  - Tab selection tests for all analytics tabs (OVERVIEW, PATTERNS, PERFORMANCE, INSIGHTS)
+  - Dynamic timeframe selection in refreshAnalytics() based on week count (0-15 weeks)
+  - Complete workflow integration test
+  - Total test count: 156 → 175 tests (+19)
+
+### Technical Improvements
+- **Test Data Model Fixes**: Updated test constructors to match actual implementations
+  - Fixed WeeklyAnalyticsData: `tasksCompleted` + `productivityScore` parameters
+  - Fixed PerformanceData: added `weakAreas`, `totalMinutes`, `taskCount`
+  - Fixed AnalyticsData: `totalStudyMinutes` (not `totalStudyHours`)
+  - Updated AnalyticsTab enum references (PATTERNS instead of WEEKLY)
+
+- **Mock Configuration**: Proper setup for suspend function testing
+  - Configured Mockito with `runBlocking` for coroutine-based mocks
+  - Fixed ALL_TIME timeframe verification to use `Int.MAX_VALUE`
+  - Proper parameter matching for suspend functions with default values
+
+### Code Quality
+- All 175 unit tests passing ✅
+- Comprehensive coverage of analytics presentation layer
+- Improved test maintainability with proper mock setup
+
 ## [2.9.39] - 2025-10-03 (feature)
 
 ### DevOps & CI/CD
