@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.41] - 2025-10-04 (hotfix)
+
+### DevOps & CI/CD
+- **GitHub Actions Fixes**: Resolved CI/CD pipeline failures
+  - Updated `actions/upload-artifact` from deprecated v3 to v4 across all workflows
+  - Fixed missing Gradle wrapper files causing "GradleWrapperMain not found" error
+  - Added `gradle-wrapper.jar` and `gradle-wrapper.properties` to repository
+  - Updated `.gitignore` to allow Gradle wrapper files while excluding other gradle artifacts
+
+### Build & Release
+- All CI/CD workflows now functional (Android CI, PR Validation, Release)
+- Proper artifact uploading with latest GitHub Actions
+
 ## [2.9.40] - 2025-10-04 (hotfix)
 
 ### Testing & Quality Assurance
