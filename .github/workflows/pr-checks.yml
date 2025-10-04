@@ -43,11 +43,29 @@ jobs:
             echo "⚠️ Warning: CHANGELOG.md not updated"
           fi
 
-      - name: Run quick lint check
+      - name: Run Lint
         run: ./gradlew lintDebug
 
-      - name: Run unit tests
+      - name: Run Detekt
+        run: ./gradlew detekt
+        continue-on-error: true
+
+      - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
+
+      - name: Generate Coverage Report
+        run: ./gradlew jacocoTestReport
+
+      - name: Extract Coverage Percentage
+        id: coverage
+        run: |
+          if [ -f app/build/reports/jacoco/jacocoTestReport/html/index.html ]; then
+            COVERAGE=$(grep -oP 'Total.*?class="ctr2">\K\d+' app/build/reports/jacoco/jacocoTestReport/html/index.html | head -1)
+            echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+            echo "✅ Test Coverage: $COVERAGE%"
+          else
+            echo "coverage=0" >> $GITHUB_OUTPUT
+          fi
 
       - name: Comment PR with results
         uses: actions/github-script@v6
@@ -55,20 +73,29 @@ jobs:
         with:
           script: |
             const jobStatus = '${{ job.status }}';
-            let comment = '## PR Validation Results\n\n';
+            const coverage = '${{ steps.coverage.outputs.coverage }}';
+            let comment = '## 🔍 PR Validation Results\n\n';
 
             if (jobStatus === 'success') {
               comment += '✅ **All checks passed!**\n\n';
+              comment += '### 📊 Quality Metrics\n';
+              comment += `- **Test Coverage**: ${coverage}%\n`;
+              comment += `- **Tests**: All passing ✅\n`;
+              comment += `- **Lint**: No blocking issues ✅\n`;
+              comment += `- **Code Quality**: Detekt analysis complete\n\n`;
               comment += '### Next Steps\n';
               comment += '- Review code changes\n';
-              comment += '- Ensure tests are passing\n';
-              comment += '- Update CHANGELOG if needed\n';
+              comment += '- Ensure CHANGELOG is updated\n';
+              comment += '- Ready for merge when approved\n';
             } else {
               comment += '❌ **Some checks failed**\n\n';
+              comment += '### 📊 Quality Metrics\n';
+              comment += `- **Test Coverage**: ${coverage}%\n\n`;
               comment += '### Action Required\n';
               comment += '- Check the workflow logs for details\n';
               comment += '- Fix failing tests or lint issues\n';
               comment += '- Update PR to resolve issues\n';
+              comment += '\n📝 View detailed reports in the Actions artifacts\n';
             }
 
             github.rest.issues.createComment({

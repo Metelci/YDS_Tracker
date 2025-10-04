@@ -1,10 +1,12 @@
  # 🎓 Road to YDS - English Exam Preparation App
 
-  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)      
-  [![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
+  [![Version](https://img.shields.io/badge/version-2.9.39-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+  [![Test Coverage](https://img.shields.io/badge/coverage-1%25-orange.svg)](https://github.com/Metelci/YDS_Tracker/actions)
+  [![Tests](https://img.shields.io/badge/tests-114%20passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
   [![API](https://img.shields.io/badge/API-30%2B-orange.svg)](https://android-arsenal.com/api?level=30)
-  [![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org/)
+  [![Kotlin](https://img.shields.io/badge/Kotlin-2.0+-purple.svg)](https://kotlinlang.org/)
   [![Material 3](https://img.shields.io/badge/Material%203-Ready-green.svg)](https://m3.material.io/)
 
   > **A comprehensive Android application for YDS/YÖKDİL English exam preparation featuring a structured 30-week study program,      

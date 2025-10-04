@@ -49,12 +49,29 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
+      - name: Generate Coverage Report
+        run: ./gradlew jacocoTestReport
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: test-results
           path: app/build/test-results/testDebugUnitTest/
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report
+          path: app/build/reports/jacoco/jacocoTestReport/html/
+
+      - name: Upload Coverage XML
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-xml
+          path: app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
@@ -93,8 +110,19 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run static analysis
+      - name: Run Lint
         run: ./gradlew lintDebug
+
+      - name: Run Detekt
+        run: ./gradlew detekt
+        continue-on-error: true
+
+      - name: Upload Detekt Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: detekt-results
+          path: app/build/reports/detekt/
 
       # Future: Add ktlint when configured
       # - name: Check Kotlin code style
