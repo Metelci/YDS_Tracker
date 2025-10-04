@@ -7,8 +7,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 
-    // Static analysis
+    // Static analysis and code quality
     alias(libs.plugins.detekt)
+    jacoco // Test coverage reporting
 
     // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
@@ -219,6 +220,80 @@ detekt {
 afterEvaluate {
     tasks.findByName("transformDebugUnitTestClassesWithAsm")?.enabled = false
     tasks.findByName("transformReleaseUnitTestClassesWithAsm")?.enabled = false
+}
+
+// JaCoCo Test Coverage Configuration
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*",
+        "**/*\$Lambda$*.*",
+        "**/*\$inlined$*.*",
+        "**/*Hilt*.*",
+        "**/*_Factory.*",
+        "**/*_MembersInjector.*",
+        "**/databinding/**",
+        "**/generated/**"
+    )
+
+    val debugTree = fileTree("${project.buildDir}/intermediates/javac/debug/classes") {
+        exclude(fileFilter)
+    }
+    val kotlinDebugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+
+    classDirectories.setFrom(files(debugTree, kotlinDebugTree))
+    sourceDirectories.setFrom(files("${project.projectDir}/src/main/java", "${project.projectDir}/src/main/kotlin"))
+    executionData.setFrom(fileTree(project.buildDir) {
+        include("**/*.exec", "**/*.ec")
+    })
+}
+
+tasks.register("jacocoTestCoverageVerification", JacocoCoverageVerification::class) {
+    dependsOn("jacocoTestReport")
+
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.70".toBigDecimal() // 70% minimum coverage
+            }
+        }
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
+    )
+
+    classDirectories.setFrom(files(
+        fileTree("${project.buildDir}/intermediates/javac/debug/classes") {
+            exclude(fileFilter)
+        },
+        fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+            exclude(fileFilter)
+        }
+    ))
 }
 
 
