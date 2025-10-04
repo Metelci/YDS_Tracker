@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.data.*
@@ -115,7 +115,7 @@ fun WeeklyPlanScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                val isDarkTheme = isSystemInDarkTheme()
+                val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,7 +175,7 @@ fun WeeklyPlanScreen(
             }
         }
     ) { paddingValues ->
-        val isDarkTheme = isSystemInDarkTheme()
+        val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()

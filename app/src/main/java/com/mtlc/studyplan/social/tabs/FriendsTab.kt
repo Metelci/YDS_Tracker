@@ -1,6 +1,6 @@
 package com.mtlc.studyplan.social.tabs
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,7 +38,7 @@ fun FriendsTab(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     // Theme-aware button colors
     val buttonContainerColor = if (isDarkTheme) {

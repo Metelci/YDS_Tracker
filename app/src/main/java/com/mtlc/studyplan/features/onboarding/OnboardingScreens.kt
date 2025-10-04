@@ -17,7 +17,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -111,7 +111,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
     val isGeneratingPlan by vm.isGeneratingPlan.collectAsState()
 
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
     val topBarGradientColors = remember(colorScheme, isDarkTheme) {
         listOf(
             colorScheme.primaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f),

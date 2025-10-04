@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -69,6 +68,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -104,9 +104,26 @@ fun WorkingTasksScreen(
     onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    // Get current week from study progress repository
-    val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
+    val screenState = rememberWorkingTasksScreenState(
+        studyProgressRepository = studyProgressRepository,
+        onNavigateToStudyPlan = onNavigateToStudyPlan
+    )
 
+    WorkingTasksScreenContent(
+        screenState = screenState,
+        appIntegrationManager = appIntegrationManager,
+        taskRepository = taskRepository,
+        sharedViewModel = sharedViewModel,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun rememberWorkingTasksScreenState(
+    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    onNavigateToStudyPlan: () -> Unit
+): WorkingTasksScreenState {
+    val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
     val plan = remember { PlanDataSource.planData }
 
     var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
@@ -116,71 +133,115 @@ fun WorkingTasksScreen(
     val thisWeek = remember(currentWeek) {
         plan.getOrNull(currentWeek - 1) ?: plan.firstOrNull()
     }
-    val weeklyIds = remember(thisWeek) { thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet() }
+    val weeklyIds = remember(thisWeek) {
+        thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet()
+    }
     val weeklyCompleted = 0
     val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
-    val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) { (weeklyCompleted.toFloat() / weeklyTotal) }
+    val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) {
+        (weeklyCompleted.toFloat() / weeklyTotal)
+    }
 
-    val isDarkTheme = isSystemInDarkTheme()
+    return remember {
+        WorkingTasksScreenState(
+            currentWeek = currentWeek,
+            selectedTab = selectedTab,
+            selectedDay = selectedDay,
+            thisWeek = thisWeek,
+            weeklyProgressPct = weeklyProgressPct,
+            onTabSelected = { selectedTab = it },
+            onDaySelected = { day ->
+                selectedDay = day
+                selectedTab = 0  // Switch to Daily tab
+            },
+            onNavigateToStudyPlan = onNavigateToStudyPlan
+        )
+    }.apply {
+        this.selectedTab = selectedTab
+        this.selectedDay = selectedDay
+    }
+}
+
+data class WorkingTasksScreenState(
+    val currentWeek: Int,
+    var selectedTab: Int,
+    var selectedDay: DayPlan?,
+    val thisWeek: WeekPlan?,
+    val weeklyProgressPct: Float,
+    val onTabSelected: (Int) -> Unit,
+    val onDaySelected: (DayPlan) -> Unit,
+    val onNavigateToStudyPlan: () -> Unit
+)
+
+@Composable
+private fun WorkingTasksScreenContent(
+    screenState: WorkingTasksScreenState,
+    appIntegrationManager: AppIntegrationManager,
+    taskRepository: TaskRepository,
+    sharedViewModel: SharedAppViewModel,
+    modifier: Modifier = Modifier
+) {
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = if (isDarkTheme) {
-                    // Seamless anthracite to light grey gradient for dark theme
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF2C2C2C), // Deep anthracite (top)
-                            Color(0xFF3A3A3A), // Medium anthracite
-                            Color(0xFF4A4A4A)  // Light anthracite (bottom)
-                        )
-                    )
-                } else {
-                    // Keep original light theme gradient unchanged
-                    Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
-                }
-            )
+            .background(createBackgroundBrush(isDarkTheme))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-        Spacer(Modifier.height(12.dp))
-        TasksGradientTopBar(appIntegrationManager)
-        Spacer(Modifier.height(8.dp))
-        SegmentedControl(
-            segments = listOf("Daily", "Weekly", "Plan"),
-            selectedIndex = selectedTab,
-            onSelect = { selectedTab = it }
+            Spacer(Modifier.height(12.dp))
+            TasksGradientTopBar(appIntegrationManager)
+            Spacer(Modifier.height(8.dp))
+            SegmentedControl(
+                segments = listOf("Daily", "Weekly", "Plan"),
+                selectedIndex = screenState.selectedTab,
+                onSelect = screenState.onTabSelected
+            )
+            Spacer(Modifier.height(8.dp))
+
+            when (screenState.selectedTab) {
+                0 -> DailyTab(
+                    selectedDay = screenState.selectedDay,
+                    currentWeek = screenState.currentWeek,
+                    taskRepository = taskRepository,
+                    sharedViewModel = sharedViewModel,
+                    onBackToPlan = { screenState.onTabSelected(2) }
+                )
+                1 -> WeeklyTab(
+                    thisWeek = screenState.thisWeek,
+                    currentWeek = screenState.currentWeek,
+                    studyProgressRepository = studyProgressRepository,
+                    onNavigateToPlan = { screenState.onTabSelected(2) },
+                    onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
+                )
+                2 -> PlanTab(
+                    thisWeek = screenState.thisWeek,
+                    weeklyProgressPct = screenState.weeklyProgressPct,
+                    onDayClick = screenState.onDaySelected,
+                    onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun createBackgroundBrush(isDarkTheme: Boolean): Brush {
+    return if (isDarkTheme) {
+        // Seamless anthracite to light grey gradient for dark theme
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF2C2C2C), // Deep anthracite (top)
+                Color(0xFF3A3A3A), // Medium anthracite
+                Color(0xFF4A4A4A)  // Light anthracite (bottom)
+            )
         )
-        Spacer(Modifier.height(8.dp))
-        when (selectedTab) {
-            0 -> DailyTab(
-                selectedDay = selectedDay,
-                currentWeek = currentWeek,
-                taskRepository = taskRepository,
-                sharedViewModel = sharedViewModel,
-                onBackToPlan = { selectedTab = 2 }
-            )
-            1 -> WeeklyTab(
-                thisWeek = thisWeek,
-                currentWeek = currentWeek,
-                studyProgressRepository = studyProgressRepository,
-                onNavigateToPlan = { selectedTab = 2 },
-                onNavigateToStudyPlan = onNavigateToStudyPlan
-            )
-            2 -> PlanTab(
-                thisWeek = thisWeek,
-                weeklyProgressPct = weeklyProgressPct,
-                onDayClick = { day ->
-                    selectedDay = day
-                    selectedTab = 0  // Switch to Daily tab
-                },
-                onNavigateToStudyPlan = onNavigateToStudyPlan
-            )
-        }
-        }
+    } else {
+        // Keep original light theme gradient unchanged
+        Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
     }
 }
 

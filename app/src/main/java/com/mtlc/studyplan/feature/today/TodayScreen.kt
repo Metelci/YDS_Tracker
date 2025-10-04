@@ -1,7 +1,6 @@
 package com.mtlc.studyplan.feature.today
 
 import android.content.Context
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,8 +30,20 @@ import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.DayOfWeek
 import java.time.LocalDate
 
+/**
+ * Data class to group TodayScreen content parameters
+ */
+private data class TodayScreenContentParams(
+    val state: TodayUiState,
+    val dailyBudgetMinutes: Int?,
+    val onStart: (String) -> Unit,
+    val onNavigateToFocus: (String) -> Unit,
+    val paddingValues: PaddingValues,
+    val sTokens: androidx.compose.ui.unit.Dp
+)
+
 @Composable
-fun TodayRoute(
+fun todayRoute(
     vm: TodayViewModel = viewModel(),
     onNavigateToFocus: (String) -> Unit = {}
 ) {
@@ -60,7 +71,7 @@ fun TodayRoute(
         com.mtlc.studyplan.metrics.Analytics.track(context, "today_open")
     }
 
-    TodayScreen(
+    todayScreen(
         state = state,
         dailyBudgetMinutes = dailyBudgetMinutes,
         onStart = { id -> vm.dispatch(TodayIntent.StartSession(id)) },
@@ -69,7 +80,7 @@ fun TodayRoute(
 }
 
 @Composable
-fun TodayScreen(
+fun todayScreen(
     state: TodayUiState,
     dailyBudgetMinutes: Int?,
     onStart: (String) -> Unit,
@@ -79,88 +90,147 @@ fun TodayScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            StudyPlanTopBar(
-                title = "Today",
-                style = StudyPlanTopBarStyle.Default,
-                navigationIcon = Icons.AutoMirrored.Outlined.EventNote
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /* add */ }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "More")
-            }
-        },
+        topBar = { TodayScreenTopBar() },
+        floatingActionButton = { TodayScreenFab() },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        when {
-            state.isLoading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            state.snackbar != null -> Text(state.snackbar)
-            state.sessions.isEmpty() -> EmptyState()
-            else -> {
-                val timePlanned = state.sessions.sumOf { it.estMinutes }
-                val budget = dailyBudgetMinutes
-                val delta = budget?.let { budget - timePlanned }
-                val adherence = budget?.let { if (it > 0) (timePlanned * 100 / it) else 0 } ?: 0
+        val params = TodayScreenContentParams(
+            state = state,
+            dailyBudgetMinutes = dailyBudgetMinutes,
+            onStart = onStart,
+            onNavigateToFocus = onNavigateToFocus,
+            paddingValues = paddingValues,
+            sTokens = sTokens
+        )
+        TodayScreenContent(params)
+    }
+}
 
-                Column(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = sTokens.md, vertical = sTokens.xs),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(sTokens.sm)
-                    ) {
-                        Text(
-                            if (budget != null) {
-                                val deltaText = if (delta!! >= 0) "+${delta} min" else "$delta min"
-                                "Planned: $timePlanned min · Budget: $budget min · $deltaText"
-                            } else {
-                                "Planned today: $timePlanned min"
-                            },
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        AssistChip(
-                            onClick = { },
-                            label = { Text("Adherence ${adherence}%") },
-                            modifier = Modifier.largeTouchTarget()
-                        )
-                    }
-                    if (budget != null && budget > 0) {
-                        val ratio = (timePlanned.toFloat() / budget).coerceIn(0f, 1f)
-                        LinearProgressIndicator(
-                            progress = { ratio },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = sTokens.md)
-                        )
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = sTokens.md),
-                        verticalArrangement = Arrangement.spacedBy(sTokens.sm)
-                    ) {
-                        items(state.sessions, key = { it.id }) { item ->
-                            SwipeableSession(
-                                session = item,
-                                onStart = onStart,
-                                onNavigateToFocus = onNavigateToFocus
-                            )
-                        }
-                        item { Spacer(Modifier.height(80.dp)) }
-                    }
-                }
-            }
+@Composable
+private fun TodayScreenTopBar() {
+    StudyPlanTopBar(
+        title = "Today",
+        style = StudyPlanTopBarStyle.Default,
+        navigationIcon = Icons.AutoMirrored.Outlined.EventNote
+    )
+}
+
+@Composable
+private fun TodayScreenFab() {
+    FloatingActionButton(onClick = { /* add */ }) {
+        Icon(Icons.Default.MoreVert, contentDescription = "More")
+    }
+}
+
+@Composable
+private fun TodayScreenContent(params: TodayScreenContentParams) {
+    when {
+        params.state.isLoading -> TodayScreenLoadingState()
+        params.state.snackbar != null -> Text(params.state.snackbar)
+        params.state.sessions.isEmpty() -> EmptyState()
+        else -> TodayScreenSessionsContent(params)
+    }
+}
+
+@Composable
+private fun TodayScreenLoadingState() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
+    val timePlanned = params.state.sessions.sumOf { it.estMinutes }
+    val budget = params.dailyBudgetMinutes
+    val delta = budget?.let { budget - timePlanned }
+    val adherence = budget?.let { if (it > 0) (timePlanned * 100 / it) else 0 } ?: 0
+
+    Column(
+        modifier = Modifier
+            .padding(params.paddingValues)
+            .fillMaxSize()
+    ) {
+        TodayScreenStatsRow(
+            timePlanned = timePlanned,
+            budget = budget,
+            delta = delta,
+            adherence = adherence,
+            sTokens = params.sTokens
+        )
+
+        if (budget != null && budget > 0) {
+            val ratio = (timePlanned.toFloat() / budget).coerceIn(0f, 1f)
+            LinearProgressIndicator(
+                progress = { ratio },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = params.sTokens.md)
+            )
         }
+
+        TodayScreenSessionsList(
+            sessions = params.state.sessions,
+            onStart = params.onStart,
+            onNavigateToFocus = params.onNavigateToFocus,
+            sTokens = params.sTokens
+        )
+    }
+}
+
+@Composable
+private fun TodayScreenStatsRow(
+    timePlanned: Int,
+    budget: Int?,
+    delta: Int?,
+    adherence: Int,
+    sTokens: androidx.compose.ui.unit.Dp
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = sTokens.md, vertical = sTokens.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(sTokens.sm)
+    ) {
+        Text(
+            text = if (budget != null) {
+                val deltaText = if (delta!! >= 0) "+${delta} min" else "$delta min"
+                "Planned: $timePlanned min · Budget: $budget min · $deltaText"
+            } else {
+                "Planned today: $timePlanned min"
+            },
+            style = MaterialTheme.typography.bodyMedium
+        )
+        AssistChip(
+            onClick = { },
+            label = { Text("Adherence ${adherence}%") },
+            modifier = Modifier.largeTouchTarget()
+        )
+    }
+}
+
+@Composable
+private fun TodayScreenSessionsList(
+    sessions: List<SessionUi>,
+    onStart: (String) -> Unit,
+    onNavigateToFocus: (String) -> Unit,
+    sTokens: androidx.compose.ui.unit.Dp
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = sTokens.md),
+        verticalArrangement = Arrangement.spacedBy(sTokens.sm)
+    ) {
+        items(sessions, key = { it.id }) { item ->
+            SwipeableSession(
+                session = item,
+                onStart = onStart,
+                onNavigateToFocus = onNavigateToFocus
+            )
+        }
+        item { Spacer(Modifier.height(80.dp)) }
     }
 }
 
@@ -171,7 +241,7 @@ private fun SessionCard(
     onSkip: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    isSystemInDarkTheme()
+    // Use MaterialTheme for dark/light derived colors if needed
     // Rotate through pastel palette for visual variety while keeping contrast
     // Use inferred feature from package for stability across moves
     val container = inferredFeaturePastelContainer("com.mtlc.studyplan.feature.today", s.id)
@@ -223,16 +293,15 @@ private fun SwipeableSession(
 
 @Preview(showBackground = true)
 @Composable
-private fun TodayScreenPreview() {
+private fun todayScreenPreview() {
     val previewState = TodayUiState(isLoading = false, sessions = FakeTodayData.sessions)
-    TodayScreen(
+    todayScreen(
         state = previewState,
         dailyBudgetMinutes = 60,
         onStart = {},
         onNavigateToFocus = {}
     )
 }
-
 
 
 

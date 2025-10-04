@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.StreakInfo
@@ -177,7 +177,7 @@ fun WorkingHomeScreen(
     }
 
     // Language manager setup identical to Settings page
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     Column(
         modifier = modifier

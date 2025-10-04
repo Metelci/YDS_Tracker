@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
@@ -44,7 +44,7 @@ fun AwardCard(
     onClick: ((Award) -> Unit)? = null
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     val gradientColors = if (award.isUnlocked) getRarityColors(award.rarity) else getLockedColors()
     val isLocked = !award.isUnlocked
     val hapticFeedback = LocalHapticFeedback.current
@@ -287,7 +287,7 @@ private fun getAwardIcon(iconType: AwardIconType): ImageVector = when (iconType)
 
 @Composable
 private fun getRarityColors(rarity: AwardRarity): List<Color> {
-    val isDark = isSystemInDarkTheme()
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     return when (rarity) {
         AwardRarity.Common -> if (!isDark) {
             listOf(Color(0xFFFFD4B3), Color(0xFFFFB388))
@@ -314,7 +314,8 @@ private fun getRarityColors(rarity: AwardRarity): List<Color> {
 
 @Composable
 private fun getLockedColors(): List<Color> {
-    return if (!isSystemInDarkTheme()) {
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    return if (!isDark) {
         listOf(Color(0xFFF8F9FA), Color(0xFFF1F3F4))
     } else {
         listOf(Color(0xFF4A4A4A), Color(0xFF3A3A3A))
