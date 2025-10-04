@@ -300,6 +300,32 @@ class NotificationManager @Inject constructor(
         notificationManager.notify(notificationId, notification)
     }
 
+    /**
+     * Show achievement notification from push message
+     */
+    fun showAchievementNotification(
+        title: String,
+        message: String,
+        notificationId: Int
+    ) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_ACHIEVEMENTS)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(createOpenAppPendingIntent())
+            .addAction(
+                R.drawable.ic_notifications,
+                "View Achievements",
+                createOpenSocialPendingIntent()
+            )
+            .build()
+
+        notificationManager.notify(notificationId, notification)
+    }
+
     fun showExamApplicationReminder(
         title: String,
         message: String,

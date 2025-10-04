@@ -269,7 +269,8 @@ private fun SettingsKeys.Accessibility.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Data.getAllKeys(): List<String> = listOf(
-    AUTO_SYNC, SYNC_FREQUENCY, WIFI_ONLY_SYNC, BACKUP_ENABLED, CACHE_SIZE_LIMIT, OFFLINE_MODE, DATA_SAVER_MODE, AUTO_CLEANUP, EXPORT_FORMAT
+    AUTO_SYNC, SYNC_FREQUENCY, WIFI_ONLY_SYNC, BACKUP_ENABLED,
+    CACHE_SIZE_LIMIT, OFFLINE_MODE, DATA_SAVER_MODE, AUTO_CLEANUP, EXPORT_FORMAT
 )
 
 private fun SettingsKeys.Study.getAllKeys(): List<String> = listOf(

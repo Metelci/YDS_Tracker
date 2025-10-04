@@ -1,6 +1,9 @@
 package com.mtlc.studyplan.calendar
 
 import android.content.Context
+import android.os.Build
+import android.os.PowerManager
+import com.mtlc.studyplan.power.PowerStateChecker
 import androidx.work.*
 import com.mtlc.studyplan.data.PlanDataSource
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,12 @@ class CalendarWorker(
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
+            // Battery optimization: avoid heavy sync in power saver or doze
+            if (PowerStateChecker.isPowerConstrained(applicationContext)) {
+                return@withContext Result.success(
+                    workDataOf("message" to "Skipped calendar sync due to power saver/doze")
+                )
+            }
             // Get dependencies
             val settingsRepository = CalendarSettingsRepository(calendarDataStore)
             val calendarSync = CalendarSync(applicationContext, settingsRepository)
@@ -140,7 +149,8 @@ object CalendarWorkerManager {
     fun scheduleDailySync(context: Context) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-            .setRequiresBatteryNotLow(false)
+            // Battery-aware: avoid running when battery is low; allow while not charging
+            .setRequiresBatteryNotLow(true)
             .setRequiresCharging(false)
             .setRequiresDeviceIdle(false)
             .build()
@@ -181,6 +191,7 @@ object CalendarWorkerManager {
     fun requestImmediateSync(context: Context) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .setRequiresBatteryNotLow(true)
             .build()
 
         val immediateSyncRequest = OneTimeWorkRequestBuilder<CalendarWorker>()

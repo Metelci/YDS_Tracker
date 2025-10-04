@@ -11,7 +11,10 @@
       "Bash(git log:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(find:*)",
+      "Bash(test:*)",
+      "Bash(xargs basename:*)"
     ],
     "deny": [],
     "ask": []

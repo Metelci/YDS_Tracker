@@ -4,6 +4,8 @@ import com.mtlc.studyplan.eventbus.AppEventBus
 import com.mtlc.studyplan.eventbus.EventBus
 import com.mtlc.studyplan.integration.EnhancedAppIntegrationManager
 import com.mtlc.studyplan.notifications.NotificationManager
+import com.mtlc.studyplan.notifications.PushNotificationManager
+import com.mtlc.studyplan.notifications.PushNotificationConfig
 import com.mtlc.studyplan.repository.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -17,6 +19,21 @@ val koinIntegrationModule = module {
 
     // System notifications coordinator
     single { NotificationManager(androidContext(), get(), get(), get()) }
+
+    // Push notification manager for FCM
+    single {
+        PushNotificationManager(
+            PushNotificationConfig(
+                context = androidContext(),
+                settingsManager = get(),
+                notificationManager = get(),
+                fcmTokenManager = get(),
+                pushMessageHandler = get(),
+                pushAnalyticsManager = get(),
+                batteryAwarePushManager = get()
+            )
+        )
+    }
 
     // Enhanced integration layer
     single {

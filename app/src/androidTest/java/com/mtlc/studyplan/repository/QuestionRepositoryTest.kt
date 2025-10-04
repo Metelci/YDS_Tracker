@@ -1,37 +1,36 @@
 package com.mtlc.studyplan.repository
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.database.entities.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [33])
+/**
+ * Instrumented tests for Question Repository
+ * Tests question database operations with real Room database
+ */
+@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class QuestionRepositoryTest {
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var database: StudyPlanDatabase
     private lateinit var repository: QuestionRepository
 
     @Before
     fun setup() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
+            context,
             StudyPlanDatabase::class.java
         ).allowMainThreadQueries().build()
 
@@ -44,7 +43,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun insertAndRetrieveQuestion() = runTest {
+    fun insertAndRetrieveQuestion() = runBlocking {
         // Given
         val question = QuestionEntity(
             id = "test_001",
@@ -70,7 +69,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun getQuestionsByExamType() = runTest {
+    fun getQuestionsByExamType() = runBlocking {
         // Given
         val ydsQuestion = createTestQuestion("yds_001", ExamType.YDS)
         val yokdilQuestion = createTestQuestion("yokdil_001", ExamType.YOKDIL)
@@ -86,7 +85,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun getQuestionsByDifficulty() = runTest {
+    fun getQuestionsByDifficulty() = runBlocking {
         // Given
         val b1Question = createTestQuestion("b1_001", ExamType.YDS, Difficulty.B1)
         val b2Question = createTestQuestion("b2_001", ExamType.YDS, Difficulty.B2)
@@ -102,7 +101,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun updateDownloadStatus() = runTest {
+    fun updateDownloadStatus() = runBlocking {
         // Given
         val question = createTestQuestion("download_test")
         repository.insertQuestion(question)
@@ -117,7 +116,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun getQuestionStats() = runTest {
+    fun getQuestionStats() = runBlocking {
         // Given
         val ydsQuestion = createTestQuestion("stats_yds", ExamType.YDS)
         val yokdilQuestion = createTestQuestion("stats_yokdil", ExamType.YOKDIL)
@@ -136,7 +135,7 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    fun searchQuestions() = runTest {
+    fun searchQuestions() = runBlocking {
         // Given
         val question1 = createTestQuestion("search_001").copy(
             questionText = "What is photosynthesis?",

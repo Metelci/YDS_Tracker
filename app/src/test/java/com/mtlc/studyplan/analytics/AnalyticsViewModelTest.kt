@@ -185,7 +185,8 @@ class AnalyticsViewModelTest {
             taskCount = 75
         )
 
-        whenever(analyticsEngine.generateAnalytics(eq(7), any(), anyOrNull())).thenReturn(newAnalyticsData)
+        whenever(analyticsEngine.generateAnalytics(eq(7), any(), anyOrNull()))
+            .thenReturn(newAnalyticsData)
         whenever(analyticsEngine.getWeeklyData(eq(7), any())).thenReturn(newWeeklyData)
         whenever(analyticsEngine.getPerformanceData(7)).thenReturn(newPerformanceData)
 

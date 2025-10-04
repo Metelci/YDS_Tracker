@@ -495,15 +495,18 @@ class NavigationDestinationTest {
             highlightId = "task-123#highlight"
         )
 
-        assertEquals("Filter with special chars should be preserved", "status/pending&completed", destination.filter)
-        assertEquals("HighlightId with special chars should be preserved", "task-123#highlight", destination.highlightId)
+        assertEquals("Filter with special chars should be preserved",
+            "status/pending&completed", destination.filter)
+        assertEquals("HighlightId with special chars should be preserved",
+            "task-123#highlight", destination.highlightId)
     }
 
     @Test
     fun `TaskDetail handles special characters in taskId`() {
         val destination = NavigationDestination.TaskDetail(taskId = "task-123/456#edit")
 
-        assertEquals("TaskId with special chars should be preserved", "task-123/456#edit", destination.taskId)
+        assertEquals("TaskId with special chars should be preserved",
+            "task-123/456#edit", destination.taskId)
     }
 
     @Test
@@ -513,7 +516,8 @@ class NavigationDestinationTest {
             params = emptyMap()
         )
 
-        assertEquals("Route with special chars should be preserved", "path/to/resource?query=value&sort=asc", destination.route)
+        assertEquals("Route with special chars should be preserved",
+            "path/to/resource?query=value&sort=asc", destination.route)
     }
 
     @Test
@@ -533,7 +537,8 @@ class NavigationDestinationTest {
     fun `Back destination handles special characters`() {
         val destination = NavigationDestination.Back(destination = "path/to/previous?source=nav")
 
-        assertEquals("Destination with special chars should be preserved", "path/to/previous?source=nav", destination.destination)
+        assertEquals("Destination with special chars should be preserved",
+            "path/to/previous?source=nav", destination.destination)
     }
 
     // Immutability Tests

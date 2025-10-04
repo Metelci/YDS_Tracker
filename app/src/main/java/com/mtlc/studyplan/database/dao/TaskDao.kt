@@ -12,6 +12,18 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE isActive = 1 ORDER BY priority DESC, dueDate ASC, createdAt ASC")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM tasks WHERE isActive = 1 ORDER BY priority DESC, dueDate ASC, createdAt ASC LIMIT :limit OFFSET :offset")
+    suspend fun getAllTasksPaginated(limit: Int, offset: Int): List<TaskEntity>
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE isActive = 1")
+    suspend fun getTotalActiveTasksCount(): Int
+
+    @Query("SELECT * FROM tasks WHERE isActive = 1 AND isCompleted = 1 ORDER BY completedAt DESC LIMIT :limit OFFSET :offset")
+    suspend fun getCompletedTasksPaginated(limit: Int, offset: Int): List<TaskEntity>
+
+    @Query("SELECT * FROM tasks WHERE isActive = 1 AND isCompleted = 0 ORDER BY priority DESC, dueDate ASC LIMIT :limit OFFSET :offset")
+    suspend fun getPendingTasksPaginated(limit: Int, offset: Int): List<TaskEntity>
+
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: String): TaskEntity?
 

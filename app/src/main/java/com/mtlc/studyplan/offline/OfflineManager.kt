@@ -339,6 +339,67 @@ class OfflineManager @Inject constructor(
     fun getPendingActionsCount(): Int {
         return _pendingActions.value.size
     }
+
+    /**
+     * Battery optimization methods for power management
+     */
+    private var lowPowerModeEnabled = false
+    private var criticalPowerModeEnabled = false
+    private var backgroundSyncPaused = false
+
+    /**
+     * Set low power mode - reduce sync frequency
+     */
+    fun setLowPowerMode(enabled: Boolean) {
+        lowPowerModeEnabled = enabled
+        android.util.Log.d("OfflineManager", "Low power mode ${if (enabled) "enabled" else "disabled"}")
+        if (enabled) {
+            // Could reduce sync frequency or batch operations
+        }
+    }
+
+    /**
+     * Set critical power mode - disable all background operations
+     */
+    fun setCriticalPowerMode(enabled: Boolean) {
+        criticalPowerModeEnabled = enabled
+        android.util.Log.d("OfflineManager", "Critical power mode ${if (enabled) "enabled" else "disabled"}")
+        if (enabled) {
+            pauseBackgroundSync()
+        } else {
+            resumeBackgroundSync()
+        }
+    }
+
+    /**
+     * Pause background sync operations
+     */
+    fun pauseBackgroundSync() {
+        backgroundSyncPaused = true
+        android.util.Log.d("OfflineManager", "Background sync paused")
+    }
+
+    /**
+     * Resume background sync operations
+     */
+    fun resumeBackgroundSync() {
+        backgroundSyncPaused = false
+        android.util.Log.d("OfflineManager", "Background sync resumed")
+
+        // Resume sync if we have pending actions and are online
+        if (_pendingActions.value.isNotEmpty() && _isOnline.value) {
+            scope.launch {
+                syncPendingActions()
+            }
+        }
+    }
+
+    /**
+     * Check if background operations should be performed
+     */
+    fun shouldPerformBackgroundOperations(): Boolean {
+        return !criticalPowerModeEnabled && !backgroundSyncPaused
+    }
 }
 
 data class OfflineAction(

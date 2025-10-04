@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import com.mtlc.studyplan.database.dao.TaskDao
 import com.mtlc.studyplan.database.entities.TaskEntity
@@ -316,5 +317,80 @@ class TaskRepository @Inject constructor(
         return getCachedTaskStats("pending_count") {
             taskDao.getPendingTasksCount()
         } as Int
+    }
+
+    // Pagination support for large datasets
+    data class PaginatedResult<T>(
+        val items: List<T>,
+        val totalCount: Int,
+        val currentPage: Int,
+        val totalPages: Int,
+        val hasNextPage: Boolean,
+        val hasPreviousPage: Boolean
+    )
+
+    suspend fun getAllTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedResult<TaskEntity> {
+        val offset = page * pageSize
+        val items = taskDao.getAllTasksPaginated(pageSize, offset)
+        val totalCount = taskDao.getTotalActiveTasksCount()
+        val totalPages = (totalCount + pageSize - 1) / pageSize
+
+        return PaginatedResult(
+            items = items,
+            totalCount = totalCount,
+            currentPage = page,
+            totalPages = totalPages,
+            hasNextPage = page < totalPages - 1,
+            hasPreviousPage = page > 0
+        )
+    }
+
+    suspend fun getCompletedTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedResult<TaskEntity> {
+        val offset = page * pageSize
+        val items = taskDao.getCompletedTasksPaginated(pageSize, offset)
+        val totalCount = getCompletedTasksCount()
+        val totalPages = (totalCount + pageSize - 1) / pageSize
+
+        return PaginatedResult(
+            items = items,
+            totalCount = totalCount,
+            currentPage = page,
+            totalPages = totalPages,
+            hasNextPage = page < totalPages - 1,
+            hasPreviousPage = page > 0
+        )
+    }
+
+    suspend fun getPendingTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedResult<TaskEntity> {
+        val offset = page * pageSize
+        val items = taskDao.getPendingTasksPaginated(pageSize, offset)
+        val totalCount = getPendingTasksCount()
+        val totalPages = (totalCount + pageSize - 1) / pageSize
+
+        return PaginatedResult(
+            items = items,
+            totalCount = totalCount,
+            currentPage = page,
+            totalPages = totalPages,
+            hasNextPage = page < totalPages - 1,
+            hasPreviousPage = page > 0
+        )
+    }
+
+    // Lazy loading for large datasets
+    fun getTasksLazy(pageSize: Int = 50): Flow<List<TaskEntity>> = flow {
+        var page = 0
+        var hasMore = true
+
+        while (hasMore) {
+            val result = getAllTasksPaginated(page, pageSize)
+            if (result.items.isNotEmpty()) {
+                emit(result.items)
+                page++
+                hasMore = result.hasNextPage
+            } else {
+                hasMore = false
+            }
+        }
     }
 }

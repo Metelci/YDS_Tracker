@@ -90,6 +90,7 @@ class SettingsManager @Inject constructor(
             val updatedSettings = when (key) {
                 SettingsKey.THEME_MODE -> currentSettings.copy(themeMode = value as ThemeMode)
                 SettingsKey.NOTIFICATIONS_ENABLED -> currentSettings.copy(notificationsEnabled = value as Boolean)
+                SettingsKey.PUSH_NOTIFICATIONS_ENABLED -> currentSettings.copy(pushNotificationsEnabled = value as Boolean)
                 SettingsKey.STUDY_REMINDERS -> currentSettings.copy(studyRemindersEnabled = value as Boolean)
                 SettingsKey.ACHIEVEMENT_NOTIFICATIONS -> currentSettings.copy(achievementNotificationsEnabled = value as Boolean)
                 SettingsKey.OFFLINE_MODE -> currentSettings.copy(offlineModeEnabled = value as Boolean)

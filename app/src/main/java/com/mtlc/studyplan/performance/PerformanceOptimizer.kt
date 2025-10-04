@@ -520,4 +520,69 @@ class PerformanceOptimizer private constructor(
             put("total_caches", cacheRegistry.size)
         }
     }
+
+    /**
+     * Set monitoring enabled/disabled for battery optimization
+     */
+    fun setMonitoringEnabled(enabled: Boolean) {
+        performanceMonitoringEnabled = enabled
+        if (!enabled) {
+            // Clear current metrics when disabling
+            clearMetrics()
+        }
+    }
+
+    /**
+     * Set reduced monitoring mode for low power scenarios
+     */
+    fun setReducedMonitoring(reduced: Boolean) {
+        // Could adjust monitoring frequency based on reduced flag
+        // For now, just log the state change
+        android.util.Log.d("PerformanceOptimizer", "Reduced monitoring: $reduced")
+    }
+
+    /**
+     * Set reduced frame rate for animations during low power
+     */
+    fun setReducedFrameRate(reduced: Boolean) {
+        // This would typically adjust animation frame rates
+        // Implementation depends on animation system integration
+        android.util.Log.d("PerformanceOptimizer", "Reduced frame rate: $reduced")
+    }
+
+    /**
+     * Enable/disable animations for critical battery scenarios
+     */
+    fun setAnimationsEnabled(enabled: Boolean) {
+        // This would control animation playback
+        // Implementation depends on animation system integration
+        android.util.Log.d("PerformanceOptimizer", "Animations enabled: $enabled")
+    }
+
+    /**
+     * Perform aggressive cleanup for critical battery situations
+     */
+    suspend fun performAggressiveCleanup() = withContext(Dispatchers.Default) {
+        performMemoryOptimizations()
+        performAggressiveMemoryCleanup()
+    }
+
+    /**
+     * Clear all caches for critical battery optimization
+     */
+    fun clearAllCaches() {
+        cacheRegistry.values.forEach { it.clear() }
+        imageCache.clear()
+        dataCache.clear()
+        clearMetrics()
+    }
+
+    /**
+     * Clear performance metrics and reset monitoring data
+     */
+    fun clearMetrics() {
+        frameMetrics.clear()
+        memorySnapshots.clear()
+        performanceMetrics.value = PerformanceMetrics()
+    }
 }

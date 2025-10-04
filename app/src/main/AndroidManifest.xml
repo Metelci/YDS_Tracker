@@ -81,6 +81,28 @@
         <!-- Calendar sync worker runs automatically via WorkManager (no explicit registration needed) -->
         <!-- CalendarWorker handles daily synchronization of study sessions to device calendar -->
 
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".notifications.StudyPlanFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Battery/Power state receiver for battery-aware scheduling -->
+        <receiver
+            android:name=".power.PowerStateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_LOW" />
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Today screens are hosted within MainActivity via Compose navigation. -->
     </application>
 </manifest>

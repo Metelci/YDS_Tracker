@@ -47,6 +47,9 @@ profileinstaller = "1.4.1"
 turbine = "1.2.0"
 mockitoKotlin = "5.4.0"
 
+# Firebase
+firebaseBom = "33.7.0"
+
 [libraries]
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation" }
@@ -66,6 +69,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomRuntime" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs-v215" }
@@ -116,6 +120,10 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 
 # Baseline Profile
 profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

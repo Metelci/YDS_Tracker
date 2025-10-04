@@ -23,8 +23,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 78
-        versionName = "2.9.43"
+        versionCode = 79
+        versionName = "2.9.44"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -133,6 +133,7 @@ dependencies {
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.work.runtime.ktx)
@@ -169,6 +170,10 @@ dependencies {
     // JSON processing
     implementation(libs.gson)
 
+    // HTTP client for API calls
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
     // Image loading and processing for avatar upload
     implementation(libs.coil.compose)
     implementation("androidx.exifinterface:exifinterface:1.3.7")
@@ -182,6 +187,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     //noinspection UseTomlInstead
     ksp(libs.androidx.room.compiler)
+    // Room testing utilities (MigrationTestHelper, InMemory)
+    testImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.androidx.room.testing)
 
     // Dependency Injection with Koin
     implementation(libs.koin.core)
@@ -197,6 +205,8 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
+    // Ensure ProcessLifecycleOwner is available under Robolectric
+    testImplementation("androidx.lifecycle:lifecycle-process:2.8.7")
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.koin.test)

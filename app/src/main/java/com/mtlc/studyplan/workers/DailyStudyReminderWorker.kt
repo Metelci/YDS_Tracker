@@ -1,6 +1,9 @@
 package com.mtlc.studyplan.workers
 
 import android.content.Context
+import android.os.Build
+import android.os.PowerManager
+import com.mtlc.studyplan.power.PowerStateChecker
 import androidx.work.*
 import com.mtlc.studyplan.data.isMutedToday
 import com.mtlc.studyplan.data.isQuietNow
@@ -51,9 +54,10 @@ class DailyStudyReminderWorker(
             .setInitialDelay(initialDelay, TimeUnit.SECONDS)
             .setConstraints(
                 Constraints.Builder()
-                    .setRequiresBatteryNotLow(false) // Work even on low battery
-                    .setRequiresDeviceIdle(false) // Don't require device idle
-                    .setRequiresStorageNotLow(false) // Work even on low storage
+                    // Battery-aware: avoid firing when battery is low; let OS defer
+                    .setRequiresBatteryNotLow(true)
+                    .setRequiresDeviceIdle(false)
+                    .setRequiresStorageNotLow(false)
                     .build()
             )
             .setBackoffCriteria(
@@ -90,6 +94,12 @@ class DailyStudyReminderWorker(
             if (isMutedToday(applicationContext) || isQuietNow(applicationContext)) {
                 // Still track that we attempted delivery
                 trackDeliveryAttempt(success = false, reason = "muted_or_quiet_hours")
+                return Result.success()
+            }
+
+            // Battery optimization: skip non-critical notifications in power saver/doze
+            if (PowerStateChecker.isPowerConstrained(applicationContext)) {
+                trackDeliveryAttempt(success = false, reason = "power_saver_or_doze")
                 return Result.success()
             }
 

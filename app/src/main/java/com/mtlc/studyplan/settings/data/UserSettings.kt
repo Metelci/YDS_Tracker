@@ -12,6 +12,7 @@ enum class ThemeMode {
 data class UserSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val notificationsEnabled: Boolean = true,
+    val pushNotificationsEnabled: Boolean = true,
     val studyRemindersEnabled: Boolean = true,
     val achievementNotificationsEnabled: Boolean = true,
     val dailyGoalRemindersEnabled: Boolean = true,
@@ -35,6 +36,7 @@ data class UserSettings(
 enum class SettingsKey {
     THEME_MODE,
     NOTIFICATIONS_ENABLED,
+    PUSH_NOTIFICATIONS_ENABLED,
     STUDY_REMINDERS,
     ACHIEVEMENT_NOTIFICATIONS,
     DAILY_GOAL_REMINDERS,

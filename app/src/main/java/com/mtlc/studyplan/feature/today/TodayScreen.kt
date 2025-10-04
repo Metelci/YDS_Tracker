@@ -39,7 +39,7 @@ private data class TodayScreenContentParams(
     val onStart: (String) -> Unit,
     val onNavigateToFocus: (String) -> Unit,
     val paddingValues: PaddingValues,
-    val sTokens: androidx.compose.ui.unit.Dp
+    val spacing: Spacing
 )
 
 @Composable
@@ -86,12 +86,12 @@ fun todayScreen(
     onStart: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    val sTokens = LocalSpacing.current
+    val spacing = LocalSpacing.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = { TodayScreenTopBar() },
-        floatingActionButton = { TodayScreenFab() },
+        topBar = { todayScreenTopBar() },
+        floatingActionButton = { todayScreenFab() },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         val params = TodayScreenContentParams(
@@ -100,14 +100,14 @@ fun todayScreen(
             onStart = onStart,
             onNavigateToFocus = onNavigateToFocus,
             paddingValues = paddingValues,
-            sTokens = sTokens
+            spacing = spacing
         )
-        TodayScreenContent(params)
+        todayScreenContent(params)
     }
 }
 
 @Composable
-private fun TodayScreenTopBar() {
+private fun todayScreenTopBar() {
     StudyPlanTopBar(
         title = "Today",
         style = StudyPlanTopBarStyle.Default,
@@ -116,31 +116,31 @@ private fun TodayScreenTopBar() {
 }
 
 @Composable
-private fun TodayScreenFab() {
+private fun todayScreenFab() {
     FloatingActionButton(onClick = { /* add */ }) {
         Icon(Icons.Default.MoreVert, contentDescription = "More")
     }
 }
 
 @Composable
-private fun TodayScreenContent(params: TodayScreenContentParams) {
+private fun todayScreenContent(params: TodayScreenContentParams) {
     when {
-        params.state.isLoading -> TodayScreenLoadingState()
+        params.state.isLoading -> todayScreenLoadingState()
         params.state.snackbar != null -> Text(params.state.snackbar)
         params.state.sessions.isEmpty() -> EmptyState()
-        else -> TodayScreenSessionsContent(params)
+        else -> todayScreenSessionsContent(params)
     }
 }
 
 @Composable
-private fun TodayScreenLoadingState() {
+private fun todayScreenLoadingState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
-private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
+private fun todayScreenSessionsContent(params: TodayScreenContentParams) {
     val timePlanned = params.state.sessions.sumOf { it.estMinutes }
     val budget = params.dailyBudgetMinutes
     val delta = budget?.let { budget - timePlanned }
@@ -151,12 +151,12 @@ private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
             .padding(params.paddingValues)
             .fillMaxSize()
     ) {
-        TodayScreenStatsRow(
+        todayScreenStatsRow(
             timePlanned = timePlanned,
             budget = budget,
             delta = delta,
             adherence = adherence,
-            sTokens = params.sTokens
+            spacing = params.spacing
         )
 
         if (budget != null && budget > 0) {
@@ -165,33 +165,33 @@ private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
                 progress = { ratio },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = params.sTokens.md)
+                    .padding(horizontal = params.spacing.md)
             )
         }
 
-        TodayScreenSessionsList(
+        todayScreenSessionsList(
             sessions = params.state.sessions,
             onStart = params.onStart,
             onNavigateToFocus = params.onNavigateToFocus,
-            sTokens = params.sTokens
+            spacing = params.spacing
         )
     }
 }
 
 @Composable
-private fun TodayScreenStatsRow(
+private fun todayScreenStatsRow(
     timePlanned: Int,
     budget: Int?,
     delta: Int?,
     adherence: Int,
-    sTokens: androidx.compose.ui.unit.Dp
+    spacing: Spacing
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = sTokens.md, vertical = sTokens.xs),
+            .padding(horizontal = spacing.md, vertical = spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(sTokens.sm)
+        horizontalArrangement = Arrangement.spacedBy(spacing.sm)
     ) {
         Text(
             text = if (budget != null) {
@@ -211,20 +211,20 @@ private fun TodayScreenStatsRow(
 }
 
 @Composable
-private fun TodayScreenSessionsList(
+private fun todayScreenSessionsList(
     sessions: List<SessionUi>,
     onStart: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit,
-    sTokens: androidx.compose.ui.unit.Dp
+    spacing: Spacing
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = sTokens.md),
-        verticalArrangement = Arrangement.spacedBy(sTokens.sm)
+            .padding(horizontal = spacing.md),
+        verticalArrangement = Arrangement.spacedBy(spacing.sm)
     ) {
         items(sessions, key = { it.id }) { item ->
-            SwipeableSession(
+            swipeableSession(
                 session = item,
                 onStart = onStart,
                 onNavigateToFocus = onNavigateToFocus
@@ -235,7 +235,7 @@ private fun TodayScreenSessionsList(
 }
 
 @Composable
-private fun SessionCard(
+private fun sessionCard(
     s: SessionUi,
     onStart: (String) -> Unit,
     onSkip: (String) -> Unit,
@@ -278,12 +278,12 @@ private fun SessionCard(
 }
 
 @Composable
-private fun SwipeableSession(
+private fun swipeableSession(
     session: SessionUi,
     onStart: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    SessionCard(
+    sessionCard(
         s = session,
         onStart = onStart,
         onSkip = { },

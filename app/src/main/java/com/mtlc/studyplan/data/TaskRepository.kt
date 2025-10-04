@@ -18,6 +18,20 @@ interface TaskRepository {
     suspend fun getUpcomingTasks(): List<Task>
     suspend fun getTasksByCategory(category: String): List<Task>
     suspend fun getEarlyMorningCompletedTasks(): List<Task>
+
+    // Pagination support for large datasets
+    data class PaginatedTasks(
+        val tasks: List<Task>,
+        val totalCount: Int,
+        val currentPage: Int,
+        val totalPages: Int,
+        val hasNextPage: Boolean,
+        val hasPreviousPage: Boolean
+    )
+
+    suspend fun getAllTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedTasks
+    suspend fun getCompletedTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedTasks
+    suspend fun getPendingTasksPaginated(page: Int = 0, pageSize: Int = 50): PaginatedTasks
 }
 
 @Singleton
@@ -78,6 +92,42 @@ class TaskRepositoryImpl @Inject constructor(
                 entity.isCompleted && entity.completedAt != null && isEarlyMorning(entity.completedAt)
             }
             .map { it.toTask() }
+    }
+
+    override suspend fun getAllTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks {
+        val result = databaseTaskRepository.getAllTasksPaginated(page, pageSize)
+        return TaskRepository.PaginatedTasks(
+            tasks = result.items.map { it.toTask() },
+            totalCount = result.totalCount,
+            currentPage = result.currentPage,
+            totalPages = result.totalPages,
+            hasNextPage = result.hasNextPage,
+            hasPreviousPage = result.hasPreviousPage
+        )
+    }
+
+    override suspend fun getCompletedTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks {
+        val result = databaseTaskRepository.getCompletedTasksPaginated(page, pageSize)
+        return TaskRepository.PaginatedTasks(
+            tasks = result.items.map { it.toTask() },
+            totalCount = result.totalCount,
+            currentPage = result.currentPage,
+            totalPages = result.totalPages,
+            hasNextPage = result.hasNextPage,
+            hasPreviousPage = result.hasPreviousPage
+        )
+    }
+
+    override suspend fun getPendingTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks {
+        val result = databaseTaskRepository.getPendingTasksPaginated(page, pageSize)
+        return TaskRepository.PaginatedTasks(
+            tasks = result.items.map { it.toTask() },
+            totalCount = result.totalCount,
+            currentPage = result.currentPage,
+            totalPages = result.totalPages,
+            hasNextPage = result.hasNextPage,
+            hasPreviousPage = result.hasPreviousPage
+        )
     }
 
     private fun isEarlyMorning(timestamp: Long): Boolean {

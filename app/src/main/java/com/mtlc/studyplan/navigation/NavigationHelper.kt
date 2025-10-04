@@ -18,35 +18,47 @@ class NavigationHelper {
      */
     fun buildRoute(destination: NavigationDestination): String {
         return when (destination) {
-            is NavigationDestination.Tasks -> {
-                val params = mutableListOf<String>()
-                destination.filter?.let { params.add("filter=$it") }
-                destination.highlightId?.let { params.add("highlightId=$it") }
-                if (params.isEmpty()) "tasks" else "tasks?${params.joinToString("&")}"
-            }
-            is NavigationDestination.TaskDetail -> {
-                "tasks/${destination.taskId}"
-            }
-            is NavigationDestination.Progress -> {
-                val params = mutableListOf<String>()
-                destination.timeRange?.let { params.add("timeRange=$it") }
-                destination.highlight?.let { params.add("highlight=$it") }
-                if (params.isEmpty()) "progress" else "progress?${params.joinToString("&")}"
-            }
-            is NavigationDestination.Social -> {
-                val params = mutableListOf<String>()
-                destination.tab?.let { params.add("tab=$it") }
-                destination.achievementId?.let { params.add("achievementId=$it") }
-                if (params.isEmpty()) "social" else "social?${params.joinToString("&")}"
-            }
-            is NavigationDestination.Custom -> {
-                val params = destination.params.entries.joinToString("&") { "${it.key}=${it.value}" }
-                if (params.isEmpty()) destination.route else "${destination.route}?$params"
-            }
-            is NavigationDestination.Back -> {
-                destination.destination
-            }
+            is NavigationDestination.Tasks -> buildTasksRoute(destination)
+            is NavigationDestination.TaskDetail -> buildTaskDetailRoute(destination)
+            is NavigationDestination.Progress -> buildProgressRoute(destination)
+            is NavigationDestination.Social -> buildSocialRoute(destination)
+            is NavigationDestination.Custom -> buildCustomRoute(destination)
+            is NavigationDestination.Back -> buildBackRoute(destination)
         }
+    }
+
+    private fun buildTasksRoute(destination: NavigationDestination.Tasks): String {
+        val params = mutableListOf<String>()
+        destination.filter?.let { params.add("filter=$it") }
+        destination.highlightId?.let { params.add("highlightId=$it") }
+        return if (params.isEmpty()) "tasks" else "tasks?${params.joinToString("&")}"
+    }
+
+    private fun buildTaskDetailRoute(destination: NavigationDestination.TaskDetail): String {
+        return "tasks/${destination.taskId}"
+    }
+
+    private fun buildProgressRoute(destination: NavigationDestination.Progress): String {
+        val params = mutableListOf<String>()
+        destination.timeRange?.let { params.add("timeRange=$it") }
+        destination.highlight?.let { params.add("highlight=$it") }
+        return if (params.isEmpty()) "progress" else "progress?${params.joinToString("&")}"
+    }
+
+    private fun buildSocialRoute(destination: NavigationDestination.Social): String {
+        val params = mutableListOf<String>()
+        destination.tab?.let { params.add("tab=$it") }
+        destination.achievementId?.let { params.add("achievementId=$it") }
+        return if (params.isEmpty()) "social" else "social?${params.joinToString("&")}"
+    }
+
+    private fun buildCustomRoute(destination: NavigationDestination.Custom): String {
+        val params = destination.params.entries.joinToString("&") { "${it.key}=${it.value}" }
+        return if (params.isEmpty()) destination.route else "${destination.route}?$params"
+    }
+
+    private fun buildBackRoute(destination: NavigationDestination.Back): String {
+        return destination.destination
     }
 
     /**

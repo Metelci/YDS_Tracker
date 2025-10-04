@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,6 +82,7 @@ import com.mtlc.studyplan.data.MurphyBook
 import com.mtlc.studyplan.data.MurphyUnit
 import com.mtlc.studyplan.data.PlanDataSource
 import com.mtlc.studyplan.data.PlanTaskLocalizer
+import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.TaskPriority
 import com.mtlc.studyplan.data.TaskRepository
@@ -89,16 +91,367 @@ import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+// Pagination support for large datasets
+data class TaskListState(
+    val currentPage: Int = 0,
+    val pageSize: Int = 20,
+    val isLoading: Boolean = false,
+    val hasMorePages: Boolean = true,
+    val totalCount: Int = 0
+)
+
+// Background data processing for heavy operations
+class BackgroundTaskProcessor(
+    private val taskRepository: TaskRepository
+) {
+    private val processingScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    fun processLargeDatasetAsync(
+        operation: suspend () -> Unit,
+        onProgress: (String) -> Unit = {},
+        onComplete: (Result<Unit>) -> Unit = {}
+    ) {
+        processingScope.launch {
+            try {
+                withContext(Dispatchers.Main) {
+                    onProgress("Starting background processing...")
+                }
+
+                operation()
+
+                withContext(Dispatchers.Main) {
+                    onProgress("Processing completed")
+                    onComplete(Result.success(Unit))
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onProgress("Processing failed: ${e.message}")
+                    onComplete(Result.failure(e))
+                }
+            }
+        }
+    }
+
+    suspend fun cleanupOldData(olderThanDays: Int = 90): Int {
+        return withContext(Dispatchers.IO) {
+            // Simulate cleanup of old completed tasks
+            val cutoffTime = System.currentTimeMillis() - (olderThanDays * 24 * 60 * 60 * 1000L)
+
+            // In a real implementation, this would archive or delete old data
+            // For now, just return a simulated count
+            val oldTasksCount = taskRepository.getAllTasksSync()
+                .filter { it.completedAt != null && it.completedAt!! < cutoffTime }
+                .size
+
+            // Simulate processing time for large datasets
+            delay(minOf(oldTasksCount * 10L, 5000L))
+
+            oldTasksCount
+        }
+    }
+
+    suspend fun compressTaskHistory(): Int {
+        return withContext(Dispatchers.IO) {
+            // Simulate data compression for archived tasks
+            val completedTasks = taskRepository.getAllTasksSync()
+                .filter { it.isCompleted }
+
+            // Simulate compression processing
+            delay(minOf(completedTasks.size * 5L, 3000L))
+
+            completedTasks.size
+        }
+    }
+
+    fun shutdown() {
+        processingScope.cancel()
+    }
+
+    // Integration with data compression
+    suspend fun compressStudyHistory(
+        studyHistoryCompressor: StudySessionCompressor,
+        sessions: List<CompressedStudySession>,
+        archiveKey: String
+    ): StudySessionCompressor.CompressionResult = withContext(Dispatchers.IO) {
+        val startDate = sessions.minOfOrNull { it.date } ?: 0L
+        val endDate = sessions.maxOfOrNull { it.date } ?: 0L
+
+        studyHistoryCompressor.compressAndStore(archiveKey, sessions, startDate, endDate)
+    }
+}
+
+// Memory-efficient data structures for study history
+data class CompressedStudySession(
+    val sessionId: String,
+    val date: Long, // Timestamp
+    val duration: Int, // Minutes
+    val tasksCompleted: Int,
+    val pointsEarned: Int,
+    val bookProgress: Map<String, Int>, // Book -> pages read
+    val flags: Int = 0 // Bit flags for boolean properties
+) {
+    companion object {
+        // Bit flag constants
+        const val FLAG_EARLY_MORNING = 1
+        const val FLAG_WEEKEND = 2
+        const val FLAG_STUDY_STREAK = 4
+        const val FLAG_HIGH_PRODUCTIVITY = 8
+    }
+
+    fun isEarlyMorning(): Boolean = (flags and FLAG_EARLY_MORNING) != 0
+    fun isWeekend(): Boolean = (flags and FLAG_WEEKEND) != 0
+    fun isStudyStreak(): Boolean = (flags and FLAG_STUDY_STREAK) != 0
+    fun isHighProductivity(): Boolean = (flags and FLAG_HIGH_PRODUCTIVITY) != 0
+}
+
+class StudyHistoryCompressor {
+    private val compressedSessions = mutableListOf<CompressedStudySession>()
+    private val sessionCache = mutableMapOf<String, CompressedStudySession>()
+
+    fun compressSession(
+        sessionId: String,
+        date: Long,
+        duration: Int,
+        tasksCompleted: Int,
+        pointsEarned: Int,
+        bookProgress: Map<String, Int>,
+        isEarlyMorning: Boolean = false,
+        isWeekend: Boolean = false,
+        isStudyStreak: Boolean = false,
+        isHighProductivity: Boolean = false
+    ): CompressedStudySession {
+        var flags = 0
+        if (isEarlyMorning) flags = flags or CompressedStudySession.FLAG_EARLY_MORNING
+        if (isWeekend) flags = flags or CompressedStudySession.FLAG_WEEKEND
+        if (isStudyStreak) flags = flags or CompressedStudySession.FLAG_STUDY_STREAK
+        if (isHighProductivity) flags = flags or CompressedStudySession.FLAG_HIGH_PRODUCTIVITY
+
+        val compressed = CompressedStudySession(
+            sessionId = sessionId,
+            date = date,
+            duration = duration,
+            tasksCompleted = tasksCompleted,
+            pointsEarned = pointsEarned,
+            bookProgress = bookProgress,
+            flags = flags
+        )
+
+        compressedSessions.add(compressed)
+        sessionCache[sessionId] = compressed
+
+        return compressed
+    }
+
+    fun getSession(sessionId: String): CompressedStudySession? {
+        return sessionCache[sessionId]
+    }
+
+    fun getSessionsInDateRange(startDate: Long, endDate: Long): List<CompressedStudySession> {
+        return compressedSessions.filter { it.date in startDate..endDate }
+    }
+
+    fun getTotalStats(): StudyStats {
+        if (compressedSessions.isEmpty()) return StudyStats()
+
+        val totalDuration = compressedSessions.sumOf { it.duration }
+        val totalTasks = compressedSessions.sumOf { it.tasksCompleted }
+        val totalPoints = compressedSessions.sumOf { it.pointsEarned }
+        val earlyMorningSessions = compressedSessions.count { it.isEarlyMorning() }
+        val weekendSessions = compressedSessions.count { it.isWeekend() }
+        val streakSessions = compressedSessions.count { it.isStudyStreak() }
+
+        return StudyStats(
+            totalSessions = compressedSessions.size,
+            totalDuration = totalDuration,
+            totalTasksCompleted = totalTasks,
+            totalPointsEarned = totalPoints,
+            earlyMorningSessions = earlyMorningSessions,
+            weekendSessions = weekendSessions,
+            streakSessions = streakSessions,
+            averageSessionDuration = if (compressedSessions.isNotEmpty()) totalDuration / compressedSessions.size else 0,
+            averageTasksPerSession = if (compressedSessions.isNotEmpty()) totalTasks / compressedSessions.size else 0
+        )
+    }
+
+    fun clearOldSessions(olderThanDays: Int) {
+        val cutoffTime = System.currentTimeMillis() - (olderThanDays * 24 * 60 * 60 * 1000L)
+        compressedSessions.removeAll { it.date < cutoffTime }
+        sessionCache.clear()
+        // Rebuild cache with remaining sessions
+        compressedSessions.forEach { sessionCache[it.sessionId] = it }
+    }
+
+    fun getMemoryUsage(): Int {
+        // Rough estimation of memory usage in bytes
+        return compressedSessions.size * 100 // ~100 bytes per compressed session
+    }
+}
+
+data class StudyStats(
+    val totalSessions: Int = 0,
+    val totalDuration: Int = 0, // minutes
+    val totalTasksCompleted: Int = 0,
+    val totalPointsEarned: Int = 0,
+    val earlyMorningSessions: Int = 0,
+    val weekendSessions: Int = 0,
+    val streakSessions: Int = 0,
+    val averageSessionDuration: Int = 0,
+    val averageTasksPerSession: Int = 0
+)
+
+// Data compression for archived study sessions
+class StudySessionCompressor {
+    private val compressedData = mutableMapOf<String, ByteArray>()
+    private val metadata = mutableMapOf<String, CompressionMetadata>()
+
+    data class CompressionMetadata(
+        val originalSize: Int,
+        val compressedSize: Int,
+        val compressionRatio: Float,
+        val compressionDate: Long,
+        val dataRange: LongRange
+    )
+
+    fun compressAndStore(
+        key: String,
+        sessions: List<CompressedStudySession>,
+        startDate: Long,
+        endDate: Long
+    ): CompressionResult {
+        val originalData = sessions.toJsonString()
+        val compressedData = compressData(originalData)
+
+        val metadata = CompressionMetadata(
+            originalSize = originalData.length,
+            compressedSize = compressedData.size,
+            compressionRatio = compressedData.size.toFloat() / originalData.length,
+            compressionDate = System.currentTimeMillis(),
+            dataRange = startDate..endDate
+        )
+
+        this.compressedData[key] = compressedData
+        this.metadata[key] = metadata
+
+        return CompressionResult(
+            key = key,
+            originalSize = originalData.length,
+            compressedSize = compressedData.size,
+            compressionRatio = metadata.compressionRatio,
+            success = true
+        )
+    }
+
+    fun decompress(key: String): List<CompressedStudySession>? {
+        val compressed = compressedData[key] ?: return null
+        val decompressed = decompressData(compressed)
+        return decompressed.fromJsonString()
+    }
+
+    fun getCompressionStats(): CompressionStats {
+        val totalOriginal = metadata.values.sumOf { it.originalSize }
+        val totalCompressed = metadata.values.sumOf { it.compressedSize }
+        val averageRatio = if (metadata.isNotEmpty()) {
+            metadata.values.map { it.compressionRatio }.average().toFloat()
+        } else 0f
+
+        return CompressionStats(
+            totalArchives = metadata.size,
+            totalOriginalSize = totalOriginal,
+            totalCompressedSize = totalCompressed,
+            averageCompressionRatio = averageRatio,
+            spaceSaved = totalOriginal - totalCompressed
+        )
+    }
+
+    fun cleanupOldArchives(olderThanDays: Int) {
+        val cutoffTime = System.currentTimeMillis() - (olderThanDays * 24 * 60 * 60 * 1000L)
+        val keysToRemove = metadata.filter { it.value.compressionDate < cutoffTime }.keys
+        keysToRemove.forEach { key ->
+            compressedData.remove(key)
+            metadata.remove(key)
+        }
+    }
+
+    // Simple compression simulation (in real implementation, use GZIP or similar)
+    private fun compressData(data: String): ByteArray {
+        // Simulate compression by removing whitespace and using shorter representations
+        val compressed = data
+            .replace("\\s+".toRegex(), " ")
+            .replace("{\"", "{")
+            .replace("\":", ":")
+            .replace(",\"", ",")
+        return compressed.toByteArray(Charsets.UTF_8)
+    }
+
+    private fun decompressData(data: ByteArray): String {
+        return String(data, Charsets.UTF_8)
+    }
+
+    // JSON serialization helpers (simplified)
+    private fun List<CompressedStudySession>.toJsonString(): String {
+        return this.joinToString(",", "[", "]") { session ->
+            "{\"id\":\"${session.sessionId}\",\"date\":${session.date},\"duration\":${session.duration},\"tasks\":${session.tasksCompleted},\"points\":${session.pointsEarned},\"flags\":${session.flags}}"
+        }
+    }
+
+    private fun String.fromJsonString(): List<CompressedStudySession> {
+        if (this.isEmpty() || this == "[]") return emptyList()
+        val jsonArray = this.removeSurrounding("[", "]")
+        if (jsonArray.isEmpty()) return emptyList()
+
+        return jsonArray.split("},{").map { item ->
+            val cleanItem = item.removeSurrounding("{", "}")
+            val fields = cleanItem.split(",").associate {
+                val (key, value) = it.split(":", limit = 2)
+                key.removeSurrounding("\"") to value
+            }
+
+            CompressedStudySession(
+                sessionId = fields["id"] ?: "",
+                date = fields["date"]?.toLong() ?: 0L,
+                duration = fields["duration"]?.toInt() ?: 0,
+                tasksCompleted = fields["tasks"]?.toInt() ?: 0,
+                pointsEarned = fields["points"]?.toInt() ?: 0,
+                bookProgress = emptyMap(),
+                flags = fields["flags"]?.toInt() ?: 0
+            )
+        }
+    }
+
+    data class CompressionResult(
+        val key: String,
+        val originalSize: Int,
+        val compressedSize: Int,
+        val compressionRatio: Float,
+        val success: Boolean
+    )
+
+    data class CompressionStats(
+        val totalArchives: Int,
+        val totalOriginalSize: Int,
+        val totalCompressedSize: Int,
+        val averageCompressionRatio: Float,
+        val spaceSaved: Int
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkingTasksScreen(
     appIntegrationManager: AppIntegrationManager,
-    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    studyProgressRepository: StudyProgressRepository,
     taskRepository: TaskRepository,
     sharedViewModel: SharedAppViewModel,
     onNavigateToStudyPlan: () -> Unit = {},
@@ -109,9 +462,10 @@ fun WorkingTasksScreen(
         onNavigateToStudyPlan = onNavigateToStudyPlan
     )
 
-    WorkingTasksScreenContent(
+    workingTasksScreenContent(
         screenState = screenState,
         appIntegrationManager = appIntegrationManager,
+        studyProgressRepository = studyProgressRepository,
         taskRepository = taskRepository,
         sharedViewModel = sharedViewModel,
         modifier = modifier
@@ -120,7 +474,7 @@ fun WorkingTasksScreen(
 
 @Composable
 private fun rememberWorkingTasksScreenState(
-    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    studyProgressRepository: StudyProgressRepository,
     onNavigateToStudyPlan: () -> Unit
 ): WorkingTasksScreenState {
     val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
@@ -174,9 +528,10 @@ data class WorkingTasksScreenState(
 )
 
 @Composable
-private fun WorkingTasksScreenContent(
+private fun workingTasksScreenContent(
     screenState: WorkingTasksScreenState,
     appIntegrationManager: AppIntegrationManager,
+    studyProgressRepository: StudyProgressRepository,
     taskRepository: TaskRepository,
     sharedViewModel: SharedAppViewModel,
     modifier: Modifier = Modifier
@@ -419,7 +774,7 @@ private fun TasksGradientTopBar(
 private fun WeeklyTab(
     thisWeek: WeekPlan?,
     currentWeek: Int,
-    studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository,
+    studyProgressRepository: StudyProgressRepository,
     onNavigateToPlan: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {}
 ) {
@@ -1901,6 +2256,250 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
         completionPercentage = if (dayIndex < 3) 100 else if (dayIndex < 5) 50 else 0,
         notes = notes
     )
+}
+
+// Paginated Task List Component for Large Datasets
+@Composable
+fun PaginatedTaskList(
+    taskRepository: TaskRepository,
+    modifier: Modifier = Modifier,
+    pageSize: Int = 20,
+    showCompletedTasks: Boolean = true
+) {
+    var taskListState by remember { mutableStateOf(TaskListState(pageSize = pageSize)) }
+    var currentTasks by remember { mutableStateOf<List<Task>>(emptyList()) }
+    val scope = rememberCoroutineScope()
+
+    // Load initial page
+    LaunchedEffect(taskListState.currentPage, showCompletedTasks) {
+        taskListState = taskListState.copy(isLoading = true)
+        try {
+            val result = if (showCompletedTasks) {
+                taskRepository.getCompletedTasksPaginated(taskListState.currentPage, pageSize)
+            } else {
+                taskRepository.getPendingTasksPaginated(taskListState.currentPage, pageSize)
+            }
+
+            currentTasks = result.tasks
+            taskListState = taskListState.copy(
+                isLoading = false,
+                hasMorePages = result.hasNextPage,
+                totalCount = result.totalCount
+            )
+        } catch (e: Exception) {
+            taskListState = taskListState.copy(isLoading = false)
+        }
+    }
+
+    Column(modifier = modifier.fillMaxSize()) {
+        // Header with pagination info
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "${if (showCompletedTasks) "Completed" else "Pending"} Tasks (${taskListState.totalCount})",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            if (taskListState.totalCount > pageSize) {
+                Text(
+                    text = "Page ${taskListState.currentPage + 1}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // Task list
+        if (taskListState.isLoading && currentTasks.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (currentTasks.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No ${if (showCompletedTasks) "completed" else "pending"} tasks found",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(currentTasks) { task ->
+                    TaskListItem(task = task)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                // Loading indicator for next page
+                if (taskListState.isLoading && currentTasks.isNotEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Pagination controls
+        if (taskListState.totalCount > pageSize) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        if (taskListState.currentPage > 0) {
+                            taskListState = taskListState.copy(currentPage = taskListState.currentPage - 1)
+                        }
+                    },
+                    enabled = taskListState.currentPage > 0 && !taskListState.isLoading,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Previous")
+                }
+
+                Text(
+                    text = "${taskListState.currentPage + 1} / ${maxOf(1, (taskListState.totalCount + pageSize - 1) / pageSize)}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                OutlinedButton(
+                    onClick = {
+                        if (taskListState.hasMorePages) {
+                            taskListState = taskListState.copy(currentPage = taskListState.currentPage + 1)
+                        }
+                    },
+                    enabled = taskListState.hasMorePages && !taskListState.isLoading,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Next")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TaskListItem(task: Task) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (task.isCompleted) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Completion indicator
+            Surface(
+                shape = CircleShape,
+                color = if (task.isCompleted) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+                modifier = Modifier.size(24.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    if (task.isCompleted) {
+                        Icon(
+                            Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Task content
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                if (task.description.isNotEmpty()) {
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // Task metadata
+                Row(
+                    modifier = Modifier.padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = task.category,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (task.estimatedMinutes > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${task.estimatedMinutes}min",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (task.pointsValue > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${task.pointsValue}pts",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
