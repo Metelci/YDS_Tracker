@@ -37,8 +37,6 @@ class AppIntegrationManager(
     val migrationIntegration = MigrationIntegration(context, settingsRepository, feedbackManager)
 
     // Edge case handling
-    val edgeCaseHandler = com.mtlc.studyplan.settings.resilience.EdgeCaseHandler(context, settingsRepository, feedbackManager)
-
     data class AppState(
         val themeState: ThemeIntegration.ThemeState,
         val notificationState: NotificationIntegration.NotificationState,

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.accessibility.FontScalingManager
 import com.mtlc.studyplan.accessibility.FocusIndicatorManager
-import com.mtlc.studyplan.settings.backup.SettingsBackupManager
+
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.security.SettingsEncryption
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
@@ -40,10 +40,6 @@ class SettingsDependencyInjection private constructor(
 
     // Search removed from settings page
 
-    // Backup dependencies
-    private val settingsBackupManager: SettingsBackupManager by lazy {
-        SettingsBackupManager(context, settingsRepository)
-    }
 
     // Deep linking dependencies removed - SettingsDeepLinkHandler was legacy code
 
@@ -61,7 +57,6 @@ class SettingsDependencyInjection private constructor(
     fun createCompositeSettingsViewModelFactory(): CompositeSettingsViewModelFactory {
         return CompositeSettingsViewModelFactory(
             settingsRepository = settingsRepository,
-            backupManager = settingsBackupManager,
             accessibilityManager = accessibilityManager,
             performanceMonitor = settingsPerformanceMonitor,
             animationCoordinator = settingsAnimationCoordinator
@@ -75,17 +70,7 @@ class SettingsDependencyInjection private constructor(
 
     // Search ViewModel factory removed
 
-    fun getBackupViewModelFactory(): CompositeSettingsBackupViewModelFactory {
-        return CompositeSettingsBackupViewModelFactory(
-            backupManager = settingsBackupManager,
-            accessibilityManager = accessibilityManager,
-            animationCoordinator = settingsAnimationCoordinator
-        )
-    }
 
-    fun getConflictResolutionViewModelFactory(): ConflictResolutionViewModelFactory {
-        return ConflictResolutionViewModelFactory(context)
-    }
 
     fun getAdvancedToggleViewModelFactory(): AdvancedToggleViewModelFactory {
         return AdvancedToggleViewModelFactory(
@@ -132,4 +117,5 @@ class SettingsDependencyInjection private constructor(
 fun Context.getSettingsDependencies(): SettingsDependencyInjection {
     return SettingsDependencyInjection.getInstance(this)
 }
+
 

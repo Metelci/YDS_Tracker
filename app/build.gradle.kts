@@ -102,6 +102,17 @@ android {
         disable.add("AutoboxingStateCreation")
     }
 
+    // Ensure unit tests do not try to compile data binding generated sources
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = false
+            isReturnDefaultValues = true
+        }
+    }
+
+    // Exclude data binding generated sources from unit test compilation via test task configuration
+    // (sourceSets.exclude is not supported this way in AGP 8 Kotlin DSL)
+
     // Fix Gradle 9.0 compatibility warnings
     configurations.all {
         if (name.contains("RuntimeClasspathCopy")) {
@@ -252,16 +263,16 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         "**/generated/**"
     )
 
-    val debugTree = fileTree("${project.buildDir}/intermediates/javac/debug/classes") {
+    val debugTree = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes").get().asFile) {
         exclude(fileFilter)
     }
-    val kotlinDebugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+    val kotlinDebugTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug").get().asFile) {
         exclude(fileFilter)
     }
 
     classDirectories.setFrom(files(debugTree, kotlinDebugTree))
     sourceDirectories.setFrom(files("${project.projectDir}/src/main/java", "${project.projectDir}/src/main/kotlin"))
-    executionData.setFrom(fileTree(project.buildDir) {
+    executionData.setFrom(fileTree(layout.buildDirectory.get().asFile) {
         include("**/*.exec", "**/*.ec")
     })
 }
@@ -287,14 +298,17 @@ tasks.register("jacocoTestCoverageVerification", JacocoCoverageVerification::cla
     )
 
     classDirectories.setFrom(files(
-        fileTree("${project.buildDir}/intermediates/javac/debug/classes") {
+        fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes").get().asFile) {
             exclude(fileFilter)
         },
-        fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+        fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes").get().asFile) {
             exclude(fileFilter)
         }
     ))
 }
+
+
+
 
 
 

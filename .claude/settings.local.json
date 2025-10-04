@@ -5,7 +5,8 @@
       "Bash(paste:*)",
       "Bash(while read f)",
       "Bash(do echo \"=== $f ===\")",
-      "Bash(Select-Object -Last 100)"
+      "Bash(Select-Object -Last 100)",
+      "Bash(code:*)"
     ],
     "deny": [],
     "ask": []

@@ -17,8 +17,6 @@
     <ID>CyclomaticComplexMethod:DeviceCompatibilityUtils.kt$@Composable fun adaptiveComponentSizing(): AdaptiveComponentSizing</ID>
     <ID>CyclomaticComplexMethod:DeviceCompatibilityUtils.kt$@Composable fun rememberDensityAwareScaling(): DensityAwareScaling</ID>
     <ID>CyclomaticComplexMethod:DeviceCompatibilityUtils.kt$private fun determineVisualAdjustments(density: Float, deviceProfile: DeviceProfile): VisualAdjustments</ID>
-    <ID>CyclomaticComplexMethod:EdgeCaseHandler.kt$EdgeCaseHandler$private suspend fun repairDataIntegrityIssues(issues: List&lt;String&gt;)</ID>
-    <ID>CyclomaticComplexMethod:EdgeCaseHandler.kt$EdgeCaseHandler$suspend fun resolveSyncConflicts(conflicts: List&lt;SyncConflict&gt;): ConflictResolutionResult</ID>
     <ID>CyclomaticComplexMethod:EventBus.kt$EventTypeMatcher$@Suppress("UNCHECKED_CAST") // Required for KClass matching - consolidated suppression point fun &lt;T : Event&gt; matchSingle(event: Event, targetType: KClass&lt;T&gt;): T?</ID>
     <ID>CyclomaticComplexMethod:EventBus.kt$EventTypeMatcher$@Suppress("UNCHECKED_CAST") // Required for KClass matching - this is the fundamental limitation we're consolidating fun &lt;T : Event&gt; filterEvents(events: Flow&lt;Event&gt;, targetType: KClass&lt;T&gt;): Flow&lt;T&gt;</ID>
     <ID>CyclomaticComplexMethod:ExamDetailsScreen.kt$@Composable private fun ExamInfoCardWithAction( title: String, icon: ImageVector, examSession: YdsExamService.YdsExamSession, daysRemaining: Int, content: @Composable () -&gt; Unit )</ID>
@@ -59,17 +57,6 @@
     <ID>ForbiddenComment:AppNavHost.kt$// TODO: Implement PlanScreen or use TodayScreen as placeholder</ID>
     <ID>ForbiddenComment:BackupSettingsViewModel.kt$BackupSettingsViewModel$// TODO: Apply conflict resolution</ID>
     <ID>ForbiddenComment:BackupSettingsViewModel.kt$BackupSettingsViewModel$// TODO: Implement disable auto sync</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Apply changes to local repository</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement Dropbox configuration</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement Google Drive configuration</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement conflict detection</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement conflict resolution</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement download logic</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement iCloud configuration</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement provider detection</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Implement upload logic</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Schedule periodic sync</ID>
-    <ID>ForbiddenComment:CloudSyncManager.kt$CloudSyncManager$// TODO: Use WorkManager for periodic sync</ID>
     <ID>ForbiddenComment:ConflictResolutionAdapter.kt$ConflictResolutionAdapter$* Adapter for displaying setting conflicts with resolution options * TODO: Implement proper conflict resolution UI</ID>
     <ID>ForbiddenComment:OptimizedSettingsAdapter.kt$OptimizedSettingsAdapter.SelectionViewHolder$// TODO: Implement optimized selection dialog</ID>
     <ID>ForbiddenComment:SettingsActivity.kt$SettingsActivity$// TODO: SettingsDetailFragment removed (legacy Fragment approach)</ID>
@@ -513,7 +500,6 @@
     <ID>LongMethod:AwardsTab.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun AwardsTab( awards: List&lt;Award&gt;, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:CalendarWorker.kt$CalendarWorker$override suspend fun doWork(): Result</ID>
     <ID>LongMethod:CompleteMurphyBookData.kt$CompleteMurphyBookData$private fun generateRedBookUnits(): List&lt;MurphyUnit&gt;</ID>
-    <ID>LongMethod:EdgeCaseHandler.kt$EdgeCaseHandler$suspend fun resolveSyncConflicts(conflicts: List&lt;SyncConflict&gt;): ConflictResolutionResult</ID>
     <ID>LongMethod:EnhancedAppIntegrationManager.kt$EnhancedAppIntegrationManager$private fun combineAllStates()</ID>
     <ID>LongMethod:EnhancedSettingsComponents.kt$@Composable fun EnhancedSelectionButton( text: String, isSelected: Boolean, onClick: () -&gt; Unit, enabled: Boolean = true )</ID>
     <ID>LongMethod:EnhancedSettingsComponents.kt$@Composable fun EnhancedSlider( value: Float, onValueChange: (Float) -&gt; Unit, valueRange: ClosedFloatingPointRange&lt;Float&gt; = 0f..1f, steps: Int = 0, label: String? = null, valueFormatter: (Float) -&gt; String = { "%.1f".format(it) }, enabled: Boolean = true )</ID>
@@ -778,18 +764,6 @@
     <ID>MaxLineLength:DataConsistencyManager.kt$DataConsistencyManager$Log.w("DataConsistency", "Cannot auto-fix stats mismatch without LocalRepository implementation")</ID>
     <ID>MaxLineLength:DataModels.kt$Achievement</ID>
     <ID>MaxLineLength:DataModels.kt$ExamInfo</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$else -&gt; throw IllegalArgumentException("Unsupported value type: ${conflict.remoteValue::class.simpleName}")</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$else -&gt; throw IllegalArgumentException("Unsupported value type: ${defaultValue::class.simpleName}")</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$feedbackManager.showError("Failed to sync ${operation.settingKey} after ${MAX_RETRY_ATTEMPTS} attempts")</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Boolean -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(conflict.settingKey, conflict.remoteValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Boolean -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(settingKey, defaultValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Float -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateFloat(conflict.settingKey, conflict.remoteValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Float -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateFloat(settingKey, defaultValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Int -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateInt(conflict.settingKey, conflict.remoteValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is Int -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateInt(settingKey, defaultValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is String -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(conflict.settingKey, conflict.remoteValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$is String -&gt; settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(settingKey, defaultValue))</ID>
-    <ID>MaxLineLength:EdgeCaseHandler.kt$EdgeCaseHandler$lastSuccessfulSync = if (successCount &gt; 0) System.currentTimeMillis() else _appState.value.lastSuccessfulSync</ID>
     <ID>MaxLineLength:EnhancedAppIntegrationManager.kt$EnhancedAppIntegrationManager$"achievements" -&gt; currentState.copy(achievementState = currentState.achievementState.copy(isLoading = isLoading))</ID>
     <ID>MaxLineLength:EnhancedAppIntegrationManager.kt$EnhancedAppIntegrationManager$combine</ID>
     <ID>MaxLineLength:EnhancedSettingsScreen.kt$settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Accessibility.HIGH_CONTRAST_MODE, it))</ID>
@@ -1116,9 +1090,6 @@
     <ID>MaxLineLength:models.kt$const</ID>
     <ID>MemberNameEqualsClassName:NotificationManager.kt$NotificationManager$private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager</ID>
     <ID>NestedBlockDepth:DataConsistencyManager.kt$DataConsistencyManager$private suspend fun fixDataInconsistencies(inconsistencies: List&lt;DataInconsistency&gt;): List&lt;FixResult&gt;</ID>
-    <ID>NestedBlockDepth:EdgeCaseHandler.kt$EdgeCaseHandler$private suspend fun performDataIntegrityCheck()</ID>
-    <ID>NestedBlockDepth:EdgeCaseHandler.kt$EdgeCaseHandler$private suspend fun repairDataIntegrityIssues(issues: List&lt;String&gt;)</ID>
-    <ID>NestedBlockDepth:EdgeCaseHandler.kt$EdgeCaseHandler$suspend fun resolveSyncConflicts(conflicts: List&lt;SyncConflict&gt;): ConflictResolutionResult</ID>
     <ID>NestedBlockDepth:NetworkSecurityManager.kt$NetworkSecurityManager$suspend fun downloadSecureFile(url: String, destinationPath: String): Result&lt;Unit&gt;</ID>
     <ID>NestedBlockDepth:OfflineManager.kt$OfflineManager$suspend fun syncPendingActions(): Result&lt;SyncResult&gt;</ID>
     <ID>NestedBlockDepth:SecurityAndErrorCoordinator.kt$SecurityAndErrorCoordinator$suspend fun &lt;T&gt; executeSecureOperation( operation: String, block: suspend () -&gt; T ): SecureOperationResult&lt;T&gt;</ID>
@@ -1151,7 +1122,6 @@
     <ID>NewLineAtEndOfFile:CalendarSync.kt$com.mtlc.studyplan.calendar.CalendarSync.kt</ID>
     <ID>NewLineAtEndOfFile:CalendarWorker.kt$com.mtlc.studyplan.calendar.CalendarWorker.kt</ID>
     <ID>NewLineAtEndOfFile:CategorizedAchievementDataSource.kt$com.mtlc.studyplan.data.CategorizedAchievementDataSource.kt</ID>
-    <ID>NewLineAtEndOfFile:CloudSyncManager.kt$com.mtlc.studyplan.settings.sync.CloudSyncManager.kt</ID>
     <ID>NewLineAtEndOfFile:CompleteMurphyBookData.kt$com.mtlc.studyplan.data.CompleteMurphyBookData.kt</ID>
     <ID>NewLineAtEndOfFile:ComprehensiveResponsiveTest.kt$com.mtlc.studyplan.ComprehensiveResponsiveTest.kt</ID>
     <ID>NewLineAtEndOfFile:ConflictResolutionAdapter.kt$com.mtlc.studyplan.settings.ui.ConflictResolutionAdapter.kt</ID>
@@ -1270,7 +1240,6 @@
     <ID>ReturnCount:CompleteMurphyBookData.kt$CompleteMurphyBookData$fun getUnitsForWeekAndDay(week: Int, dayIndex: Int): List&lt;MurphyUnit&gt;</ID>
     <ID>ReturnCount:CompleteMurphyBookData.kt$CompleteMurphyBookData$fun parseMurphyTask(taskDetails: String?): MurphyTaskInfo?</ID>
     <ID>ReturnCount:DailyStudyReminderWorker.kt$DailyStudyReminderWorker$override suspend fun doWork(): Result</ID>
-    <ID>ReturnCount:EdgeCaseHandler.kt$EdgeCaseHandler$private fun isNetworkAvailable(): Boolean</ID>
     <ID>ReturnCount:ErrorRecovery.kt$ErrorRecoveryManager$private fun isNetworkAvailable(): Boolean</ID>
     <ID>ReturnCount:ErrorRecovery.kt$NetworkRecoveryStrategy$override suspend fun execute( error: AppError, originalOperation: suspend () -&gt; Unit, recoveryManager: ErrorRecoveryManager ): RecoveryResult</ID>
     <ID>ReturnCount:ImageProcessingUtils.kt$ImageProcessingUtils$@Suppress("DEPRECATION") private fun detectPrimaryFace(bitmap: Bitmap): FaceDetectionResult?</ID>
@@ -1307,7 +1276,6 @@
     <ID>SwallowedException:Converters.kt$Converters$e: IllegalArgumentException</ID>
     <ID>SwallowedException:DailyStudyReminderWorker.kt$DailyStudyReminderWorker$e: Exception</ID>
     <ID>SwallowedException:DataArchitectureValidator.kt$DataArchitectureValidator$e: Exception</ID>
-    <ID>SwallowedException:EdgeCaseHandler.kt$EdgeCaseHandler$e: Exception</ID>
     <ID>SwallowedException:ErrorHandler.kt$ErrorHandler$e: Exception</ID>
     <ID>SwallowedException:ErrorRecovery.kt$ErrorRecoveryManager$e: Exception</ID>
     <ID>SwallowedException:ExamCountdownManager.kt$ExamCountdownWorker$e: Exception</ID>
@@ -1347,7 +1315,6 @@
     <ID>SwallowedException:StudyPlanDatabase.kt$StudyPlanDatabase.Companion$e: Exception</ID>
     <ID>SwallowedException:ThemeManager.kt$ThemeManager$e: Exception</ID>
     <ID>ThrowsCount:DataArchitectureValidator.kt$DataArchitectureValidator$private suspend fun validateIntegrationManager()</ID>
-    <ID>ThrowsCount:EdgeCaseHandler.kt$EdgeCaseHandler$suspend fun resolveSyncConflicts(conflicts: List&lt;SyncConflict&gt;): ConflictResolutionResult</ID>
     <ID>ThrowsCount:SettingsEncryption.kt$SettingsEncryption$private fun validateAndExtractData(decryptedContent: String, encryptedData: EncryptedData): String</ID>
     <ID>ThrowsCount:SettingsRepository.kt$SettingsRepository$suspend fun updateGamificationSetting(id: String, value: Any)</ID>
     <ID>ThrowsCount:SettingsRepository.kt$SettingsRepository$suspend fun updateNotificationSetting(id: String, value: Any)</ID>
@@ -1367,11 +1334,9 @@
     <ID>TooGenericExceptionCaught:CalendarSync.kt$CalendarSync$e: Exception</ID>
     <ID>TooGenericExceptionCaught:CalendarWorker.kt$CalendarWorker$e: Exception</ID>
     <ID>TooGenericExceptionCaught:CalendarWorker.kt$CalendarWorkerManager$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:CloudSyncManager.kt$CloudSyncManager$exception: Exception</ID>
     <ID>TooGenericExceptionCaught:DailyStudyReminderWorker.kt$DailyStudyReminderWorker$e: Exception</ID>
     <ID>TooGenericExceptionCaught:DataArchitectureValidator.kt$DataArchitectureValidator$e: Exception</ID>
     <ID>TooGenericExceptionCaught:DataConsistencyManager.kt$DataConsistencyManager$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:EdgeCaseHandler.kt$EdgeCaseHandler$e: Exception</ID>
     <ID>TooGenericExceptionCaught:EnhancedAppIntegrationManager.kt$EnhancedAppIntegrationManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ErrorAnalytics.kt$ErrorAnalytics$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ErrorHandler.kt$ErrorHandler$e: Exception</ID>
@@ -1463,9 +1428,7 @@
     <ID>TooManyFunctions:AppIntegrationManager.kt$AppIntegrationManager</ID>
     <ID>TooManyFunctions:AuthenticationManager.kt$AuthenticationManager</ID>
     <ID>TooManyFunctions:BackupSettingsViewModel.kt$BackupSettingsViewModel : ViewModel</ID>
-    <ID>TooManyFunctions:CloudSyncManager.kt$CloudSyncManager</ID>
     <ID>TooManyFunctions:DataFormatters.kt$DataFormatters</ID>
-    <ID>TooManyFunctions:EdgeCaseHandler.kt$EdgeCaseHandler</ID>
     <ID>TooManyFunctions:EnhancedAppIntegrationManager.kt$EnhancedAppIntegrationManager</ID>
     <ID>TooManyFunctions:ErrorAnalytics.kt$ErrorAnalytics</ID>
     <ID>TooManyFunctions:ErrorRecovery.kt$ErrorRecoveryManager</ID>

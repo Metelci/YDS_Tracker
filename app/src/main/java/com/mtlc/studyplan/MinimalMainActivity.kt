@@ -38,7 +38,7 @@ class MinimalMainActivity : ComponentActivity() {
             val themeManager = remember { ThemeManager(context) }
             val sharedViewModel = remember { SharedAppViewModel(application) }
 
-            StudyPlanTheme {
+            StudyPlanTheme(themeManager) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

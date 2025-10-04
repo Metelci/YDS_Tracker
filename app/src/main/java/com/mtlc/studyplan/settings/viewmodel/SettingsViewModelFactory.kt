@@ -4,14 +4,12 @@ import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.core.ViewModelFactory
-import com.mtlc.studyplan.settings.backup.SettingsBackupManager
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 
 class CompositeSettingsViewModelFactory(
     private val settingsRepository: SettingsRepository,
-    private val backupManager: SettingsBackupManager,
     private val accessibilityManager: AccessibilityManager,
     private val performanceMonitor: SettingsPerformanceMonitor,
     private val animationCoordinator: SettingsAnimationCoordinator
@@ -23,14 +21,6 @@ class CompositeSettingsViewModelFactory(
                 @Suppress("UNCHECKED_CAST")
                 MainSettingsViewModel(
                     settingsRepository,
-                    accessibilityManager,
-                    animationCoordinator
-                ) as T
-            }
-            modelClass.isAssignableFrom(SettingsBackupViewModel::class.java) -> {
-                @Suppress("UNCHECKED_CAST")
-                SettingsBackupViewModel(
-                    backupManager,
                     accessibilityManager,
                     animationCoordinator
                 ) as T
@@ -64,23 +54,6 @@ class CompositeSettingsViewModelFactory(
 }
 
 // Search ViewModel factory removed (search feature not present)
-
-class CompositeSettingsBackupViewModelFactory(
-    private val backupManager: SettingsBackupManager,
-    private val accessibilityManager: AccessibilityManager,
-    private val animationCoordinator: SettingsAnimationCoordinator
-) : ViewModelFactory<SettingsBackupViewModel>({
-    SettingsBackupViewModel(backupManager, accessibilityManager, animationCoordinator)
-})
-
-class ConflictResolutionViewModelFactory(
-    private val context: Context
-) : ViewModelProvider.Factory {
-
-    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
 
 class AdvancedToggleViewModelFactory(
     private val settingsRepository: SettingsRepository,
@@ -125,3 +98,6 @@ class PrivacySettingsViewModelFactory(
 ) : ViewModelFactory<PrivacySettingsViewModel>({
     PrivacySettingsViewModel(settingsRepository, context)
 })
+
+
+

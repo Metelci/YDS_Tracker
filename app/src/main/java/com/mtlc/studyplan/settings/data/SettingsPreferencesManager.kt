@@ -36,7 +36,6 @@ class SettingsPreferencesManager(context: Context) {
     fun updatePrivacySettings(settings: PrivacySettings) {
         with(prefs.edit()) {
             putString(KEY_PROFILE_VISIBILITY, settings.profileVisibility.name)
-            putBoolean(KEY_ANONYMOUS_ANALYTICS, settings.anonymousAnalytics)
             putBoolean(KEY_PROGRESS_SHARING, settings.progressSharing)
             apply()
         }
@@ -48,7 +47,6 @@ class SettingsPreferencesManager(context: Context) {
             profileVisibility = ProfileVisibility.valueOf(
                 prefs.getString(KEY_PROFILE_VISIBILITY, ProfileVisibility.FRIENDS_ONLY.name) ?: ProfileVisibility.FRIENDS_ONLY.name
             ),
-            anonymousAnalytics = prefs.getBoolean(KEY_ANONYMOUS_ANALYTICS, true),
             progressSharing = prefs.getBoolean(KEY_PROGRESS_SHARING, true)
         )
     }
@@ -157,7 +155,6 @@ class SettingsPreferencesManager(context: Context) {
 
         // Privacy keys
         private const val KEY_PROFILE_VISIBILITY = "profile_visibility"
-        private const val KEY_ANONYMOUS_ANALYTICS = "anonymous_analytics"
         private const val KEY_PROGRESS_SHARING = "progress_sharing"
 
         // Notification keys
@@ -192,7 +189,6 @@ class SettingsPreferencesManager(context: Context) {
 // Data classes for settings
 data class PrivacySettings(
     val profileVisibility: ProfileVisibility = ProfileVisibility.FRIENDS_ONLY,
-    val anonymousAnalytics: Boolean = true,
     val progressSharing: Boolean = true
 )
 

@@ -1,5 +1,5 @@
 package com.mtlc.studyplan.settings.ui
-
+import androidx.compose.ui.graphics.Brush
 import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -263,5 +263,6 @@ private fun SettingRowToggle(title: String, description: String, checked: Boolea
         Switch(checked = checked, onCheckedChange = onChecked)
     }
 }
+
 
 

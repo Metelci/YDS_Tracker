@@ -1,4 +1,5 @@
 package com.mtlc.studyplan.auth
+import androidx.compose.ui.graphics.Brush
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -211,3 +212,5 @@ private fun StatCard(stat: StatItem) {
         }
     }
 }
+
+

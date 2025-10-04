@@ -1593,8 +1593,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cloud_sync_title&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cloud_sync_title&quot;>Cloud Sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1604,8 +1602,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cloud_sync_description&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cloud_sync_description&quot;>Automatically sync settings across your devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1637,8 +1633,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;setup_cloud_sync&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;setup_cloud_sync&quot;>Setup Cloud Sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1648,8 +1642,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;sync_now&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;sync_now&quot;>Sync Now&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1692,8 +1684,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;last_sync_date&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;last_sync_date&quot;>Last sync: %s&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1703,8 +1693,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;never_synced&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;never_synced&quot;>Never synced&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1736,8 +1724,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cloud_sync_enabled&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cloud_sync_enabled&quot;>Cloud sync: Enabled&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1747,8 +1733,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cloud_sync_configured&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cloud_sync_configured&quot;>Cloud sync: Configured&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1758,8 +1742,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cloud_sync_not_configured&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cloud_sync_not_configured&quot;>Cloud sync: Not configured&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1769,8 +1751,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;auto_sync_enabled&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;auto_sync_enabled&quot;>Automatic sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1846,8 +1826,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;sync_success_format&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;sync_success_format&quot; formatted=&quot;false&quot;>Synced %d settings, resolved %d conflicts&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1901,8 +1879,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;choose_sync_provider&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;choose_sync_provider&quot;>Choose Cloud Provider&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1912,8 +1888,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;google_drive&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;google_drive&quot;>Google Drive&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1923,8 +1897,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;dropbox&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;dropbox&quot;>Dropbox&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -1934,8 +1906,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;provider_configuration_in_progress&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;provider_configuration_in_progress&quot;>Configuring cloud provider…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2264,8 +2234,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;error_sync_failed&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;error_sync_failed&quot;>Sync operation failed&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2462,8 +2430,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;progress_uploading&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;progress_uploading&quot;>Uploading to cloud…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2473,8 +2439,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;progress_downloading&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;progress_downloading&quot;>Downloading from cloud…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2737,8 +2701,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;cd_sync_button&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;cd_sync_button&quot;>Sync settings with cloud&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2836,8 +2798,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;feature_sync_title&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;feature_sync_title&quot;>Sync Across Devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -2847,8 +2807,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;feature_sync_description&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;feature_sync_description&quot;>Keep your settings synchronized on all your devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8398,8 +8356,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cloud_sync_title` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cloud_sync_title&quot;>Cloud Sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8409,8 +8365,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cloud_sync_description` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cloud_sync_description&quot;>Automatically sync settings across your devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8442,8 +8396,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.setup_cloud_sync` appears to be unused"
-        errorLine1="    &lt;string name=&quot;setup_cloud_sync&quot;>Setup Cloud Sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8453,8 +8405,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.sync_now` appears to be unused"
-        errorLine1="    &lt;string name=&quot;sync_now&quot;>Sync Now&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8497,8 +8447,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.last_sync_date` appears to be unused"
-        errorLine1="    &lt;string name=&quot;last_sync_date&quot;>Last sync: %s&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8508,8 +8456,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.never_synced` appears to be unused"
-        errorLine1="    &lt;string name=&quot;never_synced&quot;>Never synced&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8541,8 +8487,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cloud_sync_enabled` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cloud_sync_enabled&quot;>Cloud sync: Enabled&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8552,8 +8496,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cloud_sync_configured` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cloud_sync_configured&quot;>Cloud sync: Configured&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8563,8 +8505,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cloud_sync_not_configured` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cloud_sync_not_configured&quot;>Cloud sync: Not configured&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8574,8 +8514,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.auto_sync_enabled` appears to be unused"
-        errorLine1="    &lt;string name=&quot;auto_sync_enabled&quot;>Automatic sync&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8651,8 +8589,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.sync_success_format` appears to be unused"
-        errorLine1="    &lt;string name=&quot;sync_success_format&quot; formatted=&quot;false&quot;>Synced %d settings, resolved %d conflicts&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8706,8 +8642,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.choose_sync_provider` appears to be unused"
-        errorLine1="    &lt;string name=&quot;choose_sync_provider&quot;>Choose Cloud Provider&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8717,8 +8651,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.google_drive` appears to be unused"
-        errorLine1="    &lt;string name=&quot;google_drive&quot;>Google Drive&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8728,8 +8660,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.dropbox` appears to be unused"
-        errorLine1="    &lt;string name=&quot;dropbox&quot;>Dropbox&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -8739,8 +8669,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.provider_configuration_in_progress` appears to be unused"
-        errorLine1="    &lt;string name=&quot;provider_configuration_in_progress&quot;>Configuring cloud provider…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9069,8 +8997,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.error_sync_failed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;error_sync_failed&quot;>Sync operation failed&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9267,8 +9193,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.progress_uploading` appears to be unused"
-        errorLine1="    &lt;string name=&quot;progress_uploading&quot;>Uploading to cloud…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9278,8 +9202,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.progress_downloading` appears to be unused"
-        errorLine1="    &lt;string name=&quot;progress_downloading&quot;>Downloading from cloud…&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9542,8 +9464,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.cd_sync_button` appears to be unused"
-        errorLine1="    &lt;string name=&quot;cd_sync_button&quot;>Sync settings with cloud&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9641,8 +9561,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.feature_sync_title` appears to be unused"
-        errorLine1="    &lt;string name=&quot;feature_sync_title&quot;>Sync Across Devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
@@ -9652,8 +9570,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.feature_sync_description` appears to be unused"
-        errorLine1="    &lt;string name=&quot;feature_sync_description&quot;>Keep your settings synchronized on all your devices&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"

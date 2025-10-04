@@ -79,7 +79,7 @@ object SettingsDefaults {
         SettingsCategory(
             id = SettingsCategory.DATA_ID,
             title = "Data & Storage",
-            description = "Sync, backup, and storage settings",
+            description = "Backup and storage settings",
             icon = Icons.Default.Storage,
             route = "data",
             isActive = true,
@@ -124,15 +124,6 @@ object SettingsDefaults {
                     key = SettingsKeys.Privacy.PROGRESS_SHARING,
                     defaultValue = true,
                     sortOrder = 2
-                ),
-                ToggleSetting(
-                    id = "anonymous_analytics",
-                    title = "Anonymous Analytics",
-                    description = "Help improve the app by sharing anonymous usage data",
-                    category = SettingsCategory.PRIVACY_ID,
-                    key = SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
-                    defaultValue = false,
-                    sortOrder = 3
                 )
             ),
             sortOrder = 1
@@ -560,54 +551,13 @@ object SettingsDefaults {
 
     private fun getDataSections(): List<SettingsSection> = listOf(
         SettingsSection(
-            id = "data_sync",
-            title = "Synchronization",
-            items = listOf(
-                ToggleSetting(
-                    id = "auto_sync",
-                    title = "Auto Sync",
-                    description = "Automatically sync data across devices",
-                    category = SettingsCategory.DATA_ID,
-                    key = SettingsKeys.Data.AUTO_SYNC,
-                    defaultValue = true,
-                    sortOrder = 1
-                ),
-                ToggleSetting(
-                    id = "wifi_only_sync",
-                    title = "WiFi Only Sync",
-                    description = "Only sync when connected to WiFi",
-                    category = SettingsCategory.DATA_ID,
-                    key = SettingsKeys.Data.WIFI_ONLY_SYNC,
-                    defaultValue = false,
-                    sortOrder = 2
-                ),
-                SelectionSetting(
-                    id = "sync_frequency",
-                    title = "Sync Frequency",
-                    description = "How often to sync data",
-                    category = SettingsCategory.DATA_ID,
-                    key = SettingsKeys.Data.SYNC_FREQUENCY,
-                    options = listOf(
-                        SelectionOption("Real-time", 0, "Sync immediately when changes occur"),
-                        SelectionOption("Every 15 minutes", 15, "Sync every 15 minutes"),
-                        SelectionOption("Every hour", 60, "Sync every hour"),
-                        SelectionOption("Every 6 hours", 360, "Sync every 6 hours"),
-                        SelectionOption("Daily", 1440, "Sync once daily")
-                    ),
-                    currentValue = 60,
-                    sortOrder = 3
-                )
-            ),
-            sortOrder = 1
-        ),
-        SettingsSection(
             id = "data_storage",
             title = "Storage Management",
             items = listOf(
                 ToggleSetting(
                     id = "backup_enabled",
-                    title = "Cloud Backup",
-                    description = "Back up your data to the cloud",
+                    title = "Local Backup",
+                    description = "Create local backup files for safekeeping",
                     category = SettingsCategory.DATA_ID,
                     key = SettingsKeys.Data.BACKUP_ENABLED,
                     defaultValue = true,
@@ -632,7 +582,7 @@ object SettingsDefaults {
                     sortOrder = 3
                 )
             ),
-            sortOrder = 2
+            sortOrder = 1
         )
     )
 }

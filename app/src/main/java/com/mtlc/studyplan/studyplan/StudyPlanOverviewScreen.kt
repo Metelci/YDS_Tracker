@@ -134,7 +134,7 @@ fun StudyPlanOverviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.background)
+                .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
         ) {
             // Tab Selector
             StudyPlanTabRow(
@@ -1689,3 +1689,4 @@ private fun GetStartedCard() {
         }
     }
 }
+

@@ -18,7 +18,6 @@ object SettingsKeys {
     object Privacy {
         const val PROFILE_VISIBILITY_ENABLED = "privacy_profile_visibility_enabled"
         const val PROFILE_VISIBILITY_LEVEL = "privacy_profile_visibility_level"
-        const val ANONYMOUS_ANALYTICS = "privacy_anonymous_analytics"
         const val PROGRESS_SHARING = "privacy_progress_sharing"
         const val DATA_COLLECTION_CONSENT = "privacy_data_collection_consent"
         const val CRASH_REPORTING = "privacy_crash_reporting"
@@ -138,7 +137,6 @@ object SettingsKeys {
         const val DATA_SAVER_MODE = "data_saver_mode"
         const val AUTO_CLEANUP = "data_auto_cleanup"
         const val EXPORT_FORMAT = "data_export_format"
-        const val CLOUD_STORAGE = "data_cloud_storage"
     }
 
     /**
@@ -231,7 +229,7 @@ object SettingsKeys {
  * Extension functions to get all keys from each category
  */
 private fun SettingsKeys.Privacy.getAllKeys(): List<String> = listOf(
-    PROFILE_VISIBILITY_ENABLED, PROFILE_VISIBILITY_LEVEL, ANONYMOUS_ANALYTICS, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
+    PROFILE_VISIBILITY_ENABLED, PROFILE_VISIBILITY_LEVEL, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
     CRASH_REPORTING, PERFORMANCE_ANALYTICS, LOCATION_SHARING, CONTACT_SYNC
 )
 
@@ -271,8 +269,7 @@ private fun SettingsKeys.Accessibility.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Data.getAllKeys(): List<String> = listOf(
-    AUTO_SYNC, SYNC_FREQUENCY, WIFI_ONLY_SYNC, BACKUP_ENABLED, CACHE_SIZE_LIMIT,
-    OFFLINE_MODE, DATA_SAVER_MODE, AUTO_CLEANUP, EXPORT_FORMAT, CLOUD_STORAGE
+    AUTO_SYNC, SYNC_FREQUENCY, WIFI_ONLY_SYNC, BACKUP_ENABLED, CACHE_SIZE_LIMIT, OFFLINE_MODE, DATA_SAVER_MODE, AUTO_CLEANUP, EXPORT_FORMAT
 )
 
 private fun SettingsKeys.Study.getAllKeys(): List<String> = listOf(
@@ -294,4 +291,3 @@ private fun SettingsKeys.Developer.getAllKeys(): List<String> = listOf(
     DEBUG_MODE, SHOW_PERFORMANCE_OVERLAY, MOCK_DATA, CRASH_SIMULATION,
     NETWORK_SIMULATION, LOG_LEVEL, FEATURE_FLAGS
 )
-

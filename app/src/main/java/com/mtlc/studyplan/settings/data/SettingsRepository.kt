@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
-import com.mtlc.studyplan.settings.backup.SettingsBackupManager.SettingConflict
+
 import com.mtlc.studyplan.core.error.ErrorType
 
 /**
@@ -42,7 +42,6 @@ class SettingsRepository(
     private val privacyKeys = setOf(
         SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
         SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
-        SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
         SettingsKeys.Privacy.PROGRESS_SHARING
     )
 
@@ -788,16 +787,6 @@ class SettingsRepository(
                     )
                 )
             }
-            "anonymous_analytics" -> {
-                val enabled = value as? Boolean
-                    ?: throw IllegalArgumentException("Expected boolean for anonymous analytics")
-                updateSetting(
-                    SettingsUpdateRequest.UpdateBoolean(
-                        SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
-                        enabled
-                    )
-                )
-            }
             "progress_sharing" -> {
                 val enabled = value as? Boolean
                     ?: throw IllegalArgumentException("Expected boolean for progress sharing")
@@ -951,13 +940,11 @@ class SettingsRepository(
         preferences.edit {
             putBoolean(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED, true)
             putString(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL, ProfileVisibilityLevel.FRIENDS_ONLY.name)
-            putBoolean(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS, true)
             putBoolean(SettingsKeys.Privacy.PROGRESS_SHARING, true)
         }
 
         valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED)
         valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL)
-        valueCache.remove(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS)
         valueCache.remove(SettingsKeys.Privacy.PROGRESS_SHARING)
 
         privacyState.value = loadPrivacyData()
@@ -974,10 +961,6 @@ class SettingsRepository(
                 ProfileVisibilityLevel.FRIENDS_ONLY.name
             )?.let { runCatching { ProfileVisibilityLevel.valueOf(it) }.getOrDefault(ProfileVisibilityLevel.FRIENDS_ONLY) }
                 ?: ProfileVisibilityLevel.FRIENDS_ONLY,
-            anonymousAnalytics = preferences.getBoolean(
-                SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
-                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.ANONYMOUS_ANALYTICS)
-            ),
             progressSharing = preferences.getBoolean(
                 SettingsKeys.Privacy.PROGRESS_SHARING,
                 defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.PROGRESS_SHARING)
@@ -1099,124 +1082,123 @@ class SettingsRepository(
  * Default values for all settings
  */
 private object defaultValues {
-    private val defaults = mapOf<String, Any>(
+    private val defaults: Map<String, Any> = buildMap {
+
         // Privacy defaults
-        SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED to true,
-        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL to ProfileVisibilityLevel.FRIENDS_ONLY.name,
-        SettingsKeys.Privacy.ANONYMOUS_ANALYTICS to false,
-        SettingsKeys.Privacy.PROGRESS_SHARING to true,
-        SettingsKeys.Privacy.DATA_COLLECTION_CONSENT to false,
-        SettingsKeys.Privacy.CRASH_REPORTING to true,
-        SettingsKeys.Privacy.PERFORMANCE_ANALYTICS to false,
-        SettingsKeys.Privacy.LOCATION_SHARING to false,
-        SettingsKeys.Privacy.CONTACT_SYNC to false,
+        put(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED, true)
+        put(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL, ProfileVisibilityLevel.FRIENDS_ONLY.name)
+        put(SettingsKeys.Privacy.PROGRESS_SHARING, true)
+        put(SettingsKeys.Privacy.DATA_COLLECTION_CONSENT, false)
+        put(SettingsKeys.Privacy.CRASH_REPORTING, true)
+        put(SettingsKeys.Privacy.PERFORMANCE_ANALYTICS, false)
+        put(SettingsKeys.Privacy.LOCATION_SHARING, false)
+        put(SettingsKeys.Privacy.CONTACT_SYNC, false)
 
         // Notification defaults
-        SettingsKeys.Notifications.PUSH_NOTIFICATIONS to true,
-        SettingsKeys.Notifications.STUDY_REMINDERS to true,
-        SettingsKeys.Notifications.STUDY_REMINDER_TIME to "09:00",
-        SettingsKeys.Notifications.ACHIEVEMENT_ALERTS to true,
-        SettingsKeys.Notifications.EMAIL_SUMMARIES to false,
-        SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY to EmailFrequency.WEEKLY.name,
-        SettingsKeys.Notifications.WEEKLY_REPORTS to true,
-        SettingsKeys.Notifications.STREAK_WARNINGS to true,
-        SettingsKeys.Notifications.GOAL_REMINDERS to true,
-        SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS to true,
-        SettingsKeys.Notifications.QUIET_HOURS_ENABLED to false,
-        SettingsKeys.Notifications.QUIET_HOURS_START to "22:00",
-        SettingsKeys.Notifications.QUIET_HOURS_END to "08:00",
-        SettingsKeys.Notifications.NOTIFICATION_SOUND to "default",
-        SettingsKeys.Notifications.VIBRATION_ENABLED to true,
+        put(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true)
+        put(SettingsKeys.Notifications.STUDY_REMINDERS, true)
+        put(SettingsKeys.Notifications.STUDY_REMINDER_TIME, "09:00")
+        put(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, true)
+        put(SettingsKeys.Notifications.EMAIL_SUMMARIES, false)
+        put(SettingsKeys.Notifications.EMAIL_SUMMARY_FREQUENCY, EmailFrequency.WEEKLY.name)
+        put(SettingsKeys.Notifications.WEEKLY_REPORTS, true)
+        put(SettingsKeys.Notifications.STREAK_WARNINGS, true)
+        put(SettingsKeys.Notifications.GOAL_REMINDERS, true)
+        put(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, true)
+        put(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, false)
+        put(SettingsKeys.Notifications.QUIET_HOURS_START, "22:00")
+        put(SettingsKeys.Notifications.QUIET_HOURS_END, "08:00")
+        put(SettingsKeys.Notifications.NOTIFICATION_SOUND, "default")
+        put(SettingsKeys.Notifications.VIBRATION_ENABLED, true)
 
         // Gamification defaults
-        SettingsKeys.Gamification.STREAK_TRACKING to true,
-        SettingsKeys.Gamification.POINTS_REWARDS to true,
-        SettingsKeys.Gamification.CELEBRATION_EFFECTS to true,
-        SettingsKeys.Gamification.STREAK_RISK_WARNINGS to true,
-        SettingsKeys.Gamification.ACHIEVEMENT_BADGES to true,
-        SettingsKeys.Gamification.LEVEL_PROGRESSION to true,
-        SettingsKeys.Gamification.DAILY_CHALLENGES to true,
-        SettingsKeys.Gamification.LEADERBOARD_ENABLED to true,
-        SettingsKeys.Gamification.XP_MULTIPLIERS to true,
-        SettingsKeys.Gamification.REWARD_ANIMATIONS to true,
+        put(SettingsKeys.Gamification.STREAK_TRACKING, true)
+        put(SettingsKeys.Gamification.POINTS_REWARDS, true)
+        put(SettingsKeys.Gamification.CELEBRATION_EFFECTS, true)
+        put(SettingsKeys.Gamification.STREAK_RISK_WARNINGS, true)
+        put(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, true)
+        put(SettingsKeys.Gamification.LEVEL_PROGRESSION, true)
+        put(SettingsKeys.Gamification.DAILY_CHALLENGES, true)
+        put(SettingsKeys.Gamification.LEADERBOARD_ENABLED, true)
+        put(SettingsKeys.Gamification.XP_MULTIPLIERS, true)
+        put(SettingsKeys.Gamification.REWARD_ANIMATIONS, true)
 
         // Task defaults
-        SettingsKeys.Tasks.SMART_SCHEDULING to true,
-        SettingsKeys.Tasks.AUTO_DIFFICULTY to false,
-        SettingsKeys.Tasks.DAILY_GOAL_REMINDERS to true,
-        SettingsKeys.Tasks.WEEKEND_MODE to false,
-        SettingsKeys.Tasks.ADAPTIVE_LEARNING to true,
-        SettingsKeys.Tasks.BREAK_REMINDERS to true,
-        SettingsKeys.Tasks.SESSION_TIMEOUT to 30,
-        SettingsKeys.Tasks.AUTO_PAUSE to false,
-        SettingsKeys.Tasks.PROGRESS_TRACKING to true,
-        SettingsKeys.Tasks.DIFFICULTY_ADJUSTMENT to true,
-        SettingsKeys.Tasks.SPACED_REPETITION to true,
-        SettingsKeys.Tasks.CUSTOM_GOALS to false,
+        put(SettingsKeys.Tasks.SMART_SCHEDULING, true)
+        put(SettingsKeys.Tasks.AUTO_DIFFICULTY, false)
+        put(SettingsKeys.Tasks.DAILY_GOAL_REMINDERS, true)
+        put(SettingsKeys.Tasks.WEEKEND_MODE, false)
+        put(SettingsKeys.Tasks.ADAPTIVE_LEARNING, true)
+        put(SettingsKeys.Tasks.BREAK_REMINDERS, true)
+        put(SettingsKeys.Tasks.SESSION_TIMEOUT, 30)
+        put(SettingsKeys.Tasks.AUTO_PAUSE, false)
+        put(SettingsKeys.Tasks.PROGRESS_TRACKING, true)
+        put(SettingsKeys.Tasks.DIFFICULTY_ADJUSTMENT, true)
+        put(SettingsKeys.Tasks.SPACED_REPETITION, true)
+        put(SettingsKeys.Tasks.CUSTOM_GOALS, false)
 
         // Navigation defaults
-        SettingsKeys.Navigation.BOTTOM_NAVIGATION to true,
-        SettingsKeys.Navigation.HAPTIC_FEEDBACK to true,
-        SettingsKeys.Navigation.GESTURE_NAVIGATION to false,
-        SettingsKeys.Navigation.SWIPE_ACTIONS to true,
-        SettingsKeys.Navigation.QUICK_ACCESS_TOOLBAR to false,
-        SettingsKeys.Navigation.TAB_PERSISTENCE to true,
-        SettingsKeys.Navigation.DOUBLE_TAP_EXIT to true,
+        put(SettingsKeys.Navigation.BOTTOM_NAVIGATION, true)
+        put(SettingsKeys.Navigation.HAPTIC_FEEDBACK, true)
+        put(SettingsKeys.Navigation.GESTURE_NAVIGATION, false)
+        put(SettingsKeys.Navigation.SWIPE_ACTIONS, true)
+        put(SettingsKeys.Navigation.QUICK_ACCESS_TOOLBAR, false)
+        put(SettingsKeys.Navigation.TAB_PERSISTENCE, true)
+        put(SettingsKeys.Navigation.DOUBLE_TAP_EXIT, true)
 
         // Social defaults
-        SettingsKeys.Social.STUDY_BUDDY_MATCHING to false,
-        SettingsKeys.Social.SHARE_ACTIVITY to false,
-        SettingsKeys.Social.GROUP_NOTIFICATIONS to true,
-        SettingsKeys.Social.LEADERBOARD_PARTICIPATION to false,
-        SettingsKeys.Social.FRIEND_REQUESTS to true,
-        SettingsKeys.Social.ACHIEVEMENT_SHARING to true,
-        SettingsKeys.Social.PROGRESS_COMPARISON to false,
-        SettingsKeys.Social.COLLABORATIVE_LEARNING to false,
-        SettingsKeys.Social.PEER_CHALLENGES to false,
+        put(SettingsKeys.Social.STUDY_BUDDY_MATCHING, false)
+        put(SettingsKeys.Social.SHARE_ACTIVITY, false)
+        put(SettingsKeys.Social.GROUP_NOTIFICATIONS, true)
+        put(SettingsKeys.Social.LEADERBOARD_PARTICIPATION, false)
+        put(SettingsKeys.Social.FRIEND_REQUESTS, true)
+        put(SettingsKeys.Social.ACHIEVEMENT_SHARING, true)
+        put(SettingsKeys.Social.PROGRESS_COMPARISON, false)
+        put(SettingsKeys.Social.COLLABORATIVE_LEARNING, false)
+        put(SettingsKeys.Social.PEER_CHALLENGES, false)
 
         // Study defaults
-        SettingsKeys.Study.DEFAULT_SESSION_LENGTH to 25,
-        SettingsKeys.Study.PREFERRED_STUDY_TIME to "morning",
-        SettingsKeys.Study.LEARNING_STYLE to "visual",
-        SettingsKeys.Study.DIFFICULTY_PREFERENCE to "adaptive",
-        SettingsKeys.Study.FOCUS_MODE to false,
-        SettingsKeys.Study.BACKGROUND_SOUNDS to false,
-        SettingsKeys.Study.TIMER_STYLE to "pomodoro",
-        SettingsKeys.Study.PROGRESS_INDICATORS to true,
-        SettingsKeys.Study.STUDY_STREAKS to true,
-        SettingsKeys.Study.REST_INTERVALS to 5,
+        put(SettingsKeys.Study.DEFAULT_SESSION_LENGTH, 25)
+        put(SettingsKeys.Study.PREFERRED_STUDY_TIME, "morning")
+        put(SettingsKeys.Study.LEARNING_STYLE, "visual")
+        put(SettingsKeys.Study.DIFFICULTY_PREFERENCE, "adaptive")
+        put(SettingsKeys.Study.FOCUS_MODE, false)
+        put(SettingsKeys.Study.BACKGROUND_SOUNDS, false)
+        put(SettingsKeys.Study.TIMER_STYLE, "pomodoro")
+        put(SettingsKeys.Study.PROGRESS_INDICATORS, true)
+        put(SettingsKeys.Study.STUDY_STREAKS, true)
+        put(SettingsKeys.Study.REST_INTERVALS, 5)
 
         // Appearance defaults
-        SettingsKeys.Appearance.THEME_MODE to "system",
-        SettingsKeys.Appearance.ACCENT_COLOR to "blue",
-        SettingsKeys.Appearance.FONT_SIZE to 1.0f,
-        SettingsKeys.Appearance.FONT_FAMILY to "default",
-        SettingsKeys.Appearance.ANIMATION_SPEED to 1.0f,
-        SettingsKeys.Appearance.CARD_STYLE to "rounded",
-        SettingsKeys.Appearance.LAYOUT_DENSITY to "comfortable",
+        put(SettingsKeys.Appearance.THEME_MODE, "system")
+        put(SettingsKeys.Appearance.ACCENT_COLOR, "blue")
+        put(SettingsKeys.Appearance.FONT_SIZE, 1.0f)
+        put(SettingsKeys.Appearance.FONT_FAMILY, "default")
+        put(SettingsKeys.Appearance.ANIMATION_SPEED, 1.0f)
+        put(SettingsKeys.Appearance.CARD_STYLE, "rounded")
+        put(SettingsKeys.Appearance.LAYOUT_DENSITY, "comfortable")
 
         // Audio defaults
-        SettingsKeys.Audio.MASTER_VOLUME to 0.7f,
-        SettingsKeys.Audio.NOTIFICATION_VOLUME to 0.5f,
-        SettingsKeys.Audio.FEEDBACK_SOUNDS to true,
-        SettingsKeys.Audio.SUCCESS_SOUND to true,
-        SettingsKeys.Audio.ERROR_SOUND to true,
-        SettingsKeys.Audio.BACKGROUND_MUSIC to false,
-        SettingsKeys.Audio.PRONUNCIATION_AUDIO to true,
-        SettingsKeys.Audio.AUDIO_QUALITY to "high",
+        put(SettingsKeys.Audio.MASTER_VOLUME, 0.7f)
+        put(SettingsKeys.Audio.NOTIFICATION_VOLUME, 0.5f)
+        put(SettingsKeys.Audio.FEEDBACK_SOUNDS, true)
+        put(SettingsKeys.Audio.SUCCESS_SOUND, true)
+        put(SettingsKeys.Audio.ERROR_SOUND, true)
+        put(SettingsKeys.Audio.BACKGROUND_MUSIC, false)
+        put(SettingsKeys.Audio.PRONUNCIATION_AUDIO, true)
+        put(SettingsKeys.Audio.AUDIO_QUALITY, "high")
 
         // Data defaults
-        SettingsKeys.Data.AUTO_SYNC to true,
-        SettingsKeys.Data.SYNC_FREQUENCY to 60, // minutes
-        SettingsKeys.Data.WIFI_ONLY_SYNC to false,
-        SettingsKeys.Data.BACKUP_ENABLED to true,
-        SettingsKeys.Data.CACHE_SIZE_LIMIT to 100, // MB
-        SettingsKeys.Data.OFFLINE_MODE to false,
-        SettingsKeys.Data.DATA_SAVER_MODE to false,
-        SettingsKeys.Data.AUTO_CLEANUP to true,
-        SettingsKeys.Data.EXPORT_FORMAT to "json",
-        SettingsKeys.Data.CLOUD_STORAGE to false
-    )
+        put(SettingsKeys.Data.AUTO_SYNC, true)
+        put(SettingsKeys.Data.SYNC_FREQUENCY, 60) // minutes
+        put(SettingsKeys.Data.WIFI_ONLY_SYNC, false)
+        put(SettingsKeys.Data.BACKUP_ENABLED, true)
+        put(SettingsKeys.Data.CACHE_SIZE_LIMIT, 100) // MB
+        put(SettingsKeys.Data.OFFLINE_MODE, false)
+        put(SettingsKeys.Data.DATA_SAVER_MODE, false)
+        put(SettingsKeys.Data.AUTO_CLEANUP, true)
+        put(SettingsKeys.Data.EXPORT_FORMAT, "json")
+    }
 
     fun getAllDefaults(): Map<String, Any> = defaults
 

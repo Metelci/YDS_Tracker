@@ -145,7 +145,7 @@ fun OriginalSettingsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -1344,6 +1344,7 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
+
 
 
 

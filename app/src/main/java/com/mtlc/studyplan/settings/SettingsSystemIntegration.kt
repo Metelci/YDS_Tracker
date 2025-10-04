@@ -6,12 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.mtlc.studyplan.core.ViewModelFactory
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityEnhancementManager
-import com.mtlc.studyplan.settings.backup.SettingsBackupManager
+
 import com.mtlc.studyplan.settings.data.*
 import com.mtlc.studyplan.settings.feedback.SettingsFeedbackManager
 import com.mtlc.studyplan.settings.migration.SettingsMigrationManager
 import com.mtlc.studyplan.settings.performance.SettingsPerformanceMonitor
-import com.mtlc.studyplan.settings.sync.CloudSyncManager
 import com.mtlc.studyplan.settings.validation.SettingsValidator
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
  * to provide a complete, robust settings system with:
  *
  * 1. **Global Search & Deep Linking**
- * 2. **Backup & Sync with Cloud Support**
+ * 2. **Backup & Local Restore**
  * 3. **Accessibility Enhancements**
  * 4. **Smooth Animations & Transitions**
  * 5. **Advanced Toggle Components**
@@ -44,8 +43,6 @@ class SettingsSystemManager(private val context: Context) {
     private val feedbackManager = SettingsFeedbackManager(context)
 
     // Advanced features
-    private val backupManager = SettingsBackupManager(context, repository)
-    private val syncManager = CloudSyncManager(context, repository, backupManager)
     private val migrationManager = SettingsMigrationManager(context, repository)
     private val accessibilityManager = AccessibilityEnhancementManager(context)
 
@@ -143,11 +140,6 @@ class SettingsSystemManager(private val context: Context) {
                         accessibilityManager.updateAccessibilityState()
                     }
 
-                    // 4. Trigger sync if enabled
-                    if (syncManager.isCloudSyncAvailable()) {
-                        triggerBackgroundSync()
-                    }
-
                     updateSystemState()
                     true
                 }
@@ -170,100 +162,7 @@ class SettingsSystemManager(private val context: Context) {
     }
 
     // Search removed
-
     /**
-     * Backup settings with progress feedback
-     */
-    suspend fun backupSettings(): Boolean {
-        return feedbackManager.withProgressFeedback(
-            operationId = "backup_settings",
-            initialMessage = "Creating backup...",
-            successMessage = "Settings backed up successfully"
-        ) { updateProgress ->
-            updateProgress(0.2f, "Gathering settings...")
-
-            val uri = backupManager.exportSettings().getOrThrow()
-
-            updateProgress(0.8f, "Saving backup file...")
-
-            // Simulate some processing time
-            kotlinx.coroutines.delay(500)
-
-            updateProgress(1.0f, "Backup completed")
-
-            uri
-        }.isSuccess
-    }
-
-    /**
-     * Restore settings with progress feedback
-     */
-    suspend fun restoreSettings(backupUri: android.net.Uri): Boolean {
-        return feedbackManager.withProgressFeedback(
-            operationId = "restore_settings",
-            initialMessage = "Restoring settings...",
-            successMessage = "Settings restored successfully"
-        ) { updateProgress ->
-            updateProgress(0.2f, "Reading backup file...")
-
-            val result = backupManager.importSettings(
-                backupUri,
-                com.mtlc.studyplan.settings.backup.SettingsBackupManager.MergeStrategy.REPLACE
-            ).getOrThrow()
-
-            updateProgress(0.6f, "Validating settings...")
-
-            // Re-validate settings after import using available repository methods
-            // Note: Since there's no getAllSettingsSync, we skip this step or implement differently
-            // The repository handles validation during import already
-
-            // Search removed – no re-indexing
-
-            updateProgress(1.0f, "Restore completed")
-
-            updateSystemState()
-            result
-        }.isSuccess
-    }
-
-    /**
-     * Sync settings with cloud
-     */
-    suspend fun syncSettings(): Boolean {
-        if (!syncManager.isCloudSyncAvailable()) {
-            feedbackManager.showWarning("Cloud sync is not configured")
-            return false
-        }
-
-        return feedbackManager.withProgressFeedback(
-            operationId = "sync_settings",
-            initialMessage = "Syncing settings...",
-            successMessage = "Settings synchronized successfully"
-        ) { updateProgress ->
-            updateProgress(0.2f, "Connecting to cloud...")
-
-            val result = syncManager.performSync().getOrThrow()
-
-            updateProgress(0.6f, "Resolving conflicts...")
-
-            // Handle any conflicts that arose during sync
-            if (result.conflictsResolved > 0) {
-                feedbackManager.showInfo("Resolved ${result.conflictsResolved} conflicts during sync")
-            }
-
-            updateProgress(0.8f, "Updating local settings...")
-
-            // Search removed – no re-indexing after sync
-
-            updateProgress(1.0f, "Sync completed")
-
-            updateSystemState()
-            result
-        }.isSuccess
-    }
-
-    /**
-     * Reset all settings with confirmation
      */
     suspend fun resetAllSettings(): Boolean {
         val confirmed = feedbackManager.showConfirmation(
@@ -353,17 +252,6 @@ class SettingsSystemManager(private val context: Context) {
     /**
      * Trigger background sync
      */
-    private fun triggerBackgroundSync() {
-        // Launch background sync without blocking UI
-        CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-            try {
-                syncManager.performSync()
-            } catch (e: Exception) {
-                // Silent failure for background sync
-                // Could log to analytics instead
-            }
-        }
-    }
 
     /**
      * Check if setting affects accessibility
@@ -389,8 +277,6 @@ class SettingsSystemManager(private val context: Context) {
     fun getValidator() = validator
     fun getFeedbackManager() = feedbackManager
     // Search removed: no engine exposed
-    fun getBackupManager() = backupManager
-    fun getSyncManager() = syncManager
     fun getMigrationManager() = migrationManager
     fun getAccessibilityManager() = accessibilityManager
 }
@@ -455,17 +341,6 @@ class SettingsSystemViewModel(
 
     // Search removed
 
-    fun backupSettings() {
-        viewModelScope.launch {
-            settingsManager.backupSettings()
-        }
-    }
-
-    fun syncSettings() {
-        viewModelScope.launch {
-            settingsManager.syncSettings()
-        }
-    }
 
     fun resetSettings() {
         viewModelScope.launch {
@@ -500,16 +375,12 @@ object SettingsSystemUsageExample {
         // 2. Search removed on settings page
 
         // 3. Backup settings with progress
-        val backupSuccess = settingsManager.backupSettings()
 
-        // 4. Sync with cloud
-        val syncSuccess = settingsManager.syncSettings()
-
-        // 5. Get system diagnostics
+        // 4. Get system diagnostics
         val diagnostics = settingsManager.getSystemDiagnostics()
         println("System Health: ${diagnostics.performanceMetrics.averageLatency}ms avg latency")
 
-        // 6. Reset all settings with confirmation
+        // 5. Reset all settings with confirmation
         val resetSuccess = settingsManager.resetAllSettings()
 
         // Don't forget to dispose when done
@@ -527,9 +398,8 @@ object SettingsSystemUsageExample {
    - URL-based deep linking to specific settings
    - Search suggestions and autocomplete
 
-✅ **2. Settings Backup & Sync**
+✅ **2. Settings Backup & Restore**
    - JSON export/import with compression
-   - Cloud sync with conflict resolution
    - Incremental backup support
    - Data validation and integrity checks
    - Multiple merge strategies
@@ -594,6 +464,8 @@ This implementation provides a production-ready, comprehensive settings system
 that can handle complex requirements while maintaining excellent performance
 and user experience.
 */
+
+
 
 
 

@@ -3,7 +3,6 @@ package com.mtlc.studyplan.settings.data
 data class PrivacyData(
     val profileVisibilityEnabled: Boolean = true,
     val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
-    val anonymousAnalytics: Boolean = true,
     val progressSharing: Boolean = true
 )
 

@@ -42,7 +42,6 @@
 - **Purpose**: App functionality
 - **Data Processing**:
   - Anonymous user identifiers for app functionality
-  - Local device identifiers for data sync
   - No personally identifiable information
 - **User Control**: Automatically generated, not user-provided
 
@@ -137,7 +136,6 @@
   - User-created study notes and tasks
   - Achievement sharing within study groups
 - **User Control**: Users control what they share in study groups
-- **Data Handling**: Messages stored locally and in encrypted cloud backup (if user opts in)
 
 ---
 
@@ -185,7 +183,6 @@
   - Assignment descriptions and study materials
   - Custom categories and study plans
 - **User Control**: Users create and control all content
-- **Data Handling**: Stored locally with optional encrypted cloud backup
 
 ---
 
@@ -247,7 +244,6 @@
   - Custom study categories and goals
   - Progress tracking data
 - **User Control**: Users create and own all content
-- **Data Handling**: Local storage with optional encrypted cloud backup
 
 ### **Other Actions**
 - **Collected**: ✅ Yes
@@ -333,7 +329,6 @@
 ### **Data Encryption at Rest**
 - **Status**: ✅ Yes
 - **Method**: All stored data encrypted using AES-256 encryption
-- **Scope**: Both local device storage and cloud backups
 
 ### **Secure Data Deletion**
 - **Status**: ✅ Yes
@@ -368,7 +363,6 @@
 ### **Account Management**
 - **Data Types**: Email address (optional), user IDs
 - **Purpose**: Account creation and authentication
-- **Necessity**: Required only for cloud sync features
 
 ### **Analytics**
 - **Data Types**: App activity, performance data, crash logs
@@ -392,7 +386,6 @@
 ### **Data Deletion**
 - **Account Data**: Complete account deletion available
 - **Local Data**: Clear app data option in device settings
-- **Timeline**: Immediate local deletion, 30 days for cloud data
 
 ### **Data Export**
 - **Availability**: Full data export in JSON format
@@ -401,7 +394,6 @@
 
 ### **Privacy Controls**
 - **Analytics**: Toggle analytics collection on/off
-- **Cloud Sync**: Optional cloud backup with encryption
 - **Social Features**: Optional study group participation
 - **Notifications**: Granular notification preferences
 
@@ -429,7 +421,6 @@
 ## 🔍 **THIRD-PARTY DATA SHARING**
 
 ### **Service Providers**
-- **Cloud Infrastructure**: Encrypted data storage only
 - **Analytics Services**: Anonymized usage data only
 - **No Personal Data**: No personally identifiable information shared
 

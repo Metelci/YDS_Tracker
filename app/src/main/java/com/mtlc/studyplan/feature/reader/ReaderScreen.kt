@@ -1,5 +1,4 @@
 package com.mtlc.studyplan.feature.reader
-
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -247,3 +246,4 @@ private fun ReaderPreview() {
         onBack = {}
     )
 }
+

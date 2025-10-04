@@ -42,7 +42,6 @@ StudyPlan ("we," "our," or "us") is committed to protecting your privacy. This P
 
 ### **Primary Uses:**
 - **Core Functionality**: Provide task management, progress tracking, and study planning features
-- **Synchronization**: Sync your data across devices (if you create an account)
 - **Personalization**: Customize your study experience and recommendations
 - **Performance**: Monitor and improve app performance and reliability
 
@@ -64,7 +63,6 @@ StudyPlan ("we," "our," or "us") is committed to protecting your privacy. This P
 
 ### **Data Storage:**
 - **Local Storage**: Most data is stored locally on your device
-- **Cloud Backup**: Optional encrypted cloud backup for account holders
 - **Data Retention**: Personal data stored only as long as your account is active
 - **Data Location**: Servers located in secure facilities with SOC 2 compliance
 
@@ -87,7 +85,6 @@ StudyPlan ("we," "our," or "us") is committed to protecting your privacy. This P
 ### **We Share Information Only In These Limited Cases:**
 
 #### **Service Providers:**
-- **Cloud Infrastructure**: Secure hosting providers (AWS, Google Cloud)
 - **Analytics Services**: Anonymized usage data for app improvement
 - **Customer Support**: Support ticket systems for troubleshooting
 - **All providers are bound by strict data protection agreements**
@@ -170,7 +167,6 @@ StudyPlan ("we," "our," or "us") is committed to protecting your privacy. This P
 - **Export Data**: Download all your study data and settings
 - **Delete Account**: Permanent deletion of account and associated data
 - **Data Retention**: Choose how long to keep inactive data
-- **Sync Settings**: Control what data syncs across devices
 
 ---
 
@@ -194,7 +190,6 @@ StudyPlan ("we," "our," or "us") is committed to protecting your privacy. This P
 ### **Integrated Services:**
 - **Google Play Services**: For app distribution and updates
 - **Firebase**: For performance monitoring and crash reporting (Google)
-- **Cloud Storage**: For optional data backup and sync
 
 ### **Privacy Protections:**
 - **Data Processing Agreements**: All third parties bound by strict privacy terms

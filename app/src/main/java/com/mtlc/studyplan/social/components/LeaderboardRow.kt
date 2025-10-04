@@ -1,5 +1,5 @@
 package com.mtlc.studyplan.social.components
-
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.border
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -118,4 +118,7 @@ private fun fallbackInitial(name: String): String = name
     .filter { it.isNotEmpty() }
     .take(2)
     .joinToString(separator = "") { it.first().uppercase() }
+
+
+
 

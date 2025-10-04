@@ -896,3 +896,4 @@ private fun SkillRow(
         modifier = Modifier.height(sliderHeight)
     )
 }
+

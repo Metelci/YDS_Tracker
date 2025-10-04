@@ -79,13 +79,28 @@ fun WorkingHomeScreen(
     // Prussian blue color for card borders
     val prussianBlue = Color(0xFF003153)
 
-    // Pastel card colors
-    val pastelPink = featurePastelContainer(FeatureKey.TODAY, "today_progress")
-    val pastelBlue = featurePastelContainer(FeatureKey.TODAY, "days_to_exam")
-    val pastelMint = featurePastelContainer(FeatureKey.TODAY, "points_today")
-    val pastelLavender = featurePastelContainer(FeatureKey.TODAY, "tasks_done")
-    val pastelPeach = featurePastelContainer(FeatureKey.TODAY, "weekly_study_plan")
-    val pastelYellow = featurePastelContainer(FeatureKey.TODAY, "exam_card")
+    // Card colors aligned with Settings tabs palette
+    // Settings Tab palette (from OriginalSettingsScreen.TabButton):
+    // navigation -> bg F3E8FF (lavender)
+    // notifications -> bg E8F5E8 (mint)
+    // gamification -> bg FFF4E6 (peach)
+    // social -> bg EFF6FF (sky blue)
+    // privacy -> bg FDF2F8 (pink)
+    // tasks -> bg F0FDF4 (soft mint)
+    val pastelTasks = Color(0xFFF0FDF4)
+    val pastelNavigation = Color(0xFFF3E8FF)
+    val pastelGamification = Color(0xFFFFF4E6)
+    val pastelSocial = Color(0xFFEFF6FF)
+    val pastelPrivacy = Color(0xFFFDF2F8)
+    val pastelNotifications = Color(0xFFE8F5E8)
+
+    // Map home cards to settings tab colors
+    val pastelPink = pastelTasks                 // Today Progress -> Tasks
+    val pastelBlue = pastelNavigation            // Days to Exam -> Navigation
+    val pastelMint = pastelGamification          // Points Today -> Gamification
+    val pastelLavender = pastelNotifications     // Tasks Done -> Notifications
+    val pastelPeach = pastelSocial               // Weekly Plan -> Social
+    val pastelYellow = pastelPrivacy             // Exam Card -> Privacy
 
     // Theme state
     val currentTheme by themeManager?.currentTheme?.collectAsState() ?: remember { mutableStateOf(ThemeMode.SYSTEM) }
@@ -167,7 +182,7 @@ fun WorkingHomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
     ) {
         // Header Section with gradient background and theme switcher (matches Settings page design)
         Box(
@@ -707,5 +722,6 @@ fun WorkingHomeScreen(
         }
     }
 }
+
 
 

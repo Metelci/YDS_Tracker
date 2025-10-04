@@ -44,7 +44,6 @@ StudyPlan isn't just another task app - it's your personal academic success syst
 • **Offline Capability**: Access your tasks even without internet
 • **Smart Notifications**: Gentle reminders that don't overwhelm
 • **State Preservation**: Never lose your progress, even if the app closes
-• **Cross-Device Sync**: Start on phone, continue on tablet (coming soon)
 
 ### 🏆 **Perfect For:**
 • **High School Students**: Managing homework, projects, and exam prep

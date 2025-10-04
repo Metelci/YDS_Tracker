@@ -26,7 +26,6 @@ class PrivacySettingsViewModel(
         override val error: AppError? = null,
         val profileVisibilityEnabled: Boolean = true,
         val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
-        val anonymousAnalytics: Boolean = true,
         val progressSharing: Boolean = true
     ) : BaseSettingsUiState
 
@@ -73,7 +72,6 @@ class PrivacySettingsViewModel(
                             settings = settings,
                             profileVisibilityEnabled = privacyData.profileVisibilityEnabled,
                             profileVisibilityLevel = privacyData.profileVisibilityLevel,
-                            anonymousAnalytics = privacyData.anonymousAnalytics,
                             progressSharing = privacyData.progressSharing,
                             error = null
                         )
@@ -129,19 +127,6 @@ class PrivacySettingsViewModel(
                 isEnabled = privacyData.profileVisibilityEnabled,
                 category = "privacy",
                 sortOrder = 2
-            ),
-
-            // Anonymous Analytics Toggle
-            ToggleSetting(
-                id = "anonymous_analytics",
-                title = "Anonymous Analytics",
-                description = "Help improve the app by sharing anonymous usage data",
-                value = privacyData.anonymousAnalytics,
-                key = SettingsKeys.Privacy.ANONYMOUS_ANALYTICS,
-                defaultValue = true,
-                isEnabled = true,
-                category = "privacy",
-                sortOrder = 3
             ),
 
             // Progress Sharing Toggle
@@ -205,19 +190,6 @@ class PrivacySettingsViewModel(
         viewModelScope.launch(exceptionHandler) {
             try {
                 repository.updatePrivacySetting("profile_visibility_level", level)
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
-        }
-    }
-
-    /**
-     * Update anonymous analytics setting
-     */
-    fun updateAnonymousAnalytics(enabled: Boolean) {
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                repository.updatePrivacySetting("anonymous_analytics", enabled)
             } catch (exception: Exception) {
                 handleError(exception)
             }

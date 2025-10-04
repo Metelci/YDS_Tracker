@@ -178,7 +178,7 @@ fun WeeklyPlanScreen(
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -354,3 +354,4 @@ fun WeekDayCard(
         }
     }
 }
+

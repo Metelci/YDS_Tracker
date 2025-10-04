@@ -14,12 +14,6 @@ fun focusRoute(id: String) = "focus/$id"
 fun NavGraphBuilder.todayGraph(navController: NavController) {
     composable(TODAY_ROUTE) {
         TodayRoute(
-            onNavigateToPlan = {
-                navController.navigate(PLAN_ROUTE)
-            },
-            onNavigateToLesson = { id ->
-                navController.navigate(focusRoute(id))
-            },
             onNavigateToFocus = { id ->
                 navController.navigate(focusRoute(id))
             }

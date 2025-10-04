@@ -67,12 +67,6 @@ Add these entries to your main AndroidManifest.xml file.
     android:name=".performance.PerformanceMonitoringService"
     android:exported="false" />
 
-<!-- Cloud Sync Background Service -->
-<service
-    android:name=".settings.sync.CloudSyncService"
-    android:exported="false"
-    android:permission="android.permission.BIND_JOB_SERVICE" />
-
 <!-- Backup File Provider Paths -->
 <!-- Create res/xml/settings_file_paths.xml with this content: -->
 <!--

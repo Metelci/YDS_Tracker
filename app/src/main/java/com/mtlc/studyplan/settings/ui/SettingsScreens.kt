@@ -1,5 +1,5 @@
 package com.mtlc.studyplan.settings.ui
-
+import androidx.compose.ui.graphics.Brush
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
@@ -330,3 +330,4 @@ private fun SettingToggleRow(
         }
     }
 }
+

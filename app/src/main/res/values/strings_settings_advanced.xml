@@ -14,26 +14,15 @@
     <!-- Settings Backup -->
     <string name="local_backup_title">Local Backup</string>
     <string name="local_backup_description">Export and import your settings to/from files</string>
-    <string name="cloud_sync_title">Cloud Sync</string>
-    <string name="cloud_sync_description">Automatically sync settings across your devices</string>
     <string name="advanced_options_title">Advanced Options</string>
     <string name="advanced_options_description">Configure backup behavior and frequency</string>
 
-    <string name="setup_cloud_sync">Setup Cloud Sync</string>
-    <string name="sync_now">Sync Now</string>
     <string name="clear_history">Clear History</string>
 
     <string name="last_backup_date">Last backup: %s</string>
     <string name="no_backup_yet">No backup created yet</string>
-    <string name="last_sync_date">Last sync: %s</string>
-    <string name="never_synced">Never synced</string>
     <string name="backup_size_format">Backup size: %s</string>
     <string name="no_backup_size">No backup size available</string>
-
-    <string name="cloud_sync_enabled">Cloud sync: Enabled</string>
-    <string name="cloud_sync_configured">Cloud sync: Configured</string>
-    <string name="cloud_sync_not_configured">Cloud sync: Not configured</string>
-    <string name="auto_sync_enabled">Automatic sync</string>
 
     <!-- Backup Strategies -->
     <string name="import_strategy_title">Import Strategy</string>
@@ -44,7 +33,6 @@
     <!-- Backup Results -->
     <string name="export_success">Settings exported successfully</string>
     <string name="import_success_format" formatted="false">Imported %d settings with %d conflicts</string>
-    <string name="sync_success_format" formatted="false">Synced %d settings, resolved %d conflicts</string>
 
     <!-- Import Conflicts -->
     <string name="import_conflicts_title">Import Conflicts Detected</string>
@@ -52,11 +40,6 @@
     <string name="review_conflicts">Review Conflicts</string>
     <string name="apply_defaults">Apply Defaults</string>
 
-    <!-- Cloud Providers -->
-    <string name="choose_sync_provider">Choose Cloud Provider</string>
-    <string name="google_drive">Google Drive</string>
-    <string name="dropbox">Dropbox</string>
-    <string name="provider_configuration_in_progress">Configuring cloud provider…</string>
 
     <!-- Backup History -->
     <string name="clear_backup_history_title">Clear Backup History</string>
@@ -98,7 +81,6 @@
     <string name="error_search_failed">Search failed. Please try again.</string>
     <string name="error_backup_failed">Backup operation failed</string>
     <string name="error_import_failed">Import operation failed</string>
-    <string name="error_sync_failed">Sync operation failed</string>
     <string name="error_invalid_backup_file">Invalid backup file format</string>
     <string name="error_backup_corrupted">Backup file is corrupted</string>
     <string name="error_version_incompatible">Backup version is not compatible</string>
@@ -110,20 +92,16 @@
     <string name="success_settings_saved">Settings saved successfully</string>
     <string name="success_backup_created">Backup created successfully</string>
     <string name="success_settings_imported">Settings imported successfully</string>
-    <string name="success_sync_completed">Sync completed successfully</string>
 
     <!-- Loading States -->
     <string name="loading_settings">Loading settings…</string>
     <string name="loading_backup">Creating backup…</string>
     <string name="loading_import">Importing settings…</string>
-    <string name="loading_sync">Syncing settings…</string>
     <string name="loading_search_index">Building search index…</string>
 
     <!-- Progress Messages -->
     <string name="progress_gathering_data">Gathering settings data…</string>
     <string name="progress_creating_backup">Creating backup file…</string>
-    <string name="progress_uploading">Uploading to cloud…</string>
-    <string name="progress_downloading">Downloading from cloud…</string>
     <string name="progress_applying_changes">Applying changes…</string>
     <string name="progress_resolving_conflicts">Resolving conflicts…</string>
 
@@ -157,7 +135,6 @@
     <string name="cd_voice_search">Voice search</string>
     <string name="cd_export_button">Export settings to file</string>
     <string name="cd_import_button">Import settings from file</string>
-    <string name="cd_sync_button">Sync settings with cloud</string>
     <string name="cd_setting_toggle">Toggle %s setting</string>
     <string name="cd_setting_menu">Open %s menu</string>
     <string name="cd_dependency_info">Dependency information</string>
@@ -168,8 +145,6 @@
     <string name="feature_search_description">Quickly find any setting using our smart search</string>
     <string name="feature_backup_title">Backup Your Settings</string>
     <string name="feature_backup_description">Never lose your preferences with automatic backups</string>
-    <string name="feature_sync_title">Sync Across Devices</string>
-    <string name="feature_sync_description">Keep your settings synchronized on all your devices</string>
 
     <!-- Voice Search -->
     <string name="voice_search_listening">Listening…</string>

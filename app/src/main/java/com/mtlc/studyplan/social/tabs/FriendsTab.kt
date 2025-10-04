@@ -1,5 +1,5 @@
 package com.mtlc.studyplan.social.tabs
-
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -125,4 +125,7 @@ fun FriendsTab(
         }
     }
 }
+
+
+
 

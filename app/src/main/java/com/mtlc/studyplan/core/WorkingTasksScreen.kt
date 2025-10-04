@@ -123,7 +123,7 @@ fun WorkingTasksScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))))
     ) {
         Column(
             modifier = Modifier
@@ -1923,5 +1923,6 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
+
 
 
