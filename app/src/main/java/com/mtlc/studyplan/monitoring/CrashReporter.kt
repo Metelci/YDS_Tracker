@@ -370,7 +370,7 @@ class CrashReporter @Inject constructor(
     private fun getAppVersion(): String {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            "${packageInfo.versionName} (${packageInfo.versionCode})"
+            "${packageInfo.versionName} (${packageInfo.longVersionCode})"
         } catch (e: Exception) {
             "Unknown"
         }

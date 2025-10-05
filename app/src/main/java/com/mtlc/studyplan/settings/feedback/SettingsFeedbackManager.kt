@@ -224,7 +224,7 @@ class SettingsFeedbackManager(private val context: Context) {
                     destructive = destructive,
                     onResult = { confirmed ->
                         if (continuation.isActive) {
-                            continuation.resume(confirmed, onCancellation = null)
+                            continuation.resumeWith(Result.success(confirmed))
                         }
                     }
                 )
