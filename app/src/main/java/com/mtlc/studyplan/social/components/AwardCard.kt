@@ -44,7 +44,7 @@ fun AwardCard(
     onClick: ((Award) -> Unit)? = null
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
     val gradientColors = if (award.isUnlocked) getRarityColors(award.rarity) else getLockedColors()
     val isLocked = !award.isUnlocked
     val hapticFeedback = LocalHapticFeedback.current
@@ -287,7 +287,7 @@ private fun getAwardIcon(iconType: AwardIconType): ImageVector = when (iconType)
 
 @Composable
 private fun getRarityColors(rarity: AwardRarity): List<Color> {
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDark = false
     return when (rarity) {
         AwardRarity.Common -> if (!isDark) {
             listOf(Color(0xFFFFD4B3), Color(0xFFFFB388))
@@ -314,7 +314,7 @@ private fun getRarityColors(rarity: AwardRarity): List<Color> {
 
 @Composable
 private fun getLockedColors(): List<Color> {
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDark = false
     return if (!isDark) {
         listOf(Color(0xFFF8F9FA), Color(0xFFF1F3F4))
     } else {

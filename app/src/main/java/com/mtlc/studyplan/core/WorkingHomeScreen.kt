@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.StreakInfo
@@ -58,8 +58,7 @@ import com.mtlc.studyplan.data.TaskStats
 import com.mtlc.studyplan.data.TodayStats
 import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import com.mtlc.studyplan.ui.components.ThemeSwitcher
-import com.mtlc.studyplan.settings.data.ThemeMode
+// Theme switcher removed; dark/system themes not supported
 import com.mtlc.studyplan.ui.theme.FeatureKey
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
 
@@ -67,7 +66,6 @@ import com.mtlc.studyplan.ui.theme.featurePastelContainer
 @Composable
 fun WorkingHomeScreen(
     appIntegrationManager: AppIntegrationManager,
-    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null,
     onNavigateToTasks: () -> Unit = {},
     onNavigateToWeeklyPlan: () -> Unit = {},
     onNavigateToExamDetails: () -> Unit = {},
@@ -102,8 +100,7 @@ fun WorkingHomeScreen(
     val pastelPeach = pastelSocial               // Weekly Plan -> Social
     val pastelYellow = pastelPrivacy             // Exam Card -> Privacy
 
-    // Theme state
-    val currentTheme by themeManager?.currentTheme?.collectAsState() ?: remember { mutableStateOf(ThemeMode.SYSTEM) }
+    // Theme switcher and state removed; app uses light theme only
 
     // Collect data from AppIntegrationManager
     val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
@@ -177,25 +174,13 @@ fun WorkingHomeScreen(
     }
 
     // Language manager setup identical to Settings page
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(
-                brush = if (isDarkTheme) {
-                    // Seamless anthracite to light grey gradient for dark theme
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF2C2C2C), // Deep anthracite (top)
-                            Color(0xFF3A3A3A), // Medium anthracite
-                            Color(0xFF4A4A4A)  // Light anthracite (bottom)
-                        )
-                    )
-                } else {
-                    // Light theme unchanged
-                    Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
-                }
+                brush = Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
             )
     ) {
         // Header Section with gradient background and theme switcher (matches Settings page design)
@@ -207,33 +192,18 @@ fun WorkingHomeScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                color = if (isDarkTheme) {
-                    MaterialTheme.colorScheme.surface
-                } else {
-                    Color(0xFFE3F2FD) // Light blue solid color as fallback
-                }
+                color = Color(0xFFE3F2FD) // Light blue solid color as fallback
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            brush = if (isDarkTheme) {
-                                // Anthracite gradient for dark theme
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF3A3A3A), // Medium anthracite
-                                        Color(0xFF4A4A4A)  // Light anthracite
-                                    )
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color(0xFFE3F2FD), // Light blue
+                                    Color(0xFFFCE4EC)  // Light peach/pink
                                 )
-                            } else {
-                                // Gradient for light theme (matches Settings page)
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFFE3F2FD), // Light blue
-                                        Color(0xFFFCE4EC)  // Light peach/pink
-                                    )
-                                )
-                            },
+                            ),
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(horizontal = 20.dp, vertical = 18.dp)
@@ -264,18 +234,7 @@ fun WorkingHomeScreen(
                 }
             }
 
-            // Theme switcher in top right corner
-            if (themeManager != null) {
-                ThemeSwitcher(
-                    currentTheme = currentTheme,
-                    onThemeChange = { newTheme ->
-                        themeManager.setTheme(newTheme)
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 18.dp, end = 20.dp)
-                )
-            }
+            // Theme switcher removed
         }
 
         LazyColumn(

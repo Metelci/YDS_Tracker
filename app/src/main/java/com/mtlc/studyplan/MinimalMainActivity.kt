@@ -14,7 +14,6 @@ import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.shared.SharedAppViewModel
-import com.mtlc.studyplan.theme.ThemeManager
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 
 /**
@@ -35,17 +34,15 @@ class MinimalMainActivity : ComponentActivity() {
             val databaseTaskRepo = remember { com.mtlc.studyplan.repository.TaskRepository(database.taskDao()) }
             val taskRepository = remember { TaskRepositoryImpl(databaseTaskRepo) }
             val mainAppIntegrationManager = remember { AppIntegrationManager(taskRepository) }
-            val themeManager = remember { ThemeManager(context) }
             val sharedViewModel = remember { SharedAppViewModel(application) }
 
-            StudyPlanTheme(themeManager) {
+            StudyPlanTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavHost(
                         mainAppIntegrationManager = mainAppIntegrationManager,
-                        themeManager = themeManager,
                         sharedViewModel = sharedViewModel,
                         taskRepository = taskRepository
                     )

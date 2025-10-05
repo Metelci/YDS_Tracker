@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.data.*
@@ -115,7 +115,7 @@ fun WeeklyPlanScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+                val isDarkTheme = false
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,7 +175,7 @@ fun WeeklyPlanScreen(
             }
         }
     ) { paddingValues ->
-        val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+        val isDarkTheme = false
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()

@@ -2,7 +2,6 @@ package com.mtlc.studyplan.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.mtlc.studyplan.theme.ThemeManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +23,7 @@ val koinAppModule = module {
 
     single<Gson> { GsonBuilder().setPrettyPrinting().create() }
 
-    single<ThemeManager> { ThemeManager(androidContext()) }
+    // ThemeManager removed; app uses light theme only
 }
 
 // Qualifier annotations for different dispatchers

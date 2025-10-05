@@ -1,6 +1,6 @@
 package com.mtlc.studyplan.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+// removed dark theme checks
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,24 +11,16 @@ import androidx.compose.ui.graphics.compositeOver
  */
 @Composable
 fun pastelContainerFor(key: String): Color {
-    val dark = isSystemInDarkTheme()
-    // In dark mode, use TASKS palette for consistency with other components
-    // In light mode, keep the original broader palette
-    val palette = if (dark) {
-        FeaturePalettes.getValue(FeatureKey.TASKS)
-    } else {
-        listOf(
-            DesignTokens.PastelLightGray,
-            DesignTokens.PastelLavender,
-            DesignTokens.PastelPrussia,
-            DesignTokens.PastelMint,
-            DesignTokens.PastelYellow,
-            DesignTokens.PastelRed
-        )
-    }
+    val palette = listOf(
+        DesignTokens.PastelLightGray,
+        DesignTokens.PastelLavender,
+        DesignTokens.PastelPrussia,
+        DesignTokens.PastelMint,
+        DesignTokens.PastelYellow,
+        DesignTokens.PastelRed
+    )
     val idx = kotlin.math.abs(key.hashCode()) % palette.size
-    val base = palette[idx]
-    return if (dark) base.copy(alpha = 0.4f).compositeOver(MaterialTheme.colorScheme.surface) else base
+    return palette[idx]
 }
 
 /** Feature-aware pastel palettes for consistent hues by section. */
@@ -77,17 +69,9 @@ private val FeaturePalettes: Map<FeatureKey, List<Color>> = mapOf(
 
 @Composable
 fun featurePastelContainer(feature: FeatureKey, key: String): Color {
-    val dark = isSystemInDarkTheme()
-    // In dark mode, use TASKS palette for all features to unify the color scheme
-    // In light mode, keep the original feature-specific palettes
-    val palette = if (dark) {
-        FeaturePalettes.getValue(FeatureKey.TASKS)
-    } else {
-        FeaturePalettes[feature] ?: FeaturePalettes.getValue(FeatureKey.DEFAULT)
-    }
+    val palette = FeaturePalettes[feature] ?: FeaturePalettes.getValue(FeatureKey.DEFAULT)
     val idx = kotlin.math.abs(key.hashCode()) % palette.size
-    val base = palette[idx]
-    return if (dark) base.copy(alpha = 0.4f).compositeOver(MaterialTheme.colorScheme.surface) else base
+    return palette[idx]
 }
 
 /** Attempts to infer feature key from the current composition's package name. */

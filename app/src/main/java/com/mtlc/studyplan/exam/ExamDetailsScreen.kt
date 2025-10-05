@@ -8,7 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -253,7 +253,7 @@ private fun ExamInfoCardWithAction(
 ) {
     val context = LocalContext.current
     val registrationStatus = getRegistrationStatusForExam(examSession)
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -476,7 +476,7 @@ private fun InfoRow(
     label: String,
     value: String
 ) {
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
 
     Row(
         modifier = Modifier

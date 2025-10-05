@@ -7,7 +7,6 @@ import com.mtlc.studyplan.settings.data.ThemeMode
 import com.mtlc.studyplan.settings.data.SettingsKey
 import com.mtlc.studyplan.eventbus.AppEventBus
 import com.mtlc.studyplan.eventbus.AppEvent
-import com.mtlc.studyplan.theme.ThemeManager
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.offline.OfflineManager
 import com.mtlc.studyplan.utils.HapticFeedbackManager
@@ -36,7 +35,6 @@ class SettingsManager @Inject constructor(
     private val scope = CoroutineScope(ioDispatcher + SupervisorJob())
 
     // Lazy injection to avoid circular dependencies
-    private var themeManager: ThemeManager? = null
     private var notificationManager: NotificationManager? = null
     private var offlineManager: OfflineManager? = null
 
@@ -45,9 +43,7 @@ class SettingsManager @Inject constructor(
         observeSettingsChanges()
     }
 
-    fun setThemeManager(themeManager: ThemeManager) {
-        this.themeManager = themeManager
-    }
+    // ThemeManager removed; theme is fixed to light
 
     fun setNotificationManager(notificationManager: NotificationManager) {
         this.notificationManager = notificationManager
@@ -118,7 +114,7 @@ class SettingsManager @Inject constructor(
     }
 
     private suspend fun applyAllSettings(settings: UserSettings) {
-        themeManager?.setTheme(settings.themeMode)
+        // Theme application removed
 
         notificationManager?.configure(
             enabled = settings.notificationsEnabled,
@@ -137,9 +133,7 @@ class SettingsManager @Inject constructor(
     }
 
     private suspend fun applySettingsChanges(oldSettings: UserSettings, newSettings: UserSettings) {
-        if (oldSettings.themeMode != newSettings.themeMode) {
-            themeManager?.setTheme(newSettings.themeMode)
-        }
+        // Theme changes ignored (dark/system themes removed)
 
         if (oldSettings.notificationsEnabled != newSettings.notificationsEnabled ||
             oldSettings.studyRemindersEnabled != newSettings.studyRemindersEnabled ||

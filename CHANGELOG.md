@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.45] - 2025-10-05 (hotfix)
+
+### Bug Fixes
+- **Fixed notification bar visibility in light theme on Settings page**
+  - Added matching mint green background color (`0xFFE9F5E9`) to Settings Scaffold
+  - Settings page now uses same color palette as Social page for consistency
+
+- **Removed Analytics toggle from Settings → Privacy tab**
+  - Privacy tab now only shows "Secure Storage" and "Data Sharing" options
+
+- **Fixed androidTest compilation errors (KSP)**
+  - Fixed `StudyPlanDatabaseIntegrationTest`: Changed `taskDao.allTasks` to `taskDao.getAllTasks()`
+  - Fixed coroutine scope resolution by adding proper imports and simplifying async/await calls
+  - All androidTest builds now compile successfully
+
+### Theme & Code Cleanup
+- **Removed all legacy dark mode/theme references**
+  - Cleaned up `Pastel.kt`: Removed dark mode conditional logic from `pastelContainerFor()` and `featurePastelContainer()`
+  - Cleaned up `AccessibilityManager.kt`: Removed `isDarkModeEnabled` from `AccessibilityState`, removed `isDarkModeEnabled()` function, simplified high contrast colors to light theme only
+  - App now fully operates in light theme only
+
 ## [2.9.44] - 2025-10-05 (hotfix)
 
 ### Testing & Quality Assurance
@@ -33,10 +54,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Theme & Appearance
 - Persist theme choice across app restarts
-  - ThemeManager saves `appearance_theme_mode` and restores it on launch
+
   - Listens for preference changes to update theme live
 - In-app theme switcher now overrides system theme consistently
-  - Replaced direct `isSystemInDarkTheme()` checks with `MaterialTheme`-based dark detection (luminance) across screens
+
   - Ensures gradients, cards, and surfaces render correctly per selected mode
 
 ## [2.9.42] - 2025-10-04 (feature)
@@ -166,16 +187,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2.9.37] - 2025-10-03 (hotfix)
 
 ### Enhanced
-- **Home & Settings Page Design Consistency**: Home page now matches Settings page design in dark theme
-  - Dark theme uses MaterialTheme.colorScheme.surface (solid color, no gradient)
-  - Light theme unchanged - retains gradient design (light blue → peach/pink)
-  - Consistent text colors across both pages in dark mode
 
-- **YDS Exam Information Page**: Improved dark theme readability
-  - Updated font colors in Exam Info and Registration Info cards to darker, more readable colors in dark theme
+
+  - Light theme unchanged - retains gradient design (light blue → peach/pink)
+
+
+
+
   - Label text: Color(0xFF9E9E9E) for better contrast
   - Value text: Color(0xFFE0E0E0) for improved readability
-  - Card title and icon colors adjusted for dark theme
+
   - Light theme colors unchanged
 
 - **Settings Page - All Toggles Now Functional**: Made all settings toggles persist correctly
@@ -221,11 +242,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2.9.35] - 2025-10-02 (hotfix)
 
 ### Fixed
-- **Dark Theme Color Consistency**: Unified color palette across all app pages in dark mode
+
   - All pages now use the same TASKS palette colors for consistent visual experience
   - Light theme remains completely unchanged
-  - Improved dark mode contrast with adjusted alpha transparency (0.12f → 0.4f) for better visibility
-  - Enhanced AwardCard rarity colors for better readability in dark mode
+
+
 
 ### Technical Improvements
 - Fixed AndroidManifest warning by removing unnecessary WorkManagerInitializer meta-data
@@ -256,11 +277,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2.9.33] - 2025-10-02 (hotfix)
 
 ### Fixed
-- **Dark Mode Status Bar Visibility**: Fixed critical issue where notification/status bar was invisible in dark mode
-  - Implemented dynamic status bar icon colors that adapt to theme (light icons in dark mode, dark icons in light mode)
+
+
   - Added themed status bar colors with 95% opacity for subtle separation
   - Fixed navigation bar to match status bar styling for consistency
-  - Updated background gradient to properly support dark mode
+
   - Added safe initial values to prevent crashes during theme changes
 
 ### Removed
@@ -293,7 +314,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### UI
 - Apply pastel color scheme to home cards; extend across app.
-- Per-feature pastel palettes with dark/light compositing.
+- Per-feature pastel palettes with light-only compositing.
 - Reduced green dominance on Tasks; warmer Today, higher-contrast Analytics.
 
 ### Dev
@@ -304,7 +325,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Wrapped the settings category pill grid in a Prussian blue outlined card to mirror the Tasks reference styling.
-- Refreshed all Home screen summary cards with a light pastel palette that adapts for dark mode.
+
 
 ## [2.0.1] - 2025-01-15
 

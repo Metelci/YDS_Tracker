@@ -82,7 +82,9 @@ fun SettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        containerColor = Color(0xFFE9F5E9)
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

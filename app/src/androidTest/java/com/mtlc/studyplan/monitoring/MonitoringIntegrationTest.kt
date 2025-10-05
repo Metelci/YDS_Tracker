@@ -76,7 +76,8 @@ class MonitoringIntegrationTest {
         performanceMonitor.recordCacheMiss()
 
         val operationTime = performanceMonitor.measureOperation("test_operation") {
-            delay(10) // Simulate some work
+            // Simulate some work - using Thread.sleep instead of delay for non-suspend function
+            Thread.sleep(10)
         }
 
         // Verify operation was measured

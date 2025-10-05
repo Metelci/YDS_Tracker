@@ -38,7 +38,7 @@ fun FriendsTab(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
 
     // Theme-aware button colors
     val buttonContainerColor = if (isDarkTheme) {

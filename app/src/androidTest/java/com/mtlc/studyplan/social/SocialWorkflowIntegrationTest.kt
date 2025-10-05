@@ -1,7 +1,13 @@
 package com.mtlc.studyplan.social
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mtlc.studyplan.data.social.*
+import com.mtlc.studyplan.database.StudyPlanDatabase
+import com.mtlc.studyplan.database.dao.AvatarDao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -9,6 +15,9 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * Integration tests for Social Features Workflow
@@ -26,7 +35,21 @@ class SocialWorkflowIntegrationTest {
 
     @Before
     fun setup() {
-        socialRepository = PersistentSocialRepository()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val dataStore: DataStore<Preferences> = mock()
+        val avatarDao = mock<AvatarDao>()
+        val database: StudyPlanDatabase = mock()
+        
+        // Mock the expected database calls
+        whenever(database.avatarDao()).thenReturn(avatarDao)
+        // Mock the getActiveAvatar call to return a flow with empty list (no active avatar)
+        whenever(avatarDao.getActiveAvatar("default_user")).thenReturn(flowOf(null))
+
+        socialRepository = PersistentSocialRepository(
+            context = context,
+            dataStore = dataStore,
+            database = database
+        )
     }
 
     @Test
@@ -273,7 +296,7 @@ class SocialWorkflowIntegrationTest {
 
         // Profile changes should be reflected
         assertEquals("Username should be updated", "ConsistencyTest", updatedProfile.username)
-        assertEquals("Weekly goal should be updated", 15, updatedProfile.weeklyGoal Hours)
+        assertEquals("Weekly goal should be updated", 15, updatedProfile.weeklyGoalHours)
 
         // Other data should remain stable (same size/structure)
         assertEquals("Ranks count should remain consistent", initialRanks.size, updatedRanks.size)

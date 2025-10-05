@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -72,7 +72,7 @@ fun HomeScreen() {
     val coroutineScope = rememberCoroutineScope()
 
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
     val pastelPalette = remember {
         listOf(
             Color(0xFFFFF4F8), // blush pink

@@ -82,7 +82,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.isSystemInDarkTheme
+// removed dark theme checks
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.data.OnboardingRepository
@@ -132,7 +132,7 @@ fun OriginalSettingsScreen(
     var showResetDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val hasPendingGoalChanges = weeklyGoalSelection != savedWeeklyGoalHours
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = false
 
     val tabs = listOf(
         SettingsTab("navigation", stringResource(R.string.navigation).capitalizeFirst(), Icons.Outlined.Navigation),

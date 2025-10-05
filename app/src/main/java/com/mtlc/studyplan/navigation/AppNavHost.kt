@@ -69,7 +69,6 @@ import org.koin.core.context.GlobalContext
 fun AppNavHost(
     appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null,
     sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null,
-    themeManager: com.mtlc.studyplan.theme.ThemeManager? = null,
     mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null,
     studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null,
     taskRepository: com.mtlc.studyplan.data.TaskRepository? = null
@@ -230,7 +229,6 @@ fun AppNavHost(
             ) { _ ->
                 com.mtlc.studyplan.core.WorkingHomeScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
-                    themeManager = themeManager,
                     onNavigateToTasks = {
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         navController.navigate("tasks")

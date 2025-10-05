@@ -192,9 +192,9 @@ object TestResultsAggregator {
      */
     fun exportToCI(report: TestSuiteReport) {
         when (TestConfigurationManager.reportFormat) {
-            TestConfigurationManager.ReportFormat.JSON -> exportAsJson(report)
-            TestConfigurationManager.ReportFormat.XML -> exportAsXml(report)
-            TestConfigurationManager.ReportFormat.HTML -> exportAsHtml(report)
+            ReportFormat.JSON -> exportAsJson(report)
+            ReportFormat.XML -> exportAsXml(report)
+            ReportFormat.HTML -> exportAsHtml(report)
         }
 
         // Set CI environment variables

@@ -96,6 +96,48 @@ class PushNotificationManager @Inject constructor(
     }
 
     /**
+     * Handle study reminder message
+     */
+    suspend fun handleStudyReminder(message: PushMessage) {
+        pushMessageHandler.handleStudyReminder(message)
+    }
+
+    /**
+     * Handle achievement notification
+     */
+    suspend fun handleAchievementNotification(message: PushMessage) {
+        pushMessageHandler.handleAchievementNotification(message)
+    }
+
+    /**
+     * Handle exam update notification
+     */
+    suspend fun handleExamUpdate(message: PushMessage) {
+        pushMessageHandler.handleExamUpdate(message)
+    }
+
+    /**
+     * Handle motivational message
+     */
+    suspend fun handleMotivationalMessage(message: PushMessage) {
+        pushMessageHandler.handleMotivationalMessage(message)
+    }
+
+    /**
+     * Handle system notification
+     */
+    suspend fun handleSystemNotification(message: PushMessage) {
+        pushMessageHandler.handleSystemNotification(message)
+    }
+
+    /**
+     * Handle custom notification
+     */
+    suspend fun handleCustomNotification(message: PushMessage) {
+        pushMessageHandler.handleCustomNotification(message)
+    }
+
+    /**
      * Get push notification analytics
      */
     fun getPushAnalytics(): Map<String, Any> {

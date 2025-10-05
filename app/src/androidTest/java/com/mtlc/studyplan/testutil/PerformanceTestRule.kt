@@ -59,15 +59,15 @@ class PerformanceTestRule : TestRule {
         }
     }
 
-    private fun determineTestCategory(description: Description): TestConfigurationManager.TestCategory {
+    private fun determineTestCategory(description: Description): TestCategory {
         val className = description.className
         val methodName = description.methodName
 
         return when {
-            className.contains("Database") || className.contains("Repository") -> TestConfigurationManager.TestCategory.INTEGRATION
-            className.contains("LoadTest") || className.contains("Performance") || methodName.contains("Performance") -> TestConfigurationManager.TestCategory.PERFORMANCE
-            className.contains("UI") || className.contains("Compose") || methodName.contains("UI") -> TestConfigurationManager.TestCategory.UI
-            else -> TestConfigurationManager.TestCategory.UNIT
+            className.contains("Database") || className.contains("Repository") -> TestCategory.INTEGRATION
+            className.contains("LoadTest") || className.contains("Performance") || methodName.contains("Performance") -> TestCategory.PERFORMANCE
+            className.contains("UI") || className.contains("Compose") || methodName.contains("UI") -> TestCategory.UI
+            else -> TestCategory.UNIT
         }
     }
 }

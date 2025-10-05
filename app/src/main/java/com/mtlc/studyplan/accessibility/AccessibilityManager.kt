@@ -25,7 +25,6 @@ class AccessibilityEnhancementManager(private val context: Context) {
         val isLargeTextEnabled: Boolean = false,
         val isReduceMotionEnabled: Boolean = false,
         val fontScale: Float = 1.0f,
-        val isDarkModeEnabled: Boolean = false,
         val touchExplorationEnabled: Boolean = false,
         val accessibilityServicesEnabled: List<String> = emptyList()
     )
@@ -92,14 +91,6 @@ class AccessibilityEnhancementManager(private val context: Context) {
     }
 
     /**
-     * Check if dark mode is enabled
-     */
-    fun isDarkModeEnabled(): Boolean {
-        val nightModeFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
-    }
-
-    /**
      * Check if touch exploration is enabled
      */
     fun isTouchExplorationEnabled(): Boolean {
@@ -126,7 +117,6 @@ class AccessibilityEnhancementManager(private val context: Context) {
             isLargeTextEnabled = isLargeTextEnabled(),
             isReduceMotionEnabled = isReduceMotionEnabled(),
             fontScale = getFontScale(),
-            isDarkModeEnabled = isDarkModeEnabled(),
             touchExplorationEnabled = isTouchExplorationEnabled(),
             accessibilityServicesEnabled = getEnabledAccessibilityServices()
         )
@@ -208,6 +198,11 @@ class AccessibilityEnhancementManager(private val context: Context) {
 
     fun isScreenReaderActive(): Boolean = isTalkBackEnabled()
 
+    fun isDarkModeEnabled(): Boolean {
+        val uiMode = context.resources.configuration.uiMode
+        return uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    }
+
     fun requiresAccessibilityEnhancements(): Boolean {
         val state = _accessibilityState.value
         return state.isTalkBackEnabled ||
@@ -262,18 +257,18 @@ class AccessibilityEnhancementManager(private val context: Context) {
     fun getHighContrastColors(): HighContrastColors {
         return if (isHighContrastEnabled()) {
             HighContrastColors(
-                background = if (isDarkModeEnabled()) 0xFF000000.toInt() else 0xFFFFFFFF.toInt(),
-                onBackground = if (isDarkModeEnabled()) 0xFFFFFFFF.toInt() else 0xFF000000.toInt(),
-                primary = if (isDarkModeEnabled()) 0xFF00BCD4.toInt() else 0xFF0277BD.toInt(),
-                onPrimary = if (isDarkModeEnabled()) 0xFF000000.toInt() else 0xFFFFFFFF.toInt(),
-                error = if (isDarkModeEnabled()) 0xFFFF5252.toInt() else 0xFFD32F2F.toInt(),
-                success = if (isDarkModeEnabled()) 0xFF4CAF50.toInt() else 0xFF2E7D32.toInt()
+                background = 0xFFFFFFFF.toInt(),
+                onBackground = 0xFF000000.toInt(),
+                primary = 0xFF0277BD.toInt(),
+                onPrimary = 0xFFFFFFFF.toInt(),
+                error = 0xFFD32F2F.toInt(),
+                success = 0xFF2E7D32.toInt()
             )
         } else {
             // Return default Material Design colors
             HighContrastColors(
                 background = ContextCompat.getColor(context, android.R.color.background_light),
-                onBackground = 0xFF000000.toInt(), // Black text color
+                onBackground = 0xFF000000.toInt(),
                 primary = ContextCompat.getColor(context, android.R.color.holo_blue_dark),
                 onPrimary = ContextCompat.getColor(context, android.R.color.white),
                 error = ContextCompat.getColor(context, android.R.color.holo_red_dark),

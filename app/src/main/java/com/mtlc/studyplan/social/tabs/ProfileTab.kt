@@ -300,7 +300,7 @@ private fun ProfileCard(
     val prussianBlue = Color(0xFF003153)
 
 
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
 
 
 

@@ -33,20 +33,46 @@ class LoadTestSuiteIntegrationTest {
 
         // Initialize repositories (would normally use dependency injection)
         taskRepository = object : TaskRepository {
-            override fun getAllTasks() = kotlinx.coroutines.flow.flowOf(emptyList())
-            override suspend fun getAllTasksSync() = emptyList()
+            override fun getAllTasks() = kotlinx.coroutines.flow.flowOf(emptyList<com.mtlc.studyplan.data.Task>())
+            override suspend fun getAllTasksSync() = emptyList<com.mtlc.studyplan.data.Task>()
             override suspend fun getTaskById(id: String) = null
             override suspend fun insertTask(task: com.mtlc.studyplan.data.Task) = task
             override suspend fun updateTask(task: com.mtlc.studyplan.data.Task) = task
             override suspend fun deleteTask(id: String) {}
-            override suspend fun getTodaysTasks() = emptyList()
-            override suspend fun getUpcomingTasks() = emptyList()
-            override suspend fun getTasksByCategory(category: String) = emptyList()
-            override suspend fun getEarlyMorningCompletedTasks() = emptyList()
+            override suspend fun getTodaysTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getUpcomingTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getTasksByCategory(category: String) = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getEarlyMorningCompletedTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getAllTasksPaginated(page: Int, pageSize: Int) = TaskRepository.PaginatedTasks(
+                tasks = emptyList(),
+                totalCount = 0,
+                currentPage = page,
+                totalPages = 0,
+                hasNextPage = false,
+                hasPreviousPage = false
+            )
+            override suspend fun getCompletedTasksPaginated(page: Int, pageSize: Int) = TaskRepository.PaginatedTasks(
+                tasks = emptyList(),
+                totalCount = 0,
+                currentPage = page,
+                totalPages = 0,
+                hasNextPage = false,
+                hasPreviousPage = false
+            )
+            override suspend fun getPendingTasksPaginated(page: Int, pageSize: Int) = TaskRepository.PaginatedTasks(
+                tasks = emptyList(),
+                totalCount = 0,
+                currentPage = page,
+                totalPages = 0,
+                hasNextPage = false,
+                hasPreviousPage = false
+            )
         }
 
         studyProgressRepository = StudyProgressRepository(context)
-        settingsManager = SettingsManager(context)
+        val settingsRepository = com.mtlc.studyplan.settings.data.SettingsRepository(context)
+        val appEventBus = com.mtlc.studyplan.eventbus.AppEventBus()
+        settingsManager = SettingsManager(settingsRepository, appEventBus)
         performanceMonitor = PerformanceMonitor()
 
         loadTestSuite = LoadTestSuite(

@@ -3,7 +3,7 @@ package com.mtlc.studyplan.settings.ui
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+// removed dark theme checks
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -188,7 +188,7 @@ private fun AppearanceSettings(
     onFeedback: (String, Boolean) -> Unit
 ) {
     // Get current theme from settings repository
-    val currentThemeMode by settingsRepository.getStringSettingFlow(SettingsKeys.Appearance.THEME_MODE, "system").collectAsState("system")
+    // Theme mode removed; app uses light theme only
     val fontSize by settingsRepository.getFloatSettingFlow(SettingsKeys.Appearance.FONT_SIZE, 1.0f).collectAsState(1.0f)
     val animationSpeed by settingsRepository.getFloatSettingFlow(SettingsKeys.Appearance.ANIMATION_SPEED, 1.0f).collectAsState(1.0f)
     val reducedMotion by settingsRepository.getBooleanSettingFlow(SettingsKeys.Accessibility.REDUCED_MOTION, false).collectAsState(false)
@@ -202,31 +202,7 @@ private fun AppearanceSettings(
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Theme mode selection
-        EnhancedSettingsCard(
-            title = "Theme Mode",
-            description = "Choose your preferred theme",
-            icon = Icons.Filled.Palette
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("Light", "Dark", "System").forEach { theme ->
-                    val themeValue = theme.lowercase()
-                    val isSelected = currentThemeMode == themeValue
-
-                    EnhancedSelectionButton(
-                        text = theme,
-                        isSelected = isSelected,
-                        onClick = {
-                            // Update theme in settings repository
-                            coroutineScope.launch {
-                                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.THEME_MODE, themeValue))
-                            }
-                            onFeedback("Theme changed to $theme", false)
-                        }
-                    )
-                }
-            }
-        }
+        // Theme mode selection removed
 
         // Font size
         EnhancedSettingsCard(
@@ -562,40 +538,25 @@ private fun SettingsGradientTopBar(
     onNavigateBack: () -> Unit,
     isLoading: Boolean = false
 ) {
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = false
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
-        color = if (isDarkTheme) {
-            MaterialTheme.colorScheme.surface
-        } else {
-            Color(0xFFE3F2FD) // Light blue solid color as fallback
-        }
+        color = Color(0xFFE3F2FD) // Light blue solid color as fallback
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = if (isDarkTheme) {
-                        // Solid color for dark theme
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.surface,
-                                MaterialTheme.colorScheme.surface
-                            )
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFE3F2FD), // Light blue
+                            Color(0xFFFCE4EC)  // Light peach/pink
                         )
-                    } else {
-                        // Gradient for light theme only
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                Color(0xFFE3F2FD), // Light blue
-                                Color(0xFFFCE4EC)  // Light peach/pink
-                            )
-                        )
-                    },
+                    ),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 20.dp, vertical = 18.dp)
@@ -616,11 +577,7 @@ private fun SettingsGradientTopBar(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                Color.White
-                            },
+                            tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }

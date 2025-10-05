@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -107,7 +107,7 @@ private fun topBarStops(style: StudyPlanTopBarStyle): List<Pair<Color, Float>>? 
 internal fun rememberTopBarAppearance(style: StudyPlanTopBarStyle): StudyPlanTopBarAppearance {
     val colorScheme = MaterialTheme.colorScheme
     val baseOnSurface = colorScheme.onSurface
-    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
     val subtitleBase = colorScheme.onSurfaceVariant
     val subtitleColor = if (isDarkTheme) subtitleBase.copy(alpha = 0.9f) else subtitleBase.copy(alpha = 0.8f)
     val titleColor = when {
@@ -169,7 +169,7 @@ fun StudyPlanTopBar(
     val capsuleShape = RoundedCornerShape(20.dp)
     val colorScheme = MaterialTheme.colorScheme
     val baseBackground = colorScheme.surface
-    val isDarkThemeSurface = baseBackground.luminance() < 0.5f
+    val isDarkThemeSurface = false
     val borderColor = if (isDarkThemeSurface) {
         Color.White.copy(alpha = 0.2f)
     } else {

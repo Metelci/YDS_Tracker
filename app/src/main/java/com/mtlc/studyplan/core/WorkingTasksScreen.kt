@@ -69,7 +69,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -536,7 +536,7 @@ private fun workingTasksScreenContent(
     sharedViewModel: SharedAppViewModel,
     modifier: Modifier = Modifier
 ) {
-    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDarkTheme = false
     Box(
         modifier = modifier
             .fillMaxSize()

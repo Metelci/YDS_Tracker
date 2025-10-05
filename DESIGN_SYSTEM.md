@@ -23,7 +23,7 @@ The YDS Tracker app uses a design system built on **Material 3** principles with
 
 - **Consistent visual language** across all screens
 - **Accessibility compliance** with proper contrast ratios
-- **Dark mode support** with dynamic theming
+ 
 - **Scalable component library** for future development
 - **Design token system** for easy customization
 
@@ -169,7 +169,7 @@ Complete mapping from Material 2 to Material 3 components:
 ## 🎨 Color System
 
 ### Material 3 Color Scheme
-The app uses Material 3's dynamic color system with proper light/dark mode support:
+The app uses Material 3's color system:
 
 ```kotlin
 // Light Theme Colors
@@ -182,12 +182,7 @@ private val LightColorScheme = lightColorScheme(
     // ... full color scheme
 )
 
-// Dark Theme Colors
-private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF90CAF9),
-    onPrimary = Color(0xFF0D47A1),
-    // ... full dark color scheme
-)
+ 
 ```
 
 ### Color Usage Guidelines
@@ -425,23 +420,6 @@ Button(
     }
 ) {
     Text("Save")
-}
-```
-
-### Dark Mode Support
-
-```kotlin
-// ✅ Theme-aware colors
-Text(
-    text = "Content",
-    color = MaterialTheme.colorScheme.onSurface // Adapts to light/dark
-)
-
-// ✅ Custom theme-aware colors
-val backgroundColor = if (isSystemInDarkTheme()) {
-    DesignTokens.SurfaceContainer
-} else {
-    MaterialTheme.colorScheme.surface
 }
 ```
 

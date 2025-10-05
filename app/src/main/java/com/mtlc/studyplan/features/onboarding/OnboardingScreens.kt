@@ -17,7 +17,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.ui.graphics.luminance
+// removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -111,12 +111,11 @@ fun OnboardingRoute(onDone: () -> Unit) {
     val isGeneratingPlan by vm.isGeneratingPlan.collectAsState()
 
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = colorScheme.surface.luminance() < 0.5f
-    val topBarGradientColors = remember(colorScheme, isDarkTheme) {
+    val topBarGradientColors = remember(colorScheme) {
         listOf(
-            colorScheme.primaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f),
-            colorScheme.secondaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f),
-            colorScheme.tertiaryContainer.copy(alpha = if (isDarkTheme) 0.9f else 1f)
+            colorScheme.primaryContainer.copy(alpha = 1f),
+            colorScheme.secondaryContainer.copy(alpha = 1f),
+            colorScheme.tertiaryContainer.copy(alpha = 1f)
         )
     }
     val topBarTitleColor = colorScheme.onPrimaryContainer

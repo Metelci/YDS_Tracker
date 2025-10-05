@@ -10,7 +10,6 @@
     <ID>CyclomaticComplexMethod:AnalyticsComponents.kt$@Composable fun RecommendationItem( recommendation: Recommendation, modifier: Modifier = Modifier )</ID>
     <ID>CyclomaticComplexMethod:AnimatedNavigation.kt$EnhancedNavigation$@OptIn(ExperimentalAnimationApi::class) @Composable fun createTransitionSpec( style: NavigationTransitionStyle ): AnimatedContentTransitionScope&lt;NavBackStackEntry&gt;.() -&gt; ContentTransform</ID>
     <ID>CyclomaticComplexMethod:AppIntegrationManager.kt$AppIntegrationManager$fun isFeatureEnabled(feature: AppFeature): Boolean</ID>
-    <ID>CyclomaticComplexMethod:AppNavHost.kt$@Composable fun AppNavHost( appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null, sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null, studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null, taskRepository: com.mtlc.studyplan.data.TaskRepository? = null )</ID>
     <ID>CyclomaticComplexMethod:AuthenticationScreens.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FirstTimeSetupScreen( authManager: AuthenticationManager, onSetupComplete: () -&gt; Unit )</ID>
     <ID>CyclomaticComplexMethod:AwardCard.kt$@Composable fun AwardCard( award: Award, modifier: Modifier = Modifier, compact: Boolean = true, onClick: ((Award) -&gt; Unit)? = null )</ID>
     <ID>CyclomaticComplexMethod:CategorizedAchievementDataSource.kt$CategorizedAchievementDataSource$fun getConditionFunction(achievementId: String): (AchievementProgress) -&gt; Boolean</ID>
@@ -47,7 +46,6 @@
     <ID>CyclomaticComplexMethod:TaskUtils.kt$internal fun estimateTaskMinutes(desc: String, details: String?): Int</ID>
     <ID>CyclomaticComplexMethod:UiStateManager.kt$fun TextView.updateForState(state: UiState, textType: UiTextType)</ID>
     <ID>CyclomaticComplexMethod:UiStateManager.kt$fun View.updateVisibilityForState(state: UiState, stateType: UiStateType)</ID>
-    <ID>CyclomaticComplexMethod:WorkingHomeScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WorkingHomeScreen( appIntegrationManager: AppIntegrationManager, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, onNavigateToTasks: () -&gt; Unit = {}, onNavigateToWeeklyPlan: () -&gt; Unit = {}, onNavigateToExamDetails: () -&gt; Unit = {}, onNavigateToStudyPlan: () -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>CyclomaticComplexMethod:WorkingTasksScreen.kt$private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context: Context): DailyStudyInfo</ID>
     <ID>EmptyFunctionBlock:AnimationIntegrationManager.kt$AnimationIntegrationManager.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:NotificationScheduler.kt$NotificationScheduler${}</ID>
@@ -130,7 +128,6 @@
     <ID>FunctionNaming:AppAnimations.kt$@Composable fun SharedProgressIndicator( currentStep: Int, totalSteps: Int, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:AppAnimations.kt$GestureEnhancements$@Composable fun InteractiveButton( onClick: () -&gt; Unit, modifier: Modifier = Modifier, hapticType: HapticFeedbackType = HapticFeedbackType.TextHandleMove, content: @Composable RowScope.() -&gt; Unit )</ID>
     <ID>FunctionNaming:AppAnimations.kt$GestureEnhancements$@Composable fun SwipeToCompleteCard( onComplete: () -&gt; Unit, modifier: Modifier = Modifier, threshold: Dp = 72.dp, content: @Composable (swipeProgress: Float) -&gt; Unit )</ID>
-    <ID>FunctionNaming:AppNavHost.kt$@Composable fun AppNavHost( appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null, sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null, studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null, taskRepository: com.mtlc.studyplan.data.TaskRepository? = null )</ID>
     <ID>FunctionNaming:AppNavHost.kt$@Composable private fun EnhancedNavigationBar( currentRoute: String, tabs: List&lt;Triple&lt;String, androidx.compose.ui.graphics.vector.ImageVector, String&gt;&gt;, onTabSelected: (String) -&gt; Unit )</ID>
     <ID>FunctionNaming:AuthenticationScreens.kt$@Composable fun BiometricAuthenticationScreen( authManager: AuthenticationManager, onSuccess: () -&gt; Unit, onFallback: () -&gt; Unit )</ID>
     <ID>FunctionNaming:AuthenticationScreens.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AuthenticationScreen( authManager: AuthenticationManager, onAuthenticationSuccess: () -&gt; Unit, onAuthenticationFailed: (String) -&gt; Unit = {} )</ID>
@@ -390,7 +387,6 @@
     <ID>FunctionNaming:StudyPlanOverviewScreen.kt$@Composable private fun WeeklyScheduleView( weeklyPlan: WeeklyStudyPlan, studySchedule: StudyScheduleData, taskStats: TaskStats, onDayClick: (DailyStudyInfo) -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:StudyPlanOverviewScreen.kt$@Composable private fun WelcomeProgressCard()</ID>
     <ID>FunctionNaming:StudyPlanOverviewScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun StudyPlanOverviewScreen( appIntegrationManager: AppIntegrationManager, studyProgressRepository: StudyProgressRepository, onNavigateBack: () -&gt; Unit = {}, initialTab: StudyPlanTab = StudyPlanTab.WEEKLY )</ID>
-    <ID>FunctionNaming:StudyPlanTheme.kt$@Composable fun StudyPlanTheme( themeManager: ThemeManager, content: @Composable () -&gt; Unit )</ID>
     <ID>FunctionNaming:StudyPlanTopBar.kt$@Composable fun CompactFloatingLanguageSwitcher( modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:StudyPlanTopBar.kt$@Composable fun FloatingLanguageSwitcher( modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:StudyPlanTopBar.kt$@Composable fun SocialHeaderTopBar( cards: List&lt;TopBarCard&gt;, modifier: Modifier = Modifier )</ID>
@@ -399,9 +395,6 @@
     <ID>FunctionNaming:StudyPlanTopBar.kt$@Composable fun TopBarCardItem( card: TopBarCard, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:StudyPlanTopBar.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun StudyPlanTopBar( title: String, modifier: Modifier = Modifier, subtitle: String? = null, navigationIcon: ImageVector? = null, onNavigationClick: (() -&gt; Unit)? = null, showLanguageSwitcher: Boolean = false, style: StudyPlanTopBarStyle = StudyPlanTopBarStyle.Default, actions: @Composable RowScope.() -&gt; Unit = {} )</ID>
     <ID>FunctionNaming:TaskCard.kt$@Composable fun TaskCard( task: Task, checked: Boolean, onCheckedChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, showExpandedDetails: Boolean = false, onExpandToggle: (() -&gt; Unit)? = null, enableSwipeToComplete: Boolean = false, currentStreak: Int = 0, showPointsInfo: Boolean = true )</ID>
-    <ID>FunctionNaming:Theme.kt$@Composable fun StudyPlanTheme( darkTheme: Boolean = isSystemInDarkTheme(), // Dynamic color is available on Android 12+ dynamicColor: Boolean = true, // Dinamik rengi varsayılan olarak açık bıraktık content: @Composable () -&gt; Unit )</ID>
-    <ID>FunctionNaming:Theme.kt$@Composable fun StudyPlanTheme( themeManager: com.mtlc.studyplan.theme.ThemeManager, dynamicColor: Boolean = true, content: @Composable () -&gt; Unit )</ID>
-    <ID>FunctionNaming:ThemeSwitcher.kt$@Composable fun ThemeSwitcher( currentTheme: ThemeMode, onThemeChange: (ThemeMode) -&gt; Unit, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:TodayScreen.kt$@Composable fun TodayRoute( vm: TodayViewModel = viewModel(), onNavigateToPlan: () -&gt; Unit = {}, onNavigateToLesson: (String) -&gt; Unit = {}, onNavigateToFocus: (String) -&gt; Unit = {} )</ID>
     <ID>FunctionNaming:TodayScreen.kt$@Composable private fun SessionCard( s: SessionUi, onStart: (String) -&gt; Unit, onSkip: (String) -&gt; Unit, onReschedule: (LocalDateTime) -&gt; Unit = {}, onNavigateToFocus: (String) -&gt; Unit = {} )</ID>
     <ID>FunctionNaming:TodayScreen.kt$@Composable private fun SwipeableSession( session: SessionUi, onStart: (String) -&gt; Unit, onReschedule: (LocalDateTime) -&gt; Unit, onNavigateToFocus: (String) -&gt; Unit = {} )</ID>
@@ -442,7 +435,6 @@
     <ID>FunctionNaming:WelcomeScreen.kt$@Composable private fun StatItem( value: String, label: String, icon: ImageVector )</ID>
     <ID>FunctionNaming:WelcomeScreen.kt$@Composable private fun TestimonialCard(testimonial: TestimonialData)</ID>
     <ID>FunctionNaming:WelcomeScreen.kt$@Composable private fun TestimonialsSection(isVisible: Boolean)</ID>
-    <ID>FunctionNaming:WorkingHomeScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WorkingHomeScreen( appIntegrationManager: AppIntegrationManager, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, onNavigateToTasks: () -&gt; Unit = {}, onNavigateToWeeklyPlan: () -&gt; Unit = {}, onNavigateToExamDetails: () -&gt; Unit = {}, onNavigateToStudyPlan: () -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:WorkingTasksScreen.kt$@Composable private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -&gt; Unit)</ID>
     <ID>FunctionNaming:WorkingTasksScreen.kt$@Composable private fun DailyTab( selectedDay: DayPlan?, currentWeek: Int = 1, taskRepository: TaskRepository, sharedViewModel: SharedAppViewModel, onBackToPlan: () -&gt; Unit )</ID>
     <ID>FunctionNaming:WorkingTasksScreen.kt$@Composable private fun DailyTaskItem(task: DailyTask)</ID>
@@ -490,7 +482,6 @@
     <ID>LongMethod:AnalyticsScreen.kt$@Composable fun LineChart( data: List&lt;Float&gt;, labels: List&lt;String&gt;, modifier: Modifier = Modifier, animateEntry: Boolean = true )</ID>
     <ID>LongMethod:AnimatedNavigation.kt$EnhancedNavigation$@OptIn(ExperimentalAnimationApi::class) @Composable fun createTransitionSpec( style: NavigationTransitionStyle ): AnimatedContentTransitionScope&lt;NavBackStackEntry&gt;.() -&gt; ContentTransform</ID>
     <ID>LongMethod:AppAnimations.kt$StudyPlanMicroInteractions$@Composable fun enhancedTaskCompletionAnimation( isCompleted: Boolean, onProgressUpdate: (Float) -&gt; Unit = {}, onAnimationComplete: () -&gt; Unit = {} ): TaskCompletionAnimationState</ID>
-    <ID>LongMethod:AppNavHost.kt$@Composable fun AppNavHost( appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null, sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null, studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null, taskRepository: com.mtlc.studyplan.data.TaskRepository? = null )</ID>
     <ID>LongMethod:AppNavHost.kt$@Composable private fun EnhancedNavigationBar( currentRoute: String, tabs: List&lt;Triple&lt;String, androidx.compose.ui.graphics.vector.ImageVector, String&gt;&gt;, onTabSelected: (String) -&gt; Unit )</ID>
     <ID>LongMethod:AuthenticationScreens.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AuthenticationScreen( authManager: AuthenticationManager, onAuthenticationSuccess: () -&gt; Unit, onAuthenticationFailed: (String) -&gt; Unit = {} )</ID>
     <ID>LongMethod:AuthenticationScreens.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FirstTimeSetupScreen( authManager: AuthenticationManager, onSetupComplete: () -&gt; Unit )</ID>
@@ -593,7 +584,6 @@
     <ID>LongMethod:WelcomeScreen.kt$@Composable private fun KeyFeaturesSection(isVisible: Boolean)</ID>
     <ID>LongMethod:WelcomeScreen.kt$@Composable private fun TestimonialCard(testimonial: TestimonialData)</ID>
     <ID>LongMethod:WelcomeScreen.kt$@Composable private fun TestimonialsSection(isVisible: Boolean)</ID>
-    <ID>LongMethod:WorkingHomeScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WorkingHomeScreen( appIntegrationManager: AppIntegrationManager, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, onNavigateToTasks: () -&gt; Unit = {}, onNavigateToWeeklyPlan: () -&gt; Unit = {}, onNavigateToExamDetails: () -&gt; Unit = {}, onNavigateToStudyPlan: () -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:WorkingTasksScreen.kt$@Composable private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -&gt; Unit)</ID>
     <ID>LongMethod:WorkingTasksScreen.kt$@Composable private fun DailyTab( selectedDay: DayPlan?, currentWeek: Int = 1, taskRepository: TaskRepository, sharedViewModel: SharedAppViewModel, onBackToPlan: () -&gt; Unit )</ID>
     <ID>LongMethod:WorkingTasksScreen.kt$@Composable private fun PlanTab( thisWeek: WeekPlan?, weeklyProgressPct: Float, onDayClick: (DayPlan) -&gt; Unit = {}, onNavigateToStudyPlan: () -&gt; Unit = {} )</ID>
@@ -608,7 +598,6 @@
     <ID>LongParameterList:AnalyticsScreen.kt$( title: String, value: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: Color, modifier: Modifier = Modifier )</ID>
     <ID>LongParameterList:AnimatedNavigation.kt$EnhancedNavigation$( navController: NavHostController, route: String, hapticType: HapticFeedbackType = HapticFeedbackType.TextHandleMove, popUpTo: String? = null, inclusive: Boolean = false, launchSingleTop: Boolean = true )</ID>
     <ID>LongParameterList:AnimationManager.kt$AnimationManager$( textView: TextView, fromValue: Int, toValue: Int, duration: Long = DURATION_MEDIUM, prefix: String = "", suffix: String = "" )</ID>
-    <ID>LongParameterList:AppNavHost.kt$( appIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager? = null, sharedViewModel: com.mtlc.studyplan.shared.SharedAppViewModel? = null, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager? = null, studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository? = null, taskRepository: com.mtlc.studyplan.data.TaskRepository? = null )</ID>
     <ID>LongParameterList:BadgeComponents.kt$( selected: Boolean, onClick: () -&gt; Unit, onBadgeCleared: () -&gt; Unit, icon: ImageVector, label: String, badgeState: BadgeState, modifier: Modifier = Modifier )</ID>
     <ID>LongParameterList:CustomizePlanScreen.kt$( plan: List&lt;WeekPlan&gt;, overrides: UserPlanOverrides, startEpochDay: Long, onBack: () -&gt; Unit, onToggleHidden: (taskId: String, hidden: Boolean) -&gt; Unit, onRequestEdit: (taskId: String, currentDesc: String?, currentDetails: String?) -&gt; Unit, onAddTask: (week: Int, dayIndex: Int) -&gt; Unit, )</ID>
     <ID>LongParameterList:CustomizePlanScreen.kt$( week: WeekPlan, overrides: UserPlanOverrides, startEpochDay: Long, onToggleHidden: (taskId: String, hidden: Boolean) -&gt; Unit, onRequestEdit: (taskId: String, currentDesc: String?, currentDetails: String?) -&gt; Unit, onAddTask: (week: Int, dayIndex: Int) -&gt; Unit, )</ID>
@@ -657,7 +646,6 @@
     <ID>LongParameterList:TodayScreen.kt$( state: TodayUiState, dailyBudgetMinutes: Int? = null, onStart: (String) -&gt; Unit, onSnackbarShown: () -&gt; Unit, onViewPlan: () -&gt; Unit = {}, onRefresh: () -&gt; Unit = {}, onReschedule: (String, LocalDateTime) -&gt; Unit = {_, _ -&gt; }, onNavigateToFocus: (String) -&gt; Unit = {}, showFloatingActionButton: Boolean = false, )</ID>
     <ID>LongParameterList:Tooltip.kt$( tooltipId: String, isVisible: Boolean, onShowTooltip: (String) -&gt; Unit, modifier: Modifier = Modifier, pulseColor: Color = MaterialTheme.colorScheme.primary, content: @Composable () -&gt; Unit )</ID>
     <ID>LongParameterList:UiStateManager.kt$( state: UiState, onRetry: (() -&gt; Unit)? = null, loadingContent: @Composable (UiState.Loading) -&gt; Unit = { DefaultLoadingContent(it) }, errorContent: @Composable (UiState.Error) -&gt; Unit = { DefaultErrorContent(it, onRetry) }, emptyContent: @Composable (UiState.Empty) -&gt; Unit = { DefaultEmptyContent(it) }, offlineContent: @Composable (UiState.Offline) -&gt; Unit = { DefaultOfflineContent(it) }, content: @Composable () -&gt; Unit )</ID>
-    <ID>LongParameterList:WorkingHomeScreen.kt$( appIntegrationManager: AppIntegrationManager, themeManager: com.mtlc.studyplan.theme.ThemeManager? = null, onNavigateToTasks: () -&gt; Unit = {}, onNavigateToWeeklyPlan: () -&gt; Unit = {}, onNavigateToExamDetails: () -&gt; Unit = {}, onNavigateToStudyPlan: () -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>LongParameterList:WorkingTasksScreen.kt$( appIntegrationManager: AppIntegrationManager, studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository, taskRepository: TaskRepository, sharedViewModel: SharedAppViewModel, onNavigateToStudyPlan: () -&gt; Unit = {}, modifier: Modifier = Modifier )</ID>
     <ID>LoopWithTooManyJumpStatements:PlanRepository.kt$while</ID>
     <ID>MatchingDeclarationName:AchievementTokens.kt$AchievementPalette</ID>
@@ -1213,13 +1201,10 @@
     <ID>NewLineAtEndOfFile:StreakDao.kt$com.mtlc.studyplan.database.dao.StreakDao.kt</ID>
     <ID>NewLineAtEndOfFile:StreakEntity.kt$com.mtlc.studyplan.database.entities.StreakEntity.kt</ID>
     <ID>NewLineAtEndOfFile:StreakRepository.kt$com.mtlc.studyplan.repository.StreakRepository.kt</ID>
-    <ID>NewLineAtEndOfFile:StudyPlanTheme.kt$com.mtlc.studyplan.theme.StudyPlanTheme.kt</ID>
     <ID>NewLineAtEndOfFile:StudyProgressRepository.kt$com.mtlc.studyplan.data.StudyProgressRepository.kt</ID>
     <ID>NewLineAtEndOfFile:TaskDao.kt$com.mtlc.studyplan.database.dao.TaskDao.kt</ID>
     <ID>NewLineAtEndOfFile:TaskRepository.kt$com.mtlc.studyplan.repository.TaskRepository.kt</ID>
     <ID>NewLineAtEndOfFile:ThemeIntegration.kt$com.mtlc.studyplan.settings.integration.ThemeIntegration.kt</ID>
-    <ID>NewLineAtEndOfFile:ThemeManager.kt$com.mtlc.studyplan.theme.ThemeManager.kt</ID>
-    <ID>NewLineAtEndOfFile:ThemeSwitcher.kt$com.mtlc.studyplan.ui.components.ThemeSwitcher.kt</ID>
     <ID>NewLineAtEndOfFile:ToastManager.kt$com.mtlc.studyplan.utils.ToastManager.kt</ID>
     <ID>NewLineAtEndOfFile:ToggleSettingView.kt$com.mtlc.studyplan.settings.ui.views.ToggleSettingView.kt</ID>
     <ID>NewLineAtEndOfFile:Tooltip.kt$com.mtlc.studyplan.ui.components.Tooltip.kt</ID>
@@ -1313,7 +1298,6 @@
     <ID>SwallowedException:SettingsViewModel.kt$SettingsViewModel$exception: Exception</ID>
     <ID>SwallowedException:SocialScreen.kt$e: Exception</ID>
     <ID>SwallowedException:StudyPlanDatabase.kt$StudyPlanDatabase.Companion$e: Exception</ID>
-    <ID>SwallowedException:ThemeManager.kt$ThemeManager$e: Exception</ID>
     <ID>ThrowsCount:DataArchitectureValidator.kt$DataArchitectureValidator$private suspend fun validateIntegrationManager()</ID>
     <ID>ThrowsCount:SettingsEncryption.kt$SettingsEncryption$private fun validateAndExtractData(decryptedContent: String, encryptedData: EncryptedData): String</ID>
     <ID>ThrowsCount:SettingsRepository.kt$SettingsRepository$suspend fun updateGamificationSetting(id: String, value: Any)</ID>
@@ -1405,7 +1389,6 @@
     <ID>TooGenericExceptionCaught:SocialScreen.kt$error: Exception</ID>
     <ID>TooGenericExceptionCaught:StatePreservationManager.kt$StatePreservationManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:StudyPlanDatabase.kt$StudyPlanDatabase.Companion$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ThemeManager.kt$ThemeManager$e: Exception</ID>
     <ID>TooGenericExceptionThrown:DataArchitectureValidator.kt$DataArchitectureValidator$throw Exception("App state not properly initialized")</ID>
     <ID>TooGenericExceptionThrown:DataArchitectureValidator.kt$DataArchitectureValidator$throw Exception("App state timestamp not properly set")</ID>
     <ID>TooGenericExceptionThrown:DataArchitectureValidator.kt$DataArchitectureValidator$throw Exception("Data flow validation failed: ${e.message}")</ID>

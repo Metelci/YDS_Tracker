@@ -23,7 +23,7 @@ object TestDataFactory {
     fun createTestTask(
         id: String = "task_${UUID.randomUUID()}",
         title: String = "Test Task",
-        description: String? = "Test task description",
+        description: String = "Test task description",
         category: TaskCategory = TaskCategory.GRAMMAR,
         priority: TaskPriority = TaskPriority.MEDIUM,
         difficulty: TaskDifficulty = TaskDifficulty.MEDIUM,
@@ -33,14 +33,14 @@ object TestDataFactory {
         completedAt: Long? = null,
         createdAt: Long = BASE_TIMESTAMP + random.nextInt(86400000), // Random time within 24h
         dueDate: Long? = null,
-        tags: String = "[]",
-        streakContribution: Int = 1,
+        tags: List<String> = emptyList(),
+        streakContribution: Boolean = true,
         pointsValue: Int = 10,
         isActive: Boolean = true,
         parentTaskId: String? = null,
         orderIndex: Int = 0,
         notes: String? = null,
-        attachments: String = "[]",
+        attachments: List<String> = emptyList(),
         reminderTime: Long? = null,
         isRecurring: Boolean = false,
         recurringPattern: String? = null,
@@ -84,8 +84,8 @@ object TestDataFactory {
         category: TaskCategory = TaskCategory.GRAMMAR
     ): TaskEntity {
         val tags = if (dependencies.isNotEmpty()) {
-            """["dependency:${dependencies.joinToString(",")}"]"""
-        } else "[]"
+            dependencies.map { "dependency:$it" }
+        } else emptyList()
 
         return createTestTask(
             id = id,
@@ -170,8 +170,8 @@ object TestDataFactory {
         tasks.addAll(createCategoryTasks("listening", TaskCategory.LISTENING, 4, taskIndex))
         taskIndex += 4
 
-        // Writing section
-        tasks.addAll(createCategoryTasks("writing", TaskCategory.WRITING, 3, taskIndex))
+        // Other section
+        tasks.addAll(createCategoryTasks("other", TaskCategory.OTHER, 3, taskIndex))
 
         return tasks
     }
@@ -201,7 +201,7 @@ object TestDataFactory {
                 completedAt = if (isCompleted) BASE_TIMESTAMP + random.nextInt(86400000) else null,
                 actualMinutes = if (isCompleted) 15 + random.nextInt(35) else 0,
                 pointsValue = 5 + random.nextInt(15), // 5-20 points
-                streakContribution = if (isCompleted) 1 else 0
+                streakContribution = isCompleted
             )
         }
     }
@@ -219,7 +219,7 @@ object TestDataFactory {
             val dailyTasks = 3 + random.nextInt(3) // 3-5 tasks per day
 
             for (taskNum in 1..dailyTasks) {
-                val category = TaskCategory.entries.random(random)
+                val category = TaskCategory.entries[random.nextInt(TaskCategory.entries.size)]
                 val isCompleted = random.nextFloat() < 0.4f // 40% completion rate
 
                 tasks.add(createTestTask(
@@ -360,8 +360,7 @@ object TestDataFactory {
             TaskCategory.VOCABULARY -> listOf("Words", "Terms", "Phrases", "Expressions", "Vocabulary")
             TaskCategory.READING -> listOf("Comprehension", "Passages", "Texts", "Articles", "Stories")
             TaskCategory.LISTENING -> listOf("Audio", "Conversations", "Lectures", "Podcasts", "Dialogues")
-            TaskCategory.WRITING -> listOf("Essays", "Letters", "Reports", "Summaries", "Compositions")
-            TaskCategory.SPEAKING -> listOf("Pronunciation", "Fluency", "Conversations", "Presentations", "Discussions")
+            TaskCategory.OTHER -> listOf("Tasks", "Activities", "Exercises", "Practice", "Drills")
         }
 
         val adjective = adjectives[random.nextInt(adjectives.size)]

@@ -80,7 +80,6 @@ fun PrivacySettingsScreen(onBack: () -> Unit) {
         Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Privacy"))) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Privacy", Icons.Filled.Shield)
-                SettingRowToggle(title = "Analytics", description = "Help improve the app with usage data", checked = true) { }
                 SettingRowToggle(title = "Secure Storage", description = "Encrypt sensitive data", checked = true) { }
                 SettingRowToggle(title = "Data Sharing", description = "Share anonymized data for research", checked = false) { }
             }
@@ -233,13 +232,7 @@ private fun NavigationCategoryCard() {
             ) {
                 settingsManager.updateNavigationSettings(navSettings.copy(hapticFeedback = it))
             }
-            SettingRowToggle(
-                title = "Dark Mode",
-                description = "Use dark theme throughout the app",
-                checked = navSettings.darkMode
-            ) {
-                settingsManager.updateNavigationSettings(navSettings.copy(darkMode = it))
-            }
+            // Dark Mode toggle removed
         }
     }
 }

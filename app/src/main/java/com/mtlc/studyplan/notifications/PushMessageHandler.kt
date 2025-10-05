@@ -29,7 +29,7 @@ class PushMessageHandler @Inject constructor(
         }
     }
 
-    private suspend fun handleStudyReminder(message: PushMessage) {
+    suspend fun handleStudyReminder(message: PushMessage) {
         val title = message.title ?: "Study Reminder"
         val body = message.body ?: "Time to continue your studies!"
 
@@ -43,7 +43,7 @@ class PushMessageHandler @Inject constructor(
         pushAnalyticsManager.trackPushNotification("study_reminder", true)
     }
 
-    private suspend fun handleAchievementNotification(message: PushMessage) {
+    suspend fun handleAchievementNotification(message: PushMessage) {
         val title = message.title ?: "Achievement Unlocked!"
         val body = message.body ?: "Congratulations on your achievement!"
 
@@ -56,7 +56,7 @@ class PushMessageHandler @Inject constructor(
         pushAnalyticsManager.trackPushNotification("achievement", true)
     }
 
-    private suspend fun handleExamUpdate(message: PushMessage) {
+    suspend fun handleExamUpdate(message: PushMessage) {
         val title = message.title ?: "Exam Update"
         val body = message.body ?: "Important exam information available"
 
@@ -69,7 +69,7 @@ class PushMessageHandler @Inject constructor(
         pushAnalyticsManager.trackPushNotification("exam_update", true)
     }
 
-    private suspend fun handleMotivationalMessage(message: PushMessage) {
+    suspend fun handleMotivationalMessage(message: PushMessage) {
         val title = message.title ?: "Stay Motivated!"
         val body = message.body ?: "Keep pushing forward!"
 
@@ -82,7 +82,7 @@ class PushMessageHandler @Inject constructor(
         pushAnalyticsManager.trackPushNotification("motivational", true)
     }
 
-    private suspend fun handleSystemNotification(message: PushMessage) {
+    suspend fun handleSystemNotification(message: PushMessage) {
         val title = message.title ?: "System Notification"
         val body = message.body ?: "Important system message"
 
@@ -95,7 +95,7 @@ class PushMessageHandler @Inject constructor(
         pushAnalyticsManager.trackPushNotification("system", true)
     }
 
-    private suspend fun handleCustomNotification(message: PushMessage) {
+    suspend fun handleCustomNotification(message: PushMessage) {
         val title = message.title ?: "Notification"
         val body = message.body ?: "You have a new message"
 

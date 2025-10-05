@@ -399,12 +399,7 @@ fun testLightAndDarkTheme() {
         }
     }
 
-    // Test dark theme
-    composeTestRule.setContent {
-        StudyPlanTheme(darkTheme = true) {
-            ExampleCard(item = sampleItem)
-        }
-    }
+    // App uses light theme only
 }
 ```
 
@@ -514,7 +509,7 @@ Before submitting a PR with UI changes, ensure:
 - [ ] **Consistent spacing** (`LocalSpacing.current.*`)
 - [ ] **Shape tokens used** (`ShapeTokens.*`)
 - [ ] **Typography from theme** (`MaterialTheme.typography.*`)
-- [ ] **Both light and dark themes tested**
+- [ ] **Light theme tested**
 - [ ] **Accessibility content descriptions added**
 - [ ] **No hard-coded values** (colors, spacing, shapes)
 

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.firebase.messaging.RemoteMessage
+import com.mtlc.studyplan.notifications.PushMessage
+import com.mtlc.studyplan.notifications.PushMessageType
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -31,6 +33,9 @@ class FirebaseMessagingServiceTest {
 
     @Mock
     private lateinit var pushNotificationManager: PushNotificationManager
+    
+    @Mock
+    private lateinit var pushMessageHandler: PushMessageHandler
 
     
 
@@ -42,6 +47,8 @@ class FirebaseMessagingServiceTest {
         // Enable push notifications
         runBlocking {
             whenever(pushNotificationManager.arePushNotificationsEnabled()).thenReturn(true)
+            // Mock the handleIncomingMessage method to do nothing in tests
+            // We'll verify this is called instead of the specific handlers
         }
 
         // Create service instance
