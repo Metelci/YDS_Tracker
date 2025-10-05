@@ -2,8 +2,9 @@
 <resources>
 
     <style name="Theme.StudyPlan" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Pre-23 devices: use a solid status bar color to ensure contrast -->
+        <item name="android:statusBarColor">@color/md_theme_light_surfaceVariant</item>
+        <!-- windowLightStatusBar is respected on API 23+; kept in -v23 override -->
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
 
         <!-- Material 3 color attributes for compatibility -->

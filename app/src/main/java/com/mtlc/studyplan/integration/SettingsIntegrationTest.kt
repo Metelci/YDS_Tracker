@@ -1,6 +1,5 @@
 package com.mtlc.studyplan.integration
 
-import com.mtlc.studyplan.settings.data.ThemeMode
 import com.mtlc.studyplan.settings.data.UserSettings
 import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.validation.SettingsValidationManager
@@ -18,14 +17,7 @@ class SettingsIntegrationValidator {
         val defaultValidation = validationManager.validateSettings(defaultSettings)
         report.addTest("Default Settings", defaultValidation.none { it is ValidationResult.Error })
 
-        // Test 2: Theme mode changes
-        val lightThemeSettings = defaultSettings.copy(themeMode = ThemeMode.LIGHT)
-        val darkThemeSettings = defaultSettings.copy(themeMode = ThemeMode.DARK)
-        val systemThemeSettings = defaultSettings.copy(themeMode = ThemeMode.SYSTEM)
-
-        report.addTest("Light Theme", validationManager.validateSettings(lightThemeSettings).none { it is ValidationResult.Error })
-        report.addTest("Dark Theme", validationManager.validateSettings(darkThemeSettings).none { it is ValidationResult.Error })
-        report.addTest("System Theme", validationManager.validateSettings(systemThemeSettings).none { it is ValidationResult.Error })
+        // Theme mode removed; light theme only
 
         // Test 3: Notification dependency validation
         val invalidNotificationSettings = defaultSettings.copy(
@@ -55,7 +47,6 @@ class SettingsIntegrationValidator {
 
         // Test 6: All settings enabled (stress test)
         val allEnabledSettings = UserSettings(
-            themeMode = ThemeMode.DARK,
             notificationsEnabled = true,
             studyRemindersEnabled = true,
             achievementNotificationsEnabled = true,
@@ -67,7 +58,7 @@ class SettingsIntegrationValidator {
             socialSharingEnabled = true,
             hapticFeedbackEnabled = true,
             weekendModeEnabled = true,
-            smartSchedulingEnabled = true,
+            // smartSchedulingEnabled removed
             autoDifficultyEnabled = true
         )
         val allEnabledValidation = validationManager.validateSettings(allEnabledSettings)
@@ -75,7 +66,6 @@ class SettingsIntegrationValidator {
 
         // Test 7: All settings disabled (minimal test)
         val allDisabledSettings = UserSettings(
-            themeMode = ThemeMode.LIGHT,
             notificationsEnabled = false,
             studyRemindersEnabled = false,
             achievementNotificationsEnabled = false,
@@ -87,7 +77,7 @@ class SettingsIntegrationValidator {
             socialSharingEnabled = false,
             hapticFeedbackEnabled = false,
             weekendModeEnabled = false,
-            smartSchedulingEnabled = false,
+            // smartSchedulingEnabled removed
             autoDifficultyEnabled = false
         )
         val allDisabledValidation = validationManager.validateSettings(allDisabledSettings)
@@ -99,7 +89,6 @@ class SettingsIntegrationValidator {
     fun validateSettingsKeys(): Boolean {
         val allKeys = SettingsKeys.allKeys
         val requiredKeys = setOf(
-            SettingsKeys.Appearance.THEME_MODE,
             SettingsKeys.Notifications.PUSH_NOTIFICATIONS,
             SettingsKeys.Gamification.STREAK_TRACKING,
             SettingsKeys.Data.OFFLINE_MODE,
@@ -111,10 +100,7 @@ class SettingsIntegrationValidator {
 
     fun validateThemeIntegration(): Boolean {
         // Test that all theme modes are properly defined
-        val theModes = ThemeMode.entries
-        return theModes.contains(ThemeMode.LIGHT) &&
-               theModes.contains(ThemeMode.DARK) &&
-               theModes.contains(ThemeMode.SYSTEM)
+        return true
     }
 
     fun generateIntegrationReport(): String {

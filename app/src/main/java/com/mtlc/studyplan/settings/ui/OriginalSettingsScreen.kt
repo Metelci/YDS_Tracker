@@ -82,7 +82,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// removed dark theme checks
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.data.OnboardingRepository
@@ -98,6 +97,10 @@ import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
+
+// Avoid name clash with Composable named GamificationSettings in other modules
+import com.mtlc.studyplan.settings.data.ProfileVisibility
+import com.mtlc.studyplan.settings.data.PrivacySettings
 
 
 data class SettingsTab(
@@ -308,9 +311,9 @@ fun OriginalSettingsScreen(
                     }
                     "navigation" -> NavigationSettingsContent(settingsManager)
                     "notifications" -> NotificationsSettingsContent(settingsManager)
-                    "gamification" -> GamificationSettingsContent()
+                    "gamification" -> GamificationSettingsContent(settingsManager)
                     "social" -> SocialSettingsContent(settingsManager)
-                    "privacy" -> PrivacySettingsContent()
+                    "privacy" -> PrivacySettingsContent(settingsManager)
                 }
             }
 
@@ -557,9 +560,10 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
                 icon = Icons.Outlined.Schedule,
                 title = "Smart Scheduling",
                 description = "AI-powered study session recommendations",
-                checked = taskSettings.smartScheduling,
+                checked = false,
+                // Smart Scheduling toggle removed
                 onCheckedChange = { checked ->
-                    settingsManager.updateTaskSettings(taskSettings.copy(smartScheduling = checked))
+                    // Removed handler for Smart Scheduling
                 }
             )
 
@@ -657,7 +661,9 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
 }
 
 @Composable
-private fun GamificationSettingsContent() {
+private fun GamificationSettingsContent(settingsManager: SettingsPreferencesManager) {
+    val gamificationSettings by settingsManager.gamificationSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.GamificationSettings())
+
     SettingsCard(
         title = "Gamification",
         icon = Icons.Outlined.EmojiEvents
@@ -669,16 +675,20 @@ private fun GamificationSettingsContent() {
                 icon = Icons.Outlined.Star,
                 title = "Point System",
                 description = "Earn points for completing tasks",
-                checked = true,
-                onCheckedChange = { }
+                checked = gamificationSettings.pointsAndRewards,
+                onCheckedChange = { checked ->
+                    settingsManager.updateGamificationSettings(gamificationSettings.copy(pointsAndRewards = checked))
+                }
             )
 
             SettingToggleItem(
                 icon = Icons.Outlined.EmojiEvents,
-                title = "Achievements",
-                description = "Unlock achievements and badges",
-                checked = true,
-                onCheckedChange = { }
+                title = "Celebration Effects",
+                description = "Show animations and effects for achievements",
+                checked = gamificationSettings.celebrationEffects,
+                onCheckedChange = { checked ->
+                    settingsManager.updateGamificationSettings(gamificationSettings.copy(celebrationEffects = checked))
+                }
             )
         }
     }
@@ -935,7 +945,8 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
 }
 
 @Composable
-private fun PrivacySettingsContent() {
+private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) {
+    val privacySettings by settingsManager.privacySettings.collectAsState(initial = PrivacySettings())
 
     SettingsCard(
         title = "Privacy",
@@ -946,18 +957,23 @@ private fun PrivacySettingsContent() {
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Assessment,
-                title = "Analytics",
-                description = "Help improve the app with usage data",
-                checked = true,
-                onCheckedChange = { }
+                title = "Progress Sharing",
+                description = "Share your progress with others",
+                checked = privacySettings.progressSharing,
+                onCheckedChange = { checked ->
+                    settingsManager.updatePrivacySettings(privacySettings.copy(progressSharing = checked))
+                }
             )
 
             SettingToggleItem(
-                icon = Icons.Outlined.Security,
-                title = "Secure Storage",
-                description = "Encrypt sensitive data",
-                checked = true,
-                onCheckedChange = { }
+                icon = Icons.Outlined.People,
+                title = "Profile Sharing",
+                description = "Allow others to view your profile",
+                checked = privacySettings.profileVisibility == ProfileVisibility.PUBLIC,
+                onCheckedChange = { checked ->
+                    val newVisibility = if (checked) ProfileVisibility.PUBLIC else ProfileVisibility.FRIENDS_ONLY
+                    settingsManager.updatePrivacySettings(privacySettings.copy(profileVisibility = newVisibility))
+                }
             )
         }
     }
@@ -1359,7 +1375,4 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
-
-
-
 

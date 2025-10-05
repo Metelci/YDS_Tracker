@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.lerp
-// removed luminance-based dark theme checks
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -161,6 +160,7 @@ fun StudyPlanTopBar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     val context = LocalContext.current
+    val activity = (context as? android.app.Activity)
     val languageManager = rememberLanguageManager(context)
     val coroutineScope = rememberCoroutineScope()
     val appearance = rememberTopBarAppearance(style)
@@ -407,7 +407,7 @@ fun StudyPlanTopBar(
                         LanguageSwitcher(
                             currentLanguage = languageManager.currentLanguage,
                             onLanguageChanged = { newLanguage ->
-                                coroutineScope.launch { languageManager.changeLanguage(newLanguage) }
+                                coroutineScope.launch { languageManager.changeLanguage(newLanguage, activity) }
                             }
                         )
                     }
@@ -425,6 +425,7 @@ fun FloatingLanguageSwitcher(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val activity = (context as? android.app.Activity)
     val languageManager = rememberLanguageManager(context)
     val coroutineScope = rememberCoroutineScope()
 
@@ -440,14 +441,14 @@ fun FloatingLanguageSwitcher(
             shadowElevation = 2.dp
         ) {
             Box(modifier = Modifier.padding(6.dp)) {
-                LanguageSwitcher(
-                    currentLanguage = languageManager.currentLanguage,
-                    onLanguageChanged = { newLanguage ->
-                        coroutineScope.launch { languageManager.changeLanguage(newLanguage) }
+                        LanguageSwitcher(
+                            currentLanguage = languageManager.currentLanguage,
+                            onLanguageChanged = { newLanguage ->
+                                coroutineScope.launch { languageManager.changeLanguage(newLanguage, activity) }
+                            }
+                        )
                     }
-                )
-            }
-        }
+                }
     }
 }
 

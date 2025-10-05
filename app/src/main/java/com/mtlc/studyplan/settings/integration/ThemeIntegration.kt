@@ -41,11 +41,7 @@ class ThemeIntegration(
         settingsRepository.settingsState
             .map { settings ->
                 ThemeState(
-                    darkTheme = when (settingsRepository.getString(SettingsKeys.Appearance.THEME_MODE, "system")) {
-                        "dark" -> true
-                        "light" -> false
-                        else -> false // system default handled in compose
-                    },
+                    darkTheme = false,
                     dynamicColor = settingsRepository.getString(SettingsKeys.Appearance.ACCENT_COLOR, "blue") != "custom",
                     accentColor = settingsRepository.getString(SettingsKeys.Appearance.ACCENT_COLOR, "blue"),
                     fontSize = when (settingsRepository.getString(SettingsKeys.Appearance.FONT_SIZE, "normal")) {
@@ -74,9 +70,7 @@ class ThemeIntegration(
     /**
      * Apply theme settings to the app
      */
-    suspend fun updateThemeMode(mode: String) {
-        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.THEME_MODE, mode))
-    }
+    suspend fun updateThemeMode(mode: String) { /* no-op: dark/system theme removed */ }
 
     suspend fun updateAccentColor(color: String) {
         settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString(SettingsKeys.Appearance.ACCENT_COLOR, color))
@@ -103,20 +97,12 @@ class ThemeIntegration(
     /**
      * Get theme mode for compose
      */
-    fun getComposeThemeMode(): ThemeMode {
-        return when (_themeState.value.darkTheme) {
-            true -> ThemeMode.Dark
-            false -> ThemeMode.Light
-        }
-    }
+    fun getComposeThemeMode(): ThemeMode = ThemeMode.Light
 
     /**
      * Check if we should use system theme
      */
-    fun shouldUseSystemTheme(): Boolean {
-        val themeMode = settingsRepository.getString(SettingsKeys.Appearance.THEME_MODE, "system")
-        return themeMode == "system"
-    }
+    fun shouldUseSystemTheme(): Boolean = false
 }
 
 enum class ThemeMode {

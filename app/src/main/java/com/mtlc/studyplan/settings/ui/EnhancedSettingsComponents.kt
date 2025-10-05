@@ -177,15 +177,7 @@ fun EnhancedToggleSwitch(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = checked,
-                enabled = enabled,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    onCheckedChange(!checked)
-                }
-            ),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

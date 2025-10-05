@@ -142,15 +142,7 @@ object SettingsDefaults {
                     defaultValue = true,
                     sortOrder = 1
                 ),
-                ToggleSetting(
-                    id = "performance_analytics",
-                    title = "Performance Analytics",
-                    description = "Collect performance data to optimize the app",
-                    category = SettingsCategory.PRIVACY_ID,
-                    key = SettingsKeys.Privacy.PERFORMANCE_ANALYTICS,
-                    defaultValue = false,
-                    sortOrder = 2
-                )
+
             ),
             sortOrder = 2
         )
@@ -324,17 +316,8 @@ object SettingsDefaults {
     private fun getTaskSections(): List<SettingsSection> = listOf(
         SettingsSection(
             id = "tasks_scheduling",
-            title = "Smart Scheduling",
+            title = "Scheduling",
             items = listOf(
-                ToggleSetting(
-                    id = "smart_scheduling",
-                    title = "Smart Scheduling",
-                    description = "Automatically optimize task scheduling",
-                    category = SettingsCategory.TASKS_ID,
-                    key = SettingsKeys.Tasks.SMART_SCHEDULING,
-                    defaultValue = true,
-                    sortOrder = 1
-                ),
                 ToggleSetting(
                     id = "adaptive_learning",
                     title = "Adaptive Learning",
@@ -342,7 +325,7 @@ object SettingsDefaults {
                     category = SettingsCategory.TASKS_ID,
                     key = SettingsKeys.Tasks.ADAPTIVE_LEARNING,
                     defaultValue = true,
-                    sortOrder = 2
+                    sortOrder = 1
                 ),
                 ToggleSetting(
                     id = "weekend_mode",
@@ -351,7 +334,7 @@ object SettingsDefaults {
                     category = SettingsCategory.TASKS_ID,
                     key = SettingsKeys.Tasks.WEEKEND_MODE,
                     defaultValue = false,
-                    sortOrder = 3
+                    sortOrder = 2
                 )
             ),
             sortOrder = 1

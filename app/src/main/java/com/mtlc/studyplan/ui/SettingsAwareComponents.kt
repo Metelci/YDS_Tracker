@@ -62,12 +62,7 @@ fun shouldShowSocialFeatures(): Boolean {
     return settings.socialSharingEnabled
 }
 
-@Composable
-fun shouldUseSmartScheduling(): Boolean {
-    val settings = LocalUserSettings.current
-    return settings.smartSchedulingEnabled
-}
-
+// Smart scheduling flag removed
 @Composable
 fun SettingsAwareButton(
     onClick: () -> Unit,

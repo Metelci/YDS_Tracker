@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.validation
 
 import com.mtlc.studyplan.settings.data.UserSettings
+import com.mtlc.studyplan.settings.data.ThemeMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,8 @@ class SettingsValidationManager {
     fun validateSettings(settings: UserSettings): List<ValidationResult> {
         val results = mutableListOf<ValidationResult>()
 
-        // Theme validation removed (light-only)
+        // Validate theme settings
+        results.addAll(validateThemeSettings(settings))
 
         // Validate notification settings
         results.addAll(validateNotificationSettings(settings))
@@ -31,7 +33,22 @@ class SettingsValidationManager {
         return results
     }
 
-    // Theme validation removed
+    private fun validateThemeSettings(settings: UserSettings): List<ValidationResult> {
+        val results = mutableListOf<ValidationResult>()
+
+        // Theme mode validation
+        when (settings.themeMode) {
+            ThemeMode.LIGHT, ThemeMode.DARK, ThemeMode.SYSTEM -> {
+                results.add(
+                    ValidationResult.Success(
+                        "Theme mode '${settings.themeMode}' is valid"
+                    )
+                )
+            }
+        }
+
+        return results
+    }
 
     private fun validateNotificationSettings(settings: UserSettings): List<ValidationResult> {
         val results = mutableListOf<ValidationResult>()
@@ -143,7 +160,15 @@ class SettingsValidationManager {
             )
         }
 
-        // Smart scheduling removed; no validation needed here
+        // Smart scheduling validation
+        if (settings.smartSchedulingEnabled && settings.autoDifficultyEnabled) {
+            results.add(
+                ValidationResult.Info(
+                    "Both smart scheduling and auto-difficulty are enabled. " +
+                    "The app will optimize your study plan automatically."
+                )
+            )
+        }
 
         // Haptic feedback validation
         if (settings.hapticFeedbackEnabled) {
@@ -193,42 +218,3 @@ sealed class ValidationResult(val message: String) {
 data class SettingsPerformanceMetrics(
     val settingsLoadTime: Long = 0L,
     val themeChangeTime: Long = 0L,
-    val notificationSetupTime: Long = 0L,
-    val offlineSyncTime: Long = 0L,
-    val memoryUsage: Long = 0L,
-    val cacheHitRate: Double = 0.0
-)
-
-class SettingsPerformanceMonitor {
-    private val metrics = MutableStateFlow(SettingsPerformanceMetrics())
-
-    fun recordSettingsLoadTime(time: Long) {
-        metrics.value = metrics.value.copy(settingsLoadTime = time)
-    }
-
-    fun recordThemeChangeTime(time: Long) {
-        metrics.value = metrics.value.copy(themeChangeTime = time)
-    }
-
-    fun recordNotificationSetupTime(time: Long) {
-        metrics.value = metrics.value.copy(notificationSetupTime = time)
-    }
-
-    fun recordOfflineSyncTime(time: Long) {
-        metrics.value = metrics.value.copy(offlineSyncTime = time)
-    }
-
-    fun getMetrics(): StateFlow<SettingsPerformanceMetrics> = metrics.asStateFlow()
-
-    fun logPerformanceReport() {
-        val current = metrics.value
-        println("=== Settings System Performance Report ===")
-        println("Settings Load Time: ${current.settingsLoadTime}ms")
-        println("Theme Change Time: ${current.themeChangeTime}ms")
-        println("Notification Setup Time: ${current.notificationSetupTime}ms")
-        println("Offline Sync Time: ${current.offlineSyncTime}ms")
-        println("Memory Usage: ${current.memoryUsage}MB")
-        println("Cache Hit Rate: ${(current.cacheHitRate * 100).toInt()}%")
-        println("==========================================")
-    }
-}

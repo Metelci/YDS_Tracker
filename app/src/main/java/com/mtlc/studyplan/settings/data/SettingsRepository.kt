@@ -1044,11 +1044,6 @@ class SettingsRepository(
     fun getUserSettings(): Flow<UserSettings> {
         return settingsState.map { _ ->
             UserSettings(
-                themeMode = when (getString(SettingsKeys.Appearance.THEME_MODE, "system")) {
-                    "light" -> ThemeMode.LIGHT
-                    "dark" -> ThemeMode.DARK
-                    else -> ThemeMode.SYSTEM
-                },
                 notificationsEnabled = getBoolean(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true),
                 studyRemindersEnabled = getBoolean(SettingsKeys.Notifications.STUDY_REMINDERS, true),
                 achievementNotificationsEnabled = getBoolean(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, true),
@@ -1060,7 +1055,6 @@ class SettingsRepository(
                 socialSharingEnabled = getBoolean(SettingsKeys.Social.SHARE_ACTIVITY, false),
                 hapticFeedbackEnabled = getBoolean(SettingsKeys.Navigation.HAPTIC_FEEDBACK, true),
                 weekendModeEnabled = getBoolean(SettingsKeys.Tasks.WEEKEND_MODE, false),
-                smartSchedulingEnabled = getBoolean(SettingsKeys.Tasks.SMART_SCHEDULING, true),
                 autoDifficultyEnabled = getBoolean(SettingsKeys.Tasks.AUTO_DIFFICULTY, true),
                 studyReminderTime = getString(SettingsKeys.Notifications.STUDY_REMINDER_TIME, "09:00"),
                 dailyStudyGoalMinutes = getInt(SettingsKeys.Tasks.DAILY_GOAL_REMINDERS, 60)
@@ -1090,7 +1084,6 @@ private object defaultValues {
         put(SettingsKeys.Privacy.PROGRESS_SHARING, true)
         put(SettingsKeys.Privacy.DATA_COLLECTION_CONSENT, false)
         put(SettingsKeys.Privacy.CRASH_REPORTING, true)
-        put(SettingsKeys.Privacy.PERFORMANCE_ANALYTICS, false)
         put(SettingsKeys.Privacy.LOCATION_SHARING, false)
         put(SettingsKeys.Privacy.CONTACT_SYNC, false)
 
@@ -1124,7 +1117,6 @@ private object defaultValues {
         put(SettingsKeys.Gamification.REWARD_ANIMATIONS, true)
 
         // Task defaults
-        put(SettingsKeys.Tasks.SMART_SCHEDULING, true)
         put(SettingsKeys.Tasks.AUTO_DIFFICULTY, false)
         put(SettingsKeys.Tasks.DAILY_GOAL_REMINDERS, true)
         put(SettingsKeys.Tasks.WEEKEND_MODE, false)
@@ -1170,7 +1162,7 @@ private object defaultValues {
         put(SettingsKeys.Study.REST_INTERVALS, 5)
 
         // Appearance defaults
-        put(SettingsKeys.Appearance.THEME_MODE, "system")
+        // Theme mode removed; light theme only
         put(SettingsKeys.Appearance.ACCENT_COLOR, "blue")
         put(SettingsKeys.Appearance.FONT_SIZE, 1.0f)
         put(SettingsKeys.Appearance.FONT_FAMILY, "default")
@@ -1232,7 +1224,6 @@ private object defaultValues {
         }
     }
 }
-
 
 
 

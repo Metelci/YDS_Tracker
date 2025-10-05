@@ -2,15 +2,8 @@ package com.mtlc.studyplan.settings.data
 
 import kotlinx.serialization.Serializable
 
-enum class ThemeMode {
-    LIGHT,
-    DARK,
-    SYSTEM
-}
-
 @Serializable
 data class UserSettings(
-    val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val notificationsEnabled: Boolean = true,
     val pushNotificationsEnabled: Boolean = true,
     val studyRemindersEnabled: Boolean = true,
@@ -23,7 +16,6 @@ data class UserSettings(
     val socialSharingEnabled: Boolean = false,
     val hapticFeedbackEnabled: Boolean = true,
     val weekendModeEnabled: Boolean = false,
-    val smartSchedulingEnabled: Boolean = true,
     val autoDifficultyEnabled: Boolean = true,
     val studyReminderTime: String = "09:00",
     val dailyStudyGoalMinutes: Int = 60
@@ -34,7 +26,6 @@ data class UserSettings(
 }
 
 enum class SettingsKey {
-    THEME_MODE,
     NOTIFICATIONS_ENABLED,
     PUSH_NOTIFICATIONS_ENABLED,
     STUDY_REMINDERS,
@@ -47,6 +38,5 @@ enum class SettingsKey {
     SOCIAL_SHARING,
     HAPTIC_FEEDBACK,
     WEEKEND_MODE,
-    SMART_SCHEDULING,
     AUTO_DIFFICULTY
 }

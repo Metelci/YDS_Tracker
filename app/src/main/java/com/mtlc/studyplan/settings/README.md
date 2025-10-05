@@ -19,7 +19,7 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
 - Type-safe SharedPreferences wrapper
 - Reactive Flow-based state updates
 - Settings categories:
-  - **Privacy**: Profile visibility, analytics, progress sharing
+  - **Privacy**: Profile visibility, progress sharing
   - **Notifications**: Push notifications, study reminders, achievement alerts, email summaries
   - **Tasks**: Smart scheduling, auto-difficulty, daily goals, weekend mode
   - **Navigation**: Bottom navigation, haptic feedback
@@ -54,7 +54,6 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
 ### Individual Category Screens
 - **Privacy Settings**:
   - Profile Visibility (dropdown: Public, Friends Only, Private)
-  - Anonymous Analytics (toggle)
   - Progress Sharing (toggle)
 
 - **Tasks Settings**:

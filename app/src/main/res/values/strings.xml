@@ -461,9 +461,9 @@
     <string name="gamification_new_achievement_message">Unlocked: %1$s</string>
     <string name="gamification_achievement_banner">Achievement unlocked: %1$s</string>
     <string name="go_to_plan">Go to Plan</string>
-    <string name="back_to_plan">← Plan</string>
+    <string name="back_to_plan">Back to Plan</string>
     <string name="view_full_week">View Full Week</string>
-    <string name="modify_plan">▶ Modify Plan</string>
+    <string name="modify_plan">Modify Plan</string>
     <string name="gamification_settings">Gamification Settings</string>
     <string name="achievement_notification_text">You\'ve earned a new achievement!</string>
     <string name="achievement_notification_description">Congratulations! You\'ve unlocked a new achievement. Keep up the great work!</string>

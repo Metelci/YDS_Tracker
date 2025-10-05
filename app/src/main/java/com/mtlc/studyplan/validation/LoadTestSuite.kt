@@ -314,13 +314,7 @@ class LoadTestSuite @Inject constructor(
                     (operationIndex % 2 == 0)
                 )
             }
-            2 -> { // Update theme
-                settingsManager.updateSetting(
-                    com.mtlc.studyplan.settings.data.SettingsKey.THEME_MODE,
-                    if (operationIndex % 2 == 0) com.mtlc.studyplan.settings.data.ThemeMode.LIGHT
-                    else com.mtlc.studyplan.settings.data.ThemeMode.DARK
-                )
-            }
+            2 -> { /* Theme toggles removed; skip */ }
         }
     }
 

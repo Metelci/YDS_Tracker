@@ -42,11 +42,12 @@ private val LightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
+// Dark theme is not supported. Only light theme remains.
+
 @Composable
 fun StudyPlanTheme(
     content: @Composable () -> Unit
 ) {
-    // Light theme only; dark/system theme support removed
     val colorScheme = LightColorScheme
 
     val context = LocalContext.current
@@ -64,4 +65,3 @@ fun StudyPlanTheme(
         )
     }
 }
-

@@ -175,7 +175,6 @@ fun TaskSettingsScreen(onBack: () -> Unit) {
         Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 CategoryCardHeader("Tasks", Icons.AutoMirrored.Filled.Send)
-                SettingRowToggle(title = "Smart Scheduling", description = "AI-powered study session recommendations", checked = true) { }
                 SettingRowToggle(title = "Daily Reminders", description = "Remind me of my daily study goals", checked = true) { }
                 SettingRowToggle(title = "Progress Tracking", description = "Track time spent on tasks", checked = true) { }
             }

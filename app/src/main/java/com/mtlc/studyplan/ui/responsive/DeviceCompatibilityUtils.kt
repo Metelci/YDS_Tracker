@@ -7,6 +7,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 /**
  * Comprehensive device compatibility utilities for edge cases
@@ -63,18 +69,25 @@ data class DeviceProfile(
  */
 @Composable
 fun rememberSafeAreaInsets(): SafeAreaInsets {
-    // In a real app, you'd use WindowInsets.safeDrawing
-    // For now, providing reasonable defaults
-    val deviceProfile = rememberDeviceProfile()
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
 
-    return remember(deviceProfile) {
-        SafeAreaInsets(
-            top = if (deviceProfile.isVeryTall) 24.dp else 16.dp,
-            bottom = if (deviceProfile.isLandscape) 8.dp else 16.dp,
-            start = 8.dp,
-            end = 8.dp
-        )
-    }
+    // Use actual system window insets for precise padding
+    val status = WindowInsets.statusBars
+    val nav = WindowInsets.navigationBars
+    val cutout = WindowInsets.displayCutout
+
+    val topPx = maxOf(status.getTop(density), cutout.getTop(density))
+    val bottomPx = maxOf(nav.getBottom(density), cutout.getBottom(density))
+    val leftPx = maxOf(status.getLeft(density, layoutDirection), cutout.getLeft(density, layoutDirection))
+    val rightPx = maxOf(status.getRight(density, layoutDirection), cutout.getRight(density, layoutDirection))
+
+    return SafeAreaInsets(
+        top = with(density) { topPx.toDp() },
+        bottom = with(density) { bottomPx.toDp() },
+        start = with(density) { leftPx.toDp() },
+        end = with(density) { rightPx.toDp() }
+    )
 }
 
 data class SafeAreaInsets(

@@ -63,6 +63,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -459,6 +460,7 @@ fun WorkingTasksScreen(
 ) {
     val screenState = rememberWorkingTasksScreenState(
         studyProgressRepository = studyProgressRepository,
+        taskRepository = taskRepository,
         onNavigateToStudyPlan = onNavigateToStudyPlan
     )
 
@@ -475,6 +477,7 @@ fun WorkingTasksScreen(
 @Composable
 private fun rememberWorkingTasksScreenState(
     studyProgressRepository: StudyProgressRepository,
+    taskRepository: TaskRepository,
     onNavigateToStudyPlan: () -> Unit
 ): WorkingTasksScreenState {
     val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
@@ -490,7 +493,13 @@ private fun rememberWorkingTasksScreenState(
     val weeklyIds = remember(thisWeek) {
         thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet()
     }
-    val weeklyCompleted = 0
+    // Count actual completed tasks instead of hardcoded 0
+    val allTasks by taskRepository.getAllTasks().collectAsState(initial = emptyList())
+    val weeklyCompleted = remember(allTasks, weeklyIds) {
+        allTasks.count { task -> 
+            task.isCompleted && weeklyIds.contains(task.id) 
+        }
+    }
     val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
     val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) {
         (weeklyCompleted.toFloat() / weeklyTotal)
@@ -1365,12 +1374,6 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                             modifier = Modifier.weight(1f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = "09:00-09:30",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 12.sp
                         )
                     }
                     Spacer(Modifier.height(4.dp))
@@ -2594,6 +2597,5 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
-
 
 

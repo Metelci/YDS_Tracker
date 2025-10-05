@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.platform.LocalConfiguration
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Award
 import com.mtlc.studyplan.data.social.AwardIconType
@@ -172,7 +173,7 @@ fun AwardCard(
                             modifier = Modifier.weight(1f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = 14.sp
+                            fontSize = calculateResponsiveFontSize(baseSize = 14.sp)
                         )
 
                         // Rarity badge
@@ -186,7 +187,7 @@ fun AwardCard(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = Color.White,
-                                fontSize = 8.sp,
+                                fontSize = calculateResponsiveFontSize(baseSize = 8.sp),
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -197,7 +198,7 @@ fun AwardCard(
                         text = award.description,
                         style = MaterialTheme.typography.bodySmall,
                         color = secondaryContentColor,
-                        fontSize = 11.sp,
+                        fontSize = calculateResponsiveFontSize(baseSize = 11.sp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -208,10 +209,10 @@ fun AwardCard(
                             text = "Earned ${award.unlockedDate}",
                             style = MaterialTheme.typography.labelSmall,
                             color = metaContentColor,
-                            fontSize = 9.sp
+                            fontSize = calculateResponsiveFontSize(baseSize = 9.sp)
                         )
                     } else {
-                        Spacer(modifier = Modifier.height(9.dp))
+                        Spacer(modifier = Modifier.height(calculateResponsiveSize(baseSize = 9.dp)))
                     }
                 }
 
@@ -237,7 +238,7 @@ fun AwardCard(
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = primaryContentColor,
-                                fontSize = 11.sp
+                                fontSize = calculateResponsiveFontSize(baseSize = 11.sp)
                             )
                         }
                     }
@@ -263,7 +264,7 @@ fun AwardCard(
                                     text = "COMPLETED",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = badgeContentColor,
-                                    fontSize = 8.sp,
+                                    fontSize = calculateResponsiveFontSize(baseSize = 8.sp),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -336,4 +337,47 @@ private fun rarityLabel(rarity: AwardRarity): String = when (rarity) {
     AwardRarity.Rare -> "rare"
     AwardRarity.Epic -> "epic"
     AwardRarity.Legendary -> "legendary"
+}
+
+@Composable
+private fun calculateResponsiveFontSize(baseSize: androidx.compose.ui.unit.TextUnit): androidx.compose.ui.unit.TextUnit {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    val screenHeightDp = configuration.screenHeightDp
+    
+    // Define reference dimensions (for a standard 6.2 inch screen)
+    val referenceWidth = 360 // dp
+    val referenceHeight = 640 // dp
+    
+    // Calculate scaling factor based on screen size relative to reference
+    val widthScale = screenWidthDp / referenceWidth.toFloat()
+    val heightScale = screenHeightDp / referenceHeight.toFloat()
+    
+    // Use minimum of both scales to maintain aspect ratio and avoid overly large text
+    val scale = kotlin.math.min(widthScale, heightScale).coerceIn(0.8f, 1.5f) // Limit between 80% and 150% of base size
+    
+    // Apply the scale to the base size - TextUnit doesn't have an is operator for Sp
+    // We'll use the extension function times to scale sp values
+    return baseSize * scale
+}
+
+@Composable
+private fun calculateResponsiveSize(baseSize: androidx.compose.ui.unit.Dp): androidx.compose.ui.unit.Dp {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    val screenHeightDp = configuration.screenHeightDp
+    
+    // Define reference dimensions (for a standard 6.2 inch screen)
+    val referenceWidth = 360 // dp
+    val referenceHeight = 640 // dp
+    
+    // Calculate scaling factor based on screen size relative to reference
+    val widthScale = screenWidthDp / referenceWidth.toFloat()
+    val heightScale = screenHeightDp / referenceHeight.toFloat()
+    
+    // Use minimum of both scales to maintain aspect ratio and avoid overly large text
+    val scale = kotlin.math.min(widthScale, heightScale).coerceIn(0.8f, 1.5f) // Limit between 80% and 150% of base size
+    
+    // Apply the scale to the base size
+    return baseSize * scale
 }

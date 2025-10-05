@@ -40,12 +40,7 @@ class SettingsIntegration(context: Context) {
         return preferencesManager.notificationSettings.map { it.studyReminders }
     }
 
-    /**
-     * Get smart scheduling setting for AI recommendations
-     */
-    fun isSmartSchedulingEnabled(): Flow<Boolean> {
-        return preferencesManager.taskSettings.map { it.smartScheduling }
-    }
+    // Smart scheduling removed from Tasks settings
 
     /**
      * Get gamification preferences for UI features

@@ -68,21 +68,18 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
     // Settings state
     private val notificationsEnabledFlow = settingsRepository.getSettingFlow("notifications_enabled", true)
     private val gamificationEnabledFlow = settingsRepository.getSettingFlow("gamification_enabled", true)
-    private val themeModeFlow = settingsRepository.getSettingFlow("theme_mode", "system")
     private val autoAdjustDifficultyFlow = settingsRepository.getSettingFlow("difficulty_auto_adjust", true)
     private val dailyGoalTasksFlow = settingsRepository.getSettingFlow("daily_goal_tasks", 5)
 
     val appSettings = combine(
         notificationsEnabledFlow,
         gamificationEnabledFlow,
-        themeModeFlow,
         autoAdjustDifficultyFlow,
         dailyGoalTasksFlow
-    ) { notificationsEnabled, gamificationEnabled, themeMode, autoAdjustDifficulty, dailyGoalTasks ->
+    ) { notificationsEnabled, gamificationEnabled, autoAdjustDifficulty, dailyGoalTasks ->
         AppSettings(
             notificationsEnabled = notificationsEnabled,
             gamificationEnabled = gamificationEnabled,
-            themeMode = themeMode,
             autoAdjustDifficulty = autoAdjustDifficulty,
             dailyGoalTasks = dailyGoalTasks
         )
@@ -218,7 +215,7 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
                 // Update individual settings in repository
                 settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("notifications_enabled", settings.notificationsEnabled))
                 settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("gamification_enabled", settings.gamificationEnabled))
-                settingsRepository.updateSetting(SettingsUpdateRequest.UpdateString("theme_mode", settings.themeMode))
+                // Theme mode removed; always light
                 settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean("difficulty_auto_adjust", settings.autoAdjustDifficulty))
                 settingsRepository.updateSetting(SettingsUpdateRequest.UpdateInt("daily_goal_tasks", settings.dailyGoalTasks))
 
@@ -233,10 +230,7 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
 
     private suspend fun applySettingsGlobally(settings: AppSettings) {
         if (::appIntegrationManager.isInitialized) {
-            // Apply theme
-            if (settings.themeMode != "system") {
-                appIntegrationManager.themeIntegration.updateThemeMode(settings.themeMode)
-            }
+            // Theme mode removed; no changes applied
 
             // Apply notifications
             // Integration manager will handle notification settings
@@ -374,7 +368,6 @@ data class StudyStats(
 data class AppSettings(
     val notificationsEnabled: Boolean = true,
     val gamificationEnabled: Boolean = true,
-    val themeMode: String = "system",
     val autoAdjustDifficulty: Boolean = true,
     val dailyGoalTasks: Int = 5
 ) {
@@ -383,7 +376,6 @@ data class AppSettings(
             return AppSettings(
                 notificationsEnabled = settingsMap["notifications_enabled"] as? Boolean ?: true,
                 gamificationEnabled = settingsMap["gamification_enabled"] as? Boolean ?: true,
-                themeMode = settingsMap["theme_mode"] as? String ?: "system",
                 autoAdjustDifficulty = settingsMap["difficulty_auto_adjust"] as? Boolean ?: true,
                 dailyGoalTasks = settingsMap["daily_goal_tasks"] as? Int ?: 5
             )

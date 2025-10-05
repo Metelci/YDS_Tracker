@@ -416,9 +416,9 @@
   <string name="gamification_new_achievement_message">%1$s açıldı</string>
   <string name="gamification_achievement_banner">Başarı açıldı: %1$s</string>
   <string name="go_to_plan">Plana Git</string>
-  <string name="back_to_plan">← Plana Dön</string>
+  <string name="back_to_plan">Plana Dön</string>
   <string name="view_full_week">Tüm Haftayı Gör</string>
-  <string name="modify_plan">▶ Planı Düzenle</string>
+  <string name="modify_plan">Planı Düzenle</string>
   <string name="gamification_settings">Oyunlaştırma Ayarları</string>
   <string name="achievement_notification_text">Yeni bir başarı kazandınız!</string>
   <string name="achievement_notification_description">Tebrikler! Yeni bir başarı açtınız. Harika iş çıkarıyorsunuz!</string>

@@ -3,7 +3,6 @@ package com.mtlc.studyplan.settings.manager
 import com.mtlc.studyplan.settings.data.SettingsKeys
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.data.UserSettings
-import com.mtlc.studyplan.settings.data.ThemeMode
 import com.mtlc.studyplan.settings.data.SettingsKey
 import com.mtlc.studyplan.eventbus.AppEventBus
 import com.mtlc.studyplan.eventbus.AppEvent
@@ -84,7 +83,6 @@ class SettingsManager @Inject constructor(
         return try {
             val currentSettings = _currentSettings.value
             val updatedSettings = when (key) {
-                SettingsKey.THEME_MODE -> currentSettings.copy(themeMode = value as ThemeMode)
                 SettingsKey.NOTIFICATIONS_ENABLED -> currentSettings.copy(notificationsEnabled = value as Boolean)
                 SettingsKey.PUSH_NOTIFICATIONS_ENABLED -> currentSettings.copy(pushNotificationsEnabled = value as Boolean)
                 SettingsKey.STUDY_REMINDERS -> currentSettings.copy(studyRemindersEnabled = value as Boolean)
@@ -97,7 +95,6 @@ class SettingsManager @Inject constructor(
                 SettingsKey.STREAK_WARNINGS -> currentSettings.copy(streakWarningsEnabled = value as Boolean)
                 SettingsKey.DAILY_GOAL_REMINDERS -> currentSettings.copy(dailyGoalRemindersEnabled = value as Boolean)
                 SettingsKey.WEEKEND_MODE -> currentSettings.copy(weekendModeEnabled = value as Boolean)
-                SettingsKey.SMART_SCHEDULING -> currentSettings.copy(smartSchedulingEnabled = value as Boolean)
                 SettingsKey.AUTO_DIFFICULTY -> currentSettings.copy(autoDifficultyEnabled = value as Boolean)
             }
 
@@ -195,8 +192,8 @@ class SettingsManager @Inject constructor(
     fun isGamificationEnabled(): Boolean = _currentSettings.value.gamificationEnabled
     fun isHapticFeedbackEnabled(): Boolean = _currentSettings.value.hapticFeedbackEnabled
     fun isOfflineModeEnabled(): Boolean = _currentSettings.value.offlineModeEnabled
-    fun isDarkTheme(): Boolean = _currentSettings.value.themeMode == ThemeMode.DARK
+    fun isDarkTheme(): Boolean = false
     fun isNotificationsEnabled(): Boolean = _currentSettings.value.notificationsEnabled
-    fun isSmartSchedulingEnabled(): Boolean = _currentSettings.value.smartSchedulingEnabled
+    // Smart scheduling removed from settings
     fun isWeekendModeEnabled(): Boolean = _currentSettings.value.weekendModeEnabled
 }

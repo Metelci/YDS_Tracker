@@ -500,7 +500,7 @@
     <string name="back_to_plan">← Back to Plan</string>
     <string name="go_to_plan">Go to Plan</string>
     <string name="view_full_week">View Full Week</string>
-    <string name="modify_plan">▶ Modify Plan</string>
+    <string name="modify_plan">Modify Plan</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="booster_details">Improve weak areas with %1$s practice</string>

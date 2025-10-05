@@ -75,7 +75,6 @@ class SettingsPreferencesManager(context: Context) {
     // Task Settings
     fun updateTaskSettings(settings: TaskSettings) {
         with(prefs.edit()) {
-            putBoolean(KEY_SMART_SCHEDULING, settings.smartScheduling)
             putBoolean(KEY_AUTO_DIFFICULTY, settings.autoDifficultyAdjustment)
             putBoolean(KEY_DAILY_GOAL_REMINDERS, settings.dailyGoalReminders)
             putBoolean(KEY_WEEKEND_MODE, settings.weekendMode)
@@ -86,7 +85,6 @@ class SettingsPreferencesManager(context: Context) {
 
     private fun getTaskSettings(): TaskSettings {
         return TaskSettings(
-            smartScheduling = prefs.getBoolean(KEY_SMART_SCHEDULING, true),
             autoDifficultyAdjustment = prefs.getBoolean(KEY_AUTO_DIFFICULTY, true),
             dailyGoalReminders = prefs.getBoolean(KEY_DAILY_GOAL_REMINDERS, true),
             weekendMode = prefs.getBoolean(KEY_WEEKEND_MODE, false)
@@ -162,7 +160,7 @@ class SettingsPreferencesManager(context: Context) {
         private const val KEY_EMAIL_SUMMARIES = "email_summaries"
 
         // Task keys
-        private const val KEY_SMART_SCHEDULING = "smart_scheduling"
+        // Smart scheduling key removed
         private const val KEY_AUTO_DIFFICULTY = "auto_difficulty"
         private const val KEY_DAILY_GOAL_REMINDERS = "daily_goal_reminders"
         private const val KEY_WEEKEND_MODE = "weekend_mode"
@@ -198,7 +196,6 @@ data class NotificationSettings(
 )
 
 data class TaskSettings(
-    val smartScheduling: Boolean = true,
     val autoDifficultyAdjustment: Boolean = true,
     val dailyGoalReminders: Boolean = true,
     val weekendMode: Boolean = false

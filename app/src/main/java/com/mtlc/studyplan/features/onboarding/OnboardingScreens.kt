@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -509,7 +510,8 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
         // Start Date Selection
         item {
             ResponsiveCard(
-                containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainer
+                containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainer,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "Start Date",
@@ -528,8 +530,10 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                     title = null,
                     showModeToggle = false,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .height(datePickerHeight)
                         .padding(top = 8.dp)
+                        .defaultMinSize(minWidth = 320.dp)
                 )
 
                 LaunchedEffect(startDateState.selectedDateMillis) {
@@ -549,7 +553,8 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
             if (selectedMode == "exam") {
                 // Exam Date Selection
                 ResponsiveCard(
-                    containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer
+                    containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = "YDS Exam Date",
@@ -575,8 +580,10 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         title = null,
                         showModeToggle = false,
                         modifier = Modifier
+                            .fillMaxWidth()
                             .height(datePickerHeight)
                             .padding(top = 8.dp)
+                            .defaultMinSize(minWidth = 320.dp)
                     )
 
                     LaunchedEffect(examDateState.selectedDateMillis) {
@@ -799,7 +806,7 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
     val typography = responsiveOnboardingTypography()
     val heights = responsiveHeights()
     val cardColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-    val sliderHeight = (heights.slider - 8.dp).coerceAtLeast(24.dp)
+    val sliderHeight = (heights.slider - 16.dp).coerceAtLeast(16.dp)
 
     ResponsiveCard(
         containerColor = cardColor

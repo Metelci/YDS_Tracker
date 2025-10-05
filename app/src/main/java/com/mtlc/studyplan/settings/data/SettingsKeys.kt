@@ -21,7 +21,6 @@ object SettingsKeys {
         const val PROGRESS_SHARING = "privacy_progress_sharing"
         const val DATA_COLLECTION_CONSENT = "privacy_data_collection_consent"
         const val CRASH_REPORTING = "privacy_crash_reporting"
-        const val PERFORMANCE_ANALYTICS = "privacy_performance_analytics"
         const val LOCATION_SHARING = "privacy_location_sharing"
         const val CONTACT_SYNC = "privacy_contact_sync"
     }
@@ -67,7 +66,6 @@ object SettingsKeys {
      * Task and study session settings
      */
     object Tasks {
-        const val SMART_SCHEDULING = "tasks_smart_scheduling"
         const val AUTO_DIFFICULTY = "tasks_auto_difficulty"
         const val DAILY_GOAL_REMINDERS = "tasks_daily_goal_reminders"
         const val WEEKEND_MODE = "tasks_weekend_mode"
@@ -159,7 +157,6 @@ object SettingsKeys {
      * Theme and appearance settings
      */
     object Appearance {
-        const val THEME_MODE = "appearance_theme_mode"
         const val ACCENT_COLOR = "appearance_accent_color"
         const val FONT_SIZE = "appearance_font_size"
         const val FONT_FAMILY = "appearance_font_family"
@@ -230,7 +227,7 @@ object SettingsKeys {
  */
 private fun SettingsKeys.Privacy.getAllKeys(): List<String> = listOf(
     PROFILE_VISIBILITY_ENABLED, PROFILE_VISIBILITY_LEVEL, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
-    CRASH_REPORTING, PERFORMANCE_ANALYTICS, LOCATION_SHARING, CONTACT_SYNC
+    CRASH_REPORTING, LOCATION_SHARING, CONTACT_SYNC
 )
 
 private fun SettingsKeys.Notifications.getAllKeys(): List<String> = listOf(
@@ -247,7 +244,7 @@ private fun SettingsKeys.Gamification.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Tasks.getAllKeys(): List<String> = listOf(
-    SMART_SCHEDULING, AUTO_DIFFICULTY, DAILY_GOAL_REMINDERS, WEEKEND_MODE,
+    AUTO_DIFFICULTY, DAILY_GOAL_REMINDERS, WEEKEND_MODE,
     ADAPTIVE_LEARNING, BREAK_REMINDERS, SESSION_TIMEOUT, AUTO_PAUSE,
     PROGRESS_TRACKING, DIFFICULTY_ADJUSTMENT, SPACED_REPETITION, CUSTOM_GOALS
 )
@@ -279,7 +276,7 @@ private fun SettingsKeys.Study.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Appearance.getAllKeys(): List<String> = listOf(
-    THEME_MODE, ACCENT_COLOR, FONT_SIZE, FONT_FAMILY, ANIMATION_SPEED,
+    ACCENT_COLOR, FONT_SIZE, FONT_FAMILY, ANIMATION_SPEED,
     CARD_STYLE, LAYOUT_DENSITY, STATUS_BAR_COLOR, NAVIGATION_BAR_COLOR
 )
 
