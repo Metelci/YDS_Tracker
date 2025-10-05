@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.47] - 2025-10-05 (hotfix)
+
+### Bug Fixes
+- **Fixed mockup stats and fake completed status in 'This Week's Study Plan' card**
+  - Removed hardcoded weekly progress calculation that always showed 0%
+  - Weekly progress now correctly reflects actual completed tasks
+  - Removed hardcoded time slots ("09:00-09:30") that were mock data
+  - Removed fake completion status indicators
+  - The study plan card now properly initializes with real data connections
+
+### Notes
+- Hotfix only, no schema or API changes
+- Ready for initial use with accurate progress tracking
+
 ## [2.9.46] - 2025-10-05 (hotfix)
 
 ### Bug Fixes
