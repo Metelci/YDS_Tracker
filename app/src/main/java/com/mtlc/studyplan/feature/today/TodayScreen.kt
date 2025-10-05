@@ -43,7 +43,7 @@ private data class TodayScreenContentParams(
 )
 
 @Composable
-fun todayRoute(
+fun TodayRoute(
     vm: TodayViewModel = viewModel(),
     onNavigateToFocus: (String) -> Unit = {}
 ) {
@@ -71,7 +71,7 @@ fun todayRoute(
         com.mtlc.studyplan.metrics.Analytics.track(context, "today_open")
     }
 
-    todayScreen(
+    TodayScreen(
         state = state,
         dailyBudgetMinutes = dailyBudgetMinutes,
         onStart = { id -> vm.dispatch(TodayIntent.StartSession(id)) },
@@ -80,7 +80,7 @@ fun todayRoute(
 }
 
 @Composable
-fun todayScreen(
+fun TodayScreen(
     state: TodayUiState,
     dailyBudgetMinutes: Int?,
     onStart: (String) -> Unit,
@@ -90,8 +90,8 @@ fun todayScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = { todayScreenTopBar() },
-        floatingActionButton = { todayScreenFab() },
+        topBar = { TodayScreenTopBar() },
+        floatingActionButton = { TodayScreenFab() },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         val params = TodayScreenContentParams(
@@ -102,12 +102,12 @@ fun todayScreen(
             paddingValues = paddingValues,
             spacing = spacing
         )
-        todayScreenContent(params)
+        TodayScreenContent(params)
     }
 }
 
 @Composable
-private fun todayScreenTopBar() {
+private fun TodayScreenTopBar() {
     StudyPlanTopBar(
         title = "Today",
         style = StudyPlanTopBarStyle.Default,
@@ -116,31 +116,31 @@ private fun todayScreenTopBar() {
 }
 
 @Composable
-private fun todayScreenFab() {
+private fun TodayScreenFab() {
     FloatingActionButton(onClick = { /* add */ }) {
         Icon(Icons.Default.MoreVert, contentDescription = "More")
     }
 }
 
 @Composable
-private fun todayScreenContent(params: TodayScreenContentParams) {
+private fun TodayScreenContent(params: TodayScreenContentParams) {
     when {
-        params.state.isLoading -> todayScreenLoadingState()
+        params.state.isLoading -> TodayScreenLoadingState()
         params.state.snackbar != null -> Text(params.state.snackbar)
         params.state.sessions.isEmpty() -> EmptyState()
-        else -> todayScreenSessionsContent(params)
+        else -> TodayScreenSessionsContent(params)
     }
 }
 
 @Composable
-private fun todayScreenLoadingState() {
+private fun TodayScreenLoadingState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
-private fun todayScreenSessionsContent(params: TodayScreenContentParams) {
+private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
     val timePlanned = params.state.sessions.sumOf { it.estMinutes }
     val budget = params.dailyBudgetMinutes
     val delta = budget?.let { budget - timePlanned }
@@ -151,7 +151,7 @@ private fun todayScreenSessionsContent(params: TodayScreenContentParams) {
             .padding(params.paddingValues)
             .fillMaxSize()
     ) {
-        todayScreenStatsRow(
+        TodayScreenStatsRow(
             timePlanned = timePlanned,
             budget = budget,
             delta = delta,
@@ -169,7 +169,7 @@ private fun todayScreenSessionsContent(params: TodayScreenContentParams) {
             )
         }
 
-        todayScreenSessionsList(
+        TodayScreenSessionsList(
             sessions = params.state.sessions,
             onStart = params.onStart,
             onNavigateToFocus = params.onNavigateToFocus,
@@ -179,7 +179,7 @@ private fun todayScreenSessionsContent(params: TodayScreenContentParams) {
 }
 
 @Composable
-private fun todayScreenStatsRow(
+private fun TodayScreenStatsRow(
     timePlanned: Int,
     budget: Int?,
     delta: Int?,
@@ -211,7 +211,7 @@ private fun todayScreenStatsRow(
 }
 
 @Composable
-private fun todayScreenSessionsList(
+private fun TodayScreenSessionsList(
     sessions: List<SessionUi>,
     onStart: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit,
@@ -224,7 +224,7 @@ private fun todayScreenSessionsList(
         verticalArrangement = Arrangement.spacedBy(spacing.sm)
     ) {
         items(sessions, key = { it.id }) { item ->
-            swipeableSession(
+            SwipeableSession(
                 session = item,
                 onStart = onStart,
                 onNavigateToFocus = onNavigateToFocus
@@ -235,7 +235,7 @@ private fun todayScreenSessionsList(
 }
 
 @Composable
-private fun sessionCard(
+private fun SessionCard(
     s: SessionUi,
     onStart: (String) -> Unit,
     onSkip: (String) -> Unit,
@@ -278,12 +278,12 @@ private fun sessionCard(
 }
 
 @Composable
-private fun swipeableSession(
+private fun SwipeableSession(
     session: SessionUi,
     onStart: (String) -> Unit,
     onNavigateToFocus: (String) -> Unit = {}
 ) {
-    sessionCard(
+    SessionCard(
         s = session,
         onStart = onStart,
         onSkip = { },
@@ -293,9 +293,9 @@ private fun swipeableSession(
 
 @Preview(showBackground = true)
 @Composable
-private fun todayScreenPreview() {
+private fun TodayScreenPreview() {
     val previewState = TodayUiState(isLoading = false, sessions = FakeTodayData.sessions)
-    todayScreen(
+    TodayScreen(
         state = previewState,
         dailyBudgetMinutes = 60,
         onStart = {},

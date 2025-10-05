@@ -14,7 +14,9 @@
       "Bash(./gradlew:*)",
       "Bash(find:*)",
       "Bash(test:*)",
-      "Bash(xargs basename:*)"
+      "Bash(xargs basename:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git tag:*)"
     ],
     "deny": [],
     "ask": []

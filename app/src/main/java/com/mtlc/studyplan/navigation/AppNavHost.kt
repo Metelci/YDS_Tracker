@@ -294,7 +294,7 @@ fun AppNavHost(
         // Add route for the regular study plan screen
         composable(PLAN_ROUTE) {
             // TODO: Implement PlanScreen or use TodayScreen as placeholder
-            com.mtlc.studyplan.feature.today.todayRoute(
+            com.mtlc.studyplan.feature.today.TodayRoute(
 
                 onNavigateToFocus = { taskId -> navController.navigate("focus/$taskId") }
             )

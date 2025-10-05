@@ -205,7 +205,7 @@ class RealTimePerformanceMonitor @Inject constructor(
                 type = AlertType.PERFORMANCE,
                 severity = AlertSeverity.MEDIUM,
                 title = "Low Frame Rate",
-                message = "Frame rate dropped to ${String.format("%.1f", currentMetrics.fps)} FPS",
+                message = "Frame rate dropped to ${String.format(java.util.Locale.ENGLISH, "%.1f", currentMetrics.fps)} FPS",
                 timestamp = currentTime,
                 metrics = mapOf(
                     "fps" to currentMetrics.fps.toString(),
@@ -221,7 +221,7 @@ class RealTimePerformanceMonitor @Inject constructor(
                 type = AlertType.CPU,
                 severity = AlertSeverity.MEDIUM,
                 title = "High CPU Usage",
-                message = "CPU usage is ${String.format("%.1f", currentMetrics.cpuUsagePercent)}%",
+                message = "CPU usage is ${String.format(java.util.Locale.ENGLISH, "%.1f", currentMetrics.cpuUsagePercent)}%",
                 timestamp = currentTime,
                 metrics = mapOf(
                     "cpuUsage" to currentMetrics.cpuUsagePercent.toString(),
@@ -237,10 +237,10 @@ class RealTimePerformanceMonitor @Inject constructor(
                 type = AlertType.CACHE,
                 severity = AlertSeverity.LOW,
                 title = "Low Cache Hit Rate",
-                message = "Cache hit rate is ${String.format("%.1f", currentMetrics.cacheHitRate * 100)}%",
+                message = "Cache hit rate is ${String.format(java.util.Locale.ENGLISH, "%.1f", currentMetrics.cacheHitRate * 100)}%",
                 timestamp = currentTime,
                 metrics = mapOf(
-                    "cacheHitRate" to String.format("%.2f", currentMetrics.cacheHitRate)
+                    "cacheHitRate" to String.format(java.util.Locale.ENGLISH, "%.2f", currentMetrics.cacheHitRate)
                 )
             ))
         }

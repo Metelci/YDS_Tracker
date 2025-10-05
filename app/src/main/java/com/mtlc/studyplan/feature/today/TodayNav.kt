@@ -13,7 +13,7 @@ fun focusRoute(id: String) = "focus/$id"
 
 fun NavGraphBuilder.todayGraph(navController: NavController) {
     composable(TODAY_ROUTE) {
-        todayRoute(
+        TodayRoute(
             onNavigateToFocus = { id ->
                 navController.navigate(focusRoute(id))
             }

@@ -189,7 +189,7 @@ private fun PerformanceMetricsCard(
             // FPS
             MetricRow(
                 label = "Frame Rate",
-                value = if (metrics.fps > 0) "${String.format("%.1f", metrics.fps)} FPS" else "N/A",
+                value = if (metrics.fps > 0) "${String.format(java.util.Locale.ENGLISH, "%.1f", metrics.fps)} FPS" else "N/A",
                 status = when {
                     metrics.fps > 0 && metrics.fps < 50 -> MetricStatus.CRITICAL
                     metrics.fps > 0 && metrics.fps < 55 -> MetricStatus.WARNING
@@ -200,7 +200,7 @@ private fun PerformanceMetricsCard(
             // CPU Usage
             MetricRow(
                 label = "CPU Usage",
-                value = "${String.format("%.1f", metrics.cpuUsagePercent)}%",
+                value = "${String.format(java.util.Locale.ENGLISH, "%.1f", metrics.cpuUsagePercent)}%",
                 status = when {
                     metrics.cpuUsagePercent > 80 -> MetricStatus.CRITICAL
                     metrics.cpuUsagePercent > 60 -> MetricStatus.WARNING
@@ -211,7 +211,7 @@ private fun PerformanceMetricsCard(
             // Cache Hit Rate
             MetricRow(
                 label = "Cache Hit Rate",
-                value = "${String.format("%.1f", metrics.cacheHitRate * 100)}%",
+                value = "${String.format(java.util.Locale.ENGLISH, "%.1f", metrics.cacheHitRate * 100)}%",
                 status = when {
                     metrics.cacheHitRate < 0.7 -> MetricStatus.WARNING
                     else -> MetricStatus.GOOD

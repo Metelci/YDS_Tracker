@@ -480,8 +480,8 @@ private fun rememberWorkingTasksScreenState(
     val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
     val plan = remember { PlanDataSource.planData }
 
-    var selectedTab by remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
-    var selectedDay by remember { mutableStateOf<DayPlan?>(null) }
+    val selectedTabState = remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
+    val selectedDayState = remember { mutableStateOf<DayPlan?>(null) }
 
     // Get the week that corresponds to user's current progress
     val thisWeek = remember(currentWeek) {
@@ -496,30 +496,25 @@ private fun rememberWorkingTasksScreenState(
         (weeklyCompleted.toFloat() / weeklyTotal)
     }
 
-    return remember {
-        WorkingTasksScreenState(
-            currentWeek = currentWeek,
-            selectedTab = selectedTab,
-            selectedDay = selectedDay,
-            thisWeek = thisWeek,
-            weeklyProgressPct = weeklyProgressPct,
-            onTabSelected = { selectedTab = it },
-            onDaySelected = { day ->
-                selectedDay = day
-                selectedTab = 0  // Switch to Daily tab
-            },
-            onNavigateToStudyPlan = onNavigateToStudyPlan
-        )
-    }.apply {
-        this.selectedTab = selectedTab
-        this.selectedDay = selectedDay
-    }
+    return WorkingTasksScreenState(
+        currentWeek = currentWeek,
+        selectedTab = selectedTabState.value,
+        selectedDay = selectedDayState.value,
+        thisWeek = thisWeek,
+        weeklyProgressPct = weeklyProgressPct,
+        onTabSelected = { selectedTabState.value = it },
+        onDaySelected = { day ->
+            selectedDayState.value = day
+            selectedTabState.value = 0  // Switch to Daily tab
+        },
+        onNavigateToStudyPlan = onNavigateToStudyPlan
+    )
 }
 
 data class WorkingTasksScreenState(
     val currentWeek: Int,
-    var selectedTab: Int,
-    var selectedDay: DayPlan?,
+    val selectedTab: Int,
+    val selectedDay: DayPlan?,
     val thisWeek: WeekPlan?,
     val weeklyProgressPct: Float,
     val onTabSelected: (Int) -> Unit,
