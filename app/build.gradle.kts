@@ -23,8 +23,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 79
-        versionName = "2.9.44"
+    versionCode = 80
+    versionName = "2.9.46"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -133,7 +133,7 @@ dependencies {
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.work.runtime.ktx)
@@ -171,12 +171,12 @@ dependencies {
     implementation(libs.gson)
 
     // HTTP client for API calls
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
 
     // Image loading and processing for avatar upload
     implementation(libs.coil.compose)
-    implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation(libs.exifinterface)
 
     // Firebase Cloud Messaging for push notifications
     implementation(platform(libs.firebase.bom))
@@ -206,7 +206,7 @@ dependencies {
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     // Ensure ProcessLifecycleOwner is available under Robolectric
-    testImplementation("androidx.lifecycle:lifecycle-process:2.8.7")
+    testImplementation(libs.androidx.lifecycle.process)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.koin.test)
@@ -324,7 +324,6 @@ tasks.register("jacocoTestCoverageVerification", JacocoCoverageVerification::cla
         }
     ))
 }
-
 
 
 
