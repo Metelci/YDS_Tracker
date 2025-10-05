@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.9.46] - 2025-10-05 (hotfix)
+
+### Bug Fixes
+- Today screen navigation stability improvements
+  - Fixed occasional crash when resuming app from background on Today tab
+  - Guarded null states in `TodayNav.kt` and `TodayScreen.kt`
+- Performance monitoring UI tweaks
+  - Resolved layout jitter in `MonitoringDashboard.kt`
+  - Smoothed frame updates in `RealTimePerformanceMonitor.kt`
+- Navigation consistency
+  - Corrected back stack behavior in `AppNavHost.kt`
+- Dependency updates
+  - Bumped minor library versions in `gradle/libs.versions.toml`
+- Build configuration
+  - Synced app module Gradle config for stable builds
+
+### Notes
+- Hotfix only, no schema or API changes
+
 ## [2.9.45] - 2025-10-05 (hotfix)
 
 ### Bug Fixes
