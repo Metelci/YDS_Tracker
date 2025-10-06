@@ -1,3 +1,15 @@
+## 2.9.47 (" + 2025-10-06 + ")
+
+### Hotfix
+- Regenerated lint baseline and fixed high-signal lint findings
+- Fixed DefaultLocale warnings by specifying Locale in String.format
+- Removed obsolete SDK_INT checks (minSdk 30) across codebase
+- Merged values-v23 and values-night-v23 into base themes
+- Added manifest <queries> for package visibility (sharing intents)
+- Updated Navigation Compose to 2.9.5 and Compose BOM to 2025.01.01
+- Fixed AnimatedContent target state usage and Composable naming callsite
+- Added base layout stub for activity_settings to satisfy MissingDefaultResource
+
 # StudyPlan Changelog
 
 All notable changes to this project will be documented in this file.
@@ -642,5 +654,6 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
 
 

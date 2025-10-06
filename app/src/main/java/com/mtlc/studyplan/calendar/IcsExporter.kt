@@ -327,7 +327,7 @@ object IcsExporter {
         val minutes = kotlin.math.abs(offsetMinutes % 60)
         
         val sign = if (offsetMillis >= 0) "+" else "-"
-        return String.format("%s%02d%02d", sign, kotlin.math.abs(hours), minutes)
+        return String.format(java.util.Locale.ROOT, "%s%02d%02d", sign, kotlin.math.abs(hours), minutes)
     }
 
     /**

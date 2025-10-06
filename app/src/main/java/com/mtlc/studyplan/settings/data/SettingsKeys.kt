@@ -157,6 +157,7 @@ object SettingsKeys {
      * Theme and appearance settings
      */
     object Appearance {
+        const val THEME_MODE = "appearance_theme_mode"
         const val ACCENT_COLOR = "appearance_accent_color"
         const val FONT_SIZE = "appearance_font_size"
         const val FONT_FAMILY = "appearance_font_family"
@@ -276,7 +277,7 @@ private fun SettingsKeys.Study.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Appearance.getAllKeys(): List<String> = listOf(
-    ACCENT_COLOR, FONT_SIZE, FONT_FAMILY, ANIMATION_SPEED,
+    THEME_MODE, ACCENT_COLOR, FONT_SIZE, FONT_FAMILY, ANIMATION_SPEED,
     CARD_STYLE, LAYOUT_DENSITY, STATUS_BAR_COLOR, NAVIGATION_BAR_COLOR
 )
 

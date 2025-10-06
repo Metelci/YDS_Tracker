@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.mtlc.studyplan.MinimalMainActivity
 import com.mtlc.studyplan.R
@@ -57,7 +56,6 @@ class NotificationManager @Inject constructor(
     }
 
     private fun createNotificationChannels() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channels = listOf(
                 NotificationChannel(
                     CHANNEL_STUDY_REMINDERS,
@@ -114,7 +112,6 @@ class NotificationManager @Inject constructor(
             channels.forEach { channel ->
                 notificationManager.createNotificationChannel(channel)
             }
-        }
     }
 
     fun configure(

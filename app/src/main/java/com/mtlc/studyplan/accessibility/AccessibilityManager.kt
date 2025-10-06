@@ -3,7 +3,6 @@ package com.mtlc.studyplan.accessibility
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.core.content.ContextCompat
@@ -49,15 +48,11 @@ class AccessibilityEnhancementManager(private val context: Context) {
      * Check if high contrast is enabled
      */
     fun isHighContrastEnabled(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Settings.Secure.getInt(
-                context.contentResolver,
-                "high_text_contrast_enabled",
-                0
-            ) == 1
-        } else {
-            false
-        }
+        return Settings.Secure.getInt(
+            context.contentResolver,
+            "high_text_contrast_enabled",
+            0
+        ) == 1
     }
 
     /**
@@ -79,15 +74,11 @@ class AccessibilityEnhancementManager(private val context: Context) {
      * Check if reduce motion is enabled
      */
     fun isReduceMotionEnabled(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            Settings.Global.getFloat(
-                context.contentResolver,
-                Settings.Global.ANIMATOR_DURATION_SCALE,
-                1.0f
-            ) == 0.0f
-        } else {
-            false
-        }
+        return Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1.0f
+        ) == 0.0f
     }
 
     /**

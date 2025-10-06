@@ -1,6 +1,8 @@
 package com.mtlc.studyplan.settings.data
 
+import com.mtlc.studyplan.settings.integration.ThemeIntegration
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class UserSettings(
@@ -18,8 +20,16 @@ data class UserSettings(
     val weekendModeEnabled: Boolean = false,
     val autoDifficultyEnabled: Boolean = true,
     val studyReminderTime: String = "09:00",
-    val dailyStudyGoalMinutes: Int = 60
+    val dailyStudyGoalMinutes: Int = 60,
+    val themeMode: String = "Light"
 ) {
+    val themeModeEnum: ThemeIntegration.ThemeMode
+        get() = try {
+            ThemeIntegration.ThemeMode.valueOf(themeMode)
+        } catch (e: IllegalArgumentException) {
+            ThemeIntegration.ThemeMode.Light // Default fallback
+        }
+    
     companion object {
         fun default(): UserSettings = UserSettings()
     }

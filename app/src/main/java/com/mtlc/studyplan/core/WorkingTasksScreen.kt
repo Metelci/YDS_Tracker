@@ -464,7 +464,7 @@ fun WorkingTasksScreen(
         onNavigateToStudyPlan = onNavigateToStudyPlan
     )
 
-    workingTasksScreenContent(
+    WorkingTasksScreenContent(
         screenState = screenState,
         appIntegrationManager = appIntegrationManager,
         studyProgressRepository = studyProgressRepository,
@@ -532,7 +532,7 @@ data class WorkingTasksScreenState(
 )
 
 @Composable
-private fun workingTasksScreenContent(
+private fun WorkingTasksScreenContent(
     screenState: WorkingTasksScreenState,
     appIntegrationManager: AppIntegrationManager,
     studyProgressRepository: StudyProgressRepository,
@@ -2597,5 +2597,4 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
-
 

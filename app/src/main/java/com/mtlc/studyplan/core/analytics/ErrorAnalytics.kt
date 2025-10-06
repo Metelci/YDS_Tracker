@@ -427,13 +427,13 @@ class ErrorAnalytics(private val context: Context) {
         val totalErrors = errorCounts.values.sumOf { it.get() }
         errorCounts.forEach { (key, count) ->
             val percentage = if (totalErrors > 0) (count.get().toDouble() / totalErrors * 100) else 0.0
-            csv.appendLine("Error,$key,${count.get()},${String.format("%.2f", percentage)}%")
+            csv.appendLine("Error,$key,${count.get()},${String.format(java.util.Locale.US, "%.2f", percentage)}%")
         }
 
         val totalActions = userActionCounts.values.sumOf { it.get() }
         userActionCounts.forEach { (key, count) ->
             val percentage = if (totalActions > 0) (count.get().toDouble() / totalActions * 100) else 0.0
-            csv.appendLine("Action,$key,${count.get()},${String.format("%.2f", percentage)}%")
+            csv.appendLine("Action,$key,${count.get()},${String.format(java.util.Locale.US, "%.2f", percentage)}%")
         }
 
         return csv.toString()

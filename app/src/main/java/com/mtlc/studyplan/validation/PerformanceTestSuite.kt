@@ -353,7 +353,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = performanceMonitor.performanceMetrics.value.memoryUsageMB,
             peakMemoryMB = performanceMonitor.performanceMetrics.value.memoryUsageMB,
             passed = averageNavTime < 250.0 && speedPercentage >= 90.0,
-            details = "Average navigation: ${String.format("%.1f", averageNavTime)}ms, Fast navigations: ${speedPercentage.toInt()}% under 300ms"
+            details = "Average navigation: ${String.format(java.util.Locale.US, "%.1f", averageNavTime)}ms, Fast navigations: ${speedPercentage.toInt()}% under 300ms"
         )
     }
 
@@ -392,7 +392,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = metrics.maxOfOrNull { it.memoryMB } ?: 0.0,
             passed = averageFps >= 55.0 && fpsConsistency > 0.85,
-            details = "FPS consistency during background processing: ${String.format("%.1f", fpsConsistency * 100)}%"
+            details = "FPS consistency during background processing: ${String.format(java.util.Locale.US, "%.1f", fpsConsistency * 100)}%"
         )
     }
 
@@ -436,7 +436,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = performanceMonitor.performanceMetrics.value.memoryUsageMB,
             peakMemoryMB = performanceMonitor.performanceMetrics.value.memoryUsageMB,
             passed = averageSaveTime < 100.0 && averageRestoreTime < 50.0 && maxStateOperation < 200.0,
-            details = "Average save: ${String.format("%.1f", averageSaveTime)}ms, restore: ${String.format("%.1f", averageRestoreTime)}ms"
+            details = "Average save: ${String.format(java.util.Locale.US, "%.1f", averageSaveTime)}ms, restore: ${String.format(java.util.Locale.US, "%.1f", averageRestoreTime)}ms"
         )
     }
 

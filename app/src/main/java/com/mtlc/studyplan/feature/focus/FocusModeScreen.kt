@@ -322,7 +322,7 @@ private fun TimerDisplay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = String.format("%02d:%02d", minutes, seconds),
+                text = String.format(java.util.Locale.ROOT, "%02d:%02d", minutes, seconds),
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

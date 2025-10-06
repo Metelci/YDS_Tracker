@@ -103,10 +103,10 @@ class ThemeIntegration(
      * Check if we should use system theme
      */
     fun shouldUseSystemTheme(): Boolean = false
-}
 
-enum class ThemeMode {
-    Light, Dark, System
+    enum class ThemeMode {
+        Light, Dark, System
+    }
 }
 
 /**

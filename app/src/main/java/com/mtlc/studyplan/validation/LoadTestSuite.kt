@@ -116,12 +116,6 @@ class LoadTestSuite @Inject constructor(
         } catch (e: CancellationException) {
             Log.e(TAG, "Load test was cancelled", e)
             Result.failure(e)
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Invalid state during load test", e)
-            Result.failure(e)
-        } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "Invalid argument during load test", e)
-            Result.failure(e)
         }
     }
 
@@ -259,6 +253,10 @@ class LoadTestSuite @Inject constructor(
                 params.failureCounter.incrementAndGet()
             } catch (e: SecurityException) {
                 Log.w(TAG, "Security violation for user ${params.userId} operation $operationIndex", e)
+                params.operationCounter.incrementAndGet()
+                params.failureCounter.incrementAndGet()
+            } catch (e: Exception) {
+                Log.w(TAG, "User ${params.userId} operation $operationIndex failed with an unexpected exception", e)
                 params.operationCounter.incrementAndGet()
                 params.failureCounter.incrementAndGet()
             }

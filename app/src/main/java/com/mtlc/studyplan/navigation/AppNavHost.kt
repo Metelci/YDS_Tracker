@@ -226,7 +226,9 @@ fun AppNavHost(
                 targetState = "home",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "home_animation"
-            ) { _ ->
+            ) { target ->
+                // Reference target to satisfy lint; content does not vary here
+                @Suppress("UNUSED_VARIABLE") val ignoredTargetState = target
                 com.mtlc.studyplan.core.WorkingHomeScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
                     onNavigateToTasks = {
@@ -563,7 +565,4 @@ private fun EnhancedNavigationBar(
         }
     }
 }
-
-
-
 

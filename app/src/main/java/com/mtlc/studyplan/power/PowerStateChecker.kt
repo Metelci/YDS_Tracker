@@ -18,7 +18,8 @@ object PowerStateChecker {
 
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val inPowerSaver = pm.isPowerSaveMode
-        val inDoze = Build.VERSION.SDK_INT >= 23 && pm.isDeviceIdleMode
+        // Min SDK is 30: isDeviceIdleMode is always available
+        val inDoze = pm.isDeviceIdleMode
         return inPowerSaver || inDoze
     }
 
@@ -27,4 +28,3 @@ object PowerStateChecker {
         forceConstrained = constrained
     }
 }
-

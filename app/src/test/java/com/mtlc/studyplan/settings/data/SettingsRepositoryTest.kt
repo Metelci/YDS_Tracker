@@ -365,7 +365,7 @@ class SettingsRepositoryTest {
 
             // Then: Returns error result
             assertTrue(result is SettingsOperationResult.Error)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Expected to fail with invalid JSON - this is correct test behavior
             // Exception swallowing is intentional for testing error conditions
             assertTrue("Invalid JSON correctly threw exception", true)
@@ -457,7 +457,7 @@ class SettingsRepositoryTest {
             // Then: Emits notification data
             val data = awaitItem()
             assertNotNull(data)
-            assertTrue(data.pushNotifications || !data.pushNotifications) // Always true
+            assertTrue(true) // Always true
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -3,7 +3,6 @@
 package com.mtlc.studyplan.performance
 
 import android.content.Context
-import android.os.Build
 import android.os.Debug
 import android.os.Handler
 import android.os.Looper
@@ -197,9 +196,7 @@ class PerformanceOptimizer private constructor(
                 totalMemory = runtime.totalMemory(),
                 usedMemory = runtime.totalMemory() - runtime.freeMemory(),
                 freeMemory = runtime.freeMemory(),
-                gcCount = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Debug.getRuntimeStats()["art.gc.gc-count"]?.toIntOrNull() ?: 0
-                } else 0
+                gcCount = Debug.getRuntimeStats()["art.gc.gc-count"]?.toIntOrNull() ?: 0
             )
         }
 

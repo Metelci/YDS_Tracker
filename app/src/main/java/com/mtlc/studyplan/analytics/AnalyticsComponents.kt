@@ -496,7 +496,7 @@ fun StudyHabitsCard(
                 )
                 HabitMetric(
                     title = "Sessions/Day",
-                    value = String.format("%.1f", data.averageSessionsPerDay),
+                    value = String.format(java.util.Locale.US, "%.1f", data.averageSessionsPerDay),
                     description = "Study frequency"
                 )
             }

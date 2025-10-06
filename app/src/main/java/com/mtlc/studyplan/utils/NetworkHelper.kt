@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,8 +94,7 @@ object NetworkHelper {
     }
 
     private fun registerNetworkCallback() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            networkCallback = object : ConnectivityManager.NetworkCallback() {
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     updateNetworkState()
                 }
@@ -113,13 +111,12 @@ object NetworkHelper {
                 }
             }
 
-            val networkRequest = NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .build()
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
 
-            networkCallback?.let { callback ->
-                connectivityManager.registerNetworkCallback(networkRequest, callback)
-            }
+        networkCallback?.let { callback ->
+            connectivityManager.registerNetworkCallback(networkRequest, callback)
         }
     }
 
@@ -139,13 +136,11 @@ object NetworkHelper {
     }
 
     fun unregisterNetworkCallback() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            networkCallback?.let { callback ->
-                try {
-                    connectivityManager.unregisterNetworkCallback(callback)
-                } catch (e: Exception) {
-                    // Callback might not be registered
-                }
+        networkCallback?.let { callback ->
+            try {
+                connectivityManager.unregisterNetworkCallback(callback)
+            } catch (e: Exception) {
+                // Callback might not be registered
             }
         }
         networkCallback = null

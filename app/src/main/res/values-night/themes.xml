@@ -2,8 +2,8 @@
 <resources>
 
     <style name="Theme.StudyPlan" parent="android:Theme.Material.NoActionBar">
-        <!-- Pre-23 devices: use a dark status bar color for visibility -->
-        <item name="android:statusBarColor">@color/md_theme_dark_surface</item>
+        <!-- Min SDK 30: edge-to-edge with dark icons off -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
 

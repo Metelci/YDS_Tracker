@@ -92,7 +92,7 @@ class ProductionValidator @Inject constructor(
             name = "Frame Time Consistency",
             passed = metrics.averageFrameTime <= 16.67,
             description = "Frame time under 16.67ms (60fps)",
-            actualValue = "${String.format("%.2f", metrics.averageFrameTime)} ms",
+            actualValue = "${String.format(java.util.Locale.US, "%.2f", metrics.averageFrameTime)} ms",
             severity = CheckSeverity.MEDIUM
         ))
 
@@ -130,7 +130,7 @@ class ProductionValidator @Inject constructor(
             name = "Memory Usage Percentage",
             passed = memoryUsagePercentage < 80.0,
             description = "Memory usage under 80%",
-            actualValue = "${String.format("%.1f", memoryUsagePercentage)}%",
+            actualValue = "${String.format(java.util.Locale.US, "%.1f", memoryUsagePercentage)}%",
             severity = CheckSeverity.HIGH
         ))
 
@@ -192,12 +192,13 @@ class ProductionValidator @Inject constructor(
     private fun validateApiUsage(): ApiCheckResults {
         val checks = mutableListOf<ValidationCheck>()
 
-        // Check minimum SDK version
+        // Check declared minimum SDK version
+        val declaredMinSdk = context.applicationInfo.minSdkVersion
         checks.add(ValidationCheck(
             name = "Minimum SDK Version",
-            passed = Build.VERSION.SDK_INT >= 24, // Android 7.0
+            passed = declaredMinSdk >= 24, // Android 7.0
             description = "Supports Android 7.0+",
-            actualValue = "API ${Build.VERSION.SDK_INT}",
+            actualValue = "minSdk API $declaredMinSdk",
             severity = CheckSeverity.MEDIUM
         ))
 
