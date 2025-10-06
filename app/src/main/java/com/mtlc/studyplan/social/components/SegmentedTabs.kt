@@ -18,13 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.social.SOCIAL_TABS
 import com.mtlc.studyplan.social.SocialTab
-import com.mtlc.studyplan.ui.theme.DesignTokens
 
 @Composable
 fun SocialSegmentedTabs(
@@ -32,6 +34,17 @@ fun SocialSegmentedTabs(
     onTabSelected: (SocialTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    val tabFontSize = when {
+        screenWidthDp < 340 -> 11.sp
+        screenWidthDp < 380 -> 12.sp
+        screenWidthDp < 420 -> 13.sp
+        else -> 14.sp
+    }
+    val tabHorizontalPadding = if (screenWidthDp < 360) 4.dp else 8.dp
+    val tabVerticalPadding = if (screenWidthDp < 360) 8.dp else 10.dp
+
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(28.dp),
@@ -61,7 +74,7 @@ fun SocialSegmentedTabs(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .heightIn(min = 48.dp)
+                        .heightIn(min = 44.dp)
                         .selectable(
                             selected = isSelected,
                             onClick = { onTabSelected(tab) },
@@ -72,13 +85,15 @@ fun SocialSegmentedTabs(
                     contentColor = contentColor
                 ) {
                     Box(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+                        modifier = Modifier.padding(horizontal = tabHorizontalPadding, vertical = tabVerticalPadding),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(id = tab.labelRes),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = tabFontSize),
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }

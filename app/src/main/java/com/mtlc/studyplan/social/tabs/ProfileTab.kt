@@ -373,20 +373,12 @@ private fun ProfileCard(
 
 
                     Text(
-
-
                         text = profile.username,
-
-
                         style = MaterialTheme.typography.bodyMedium,
-
-
                         fontWeight = FontWeight.Medium,
-
-
-                        modifier = Modifier.weight(1f)
-
-
+                        modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
 

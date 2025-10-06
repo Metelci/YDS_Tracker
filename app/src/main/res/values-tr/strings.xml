@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
   <string name="app_name">Çalışma Planı</string>
   <string name="app_title">YDS Yolculuğu</string>
@@ -49,7 +49,6 @@
   <string name="prep_complete_desc">6 aylık hazırlık dönemini tamamladınız. Artık deneme sınavı zamanı!</string>
   <string name="first_exam_week_title">Sınav Kampı Başladı!</string>
   <string name="first_exam_week_desc">Deneme sınavı kampının son ayına başladınız!</string>
-  <!-- Onboarding (Turkish) -->
   <string name="onboarding_title">Planınızı Kişiselleştirin</string>
   <string name="exam_date_title">Sınav Tarihini Seçin</string>
   <string name="pick_min_date">En Erken</string>
@@ -68,7 +67,6 @@
     <item quantity="one">%1$d / %2$d görev tamamlandı</item>
     <item quantity="other">%1$d / %2$d görev tamamlandı</item>
   </plurals>
-  <!-- Back-compat: code may still reference string versions -->
   <string name="tasks_completed">%1$d / %2$d görev tamamlandı</string>
   <string name="new_achievement">Yeni Başarı: %s</string>
   <string name="streak_label">Çalışma Serisi</string>
@@ -77,11 +75,9 @@
     <item quantity="one">%d gün</item>
     <item quantity="other">%d gün</item>
   </plurals>
-  <!-- Back-compat: code may still reference string versions -->
   <string name="days_unit">%d gün</string>
   <string name="percent_format">%d%%</string>
   <string name="units">Birimler</string>
-  <!-- Settings screens resources -->
   <string name="app_version_format">Sürüm %1$s (%2$s)</string>
   <string name="app_version_unknown">Sürüm bilinmiyor</string>
   <string name="settings_error_title">Hata</string>
@@ -103,12 +99,10 @@
   <string name="free_reading_description_1">İlgi duyduğunuz bir konuda İngilizce YouTube kanalı izleyin veya blog okuyun.</string>
   <string name="application_started_format">%s için başvurular bugün başladı!</string>
   <string name="application_deadline_today_format">%s başvuruları için bugün son gün!</string>
-  <!-- Mini exam strings referenced in code -->
   <string name="mini_exam_lesson">1. Ders: Mini Deneme Sınavı</string>
   <string name="mini_exam_description">40-50 soruluk deneme sınavı çözün (Süre: 60-75 dk). Okuma, dilbilgisi ve kelime odaklı dikkat edin.</string>
   <string name="mini_analysis_lesson">2. Ders: Sınav Analizi ve Kelime Çalışması</string>
   <string name="mini_analysis_description">Hataları ve bilinmeyen kelimeleri derinlemesine analiz edin; kelimeleri kelime setinize ekleyin.</string>
-  <!-- Lesson titles -->
   <string name="grammar_topic_lesson">1. Ders: Dilbilgisi Konusu</string>
   <string name="grammar_exercises_lesson">1. Ders: Dilbilgisi Alıştırmaları</string>
   <string name="grammar_reinforcement_lesson">1. Ders: Dilbilgisi Pekiştirmesi</string>
@@ -126,7 +120,6 @@
   <string name="question_analysis_review_lesson">2. Ders: Soru Analizi ve Tekrar</string>
   <string name="challenging_reading_vocabulary_lesson">2. Ders: Zorlu Okuma ve Kelime</string>
   <string name="weekly_vocabulary_review_title">Haftalık Kelime Tekrarı</string>
-  <!-- Lesson descriptions -->
   <string name="grammar_topic_description">Kaynak: %1$s. Bu haftanın konusu \'%2$s\' üzerinde detaylı çalışın.</string>
   <string name="grammar_exercises_description">%1$s kitabındaki dün çalıştığınız konu için alıştırmalar. Hiçbirini atlamadan tamamlayın.</string>
   <string name="grammar_reinforcement_description">Öğrendiğiniz dilbilgisi yapılarını kullanarak çeviri veya cümle kurma alıştırmaları yapın.</string>
@@ -135,7 +128,6 @@
   <string name="weekly_grammar_review_description">Bu hafta öğrendiğiniz tüm dilbilgisi konularını ve kurallarını gözden geçirin.</string>
   <string name="next_week_preparation_description">Gelecek haftanın konusu \'%1$s\' üzerinde önceden hazırlık yapmak için kısaca gözden geçirin.</string>
   <string name="weekly_analysis_planning_description">Haftanın genel bir değerlendirmesini yapın. Güçlü ve zayıf yönlerinizi belirleyin.</string>
-  <!-- Exam week descriptions -->
   <string name="full_exam_description">Kaynak: Geçmiş yılların YDS/YÖKDİL sınavı. Tam 80 soruyu tam 180 dakikada çözün.</string>
   <string name="exam_analysis_description">Sınav sonrası en az 1 saat mola verin. Sonra yanlış cevaplarınızı, boş bıraktıklarınızı ve emin olmadığınız doğru cevaplarınızı derinlemesine analiz edin. Bilinmeyen kelimeleri listeleyin.</string>
   <string name="full_exam_description_2">Kaynak: Güvenilir bir yayıncının deneme sınavı. Tam 80 soruyu tam 180 dakikada çözün.</string>
@@ -145,17 +137,14 @@
   <string name="weekly_vocabulary_review_description">Bu haftanın deneme sınavlarından bilinmeyen tüm kelimeleri flashcard uygulaması kullanarak gözden geçirin.</string>
   <string name="general_review_description">Bu haftanın deneme sınavlarından genel hata kalıplarını gözden geçirin (örn. zaman yönetimi, belirli soru türleri).</string>
   <string name="strategy_motivation_description">Gelecek haftanın stratejisini belirleyin ve zihninizi dinlendirin. Sınav yaklaşıyor!</string>
-  <!-- Additional lesson titles -->
   <string name="general_repeat">Genel Tekrar ve Dinlenme</string>
   <string name="strategy_motivation">Strateji ve Motivasyon</string>
-  <!-- Week titles -->
   <string name="exam_camp_week_title">%1$d. Ay, %2$d. Hafta: Sınav Kampı</string>
   <string name="general_review_1_50">Genel Tekrar 1-50</string>
   <string name="general_review_51_115">Genel Tekrar 51-115</string>
   <string name="weak_topic_analysis">Zayıf Konu Analizi</string>
   <string name="advanced_tenses">Yeşil Kitap - İleri Zamanlar</string>
   <string name="final_review_exam_camp">Son Tekrar ve Sınav Kampı</string>
-  <!-- Achievements -->
   <string name="first_step_achievement_title">İlk Adım</string>
   <string name="first_step_achievement_desc">İlk görevinizi tamamladınız!</string>
   <string name="hundred_tasks_achievement_title">Yolda</string>
@@ -168,12 +157,10 @@
   <string name="ten_exams_desc">Toplam 10 tam deneme sınavı çözdünüz!</string>
   <string name="ten_exams_achievement_title">10 Deneme Sınavı Tamamlandı!</string>
   <string name="ten_exams_achievement_desc">Toplam 10 tam deneme sınavı çözdünüz!</string>
-  <!-- Exam names -->
   <string name="yokdil_spring">YÖKDİL/1 (İlkbahar)</string>
   <string name="yds_spring">YDS/1 (İlkbahar)</string>
   <string name="yokdil_fall">YÖKDİL/2 (Sonbahar)</string>
   <string name="yds_fall">YDS/2 (Sonbahar)</string>
-  <!-- Notification texts -->
   <string name="study_time_title">Çalışma Zamanı!</string>
   <string name="study_time_message">Bugünkü hedefleri tamamlamayı unutma.</string>
   <string name="exam_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
@@ -182,11 +169,9 @@
   <string name="new_achievement_unlocked">Yeni Başarı: %s</string>
   <string name="achievement_icon_description">Başarı İkonu</string>
   <string name="task_minutes">~%1$d dk</string>
-  <!-- Book names -->
   <string name="blue_book_full">Mavi Kitap - İngilizce Dilbilgisi</string>
   <string name="green_book_full">Yeşil Kitap - İleri Düzey Dilbilgisi</string>
   <string name="green_book_advanced_tenses">Yeşil Kitap - İleri Zamanlar</string>
-  <!-- Blue book topics -->
   <string name="tenses_review_topic">Zamanlar Gözden Geçirmesi (Tüm Zamanların Karşılaştırılması)</string>
   <string name="future_in_detail_topic">Gelecek Detaylı (Devamlı/Gerçek)</string>
   <string name="modals_1_topic">Modallar 1 (Yetenek, İzin, Tavsiye)</string>
@@ -197,12 +182,10 @@
   <string name="noun_clauses_topic">İsim Cümlecikleri ve İlişki Cümlecikleri</string>
   <string name="gerunds_infinitives_topic">Gerundlar ve İnfinitivler (İleri Kalıplar)</string>
   <string name="conjunctions_connectors_topic">Bağlaçlar ve Bağlayıcılar</string>
-  <!-- Green book topics -->
   <string name="advanced_connectors_topic">İleri Bağlayıcılar ve Söylem Belirteçleri</string>
   <string name="hypothetical_meaning_topic">Varsayımsal Anlam ve Subjunctives</string>
   <string name="adjectives_adverbs_topic">Sıfatlar ve Zarflar (İleri Kullanım)</string>
   <string name="prepositions_phrasal_verbs_topic">Edatlar ve Deyimsel Fiiller (İleri Düzey)</string>
-  <!-- Other -->
   <string name="sentence_completion">Cümle Tamamlama</string>
   <string name="paragraph_completion">Paragraf Tamamlama ve Cümle Kırılma Tutarlılığı</string>
   <string name="final_review_exam_camp_short">Son Tekrar ve Sınav Kampı</string>
@@ -216,12 +199,10 @@
   <string name="add_booster">Takviye ekle</string>
   <string name="open_plan_settings">Plan Ayarlarını Aç</string>
   <string name="booster_details">%1$s pratiği yaparak zayıf alanları geliştirin</string>
-  <!-- Green book topics continuation -->
   <string name="advanced_tense_nuances_topic">İleri Zaman Nüansları ve Anlatı Zamanları</string>
   <string name="inversion_emphasis_topic">Tersine Çevirme ve Vurgu (Not only, Hardly...)</string>
   <string name="advanced_modals_topic">İleri Modallar (Çıkarım, Varsayımsal)</string>
   <string name="participle_clauses_topic">Participle Cümlecikleri (-ing ve -ed cümlecikleri)</string>
-  <!-- About -->
   <string name="about_title">Hakkında</string>
   <string name="about_version">Sürüm: %s</string>
   <string name="about_feature_customize_title">Özelleştirilebilir Çalışma Planları</string>
@@ -229,7 +210,6 @@
   <string name="about_data_persistence">Değişiklikler cihazda depolanır ve uygulamada geçerlidir.</string>
   <string name="about_contact">Geri bildirim için e-posta gönderin.</string>
   <string name="customize_cd">Planı özelleştir</string>
-  <!-- Tooltip strings -->
   <string name="tooltip_customize_plan_title">Planınızı Özelleştirin</string>
   <string name="tooltip_customize_plan_message">Görevleri gizlemek, düzenlemek veya kendi görevlerinizi eklemek için takvim simgesine dokunun. Tüm değişiklikler cihazınızda kaydedilir.</string>
   <string name="tooltip_plan_settings_title">Plan Ayarları</string>
@@ -242,16 +222,13 @@
   <string name="tooltip_expand_week_message">Günlük görevleri görmek için herhangi bir haftaya dokunun. Daraltmak için tekrar dokunun.</string>
   <string name="tooltip_task_details_title">Görev Bilgileri</string>
   <string name="tooltip_task_details_message">Ayrıntılı talimatlar ve tahmini zamanı görmek için herhangi bir göreve dokunun.</string>
-  <!-- Missing strings for XML layouts -->
   <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
   <string name="reset_progress">İlerlemeyi Sıfırla</string>
-  <!-- Navigation -->
   <string name="nav_home">Ana Sayfa</string>
   <string name="nav_tasks">Görevler</string>
   <string name="nav_progress">İlerleme</string>
   <string name="nav_social">Sosyal</string>
   <string name="nav_settings">Ayarlar</string>
-  <!-- Missing strings -->
   <string name="settings">Ayarlar</string>
   <string name="navigate_up">Yukarı git</string>
   <string name="category_icon_description">Kategori ikonu</string>
@@ -259,13 +236,10 @@
   <string name="tooltip_close">İpucunu kapat</string>
   <string name="save">Kaydet</string>
   <string name="weekly_goal_save_error">Haftalık hedef kaydedilemedi. Lütfen tekrar deneyin.</string>
-  <!-- Undo system -->
   <string name="task_completed_undo">Görev tamamlandı</string>
   <string name="undo">Geri Al</string>
-  <!-- View toggles -->
   <string name="show_current_period">Mevcut Dönemi Göster</string>
   <string name="show_all_weeks">Tüm Haftaları Göster</string>
-  <!-- Social Features -->
   <string name="study_community">Çalışma Topluluğu</string>
   <string name="find_study_buddies">Çalışma Arkadaşları Bul</string>
   <string name="my_study_groups">Çalışma Gruplarım</string>
@@ -279,7 +253,6 @@
   <string name="online">Çevrimiçi</string>
   <string name="create_profile_title">Çalışma Profilinizi Oluşturun</string>
   <string name="privacy_first_notice">Gizlilik Öncelikli: Gerçek kimliğiniz asla paylaşılmaz. Sadece çalışma tercihleri eşleştirme için kullanılır.</string>
-  <!-- PDF Report Strings -->
   <string name="report_title">Çalışma İlerleme Raporu</string>
   <string name="generate_report">Rapor Oluştur</string>
   <string name="share_report">Raporu Paylaş</string>
@@ -289,7 +262,6 @@
   <string name="report_share_error">Rapor Paylaşılırken Hata</string>
   <string name="report_no_data">Çalışma Verisi Yok</string>
   <string name="report_insufficient_data">Rapor dönemi için yetersiz veri</string>
-  <!-- Report Labels -->
   <string name="minutes">Dakika</string>
   <string name="tasks">Görevler</string>
   <string name="streak">Seri</string>
@@ -306,17 +278,13 @@
   <string name="strengths">Güçlü Yönler</string>
   <string name="areas_for_improvement">Geliştirilmesi Gereken Alanlar</string>
   <string name="performance_trends">Performans Eğilimleri</string>
-  <!-- Report Time Periods -->
   <string name="last_week">Geçen Hafta</string>
   <string name="last_month">Geçen Ay</string>
   <string name="last_4_weeks">Son 4 Hafta</string>
   <string name="custom_period">Özel Dönem</string>
-  <!-- Privacy Options -->
   <string name="include_name">Öğrenci adını dahil et</string>
   <string name="privacy_protected_report">Gizlilik için ad dahil edilmeyecek</string>
-  <!-- Top bar titles -->
   <string name="topbar_invite_action">Davet Et</string>
-  <!-- Social Hub Lovable redesign -->
   <string name="social_tab_profile">Profil</string>
   <string name="social_tab_ranks">Sıralamalar</string>
   <string name="social_tab_groups">Gruplar</string>
@@ -394,7 +362,6 @@
   <string name="social_stat_score">Puanınız</string>
   <string name="social_stat_streak">Günlük Seri</string>
   <string name="social_invite_friends_to_rank">Siralamanizi gormek icin birkac arkadasinizi davet edin</string>
-  <!-- Settings strings -->
   <string name="expand_selection">Seçimi genişlet</string>
   <string name="settings_category_description">%1$s: %2$s</string>
   <string name="category_active">Aktif</string>
@@ -402,7 +369,6 @@
   <string name="export_settings">Ayarları dışa aktar</string>
   <string name="import_settings">Ayarları içe aktar</string>
   <string name="reset_all_settings">Tüm ayarları sıfırla</string>
-  <!-- Missing settings strings -->
   <string name="settings_title">Ayarlar</string>
   <string name="search_settings_hint">Ayarları ara...</string>
   <string name="no_results_found">Sonuç bulunamadı</string>
@@ -425,7 +391,6 @@
   <string name="streak_expiry_notification">%1$d günlük seriniz %2$d saat içinde sona eriyor</string>
   <string name="streak_expiry_description">%1$d günlük çalışma serinizi bozmayın! Seriyi sürdürmek için sonraki %2$d saat içinde bir görev tamamlayın.</string>
   <string name="daily_goal_complete">Harika! Günlük çalışma hedefinizi tamamladınız</string>
-  <!-- Home screen strings -->
   <string name="start">Başla</string>
   <string name="your_journey">Yolculuğunuz</string>
   <string name="today">Bugün</string>
@@ -435,13 +400,11 @@
   <string name="tasks_done">Tamamlanan</string>
   <string name="this_week">Bu Hafta</string>
   <string name="start_studying">Çalışmaya başla</string>
-  <!-- Settings screen tabs -->
   <string name="navigation">Navigasyon</string>
   <string name="notifications">Bildirimler</string>
   <string name="gamification">Oyunlaştırma</string>
   <string name="privacy">Gizlilik</string>
   <string name="customize_study_experience">Çalışma deneyiminizi özelleştirin</string>
-  <!-- Tasks settings card -->
   <string name="weekly_goal">Haftalık Hedef</string>
   <string name="reset_all_progress">Tüm İlerlemeyi Sıfırla</string>
   <string name="reset_everything">Her Şeyi Sıfırla</string>
@@ -480,67 +443,67 @@
   <string name="topbar_tasks_title">Günlük Görevler</string>
   <string name="topbar_tasks_subtitle">Görevleri tamamlayarak serinizi sürdürün</string>
   <string name="gamification_points_earned_message">+%1$d puan kazanıldı</string>
-    <string name="tasks_tab_daily">Günlük</string>
-    <string name="tasks_tab_weekly">Haftalık</string>
-    <string name="tasks_tab_plan">Plan</string>
-    <string name="tasks_header_first_time_message">Başlamak için ilk görevinizi oluşturun!</string>
-    <string name="tasks_header_returning_message">Serinizi güçlendirmek için görevleri tamamlayın</string>
-    <string name="tasks_xp_value">%1$d XP</string>
-    <string name="tasks_week_title">%2$d haftanın %1$d. haftası</string>
-    <string name="tasks_week_day_progress">%2$d günün %1$d. günü</string>
-    <string name="tasks_week_completed_summary">%2$d görevden %1$d tamamlandı</string>
-    <string name="tasks_week_nav_previous_cd">Önceki Hafta</string>
-    <string name="tasks_week_nav_previous">Önceki</string>
-    <string name="tasks_week_nav_label">%1$d. Hafta</string>
-    <string name="tasks_week_nav_next">Sonraki</string>
-    <string name="tasks_week_nav_next_cd">Sonraki Hafta</string>
-    <string name="tasks_week_schedule_title">Bu Haftanın Programı</string>
-    <string name="tasks_week_quick_actions_title">Hızlı İşlemler</string>
-    <string name="tasks_week_quick_action_plan">Planı Görüntüle</string>
-    <string name="tasks_week_quick_action_study">Çalışma Planı</string>
-    <string name="tasks_week_stats_title">Hafta İstatistikleri</string>
-    <string name="tasks_week_stat_completed">Tamamlandı</string>
-    <string name="tasks_week_stat_remaining">Kalan</string>
-    <string name="tasks_week_stat_total">Toplam</string>
-    <string name="tasks_week_today_badge">BUGÜN</string>
-    <string name="tasks_week_task_count">%1$d görev</string>
-    <string name="tasks_week_view_cd">Görüntüle</string>
-    <string name="tasks_plan_card_title">Bu Haftanın Çalışma Planı</string>
-    <string name="tasks_plan_focus">Okuduğunu Anlama Odaklı</string>
-    <string name="tasks_plan_progress_label">Hafta İlerlemesi</string>
-    <string name="tasks_plan_daily_schedule">Günlük Program</string>
-    <string name="tasks_plan_view_full">Tüm Çalışma Planını Görüntüle</string>
-    <string name="tasks_plan_view_full_subtitle">Kapsamlı YDS hazırlık takvimi</string>
-    <string name="tasks_plan_nav_cd">Tam çalışma planına git</string>
-    <string name="tasks_plan_status_completed">Tamamlandı</string>
-    <string name="tasks_plan_status_in_progress">Devam ediyor</string>
-    <string name="tasks_plan_status_not_started">Başlanmadı</string>
-    <string name="tasks_plan_status_scheduled">Planlandı</string>
-    <string name="tasks_plan_status_today">Bugün - %1$s</string>
-    <string name="tasks_plan_day_label_today">%1$s, %2$s (Bugün)</string>
-    <string name="tasks_plan_day_label">%1$s, %2$s</string>
-    <string name="tasks_plan_task_summary">%2$d görevden %1$d tamamlandı</string>
-    <string name="tasks_plan_empty">Plan verisi mevcut değil</string>
-    <string name="tasks_daily_placeholder_title">Plandan bir gün seçin</string>
-    <string name="tasks_daily_placeholder_body">Detaylı materyalleri görmek için Plan sekmesinde herhangi bir güne dokunun</string>
-    <string name="tasks_daily_placeholder_button">Plana Git</string>
-    <string name="tasks_daily_loading_message">%1$s için çalışma planı yükleniyor...</string>
-    <string name="tasks_daily_estimated_time">Tahmini Süre: %1$s</string>
-    <string name="tasks_daily_units_title">Bugünün Üniteleri</string>
-    <string name="tasks_daily_tasks_title">Günlük Görevler</string>
-    <string name="tasks_daily_no_tasks">Bugün için özel bir görev yok. Ünitelerinize odaklanın!</string>
-    <string name="tasks_daily_duration">Süre: %1$s</string>
-    <string name="tasks_daily_materials_title">Çalışma Materyalleri</string>
-    <string name="tasks_daily_no_materials">Bugün için ek materyal yok. Kitap ünitelerine odaklanın!</string>
-    <string name="tasks_daily_notes_title">Çalışma Notları</string>
-    <string name="tasks_material_open_link_cd">Bağlantıyı aç</string>
-    <string name="tasks_daily_unit_title">%1$d. Ünite: %2$s</string>
-    <string name="tasks_daily_unit_pages">Sayfa %1$s</string>
-    <string name="tasks_daily_unit_exercises">Alıştırmalar: %1$s</string>
-    <string name="tasks_daily_back_to_plan">Plana Dön</string>
-    <string name="tasks_week_upcoming_title">Yaklaşan Günler</string>
-    <string name="tasks_week_upcoming_badge">Planlandı</string>
-    <string name="tasks_week_upcoming_placeholder">Burada görmek için sonraki oturumlarınızı planlayın.</string>
-    <string name="tasks_plan_day_placeholder">Ayrıntılı görevler planınız oluşturulduğunda burada görünecek.</string>
-    <string name="tasks_daily_estimated_time_default">belirlenecek</string>
+  <string name="tasks_tab_daily">Günlük</string>
+  <string name="tasks_tab_weekly">Haftalık</string>
+  <string name="tasks_tab_plan">Plan</string>
+  <string name="tasks_header_first_time_message">Başlamak için ilk görevinizi oluşturun!</string>
+  <string name="tasks_header_returning_message">Serinizi güçlendirmek için görevleri tamamlayın</string>
+  <string name="tasks_xp_value">%1$d XP</string>
+  <string name="tasks_week_title">%2$d haftanın %1$d. haftası</string>
+  <string name="tasks_week_day_progress">%2$d günün %1$d. günü</string>
+  <string name="tasks_week_completed_summary">%2$d görevden %1$d tamamlandı</string>
+  <string name="tasks_week_nav_previous_cd">Önceki Hafta</string>
+  <string name="tasks_week_nav_previous">Önceki</string>
+  <string name="tasks_week_nav_label">%1$d. Hafta</string>
+  <string name="tasks_week_nav_next">Sonraki</string>
+  <string name="tasks_week_nav_next_cd">Sonraki Hafta</string>
+  <string name="tasks_week_schedule_title">Bu Haftanın Programı</string>
+  <string name="tasks_week_quick_actions_title">Hızlı İşlemler</string>
+  <string name="tasks_week_quick_action_plan">Planı Görüntüle</string>
+  <string name="tasks_week_quick_action_study">Çalışma Planı</string>
+  <string name="tasks_week_stats_title">Hafta İstatistikleri</string>
+  <string name="tasks_week_stat_completed">Tamamlandı</string>
+  <string name="tasks_week_stat_remaining">Kalan</string>
+  <string name="tasks_week_stat_total">Toplam</string>
+  <string name="tasks_week_today_badge">BUGÜN</string>
+  <string name="tasks_week_task_count">%1$d görev</string>
+  <string name="tasks_week_view_cd">Görüntüle</string>
+  <string name="tasks_plan_card_title">Bu Haftanın Çalışma Planı</string>
+  <string name="tasks_plan_focus">Haftanızın odağı hazır olduğunda burada görünecek.</string>
+  <string name="tasks_plan_progress_label">Hafta İlerlemesi</string>
+  <string name="tasks_plan_daily_schedule">Günlük Program</string>
+  <string name="tasks_plan_view_full">Tüm Çalışma Planını Görüntüle</string>
+  <string name="tasks_plan_view_full_subtitle">Kapsamlı YDS hazırlık takvimi</string>
+  <string name="tasks_plan_nav_cd">Tam çalışma planına git</string>
+  <string name="tasks_plan_status_completed">Tamamlandı</string>
+  <string name="tasks_plan_status_in_progress">Devam ediyor</string>
+  <string name="tasks_plan_status_not_started">Başlanmadı</string>
+  <string name="tasks_plan_status_scheduled">Planlandı</string>
+  <string name="tasks_plan_status_today">Bugün - %1$s</string>
+  <string name="tasks_plan_day_label_today">%1$s, %2$s (Bugün)</string>
+  <string name="tasks_plan_day_label">%1$s, %2$s</string>
+  <string name="tasks_plan_task_summary">%2$d görevden %1$d tamamlandı</string>
+  <string name="tasks_plan_empty">Plan verisi mevcut değil</string>
+  <string name="tasks_daily_placeholder_title">Plandan bir gün seçin</string>
+  <string name="tasks_daily_placeholder_body">Detaylı materyalleri görmek için Plan sekmesinde herhangi bir güne dokunun</string>
+  <string name="tasks_daily_placeholder_button">Plana Git</string>
+  <string name="tasks_daily_loading_message">%1$s için çalışma planı yükleniyor...</string>
+  <string name="tasks_daily_estimated_time">Tahmini Süre: %1$s</string>
+  <string name="tasks_daily_units_title">Bugünün Üniteleri</string>
+  <string name="tasks_daily_tasks_title">Günlük Görevler</string>
+  <string name="tasks_daily_no_tasks">Bugün için özel bir görev yok. Ünitelerinize odaklanın!</string>
+  <string name="tasks_daily_duration">Süre: %1$s</string>
+  <string name="tasks_daily_materials_title">Çalışma Materyalleri</string>
+  <string name="tasks_daily_no_materials">Bugün için ek materyal yok. Kitap ünitelerine odaklanın!</string>
+  <string name="tasks_daily_notes_title">Çalışma Notları</string>
+  <string name="tasks_material_open_link_cd">Bağlantıyı aç</string>
+  <string name="tasks_daily_unit_title">%1$d. Ünite: %2$s</string>
+  <string name="tasks_daily_unit_pages">Sayfa %1$s</string>
+  <string name="tasks_daily_unit_exercises">Alıştırmalar: %1$s</string>
+  <string name="tasks_daily_back_to_plan">Plana Dön</string>
+  <string name="tasks_week_upcoming_title">Yaklaşan Günler</string>
+  <string name="tasks_week_upcoming_badge">Planlandı</string>
+  <string name="tasks_week_upcoming_placeholder">Burada görmek için sonraki oturumlarınızı planlayın.</string>
+  <string name="tasks_plan_day_placeholder">Ayrıntılı görevler planınız oluşturulduğunda burada görünecek.</string>
+  <string name="tasks_daily_estimated_time_default">belirlenecek</string>
 </resources>

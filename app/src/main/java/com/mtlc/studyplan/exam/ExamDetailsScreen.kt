@@ -323,37 +323,6 @@ private fun ExamInfoCardWithAction(
                     )
                 }
 
-                // Apply Button in top-right corner for registration card
-                if (title == "Registration Information" &&
-                    (registrationStatus == YdsExamService.RegistrationStatus.OPEN ||
-                     registrationStatus == YdsExamService.RegistrationStatus.LATE_REGISTRATION)) {
-
-                    Button(
-                        onClick = {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(examSession.applicationUrl))
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                // Handle case where no browser app is available
-                                e.printStackTrace()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .height(36.dp)
-                            .width(80.dp)
-                    ) {
-                        Text(
-                            text = "Apply",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
-                    }
-                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
