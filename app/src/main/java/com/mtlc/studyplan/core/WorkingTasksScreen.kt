@@ -69,6 +69,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 // removed luminance-based dark theme checks
 import androidx.compose.ui.semantics.Role
@@ -87,6 +88,7 @@ import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.TaskPriority
 import com.mtlc.studyplan.data.TaskRepository
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.WeekPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
@@ -594,7 +596,11 @@ private fun WorkingTasksScreenContent(
             TasksGradientTopBar(appIntegrationManager)
             Spacer(Modifier.height(8.dp))
             SegmentedControl(
-                segments = listOf("Daily", "Weekly", "Plan"),
+                segments = listOf(
+                    stringResource(R.string.tasks_tab_daily),
+                    stringResource(R.string.tasks_tab_weekly),
+                    stringResource(R.string.tasks_tab_plan)
+                ),
                 selectedIndex = screenState.selectedTab,
                 onSelect = screenState.onTabSelected
             )
@@ -762,13 +768,17 @@ private fun TasksGradientTopBar(
                     )
                     Column {
                         Text(
-                            text = "Daily Tasks",
+                            text = stringResource(R.string.topbar_tasks_title),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = if (isFirstTimeUser) "Create your first task to get started!" else "Complete tasks to build your streak",
+                            text = if (isFirstTimeUser) {
+                                stringResource(R.string.tasks_header_first_time_message)
+                            } else {
+                                stringResource(R.string.tasks_header_returning_message)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
@@ -802,7 +812,7 @@ private fun TasksGradientTopBar(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            if (isFirstTimeUser) "0 XP" else "$totalXP XP",
+                            text = stringResource(R.string.tasks_xp_value, if (isFirstTimeUser) 0 else totalXP),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -865,14 +875,14 @@ private fun WeeklyTab(
                     ) {
                         Column {
                             Text(
-                                "Week $currentWeek of 30",
+                                stringResource(R.string.tasks_week_title, currentWeek, 30),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                "Day $daysCompleted of 7",
+                                stringResource(R.string.tasks_week_day_progress, daysCompleted, 7),
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                             )
@@ -912,7 +922,7 @@ private fun WeeklyTab(
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "$completedTasks of $totalTasks tasks completed",
+                            stringResource(R.string.tasks_week_completed_summary, completedTasks, totalTasks),
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
@@ -947,15 +957,15 @@ private fun WeeklyTab(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Previous Week",
+                            contentDescription = stringResource(R.string.tasks_week_nav_previous_cd),
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text("Previous")
+                        Text(stringResource(R.string.tasks_week_nav_previous))
                     }
 
                     Text(
-                        "Week $currentWeek",
+                        stringResource(R.string.tasks_week_nav_label, currentWeek),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -971,11 +981,11 @@ private fun WeeklyTab(
                         enabled = currentWeek < 30,
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Next")
+                        Text(stringResource(R.string.tasks_week_nav_next))
                         Spacer(Modifier.width(8.dp))
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Next Week",
+                            contentDescription = stringResource(R.string.tasks_week_nav_next_cd),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -986,7 +996,7 @@ private fun WeeklyTab(
         // Daily Summary
         item {
             Text(
-                "This Week's Schedule",
+                stringResource(R.string.tasks_week_schedule_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -1009,7 +1019,7 @@ private fun WeeklyTab(
         item {
             Spacer(Modifier.height(8.dp))
             Text(
-                "Quick Actions",
+                stringResource(R.string.tasks_week_quick_actions_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -1043,7 +1053,7 @@ private fun WeeklyTab(
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "View Plan",
+                            stringResource(R.string.tasks_week_quick_action_plan),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -1073,7 +1083,7 @@ private fun WeeklyTab(
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Study Plan",
+                            stringResource(R.string.tasks_week_quick_action_study),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -1094,7 +1104,7 @@ private fun WeeklyTab(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "Week Statistics",
+                        stringResource(R.string.tasks_week_stats_title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -1106,19 +1116,19 @@ private fun WeeklyTab(
                     ) {
                         WeekStatItem(
                             icon = Icons.Filled.CheckCircle,
-                            label = "Completed",
+                            label = stringResource(R.string.tasks_week_stat_completed),
                             value = "$completedTasks",
                             color = MaterialTheme.colorScheme.primary
                         )
                         WeekStatItem(
                             icon = Icons.Filled.Circle,
-                            label = "Remaining",
+                            label = stringResource(R.string.tasks_week_stat_remaining),
                             value = "${totalTasks - completedTasks}",
                             color = MaterialTheme.colorScheme.secondary
                         )
                         WeekStatItem(
                             icon = Icons.AutoMirrored.Filled.MenuBook,
-                            label = "Total",
+                            label = stringResource(R.string.tasks_week_stat_total),
                             value = "$totalTasks",
                             color = MaterialTheme.colorScheme.tertiary
                         )
@@ -1197,7 +1207,7 @@ private fun WeeklyDayCard(
                             color = MaterialTheme.colorScheme.primary
                         ) {
                             Text(
-                                "TODAY",
+                                stringResource(R.string.tasks_week_today_badge),
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1208,7 +1218,7 @@ private fun WeeklyDayCard(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "${day.tasks.size} tasks",
+                    stringResource(R.string.tasks_week_task_count, day.tasks.size),
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1216,7 +1226,7 @@ private fun WeeklyDayCard(
 
             Icon(
                 Icons.Filled.ChevronRight,
-                contentDescription = "View",
+                contentDescription = stringResource(R.string.tasks_week_view_cd),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -1297,13 +1307,13 @@ private fun PlanTab(
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "View Full Study Plan",
+                                text = stringResource(R.string.tasks_plan_view_full),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 16.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Comprehensive YDS preparation schedule",
+                                text = stringResource(R.string.tasks_plan_view_full_subtitle),
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
@@ -1311,7 +1321,7 @@ private fun PlanTab(
                     }
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = "Navigate to full study plan",
+                        contentDescription = stringResource(R.string.tasks_plan_nav_cd),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
@@ -1326,13 +1336,13 @@ private fun PlanTab(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(8.dp))
-                        Text("This Week's Study Plan", fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.tasks_plan_card_title), fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(Modifier.height(6.dp))
-                    Text("Reading Comprehension Focus", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                    Text(stringResource(R.string.tasks_plan_focus), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                     Spacer(Modifier.height(12.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Week Progress", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.tasks_plan_progress_label), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("${(weeklyProgressPct * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(Modifier.height(6.dp))
@@ -1346,7 +1356,7 @@ private fun PlanTab(
                         trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                     Spacer(Modifier.height(12.dp))
-                    Text("Daily Schedule", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.tasks_plan_daily_schedule), fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(8.dp))
                     DayScheduleList(thisWeek, dayStatuses, onDayClick)
                 }
@@ -1358,15 +1368,17 @@ private fun PlanTab(
             Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_secondary_block"))) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("Upcoming Days", fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.tasks_week_upcoming_title), fontWeight = FontWeight.SemiBold)
                         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-                            Text("Planned", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
+                            Text(stringResource(R.string.tasks_week_upcoming_badge), modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
                         }
                     }
                     Spacer(Modifier.height(8.dp))
-                    Text("Thu: Grammar deep dive + Vocabulary expansion", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("Fri: Mixed practice + Practice test preparation", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("Weekend: Review week + Prep next week's plan", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        text = stringResource(R.string.tasks_week_upcoming_placeholder),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 13.sp
+                    )
                 }
             }
         }
@@ -1381,7 +1393,7 @@ private fun DayScheduleList(
     onDayClick: (DayPlan) -> Unit = {}
 ) {
     if (week == null) {
-        Text("No plan available", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.tasks_plan_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
     }
     val fmt = DateTimeFormatter.ofPattern("EEE, MMM d").withLocale(Locale.getDefault())
@@ -1406,12 +1418,16 @@ private fun DayScheduleList(
                     DayCompletionState.NOT_STARTED
                 }
                 val baseStatusLabel = when (statusState) {
-                    DayCompletionState.COMPLETED -> "Completed"
-                    DayCompletionState.IN_PROGRESS -> "In progress"
-                    DayCompletionState.NOT_STARTED -> "Not started"
-                    DayCompletionState.EMPTY -> "Scheduled"
+                    DayCompletionState.COMPLETED -> stringResource(R.string.tasks_plan_status_completed)
+                    DayCompletionState.IN_PROGRESS -> stringResource(R.string.tasks_plan_status_in_progress)
+                    DayCompletionState.NOT_STARTED -> stringResource(R.string.tasks_plan_status_not_started)
+                    DayCompletionState.EMPTY -> stringResource(R.string.tasks_plan_status_scheduled)
                 }
-                val statusLabel = if (isToday) "Today - $baseStatusLabel" else baseStatusLabel
+                val statusLabel = if (isToday) {
+                    stringResource(R.string.tasks_plan_status_today, baseStatusLabel)
+                } else {
+                    baseStatusLabel
+                }
                 val (statusContainerColor, statusContentColor) = when (statusState) {
                     DayCompletionState.COMPLETED -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
                     DayCompletionState.IN_PROGRESS -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
@@ -1421,7 +1437,12 @@ private fun DayScheduleList(
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     val dateLabel = dayDate.format(fmt)
-                    Text(if (isToday) "${day.day}, $dateLabel (Today)" else "${day.day}, $dateLabel", fontWeight = FontWeight.SemiBold)
+                    val dayLabel = if (isToday) {
+                        stringResource(R.string.tasks_plan_day_label_today, day.day, dateLabel)
+                    } else {
+                        stringResource(R.string.tasks_plan_day_label, day.day, dateLabel)
+                    }
+                    Text(dayLabel, fontWeight = FontWeight.SemiBold)
                     Surface(
                         shape = RoundedCornerShape(16.dp),
                         color = statusContainerColor
@@ -1437,29 +1458,17 @@ private fun DayScheduleList(
                 statusInfo?.takeIf { it.totalTasks > 0 }?.let { info ->
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = "${info.completedTasks}/${info.totalTasks} tasks completed",
+                        text = stringResource(R.string.tasks_plan_task_summary, info.completedTasks, info.totalTasks),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }
                 Spacer(Modifier.height(6.dp))
-                day.tasks.forEach { t ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = t.desc,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Spacer(Modifier.height(4.dp))
-                }
+                Text(
+                    text = stringResource(R.string.tasks_plan_day_placeholder),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp
+                )
             }
         }
     }
@@ -1502,13 +1511,13 @@ private fun DailyTab(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Select a Day from the Plan",
+                    text = stringResource(R.string.tasks_daily_placeholder_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Click on any day in the Plan tab to view detailed study materials and tasks",
+                    text = stringResource(R.string.tasks_daily_placeholder_body),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -1518,7 +1527,7 @@ private fun DailyTab(
                     onClick = onBackToPlan,
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Text("Go to Plan")
+                    Text(stringResource(R.string.tasks_daily_placeholder_button))
                 }
             }
         }
@@ -1537,7 +1546,7 @@ private fun DailyTab(
             ) {
                 CircularProgressIndicator()
                 Text(
-                    text = "Loading ${selectedDay.day} Study Plan...",
+                    text = stringResource(R.string.tasks_daily_loading_message, selectedDay.day),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1682,7 +1691,7 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
                 }
 
                 OutlinedButton(onClick = onBackToPlan) {
-                    Text("← Plan")
+                    Text(stringResource(R.string.tasks_daily_back_to_plan))
                 }
             }
 
@@ -1694,7 +1703,7 @@ private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Estimated Time: ${studyInfo.estimatedTime}",
+                    text = stringResource(R.string.tasks_daily_estimated_time, studyInfo.estimatedTime),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1781,7 +1790,7 @@ private fun StudyBookCard(
             if (units.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Units for Today",
+                    text = stringResource(R.string.tasks_daily_units_title),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -1872,18 +1881,18 @@ private fun StudyUnitItem(unit: StudyUnit, onClick: () -> Unit = {}) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Unit ${unit.unitNumber}: ${unit.title}",
+                    text = stringResource(R.string.tasks_daily_unit_title, unit.unitNumber, unit.title),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "Pages ${unit.pages}",
+                    text = stringResource(R.string.tasks_daily_unit_pages, unit.pages),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (unit.exercises.isNotEmpty()) {
                     Text(
-                        text = "Exercises: ${unit.exercises.joinToString(", ")}",
+                        text = stringResource(R.string.tasks_daily_unit_exercises, unit.exercises.joinToString(", ")),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1901,7 +1910,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Daily Tasks",
+                text = stringResource(R.string.tasks_daily_tasks_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -1910,7 +1919,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
 
             if (tasks.isEmpty()) {
                 Text(
-                    text = "No specific tasks for today. Focus on your study units!",
+                    text = stringResource(R.string.tasks_daily_no_tasks),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -1958,7 +1967,7 @@ private fun DailyTaskItem(task: DailyTask) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Duration: ${task.estimatedDuration}",
+                    text = stringResource(R.string.tasks_daily_duration, task.estimatedDuration),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1992,7 +2001,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Study Materials",
+                text = stringResource(R.string.tasks_daily_materials_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -2001,7 +2010,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
 
             if (materials.isEmpty()) {
                 Text(
-                    text = "No additional materials for today. Focus on your textbook units!",
+                    text = stringResource(R.string.tasks_daily_no_materials),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -2068,7 +2077,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
 
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
-                contentDescription = "Open link",
+                contentDescription = stringResource(R.string.tasks_material_open_link_cd),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
@@ -2092,7 +2101,7 @@ private fun NotesSection(notes: String) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Study Notes",
+                    text = stringResource(R.string.tasks_daily_notes_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -2117,7 +2126,6 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
 
     val localizedDayName = PlanTaskLocalizer.localizeDayName(dayPlan.day, context)
 
-    val localizedPlanTasks = dayPlan.tasks.map { PlanTaskLocalizer.localize(it, context) }
 
 
 
@@ -2129,211 +2137,23 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
         else -> StudyBook.RED_BOOK         // Weeks 27-30: Exam Camp (mixed/review - default to Red for now)
     }
 
-    // Create units using actual Murphy book data
-    val units = when {
-        // Red Book: Units 1-114 across 8 weeks
-        book == StudyBook.RED_BOOK -> {
-            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
-            if (murphyUnits.isNotEmpty()) {
-                murphyUnits.map { unit ->
-                    StudyUnit(
-                        title = unit.title,
-                        unitNumber = unit.unitNumber,
-                        pages = unit.pages,
-                        exercises = unit.exercises,
-                        isCompleted = dayIndex < 3,
-                        estimatedMinutes = parseEstimatedMinutes(unit.estimatedTime),
-                        vocabulary = unit.keyPoints.take(5), // Use keyPoints as vocabulary
-                        grammarTopic = unit.title, // Use title as grammar topic
-                        murphyUnit = unit
-                    )
-                }
-            } else {
-                // Fallback to basic unit if Murphy unit not found
-                val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1
-                listOf(
-                    StudyUnit(
-                        title = when (baseUnitNumber % 10) {
-                            0 -> "Present Simple and Continuous"
-                            1 -> "Past Simple and Continuous"
-                            2 -> "Present Perfect"
-                            3 -> "Modal Verbs"
-                            4 -> "Future Forms"
-                            5 -> "Conditionals"
-                            6 -> "Passive Voice"
-                            7 -> "Reported Speech"
-                            8 -> "Gerunds and Infinitives"
-                            else -> "Questions and Negatives"
-                        },
-                        unitNumber = minOf(baseUnitNumber, 114),
-                        pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
-                        exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
-                        isCompleted = dayIndex < 3,
-                        estimatedMinutes = 30,
-                        vocabulary = listOf("essential", "basic", "fundamental"),
-                        grammarTopic = "Essential Grammar"
-                    )
-                )
-            }
-        }
-
-        // Blue Book: Intermediate level topics
-        book == StudyBook.BLUE_BOOK -> {
-            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
-            if (murphyUnits.isNotEmpty()) {
-                murphyUnits.map { unit ->
-                    StudyUnit(
-                        title = unit.title,
-                        unitNumber = unit.unitNumber,
-                        pages = unit.pages,
-                        exercises = unit.exercises,
-                        isCompleted = dayIndex < 3,
-                        estimatedMinutes = parseEstimatedMinutes(unit.estimatedTime),
-                        vocabulary = unit.keyPoints.take(5), // Use keyPoints as vocabulary
-                        grammarTopic = unit.title, // Use title as grammar topic
-                        murphyUnit = unit
-                    )
-                }
-            } else {
-                // Fallback for Blue Book
-                val weekInBlueBook = currentWeek - 8
-                listOf(
-                    StudyUnit(
-                        title = when (weekInBlueBook) {
-                            1 -> "Tenses Review (All Tenses Comparison)"
-                            2 -> "Future in Detail (Continuous/Perfect)"
-                            3 -> "Modals 1 (Ability, Permission, Advice)"
-                            4 -> "Modals 2 (Deduction, Obligation, Regret)"
-                            5 -> "Conditionals & Wish (All Types)"
-                            6 -> "Passive Voice (All Tenses) & 'have something done'"
-                            7 -> "Reported Speech (Questions, Commands, Advanced)"
-                            8 -> "Noun Clauses & Relative Clauses"
-                            9 -> "Gerunds & Infinitives (Advanced patterns)"
-                            10 -> "Conjunctions & Connectors"
-                            else -> "Advanced Grammar Review"
-                        },
-                        unitNumber = weekInBlueBook * 10 + dayIndex,
-                        pages = "${weekInBlueBook * 8}-${weekInBlueBook * 8 + 7}",
-                        exercises = listOf("${weekInBlueBook}.1", "${weekInBlueBook}.2", "${weekInBlueBook}.3"),
-                        isCompleted = dayIndex < 3
-                    )
-                )
-            }
-        }
-
-        // Green Book: Advanced level topics
-        book == StudyBook.GREEN_BOOK -> {
-            val murphyUnits = CompleteMurphyBookData.getUnitsForWeekAndDay(currentWeek, dayIndex)
-            if (murphyUnits.isNotEmpty()) {
-                murphyUnits.map { unit ->
-                    StudyUnit(
-                        title = unit.title,
-                        unitNumber = unit.unitNumber,
-                        pages = unit.pages,
-                        exercises = unit.exercises,
-                        isCompleted = dayIndex < 2,
-                        murphyUnit = unit
-                    )
-                }
-            } else {
-                // Fallback for Green Book
-                val weekInGreenBook = currentWeek - 18
-                listOf(
-                    StudyUnit(
-                        title = when (weekInGreenBook) {
-                            1 -> "Advanced Tense Nuances & Narrative Tenses"
-                            2 -> "Inversion & Emphasis (Not only, Hardly...)"
-                            3 -> "Advanced Modals (Speculation, Hypothetical)"
-                            4 -> "Participle Clauses (-ing and -ed clauses)"
-                            5 -> "Advanced Connectors & Discourse Markers"
-                            6 -> "Hypothetical Meaning & Subjunctives"
-                            7 -> "Adjectives & Adverbs (Advanced Uses)"
-                            else -> "Prepositions & Phrasal Verbs (Advanced)"
-                        },
-                        unitNumber = weekInGreenBook * 5 + dayIndex,
-                        pages = "${weekInGreenBook * 6}-${weekInGreenBook * 6 + 5}",
-                        exercises = listOf("${weekInGreenBook}.1", "${weekInGreenBook}.2"),
-                        isCompleted = dayIndex < 2
-                    )
-                )
-            }
-        }
-
-        else -> emptyList()
-    }
-
-    // Create sample tasks based on the day's existing tasks
-    val tasks = localizedPlanTasks.take(3).mapIndexed { index, task ->
-        val description = "Complete the assigned ${task.desc.lowercase(Locale.getDefault())} exercises"
-
-        DailyTask(
-            title = task.desc,
-            description = description,
-            estimatedDuration = "${20 + index * 10} minutes",
-            priority = when (index) {
-                0 -> Priority.HIGH
-                1 -> Priority.MEDIUM
-                else -> Priority.LOW
-            },
-            isCompleted = index == 0 && dayIndex < 3
-        )
-    }
-    // Real study materials from trusted platforms
-    val materials = listOf(
-        StudyMaterial(
-            title = "British Council LearnEnglish",
-            type = MaterialType.VIDEO,
-            url = "https://learnenglish.britishcouncil.org/",
-            description = "Grammar lessons, vocabulary and pronunciation exercises"
-        ),
-        StudyMaterial(
-            title = "Cambridge English Practice",
-            type = MaterialType.EXERCISE,
-            url = "https://www.cambridgeenglish.org/learning-english/",
-            description = "Official Cambridge exam practice materials"
-        ),
-        StudyMaterial(
-            title = "BBC Learning English",
-            type = MaterialType.AUDIO,
-            url = "https://www.bbc.co.uk/learningenglish/",
-            description = "Daily English lessons with audio and video content"
-        ),
-        StudyMaterial(
-            title = "Duolingo English Test Prep",
-            type = MaterialType.QUIZ,
-            url = "https://englishtest.duolingo.com/prepare",
-            description = "Interactive practice tests and quizzes"
-        ),
-        StudyMaterial(
-            title = "Oxford Online English",
-            type = MaterialType.VIDEO,
-            url = "https://www.youtube.com/@OxfordOnlineEnglish",
-            description = "Free video lessons covering grammar, vocabulary, and more"
-        )
-    ).take(3 + dayIndex % 2)
-
-    // Create notes based on the day
-    val notes = when (dayIndex) {
-        0 -> "Focus on understanding the fundamental concepts. Take your time with the exercises."
-        1 -> "Pay special attention to irregular verbs. Practice pronunciation."
-        2 -> "This unit builds on previous lessons. Review Unit 9 if needed."
-        3 -> "Challenge day! Try to complete all exercises without looking at answers first."
-        4 -> "Review week: Good time to consolidate what you've learned this week."
-        5 -> "Weekend practice: Take a more relaxed approach and focus on areas you found difficult."
-        6 -> "Preparation day: Review the upcoming week's material and plan your study schedule."
-        else -> ""
-    }
+        // Create neutral placeholders for initial plan generation
+    val units = emptyList<StudyUnit>()
+    val tasks = emptyList<DailyTask>()
+    val materials = emptyList<StudyMaterial>()
+    val estimatedTimeValue = context.getString(R.string.tasks_daily_estimated_time_default)
+    val notes = ""
 
     return DailyStudyInfo(
-        weekTitle = "Week $currentWeek - ${book.description}",
+        weekTitle = context.getString(R.string.tasks_week_nav_label, currentWeek),
         dayName = localizedDayName,
         date = LocalDate.now().plusDays(dayIndex.toLong()).format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())),
         book = book,
         units = units,
         tasks = tasks,
         materials = materials,
-        estimatedTime = "2-3 hours",
-        completionPercentage = if (dayIndex < 3) 100 else if (dayIndex < 5) 50 else 0,
+        estimatedTime = estimatedTimeValue,
+        completionPercentage = 0,
         notes = notes
     )
 }
@@ -2462,7 +2282,7 @@ fun PaginatedTaskList(
                     enabled = taskListState.currentPage > 0 && !taskListState.isLoading,
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Previous")
+                    Text(stringResource(R.string.tasks_week_nav_previous))
                 }
 
                 Text(
@@ -2479,7 +2299,7 @@ fun PaginatedTaskList(
                     enabled = taskListState.hasMorePages && !taskListState.isLoading,
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Next")
+                    Text(stringResource(R.string.tasks_week_nav_next))
                 }
             }
         }
@@ -2679,4 +2499,6 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
+
+
 

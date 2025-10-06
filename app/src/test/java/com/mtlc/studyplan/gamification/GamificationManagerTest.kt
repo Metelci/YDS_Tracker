@@ -193,7 +193,7 @@ class GamificationManagerTest {
     }
 
     @Test
-    fun `completed achievements show 100% progress`() {
+    fun `completed achievements show 100 percent progress`() {
         val completedAchievement = testAchievements.find {
             it.currentProgress >= it.targetValue
         }

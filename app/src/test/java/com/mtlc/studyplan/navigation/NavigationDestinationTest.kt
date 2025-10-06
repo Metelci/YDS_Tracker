@@ -525,7 +525,7 @@ class NavigationDestinationTest {
         val params = mapOf<String, Any?>(
             "validParam" to "value",
             "nullParam" to null as Any?
-        ).filterValues { it != null } as Map<String, Any>
+        ).filterValues { it != null }.mapValues { it.value!! }
 
         val destination = NavigationDestination.Custom(route = "route", params = params)
 

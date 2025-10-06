@@ -1,3 +1,14 @@
+## [2.9.49] - 2025-10-06 (hotfix)
+
+### Hotfix
+- Onboarding calendars: responsive width/height; fully visible days on all screens
+- Tasks page i18n: segmented control + cards localized (EN/TR)
+- Removed mock exams/practice content; neutral placeholders for initial use
+- Turkish strings normalized to UTF-8; corrected diacritics
+- Upcoming Days card localized; mock bullets removed
+
+### Notes
+- UI-only hotfix; no DB schema changes
 ## 2.9.47 (" + 2025-10-06 + ")
 
 ### Hotfix
@@ -646,6 +657,7 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
+
 
 
 

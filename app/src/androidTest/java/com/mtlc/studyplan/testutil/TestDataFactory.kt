@@ -193,7 +193,7 @@ object TestDataFactory {
 
             createTestTask(
                 id = "${prefix}_task_$taskNumber",
-                title = "${category.name.lowercase().capitalize()} Task $taskNumber",
+                title = "${category.name.lowercase().replaceFirstChar { it.uppercase() }} Task $taskNumber",
                 category = category,
                 priority = priority,
                 estimatedMinutes = 20 + random.nextInt(40), // 20-60 minutes

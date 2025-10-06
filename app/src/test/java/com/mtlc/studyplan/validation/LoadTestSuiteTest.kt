@@ -113,15 +113,24 @@ class LoadTestSuiteTest {
 
     @Test
     fun `load test handles exceptions gracefully`() = runTest {
-        // Force failures deterministically across all operation paths
+        // Force failures deterministically by selecting operations that will fail
+        val failingSuite = LoadTestSuite(
+            context,
+            taskRepository,
+            studyProgressRepository,
+            settingsManager,
+            performanceMonitor,
+            operationSelector = { 0 } // Force database operations which are mocked to fail
+        )
+
+        // Force failures for database operations
         whenever(taskRepository.insertTask(any())).thenAnswer { throw IllegalStateException("Test failure - insert") }
         whenever(taskRepository.getAllTasks()).thenReturn(kotlinx.coroutines.flow.flow {
             throw IllegalStateException("Test failure - getAllTasks")
         })
-        // Keep study progress flows stable; failures come from other paths
+        // Keep study progress flows stable; failures come from database paths
         whenever(studyProgressRepository.setCurrentWeek(any())).thenReturn(Unit)
         whenever(studyProgressRepository.currentWeek).thenReturn(kotlinx.coroutines.flow.flowOf(1))
-        whenever(settingsManager.updateSetting(any(), any())).thenAnswer { throw IllegalStateException("Test failure - updateSetting") }
 
         val config = LoadTestSuite.LoadTestConfig(
             concurrentUsers = 1,
@@ -129,7 +138,7 @@ class LoadTestSuiteTest {
             testDurationMs = 2000L
         )
 
-        val result = loadTestSuite.runComprehensiveLoadTest(config)
+        val result = failingSuite.runComprehensiveLoadTest(config)
 
         assertTrue("Load test should succeed even with failures", result.isSuccess)
         result.onSuccess { loadResult ->

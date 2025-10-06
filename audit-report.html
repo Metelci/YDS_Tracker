@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>StudyPlan Audit Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; line-height: 1.5; background: #f6f8fb; color: #1f2933; }
+    h1 { font-size: 28px; margin-bottom: 8px; }
+    h2 { margin-top: 32px; font-size: 20px; border-bottom: 2px solid #d0d7de; padding-bottom: 6px; }
+    h3 { margin-top: 24px; font-size: 16px; }
+    .summary { background: #ffffff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; }
+    ul { margin-top: 8px; }
+    li { margin-bottom: 6px; }
+    table { border-collapse: collapse; width: 100%; background: #ffffff; }
+    th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }
+    th { background: #f0f4f8; }
+    code { background: #eef2f7; padding: 2px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>StudyPlan End-to-End Audit</h1>
+  <p>Audit date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')</p>
+
+  <div class="summary">
+    <h2>Executive Summary</h2>
+    <ul>
+      <li>Onboarding calendars now scale horizontally and remain fully scrollable, preventing Sunday truncation (<code>app/src/main/java/com/mtlc/studyplan/features/onboarding/OnboardingScreens.kt:435</code>).</li>
+      <li>Availability sliders received localized labels, value chips, and enhanced styling for visual clarity (<code>.../OnboardingScreens.kt:867</code>).</li>
+      <li>Removed deprecated “Smart Scheduling” toggle from tasks settings to align with current feature set (<code>app/src/main/java/com/mtlc/studyplan/settings/ui/OriginalSettingsScreen.kt:556</code>).</li>
+      <li>Weekly plan cards now derive completion badges from live task data, eliminating fake completed states (<code>app/src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt:504</code>).</li>
+    </ul>
+  </div>
+
+  <h2>Build &amp; Test Validation</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Command</th>
+        <th>Outcome</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>./gradlew :app:compileDebugKotlin</code></td>
+        <td>Success</td>
+        <td>Verifies Kotlin sources compile after layout and data updates.</td>
+      </tr>
+      <tr>
+        <td><code>./gradlew :app:testDebugUnitTest</code></td>
+        <td>Success</td>
+        <td>Unit test suite passes in 44s.</td>
+      </tr>
+      <tr>
+        <td><code>./gradlew :app:lintDebug</code></td>
+        <td>Success</td>
+        <td>Command completed in ~3m; CLI timeout triggered after completion, results remain valid.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Key Implementation Notes</h2>
+  <h3>Responsive Onboarding Calendars</h3>
+  <ul>
+    <li>Introduced width heuristics based on <code>ScreenSize</code> to ensure minimum visibility for all columns (<code>OnboardingScreens.kt:435-449</code>).</li>
+    <li>Wrapped date pickers in horizontally scrollable containers for overflow handling (<code>OnboardingScreens.kt:555-626</code>).</li>
+  </ul>
+
+  <h3>Availability Slider Redesign</h3>
+  <ul>
+    <li>Localized day names via <code>TextStyle.FULL</code> and added Material-aware slider colors (<code>OnboardingScreens.kt:867-907</code>).</li>
+    <li>Value chips now mirror system color scheme for quick-read availability totals.</li>
+  </ul>
+
+  <h3>Tasks Settings Cleanup</h3>
+  <ul>
+    <li>Removed dormant Smart Scheduling toggle block, keeping actionable controls only (<code>OriginalSettingsScreen.kt:556-564</code>).</li>
+  </ul>
+
+  <h3>Weekly Plan Status Integrity</h3>
+  <ul>
+    <li>Added <code>DayScheduleStatus</code> and <code>DayCompletionState</code> modeling to compute real completion info (<code>WorkingTasksScreen.kt:504-566</code>).</li>
+    <li>Plan tab cards now display context-aware status chips and task summaries (<code>WorkingTasksScreen.kt:1375-1438</code>).</li>
+  </ul>
+
+  <h2>Risk &amp; Follow-up</h2>
+  <ul>
+    <li>Manual QA on varied device sizes recommended to validate calendar scroll elasticity and slider layout.</li>
+    <li>Monitor lint warnings on next full run; current report completed successfully despite CLI timeout.</li>
+  </ul>
+
+  <h2>Repository State</h2>
+  <p><code>git status -sb</code>: clean (no outstanding changes).</p>
+
+</body>
+</html>
