@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,11 +34,13 @@ import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 @Composable
 fun FriendsTab(
     friends: List<Friend>,
+    canInviteFriends: Boolean,
     onFriendSelected: (Friend) -> Unit,
     onAddFriend: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    val loginPrompt = stringResource(id = R.string.social_login_required)
     val isDarkTheme = false
 
     // Theme-aware button colors
@@ -51,6 +54,15 @@ fun FriendsTab(
     } else {
         MaterialTheme.colorScheme.onSecondaryContainer
     }
+    val disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+    val disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+
+    val inviteButtonColors = ButtonDefaults.filledTonalButtonColors(
+        containerColor = buttonContainerColor,
+        contentColor = buttonContentColor,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor
+    )
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
         Row(
@@ -63,19 +75,33 @@ fun FriendsTab(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            FilledTonalButton(
-                onClick = onAddFriend,
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = buttonContainerColor,
-                    contentColor = buttonContentColor
-                )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
-                Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
-                Text(
-                    text = stringResource(id = R.string.social_add_friend),
-                    modifier = Modifier.padding(start = spacing.xs)
-                )
+                FilledTonalButton(
+                    onClick = onAddFriend,
+                    enabled = canInviteFriends,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = inviteButtonColors
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = null,
+                        tint = if (canInviteFriends) buttonContentColor else disabledContentColor
+                    )
+                    Text(
+                        text = stringResource(id = R.string.social_add_friend),
+                        modifier = Modifier.padding(start = spacing.xs)
+                    )
+                }
+                if (!canInviteFriends) {
+                    Text(
+                        text = loginPrompt,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = disabledContentColor
+                    )
+                }
             }
         }
         if (friends.isEmpty()) {
@@ -101,16 +127,26 @@ fun FriendsTab(
                 )
                 FilledTonalButton(
                     onClick = onAddFriend,
+                    enabled = canInviteFriends,
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = buttonContainerColor,
-                        contentColor = buttonContentColor
-                    )
+                    colors = inviteButtonColors
                 ) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = null,
+                        tint = if (canInviteFriends) buttonContentColor else disabledContentColor
+                    )
                     Text(
                         text = stringResource(id = R.string.social_invite_friends),
                         modifier = Modifier.padding(start = spacing.xs)
+                    )
+                }
+                if (!canInviteFriends) {
+                    Text(
+                        text = loginPrompt,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = disabledContentColor,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
@@ -118,14 +154,21 @@ fun FriendsTab(
             Column(
                 verticalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
+                val friendClick: (Friend) -> Unit = if (canInviteFriends) onFriendSelected else { _ -> }
                 friends.forEach { friend ->
-                    FriendRow(friend = friend, onClick = onFriendSelected)
+                    val rowModifier = if (canInviteFriends) {
+                        Modifier
+                    } else {
+                        Modifier.alpha(0.6f)
+                    }
+                    FriendRow(
+                        friend = friend,
+                        onClick = friendClick,
+                        modifier = rowModifier
+                    )
                 }
             }
         }
     }
 }
-
-
-
 

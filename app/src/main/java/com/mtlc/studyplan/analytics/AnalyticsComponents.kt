@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.*
 
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.analytics.StudyStreak
 
 // Data classes are now defined in AnalyticsEngine.kt
@@ -748,7 +750,7 @@ fun RecentAchievementsCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Recent Achievements",
+                    text = stringResource(id = R.string.analytics_recent_achievements_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )

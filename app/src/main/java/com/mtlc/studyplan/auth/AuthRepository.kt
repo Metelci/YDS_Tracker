@@ -75,6 +75,18 @@ class AuthRepository(private val context: Context) {
         }
     }
 
+    suspend fun updateUsername(username: String): Result<Unit> {
+        return try {
+            val sanitized = username.trim()
+            dataStore.edit { prefs ->
+                prefs[Keys.USERNAME] = sanitized
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun updateStats(xp: Int, streak: Int) {
         dataStore.edit { prefs ->
             prefs[Keys.XP] = xp

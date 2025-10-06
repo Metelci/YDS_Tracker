@@ -67,6 +67,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -194,6 +195,7 @@ fun SocialScreen(
     val friends by socialRepository.friends.collectAsState()
     val awards by socialRepository.awards.collectAsState()
     val currentAuthUser by authRepository.currentUser.collectAsState(initial = null)
+    val canInviteFriends = currentAuthUser != null
 
     var selectedTab by rememberSaveable { mutableStateOf(SocialTab.Profile) }
     var showUsernameDialog by rememberSaveable { mutableStateOf(false) }
@@ -401,11 +403,26 @@ fun SocialScreen(
     // and mapped to SocialTab enum directly
 
     // Enforce username selection if missing
-    LaunchedEffect(profile.username) {
-        val needsUsername = profile.username.isBlank()
-        showUsernameDialog = needsUsername
-        if (needsUsername) {
+    LaunchedEffect(currentAuthUser?.username, profile.username) {
+        val authUsername = currentAuthUser?.username?.trim().orEmpty()
+
+        if (currentAuthUser == null) {
+            if (profile.username.isNotBlank()) {
+                socialRepository.updateUsername("")
+            }
+            showUsernameDialog = false
             pendingUsername = ""
+            usernameError = null
+        } else if (authUsername.isBlank()) {
+            showUsernameDialog = true
+            pendingUsername = ""
+            usernameError = null
+        } else {
+            if (profile.username != authUsername) {
+                socialRepository.updateUsername(authUsername)
+            }
+            showUsernameDialog = false
+            pendingUsername = authUsername
             usernameError = null
         }
     }
@@ -435,15 +452,34 @@ fun SocialScreen(
                         val err = validateUsername(pendingUsername)
                         usernameError = err
                         if (err == null) {
-                            scope.launch {
-                                socialRepository.updateUsername(pendingUsername.trim())
-                                showUsernameDialog = false
-                                val usernameSetMessage = context.getString(R.string.social_username_set_success)
-                                    .replace("{username}", pendingUsername.trim())
-                                snackbarHostState.showSnackbar(
-                                    message = usernameSetMessage,
-                                    duration = SnackbarDuration.Short
-                                )
+                            val activeUser = currentAuthUser
+                            if (activeUser == null) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(R.string.social_login_required),
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } else {
+                                val sanitized = pendingUsername.trim()
+                                scope.launch {
+                                    val updateResult = authRepository.updateUsername(sanitized)
+                                    if (updateResult.isSuccess) {
+                                        socialRepository.updateUsername(sanitized)
+                                        showUsernameDialog = false
+                                        val usernameSetMessage = context.getString(R.string.social_username_set_success)
+                                            .replace("{username}", sanitized)
+                                        snackbarHostState.showSnackbar(
+                                            message = usernameSetMessage,
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    } else {
+                                        snackbarHostState.showSnackbar(
+                                            message = context.getString(R.string.social_username_save_error),
+                                            duration = SnackbarDuration.Long
+                                        )
+                                    }
+                                }
                             }
                         }
                     },
@@ -499,8 +535,18 @@ fun SocialScreen(
             ) {
                 // Fixed Social Hub Top Bar
                 SocialHubTopBar(
+                    canInvite = canInviteFriends,
                     onInviteClick = {
-                        showInviteFriendDialog = true
+                        if (canInviteFriends) {
+                            showInviteFriendDialog = true
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.social_login_required),
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
                     }
                 )
 
@@ -554,9 +600,19 @@ fun SocialScreen(
                 SocialTab.Ranks -> RanksTab(ranks = ranks)
                 SocialTab.Friends -> FriendsTab(
                     friends = friends,
+                    canInviteFriends = canInviteFriends,
                     onFriendSelected = { /* friend -> showFriendProfileSnackbar(friend, snackbarHostState, scope, context) */ },
                     onAddFriend = {
-                        showInviteFriendDialog = true
+                        if (canInviteFriends) {
+                            showInviteFriendDialog = true
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.social_login_required),
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
                     }
                 )
                 SocialTab.Awards -> AwardsTab(awards = awards)
@@ -615,7 +671,7 @@ fun SocialScreen(
                         // Check if user is logged in
                         val user = currentAuthUser
                         if (user == null) {
-                            friendEmailError = "Please log in via Settings → Social to send invites"
+                            friendEmailError = context.getString(R.string.social_login_required)
                             return@TextButton
                         }
 
@@ -691,6 +747,7 @@ fun SocialScreen(
 
 @Composable
 fun SocialHubTopBar(
+    canInvite: Boolean,
     onInviteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -698,7 +755,10 @@ fun SocialHubTopBar(
     val title = stringResource(R.string.social_hub_title)
     val subtitle = stringResource(R.string.social_hub_subtitle)
     val inviteLabel = stringResource(R.string.topbar_invite_action)
-    val prussianBlue = Color(0xFF003153)
+    val loginPrompt = stringResource(R.string.social_login_required)
+
+    val disabledContainer = MaterialTheme.colorScheme.surfaceVariant
+    val disabledContent = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
 
     Surface(
         modifier = modifier
@@ -713,8 +773,8 @@ fun SocialHubTopBar(
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFE9F5E9), // Light mint green
-                            Color(0xFFD1ECF1)  // Light cyan/aqua blue
+                            Color(0xFFE9F5E9),
+                            Color(0xFFD1ECF1)
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
@@ -742,27 +802,45 @@ fun SocialHubTopBar(
                     )
                 }
 
-                FilledTonalButton(
-                    onClick = onInviteClick,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF2E7D32)
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.PersonAdd,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = Color(0xFF2E7D32)
-                    )
-                    Spacer(modifier = Modifier.size(6.dp))
-                    Text(
-                        text = inviteLabel,
-                        fontWeight = FontWeight.Medium,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    FilledTonalButton(
+                        onClick = onInviteClick,
+                        enabled = canInvite,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF2E7D32),
+                            disabledContainerColor = disabledContainer,
+                            disabledContentColor = disabledContent
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.PersonAdd,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = if (canInvite) Color(0xFF2E7D32) else disabledContent
+                        )
+                        Spacer(modifier = Modifier.size(6.dp))
+                        Text(
+                            text = inviteLabel,
+                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    if (!canInvite) {
+                        Text(
+                            text = loginPrompt,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = disabledContent,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.padding(top = spacing.xs)
+                        )
+                    }
                 }
             }
         }

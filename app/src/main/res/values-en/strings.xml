@@ -350,6 +350,12 @@
     <string name="social_rarity_rare">Rare</string>
     <string name="social_rarity_epic">Epic</string>
     <string name="social_rarity_legendary">Legendary</string>
+    <string name="social_awards_progress_heading">Achievement Progress</string>
+    <string name="social_awards_progress_unlocked">%1$d of %2$d unlocked</string>
+    <string name="social_awards_progress_label">Progress</string>
+    <string name="social_awards_progress_percent">%1$d%%</string>
+    <string name="social_awards_total_points_label">Total Points Earned</string>
+    <string name="social_awards_total_points_value">%1$d %2$s</string>
     <string name="social_weekly_leaderboard">Weekly Leaderboard</string>
     <string name="social_rank_number">#%1$d</string>
     <string name="social_leaderboard_streak">%1$d day streak</string>
@@ -505,7 +511,7 @@
     <string name="save">Save</string>
     <string name="booster_details">Improve weak areas with %1$s practice</string>
     <string name="analytics_loading_results">Loading search results for \"%s\"...</string>
-
+    <string name="analytics_recent_achievements_title">Recent Achievements</string>
     <string name="tasks_tab_daily">Daily</string>
     <string name="tasks_tab_weekly">Weekly</string>
     <string name="tasks_tab_plan">Plan</string>

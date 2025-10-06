@@ -113,35 +113,43 @@ fun AwardsTab(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                val unlockedCount = awards.count { it.isUnlocked }
+                val totalAwards = awards.size
+                val progress = if (totalAwards > 0) {
+                    unlockedCount.toFloat() / totalAwards.toFloat()
+                } else 0f
+                val progressPercent = (progress * 100).toInt()
+                val totalPoints = awards.filter { it.isUnlocked }.sumOf { it.points }
+                val pointsLabel = stringResource(id = R.string.social_points_suffix)
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Achievement Progress",
+                        text = stringResource(id = R.string.social_awards_progress_heading),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    val unlockedCount = awards.count { it.isUnlocked }
                     Text(
-                        text = "$unlockedCount of ${awards.size} unlocked",
+                        text = stringResource(
+                            id = R.string.social_awards_progress_unlocked,
+                            unlockedCount,
+                            totalAwards
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 Text(
-                    text = "Progress",
+                    text = stringResource(id = R.string.social_awards_progress_label),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
-                val progress = if (awards.isNotEmpty()) {
-                    awards.count { it.isUnlocked }.toFloat() / awards.size.toFloat()
-                } else 0f
 
                 LinearProgressIndicator(
                     progress = { progress },
@@ -154,7 +162,10 @@ fun AwardsTab(
                 )
 
                 Text(
-                    text = "${(progress * 100).toInt()}%",
+                    text = stringResource(
+                        id = R.string.social_awards_progress_percent,
+                        progressPercent
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -165,14 +176,17 @@ fun AwardsTab(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Total Points Earned",
+                        text = stringResource(id = R.string.social_awards_total_points_label),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    val totalPoints = awards.filter { it.isUnlocked }.sumOf { it.points }
                     Text(
-                        text = "$totalPoints pts",
+                        text = stringResource(
+                            id = R.string.social_awards_total_points_value,
+                            totalPoints,
+                            pointsLabel
+                        ),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

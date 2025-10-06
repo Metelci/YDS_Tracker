@@ -271,6 +271,7 @@
   <string name="average_accuracy">Ortalama Doğruluk</string>
   <string name="study_analytics">Çalışma Analitiği</string>
   <string name="analytics_loading_results">\"%s\" için arama sonuçları yükleniyor...</string>
+  <string name="analytics_recent_achievements_title">Son Basarilar</string>
   <string name="time_by_skill">Becereğe Göre Zaman</string>
   <string name="weekly_study_minutes">Haftalık Çalışma Dakikaları</string>
   <string name="performance_insights">Performans İçgörüleri</string>
@@ -308,6 +309,8 @@
   <string name="social_username_label">Kullanıcı adı</string>
   <string name="social_username_error">3–20 küçük harf, rakam veya alt çizgi kullanın</string>
   <string name="social_username_set_success">{username} kullanıcı adı olarak ayarlandı</string>
+  <string name="social_login_required">Arkadas daveti icin Ayarlar sayfasindan giris yapin.</string>
+  <string name="social_username_save_error">Kullanici adi kaydedilemedi. Lutfen tekrar deneyin.</string>
   <string name="social_choose_avatar">Avatarınızı Seçin</string>
   <string name="social_upload_avatar">Özel Avatar Yükle</string>
   <string name="social_avatar_upload_error_size">Avatar gorseli 2MB\'den kucuk olmali</string>
@@ -354,6 +357,12 @@
   <string name="social_rarity_rare">Nadir</string>
   <string name="social_rarity_epic">Destansı</string>
   <string name="social_rarity_legendary">Efsanevi</string>
+  <string name="social_awards_progress_heading">Basari Ilerlemesi</string>
+  <string name="social_awards_progress_unlocked">%2$d odulden %1$d tanesi acildi</string>
+  <string name="social_awards_progress_label">Ilerleme</string>
+  <string name="social_awards_progress_percent">%1$d%%</string>
+  <string name="social_awards_total_points_label">Kazanilan Toplam Puan</string>
+  <string name="social_awards_total_points_value">%1$d %2$s</string>
   <string name="social_weekly_leaderboard">Haftalık Sıralama</string>
   <string name="social_rank_number">#%1$d</string>
   <string name="social_leaderboard_streak">%1$d günlük seri</string>
@@ -507,3 +516,4 @@
   <string name="tasks_plan_day_placeholder">Ayrıntılı görevler planınız oluşturulduğunda burada görünecek.</string>
   <string name="tasks_daily_estimated_time_default">belirlenecek</string>
 </resources>
+
