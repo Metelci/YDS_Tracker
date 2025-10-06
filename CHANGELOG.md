@@ -10,14 +10,6 @@
 - Fixed AnimatedContent target state usage and Composable naming callsite
 - Added base layout stub for activity_settings to satisfy MissingDefaultResource
 
-# StudyPlan Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
-## [2.9.47] - 2025-10-05 (hotfix)
-
 ### Bug Fixes
 - **Fixed mockup stats and fake completed status in 'This Week's Study Plan' card**
   - Removed hardcoded weekly progress calculation that always showed 0%

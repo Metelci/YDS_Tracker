@@ -557,17 +557,6 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             SettingToggleItem(
-                icon = Icons.Outlined.Schedule,
-                title = "Smart Scheduling",
-                description = "AI-powered study session recommendations",
-                checked = false,
-                // Smart Scheduling toggle removed
-                onCheckedChange = { checked ->
-                    // Removed handler for Smart Scheduling
-                }
-            )
-
-            SettingToggleItem(
                 icon = Icons.AutoMirrored.Outlined.EventNote,
                 title = "Daily Goal Reminders",
                 description = "Remind me of my daily study goals",

@@ -504,6 +504,29 @@ private fun rememberWorkingTasksScreenState(
     val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) {
         (weeklyCompleted.toFloat() / weeklyTotal)
     }
+    val tasksById = remember(allTasks) {
+        allTasks.associateBy { it.id }
+    }
+    val dayStatuses = remember(thisWeek, tasksById) {
+        thisWeek?.days?.map { day ->
+            val total = day.tasks.size
+            val completed = day.tasks.count { planTask ->
+                tasksById[planTask.id]?.isCompleted == true
+            }
+            val state = when {
+                total == 0 -> DayCompletionState.EMPTY
+                completed == 0 -> DayCompletionState.NOT_STARTED
+                completed < total -> DayCompletionState.IN_PROGRESS
+                else -> DayCompletionState.COMPLETED
+            }
+            DayScheduleStatus(
+                dayName = day.day,
+                completedTasks = completed,
+                totalTasks = total,
+                state = state
+            )
+        } ?: emptyList()
+    }
 
     return WorkingTasksScreenState(
         currentWeek = currentWeek,
@@ -511,6 +534,7 @@ private fun rememberWorkingTasksScreenState(
         selectedDay = selectedDayState.value,
         thisWeek = thisWeek,
         weeklyProgressPct = weeklyProgressPct,
+        dayStatuses = dayStatuses,
         onTabSelected = { selectedTabState.value = it },
         onDaySelected = { day ->
             selectedDayState.value = day
@@ -526,10 +550,25 @@ data class WorkingTasksScreenState(
     val selectedDay: DayPlan?,
     val thisWeek: WeekPlan?,
     val weeklyProgressPct: Float,
+    val dayStatuses: List<DayScheduleStatus>,
     val onTabSelected: (Int) -> Unit,
     val onDaySelected: (DayPlan) -> Unit,
     val onNavigateToStudyPlan: () -> Unit
 )
+
+data class DayScheduleStatus(
+    val dayName: String,
+    val completedTasks: Int,
+    val totalTasks: Int,
+    val state: DayCompletionState
+)
+
+enum class DayCompletionState {
+    EMPTY,
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED
+}
 
 @Composable
 private fun WorkingTasksScreenContent(
@@ -579,6 +618,7 @@ private fun WorkingTasksScreenContent(
                 2 -> PlanTab(
                     thisWeek = screenState.thisWeek,
                     weeklyProgressPct = screenState.weeklyProgressPct,
+                    dayStatuses = screenState.dayStatuses,
                     onDayClick = screenState.onDaySelected,
                     onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
                 )
@@ -1218,6 +1258,7 @@ private fun WeekStatItem(
 private fun PlanTab(
     thisWeek: WeekPlan?,
     weeklyProgressPct: Float,
+    dayStatuses: List<DayScheduleStatus>,
     onDayClick: (DayPlan) -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {}
 ) {
@@ -1307,7 +1348,7 @@ private fun PlanTab(
                     Spacer(Modifier.height(12.dp))
                     Text("Daily Schedule", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(8.dp))
-                    DayScheduleList(thisWeek, onDayClick)
+                    DayScheduleList(thisWeek, dayStatuses, onDayClick)
                 }
             }
         }
@@ -1334,7 +1375,11 @@ private fun PlanTab(
 }
 
 @Composable
-private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {}) {
+private fun DayScheduleList(
+    week: WeekPlan?,
+    dayStatuses: List<DayScheduleStatus>,
+    onDayClick: (DayPlan) -> Unit = {}
+) {
     if (week == null) {
         Text("No plan available", color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
@@ -1352,13 +1397,50 @@ private fun DayScheduleList(week: WeekPlan?, onDayClick: (DayPlan) -> Unit = {})
                 .clickable { onDayClick(day) }
         ) {
             Column(Modifier.padding(12.dp)) {
+                val dayDate = monday.plusDays(idx.toLong())
+                val isToday = LocalDate.now() == dayDate
+                val statusInfo = dayStatuses.getOrNull(idx)
+                val statusState = statusInfo?.state ?: if (day.tasks.isEmpty()) {
+                    DayCompletionState.EMPTY
+                } else {
+                    DayCompletionState.NOT_STARTED
+                }
+                val baseStatusLabel = when (statusState) {
+                    DayCompletionState.COMPLETED -> "Completed"
+                    DayCompletionState.IN_PROGRESS -> "In progress"
+                    DayCompletionState.NOT_STARTED -> "Not started"
+                    DayCompletionState.EMPTY -> "Scheduled"
+                }
+                val statusLabel = if (isToday) "Today - $baseStatusLabel" else baseStatusLabel
+                val (statusContainerColor, statusContentColor) = when (statusState) {
+                    DayCompletionState.COMPLETED -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
+                    DayCompletionState.IN_PROGRESS -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+                    DayCompletionState.NOT_STARTED -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+                    DayCompletionState.EMPTY -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+                }
+
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    val dateLabel = monday.plusDays(idx.toLong()).format(fmt)
-                    val isToday = LocalDate.now() == monday.plusDays(idx.toLong())
+                    val dateLabel = dayDate.format(fmt)
                     Text(if (isToday) "${day.day}, $dateLabel (Today)" else "${day.day}, $dateLabel", fontWeight = FontWeight.SemiBold)
-                    Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-                        Text(if (isToday) "In Progress" else "Completed", modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = statusContainerColor
+                    ) {
+                        Text(
+                            statusLabel,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
+                            fontSize = 11.sp,
+                            color = statusContentColor
+                        )
                     }
+                }
+                statusInfo?.takeIf { it.totalTasks > 0 }?.let { info ->
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = "${info.completedTasks}/${info.totalTasks} tasks completed",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp
+                    )
                 }
                 Spacer(Modifier.height(6.dp))
                 day.tasks.forEach { t ->

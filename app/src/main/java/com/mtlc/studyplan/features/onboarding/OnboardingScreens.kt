@@ -17,6 +17,8 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 // removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,8 +45,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.surfaceColorAtElevation
@@ -60,6 +65,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -88,6 +94,9 @@ import com.mtlc.studyplan.ui.responsive.ResponsiveLazyColumn
 import com.mtlc.studyplan.ui.responsive.adaptiveComponentSizing
 import com.mtlc.studyplan.ui.responsive.adaptiveFontScale
 import com.mtlc.studyplan.ui.responsive.adaptiveLayoutConfig
+import com.mtlc.studyplan.ui.responsive.rememberScreenSize
+import com.mtlc.studyplan.ui.responsive.rememberScreenWidth
+import com.mtlc.studyplan.ui.responsive.ScreenSize
 import com.mtlc.studyplan.ui.responsive.isVerySmallScreen
 import com.mtlc.studyplan.ui.responsive.performanceConfig
 import com.mtlc.studyplan.ui.responsive.rememberDeviceProfile
@@ -98,6 +107,8 @@ import com.mtlc.studyplan.ui.responsive.touchTargetSize
 import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 
 @Composable
@@ -419,6 +430,22 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
         }
     }
 
+    val screenSize = rememberScreenSize()
+    val screenWidth = rememberScreenWidth()
+    val (calendarMinWidth, calendarMaxWidth) = remember(screenSize, screenWidth) {
+        when (screenSize) {
+            ScreenSize.Mobile -> {
+                val min = maxOf(screenWidth * 0.95f, 360.dp)
+                min to min
+            }
+            ScreenSize.Tablet -> {
+                val min = maxOf(screenWidth * 0.6f, 460.dp)
+                min to maxOf(min, 600.dp)
+            }
+            ScreenSize.Desktop -> 580.dp to 720.dp
+        }
+    }
+
     ResponsiveLazyColumn {
         item {
             ResponsiveContainer {
@@ -525,16 +552,23 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                     yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
                 )
 
-                DatePicker(
-                    state = startDateState,
-                    title = null,
-                    showModeToggle = false,
+                val startCalendarScroll = rememberScrollState()
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(datePickerHeight)
                         .padding(top = 8.dp)
-                        .defaultMinSize(minWidth = 320.dp)
-                )
+                        .horizontalScroll(startCalendarScroll)
+                ) {
+                    DatePicker(
+                        state = startDateState,
+                        title = null,
+                        showModeToggle = false,
+                        modifier = Modifier
+                            .widthIn(min = calendarMinWidth, max = calendarMaxWidth)
+                            .height(datePickerHeight)
+                            .defaultMinSize(minWidth = calendarMinWidth)
+                    )
+                }
 
                 LaunchedEffect(startDateState.selectedDateMillis) {
                     startDateState.selectedDateMillis?.let { millis ->
@@ -575,16 +609,23 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         }
                     )
 
-                    DatePicker(
-                        state = examDateState,
-                        title = null,
-                        showModeToggle = false,
+                    val examCalendarScroll = rememberScrollState()
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(datePickerHeight)
                             .padding(top = 8.dp)
-                            .defaultMinSize(minWidth = 320.dp)
-                    )
+                            .horizontalScroll(examCalendarScroll)
+                    ) {
+                        DatePicker(
+                            state = examDateState,
+                            title = null,
+                            showModeToggle = false,
+                            modifier = Modifier
+                                .widthIn(min = calendarMinWidth, max = calendarMaxWidth)
+                                .height(datePickerHeight)
+                                .defaultMinSize(minWidth = calendarMinWidth)
+                        )
+                    }
 
                     LaunchedEffect(examDateState.selectedDateMillis) {
                         examDateState.selectedDateMillis?.let { millis ->
@@ -800,13 +841,21 @@ private fun StudyPlanPreviewItem(
     }
 }
 
+
 @Composable
 private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
     val availability by vm.availability.collectAsState()
     val typography = responsiveOnboardingTypography()
     val heights = responsiveHeights()
     val cardColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-    val sliderHeight = (heights.slider - 16.dp).coerceAtLeast(16.dp)
+    val sliderHeight = (heights.slider - 16.dp).coerceAtLeast(20.dp)
+    val sliderColors = SliderDefaults.colors(
+        activeTrackColor = MaterialTheme.colorScheme.primary,
+        inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+        thumbColor = MaterialTheme.colorScheme.primary,
+        activeTickColor = Color.Transparent,
+        inactiveTickColor = Color.Transparent
+    )
 
     ResponsiveCard(
         containerColor = cardColor
@@ -815,20 +864,55 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
             stringResource(R.string.availability_title),
             style = typography.cardTitle
         )
-        DayOfWeek.entries.forEach { day ->
-            val label = day.name.lowercase().replaceFirstChar { it.uppercase() }
-            val value = availability[day] ?: 0
-            Text(
-                "$label: ${value}min",
-                style = typography.sliderLabel
-            )
-            Slider(
-                value = value.toFloat(),
-                onValueChange = { vm.setAvailability(day, it.toInt()) },
-                valueRange = 0f..180f,
-                modifier = Modifier.height(sliderHeight)
-            )
-        }
+        DayOfWeek.entries
+            .sortedBy { it.value }
+            .forEach { day ->
+                val label = day.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                val value = (availability[day] ?: 0).coerceIn(0, 180)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = label,
+                        style = typography.sliderLabel
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        tonalElevation = 0.dp
+                    ) {
+                        Text(
+                            text = "$value min",
+                            style = typography.sliderLabel,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Slider(
+                        value = value.toFloat(),
+                        onValueChange = { newValue ->
+                            vm.setAvailability(day, newValue.toInt())
+                        },
+                        valueRange = 0f..180f,
+                        colors = sliderColors,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(sliderHeight)
+                    )
+                }
+            }
     }
 }
 
