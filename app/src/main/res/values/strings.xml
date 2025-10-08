@@ -602,7 +602,7 @@
 
     <!-- Home screen -->
     <string name="home_title">Home</string>
-    <string name="home_today_progress_title">Today&apos;s Progress</string>
+    <string name="home_today_progress_title">Today\'s Progress</string>
     <string name="home_today_progress_minutes">%1$d minutes studied</string>
     <string name="home_today_progress_points">%1$d XP earned today</string>
     <string name="home_today_progress_streak">%1$d-day streak</string>
@@ -616,7 +616,7 @@
     <string name="home_study_progress_overall">Overall: %1$d / %2$d tasks completed</string>
     <string name="home_study_progress_total_xp">Total XP: %1$d</string>
     <string name="home_study_progress_current_streak">Current streak: %1$d days</string>
-    <string name="home_today_tasks_title">Today&apos;s Tasks</string>
+    <string name="home_today_tasks_title">Today\'s Tasks</string>
     <string name="home_today_tasks_empty">No tasks scheduled for today.</string>
     <string name="home_new_placeholder">New home screen placeholder - implementation pending</string>
 </resources>
