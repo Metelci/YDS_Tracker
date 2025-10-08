@@ -575,4 +575,24 @@
     <string name="tasks_week_upcoming_placeholder">Plan your next sessions to see them here.</string>
     <string name="tasks_plan_day_placeholder">Detailed tasks will appear here once your plan is generated.</string>
     <string name="tasks_daily_estimated_time_default">to be estimated</string>
+
+    <!-- Home screen -->
+    <string name="home_title">Home</string>
+    <string name="home_today_progress_title">Today&apos;s Progress</string>
+    <string name="home_today_progress_minutes">%1$d minutes studied</string>
+    <string name="home_today_progress_points">%1$d XP earned today</string>
+    <string name="home_today_progress_streak">%1$d-day streak</string>
+    <string name="home_exam_card_title">Next Exam: %1$s</string>
+    <string name="home_exam_card_date">Date: %1$s</string>
+    <string name="home_exam_card_status">Status: %1$s</string>
+    <string name="home_exam_card_days_remaining">Days remaining: %1$d</string>
+    <string name="home_exam_card_registration_period">Registration period: %1$s - %2$s</string>
+    <string name="home_exam_card_late_registration">Late registration until: %1$s</string>
+    <string name="home_study_progress_title">Study Progress</string>
+    <string name="home_study_progress_overall">Overall: %1$d / %2$d tasks completed</string>
+    <string name="home_study_progress_total_xp">Total XP: %1$d</string>
+    <string name="home_study_progress_current_streak">Current streak: %1$d days</string>
+    <string name="home_today_tasks_title">Today&apos;s Tasks</string>
+    <string name="home_today_tasks_empty">No tasks scheduled for today.</string>
+    <string name="home_new_placeholder">New home screen placeholder - implementation pending</string>
 </resources>

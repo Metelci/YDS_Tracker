@@ -1,3 +1,28 @@
+## [2.9.51] - 2025-10-07 (hotfix)
+
+### Study Plan
+- Replaced mock weekly cards with live Raymond Murphy plan data, including completion tracking per day and week
+- Added dedicated daily plan view that surfaces selected units, exercises, and completion state
+- Matched Weekly Study Plan top bar styling to Settings gradient capsule for visual consistency
+
+### UI
+- Removed oversized white gutter beneath bottom navigation on Weekly Study Plan by respecting system insets
+- Centered onboarding date pickers with consistent widths across device classes
+
+### Verification
+- Manually walked weekly/daily plan views with populated and empty data sets
+- Re-ran onboarding planner on 6.7″ device to confirm calendar layout
+
+## [2.9.50] - 2025-10-07 (hotfix)
+
+### Localization
+- Completed Turkish translations for Social awards progress card, including unlocked count, progress label, and total points copy
+- Wired Social awards progress UI to `stringResource` values so analytics cards pick up locale-specific text
+- Localized Analytics "Recent Achievements" card title across default and Turkish resource sets
+
+### Verification
+- Ran Gradle sync to confirm project configuration after localization updates
+
 ## [2.9.49] - 2025-10-06 (hotfix)
 
 ### Hotfix

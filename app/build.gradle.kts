@@ -23,8 +23,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-    versionCode = 83
-    versionName = "2.9.49"
+    versionCode = 85
+    versionName = "2.9.51"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -324,7 +324,6 @@ tasks.register("jacocoTestCoverageVerification", JacocoCoverageVerification::cla
         }
     ))
 }
-
 
 
 

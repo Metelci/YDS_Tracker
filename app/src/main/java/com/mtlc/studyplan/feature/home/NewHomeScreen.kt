@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.ui.res.stringResource
+import com.mtlc.studyplan.R
 
 /**
  * Temporary placeholder while the new home experience is rebuilt.
@@ -19,6 +21,6 @@ fun NewHomeScreen(
     modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
-        Text(text = "New home screen placeholder – implementation pending")
+        Text(text = stringResource(R.string.home_new_placeholder))
     }
 }

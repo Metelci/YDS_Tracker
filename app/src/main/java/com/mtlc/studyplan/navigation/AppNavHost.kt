@@ -420,35 +420,30 @@ fun AppNavHost(
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     navController.popBackStack()
                 },
-                onNavigateToDaily = { day ->
+                onNavigateToDaily = { weekIndex, dayIndex ->
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    navController.navigate("daily/$day")
-                }
+                    navController.navigate("daily/$weekIndex/$dayIndex")
+                },
+                studyProgressRepository = resolvedStudyProgressRepository,
+                taskRepository = resolvedTaskRepository,
+                sharedViewModel = sharedViewModel
             )
         }
 
         // Daily view route
-        composable("daily/{day}") { backStackEntry ->
-            val day = backStackEntry.arguments?.getString("day") ?: ""
-            Scaffold(
-                topBar = {
-                    StudyPlanTopBar(
-                        title = "$day Study Plan",
-                        navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                        onNavigationClick = { navController.popBackStack() },
-                        style = StudyPlanTopBarStyle.Tasks
-                    )
-                }
-            ) { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("$day Study Details")
-                }
-            }
+        composable("daily/{weekIndex}/{dayIndex}") { backStackEntry ->
+            val weekIndex = backStackEntry.arguments?.getString("weekIndex")?.toIntOrNull() ?: 0
+            val dayIndex = backStackEntry.arguments?.getString("dayIndex")?.toIntOrNull() ?: 0
+            com.mtlc.studyplan.core.DailyPlanScreen(
+                weekIndex = weekIndex,
+                dayIndex = dayIndex,
+                onNavigateBack = {
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.popBackStack()
+                },
+                sharedViewModel = sharedViewModel,
+                taskRepository = resolvedTaskRepository
+            )
         }
 
         // Exam details route - Real YDS exam information
@@ -565,4 +560,3 @@ private fun EnhancedNavigationBar(
         }
     }
 }
-

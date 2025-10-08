@@ -12,15 +12,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.data.Task as DataTask
 import com.mtlc.studyplan.data.DayPlan as DataDayPlan
 import com.mtlc.studyplan.data.WeekPlan as DataWeekPlan
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.core.DataStore
-import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import com.mtlc.studyplan.utils.settingsDataStore
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
@@ -94,7 +96,7 @@ fun HomeScreen() {
     Scaffold(
         topBar = {
             StudyPlanTopBar(
-                title = "Home",
+                title = stringResource(R.string.home_title),
                 showLanguageSwitcher = true,
                 style = StudyPlanTopBarStyle.Home
             )
@@ -123,29 +125,29 @@ fun HomeScreen() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Today's Progress",
+                            text = stringResource(R.string.home_today_progress_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "$completedTasks / $plannedTasks tasks completed",
+                            text = stringResource(R.string.tasks_completed, completedTasks, plannedTasks),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         if (studyMinutes > 0) {
                             Text(
-                                text = "$studyMinutes minutes studied",
+                                text = stringResource(R.string.home_today_progress_minutes, studyMinutes),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                         if (pointsEarned > 0) {
                             Text(
-                                text = "$pointsEarned XP earned today",
+                                text = stringResource(R.string.home_today_progress_points, pointsEarned),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                         if (currentStreak > 0) {
                             Text(
-                                text = "${currentStreak}-day streak",
+                                text = stringResource(R.string.home_today_progress_streak, currentStreak),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -171,9 +173,9 @@ fun HomeScreen() {
                         colors = CardDefaults.cardColors(containerColor = cardColors[1 % cardColors.size])
                     ) {
                         Column(Modifier.padding(12.dp)) {
-                            Text("Next Exam: ${nextExam.name}", style = MaterialTheme.typography.titleSmall)
-                            Text("Date: ${nextExam.examDate}", style = MaterialTheme.typography.bodySmall)
-                            Text("Status: ${YdsExamService.getStatusMessage()}", style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.home_exam_card_title, nextExam.name), style = MaterialTheme.typography.titleSmall)
+                            Text(stringResource(R.string.home_exam_card_date, nextExam.examDate), style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.home_exam_card_status, YdsExamService.getStatusMessage()), style = MaterialTheme.typography.bodySmall)
                             LinearProgressIndicator(
                                 progress = { if (daysToExam > 0) (100 - daysToExam.coerceAtMost(100)) / 100f else 1f },
                                 modifier = Modifier
@@ -182,17 +184,17 @@ fun HomeScreen() {
                                     .padding(top = 8.dp),
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             )
-                            Text("Days remaining: ${daysToExam}", style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.home_exam_card_days_remaining, daysToExam), style = MaterialTheme.typography.bodySmall)
 
                             // Show registration info if relevant
                             when (registrationStatus) {
                                 YdsExamService.RegistrationStatus.OPEN -> {
-                                    Text("Registration period: ${nextExam.registrationStart} - ${nextExam.registrationEnd}",
+                                    Text(stringResource(R.string.home_exam_card_registration_period, nextExam.registrationStart, nextExam.registrationEnd),
                                          style = MaterialTheme.typography.bodySmall,
                                          color = MaterialTheme.colorScheme.primary)
                                 }
                                 YdsExamService.RegistrationStatus.LATE_REGISTRATION -> {
-                                    Text("Late registration until: ${nextExam.lateRegistrationEnd}",
+                                    Text(stringResource(R.string.home_exam_card_late_registration, nextExam.lateRegistrationEnd),
                                          style = MaterialTheme.typography.bodySmall,
                                          color = MaterialTheme.colorScheme.error)
                                 }
@@ -210,7 +212,7 @@ fun HomeScreen() {
                         colors = CardDefaults.cardColors(containerColor = cardColors[2 % cardColors.size])
                     ) {
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Study Progress", style = MaterialTheme.typography.titleSmall)
+                            Text(stringResource(R.string.home_study_progress_title), style = MaterialTheme.typography.titleSmall)
                             LinearProgressIndicator(
                                 progress = { progressRatio },
                                 modifier = Modifier
@@ -219,20 +221,20 @@ fun HomeScreen() {
                                     .clip(RoundedCornerShape(3.dp)),
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             )
-                            Text("Overall: ${completedInPlan} / ${totalTasks} tasks completed")
+                            Text(stringResource(R.string.home_study_progress_overall, completedInPlan, totalTasks))
                             if (progress.totalXp > 0) {
-                                Text("Total XP: ${progress.totalXp}")
+                                Text(stringResource(R.string.home_study_progress_total_xp, progress.totalXp))
                             }
                             // Only show streak if it's greater than 0
                             if (progress.streakCount > 0) {
-                                Text("Current streak: ${progress.streakCount} days")
+                                Text(stringResource(R.string.home_study_progress_current_streak, progress.streakCount))
                             }
                         }
                     }
                 }
             }
             item {
-                Text("Today’s Tasks", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.home_today_tasks_title), style = MaterialTheme.typography.titleMedium)
             }
             if (todayTasks != null) {
                 val (weekNum, tasks) = todayTasks
@@ -251,7 +253,7 @@ fun HomeScreen() {
                     HorizontalDivider()
                 }
             } else {
-                item { Text("No tasks scheduled for today.") }
+                item { Text(stringResource(R.string.home_today_tasks_empty)) }
             }
         }
     }

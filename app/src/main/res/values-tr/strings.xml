@@ -515,5 +515,24 @@
   <string name="tasks_week_upcoming_placeholder">Burada görmek için sonraki oturumlarınızı planlayın.</string>
   <string name="tasks_plan_day_placeholder">Ayrıntılı görevler planınız oluşturulduğunda burada görünecek.</string>
   <string name="tasks_daily_estimated_time_default">belirlenecek</string>
+  <!-- Home screen -->
+  <string name="home_title">Ana Sayfa</string>
+  <string name="home_today_progress_title">Bugunun Ilerlemesi</string>
+  <string name="home_today_progress_minutes">%1$d dakika calisildi</string>
+  <string name="home_today_progress_points">Bugun %1$d XP kazanildi</string>
+  <string name="home_today_progress_streak">%1$d gunluk seri</string>
+  <string name="home_exam_card_title">Siradaki Sinav: %1$s</string>
+  <string name="home_exam_card_date">Tarih: %1$s</string>
+  <string name="home_exam_card_status">Durum: %1$s</string>
+  <string name="home_exam_card_days_remaining">Kalan gun: %1$d</string>
+  <string name="home_exam_card_registration_period">Kayit donemi: %1$s - %2$s</string>
+  <string name="home_exam_card_late_registration">Gec kayit son tarih: %1$s</string>
+  <string name="home_study_progress_title">Calisma Ilerlemesi</string>
+  <string name="home_study_progress_overall">Genel: %1$d / %2$d gorev tamamlandi</string>
+  <string name="home_study_progress_total_xp">Toplam XP: %1$d</string>
+  <string name="home_study_progress_current_streak">Guncel seri: %1$d gun</string>
+  <string name="home_today_tasks_title">Bugunun Gorevleri</string>
+  <string name="home_today_tasks_empty">Bugun icin planlanmis gorev yok.</string>
+  <string name="home_new_placeholder">Yeni ana sayfa yer tutucusu - uygulama beklemede</string>
 </resources>
 

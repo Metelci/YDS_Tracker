@@ -17,8 +17,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
 // removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -432,17 +430,12 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 
     val screenSize = rememberScreenSize()
     val screenWidth = rememberScreenWidth()
-    val (calendarMinWidth, calendarMaxWidth) = remember(screenSize, screenWidth) {
+    val calendarMinWidth = 360.dp
+    val calendarMaxWidth = remember(screenSize, screenWidth) {
         when (screenSize) {
-            ScreenSize.Mobile -> {
-                val min = maxOf(screenWidth * 0.95f, 360.dp)
-                min to min
-            }
-            ScreenSize.Tablet -> {
-                val min = maxOf(screenWidth * 0.6f, 460.dp)
-                min to maxOf(min, 600.dp)
-            }
-            ScreenSize.Desktop -> 580.dp to 720.dp
+            ScreenSize.Mobile -> screenWidth
+            ScreenSize.Tablet -> maxOf(screenWidth * 0.75f, 520.dp)
+            ScreenSize.Desktop -> 720.dp
         }
     }
 
@@ -552,21 +545,24 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                     yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
                 )
 
-                val startCalendarScroll = rememberScrollState()
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .horizontalScroll(startCalendarScroll)
+                        .padding(top = 8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     DatePicker(
                         state = startDateState,
                         title = null,
                         showModeToggle = false,
                         modifier = Modifier
-                            .widthIn(min = calendarMinWidth, max = calendarMaxWidth)
-                            .height(datePickerHeight)
+                            .fillMaxWidth()
+                            .then(
+                                if (screenSize == ScreenSize.Mobile) Modifier
+                                else Modifier.widthIn(max = calendarMaxWidth)
+                            )
                             .defaultMinSize(minWidth = calendarMinWidth)
+                            .height(datePickerHeight)
                     )
                 }
 
@@ -609,21 +605,24 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         }
                     )
 
-                    val examCalendarScroll = rememberScrollState()
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
-                            .horizontalScroll(examCalendarScroll)
+                            .padding(top = 8.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         DatePicker(
                             state = examDateState,
                             title = null,
                             showModeToggle = false,
                             modifier = Modifier
-                                .widthIn(min = calendarMinWidth, max = calendarMaxWidth)
-                                .height(datePickerHeight)
+                                .fillMaxWidth()
+                                .then(
+                                    if (screenSize == ScreenSize.Mobile) Modifier
+                                    else Modifier.widthIn(max = calendarMaxWidth)
+                                )
                                 .defaultMinSize(minWidth = calendarMinWidth)
+                                .height(datePickerHeight)
                         )
                     }
 

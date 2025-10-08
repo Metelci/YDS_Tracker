@@ -3,13 +3,16 @@ package com.mtlc.studyplan.calendar
 import android.content.Context
 import android.os.Build
 import android.os.PowerManager
-import com.mtlc.studyplan.power.PowerStateChecker
 import androidx.work.*
 import com.mtlc.studyplan.data.PlanDataSource
+import com.mtlc.studyplan.data.PlanSettingsStore
+import com.mtlc.studyplan.power.PowerStateChecker
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.Duration
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -57,16 +60,27 @@ class CalendarWorker(
 
             // Get study plan data from data source
             val weekPlans = PlanDataSource.planData
-            val dayPlans = weekPlans.flatMap { it.days }
-            
-            if (dayPlans.size == 0) {
+            val planSettingsStore = PlanSettingsStore(applicationContext.settingsDataStore)
+            val planSettings = planSettingsStore.settingsFlow.first()
+            val planStartDate = LocalDate.ofEpochDay(planSettings.startEpochDay)
+
+            val limitedWeekPlans = weekPlans.take(planSettings.totalWeeks.coerceAtMost(weekPlans.size))
+            val calendarDayPlans = limitedWeekPlans.flatMapIndexed { weekIndex, week ->
+                week.days.mapIndexed { dayIndex, day ->
+                    val offsetDays = (weekIndex * 7L) + dayIndex.toLong()
+                    val scheduledDate = planStartDate.plusDays(offsetDays)
+                    day.copy(day = scheduledDate.toString())
+                }
+            }
+
+            if (calendarDayPlans.isEmpty()) {
                 return@withContext Result.success(
                     workDataOf("message" to "No study plans to sync")
                 )
             }
 
             // Perform sync
-            val syncResult = calendarSync.upsertNext4Weeks(dayPlans)
+            val syncResult = calendarSync.upsertNext4Weeks(calendarDayPlans)
             
             when (syncResult) {
                 is CalendarSyncResult.Success -> {

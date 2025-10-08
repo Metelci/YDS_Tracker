@@ -502,9 +502,9 @@ private fun rememberWorkingTasksScreenState(
             task.isCompleted && weeklyIds.contains(task.id) 
         }
     }
-    val weeklyTotal = remember(weeklyIds) { weeklyIds.size.coerceAtLeast(1) }
+    val weeklyTotal = remember(weeklyIds) { weeklyIds.size }
     val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) {
-        (weeklyCompleted.toFloat() / weeklyTotal)
+        if (weeklyTotal > 0) weeklyCompleted.toFloat() / weeklyTotal else 0f
     }
     val tasksById = remember(allTasks) {
         allTasks.associateBy { it.id }
@@ -535,6 +535,8 @@ private fun rememberWorkingTasksScreenState(
         selectedTab = selectedTabState.value,
         selectedDay = selectedDayState.value,
         thisWeek = thisWeek,
+        weeklyCompletedTasks = weeklyCompleted,
+        weeklyTotalTasks = weeklyTotal,
         weeklyProgressPct = weeklyProgressPct,
         dayStatuses = dayStatuses,
         onTabSelected = { selectedTabState.value = it },
@@ -551,6 +553,8 @@ data class WorkingTasksScreenState(
     val selectedTab: Int,
     val selectedDay: DayPlan?,
     val thisWeek: WeekPlan?,
+    val weeklyCompletedTasks: Int,
+    val weeklyTotalTasks: Int,
     val weeklyProgressPct: Float,
     val dayStatuses: List<DayScheduleStatus>,
     val onTabSelected: (Int) -> Unit,
@@ -617,7 +621,10 @@ private fun WorkingTasksScreenContent(
                 1 -> WeeklyTab(
                     thisWeek = screenState.thisWeek,
                     currentWeek = screenState.currentWeek,
+                    weeklyCompletedTasks = screenState.weeklyCompletedTasks,
+                    weeklyTotalTasks = screenState.weeklyTotalTasks,
                     studyProgressRepository = studyProgressRepository,
+                    dayStatuses = screenState.dayStatuses,
                     onNavigateToPlan = { screenState.onTabSelected(2) },
                     onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
                 )
@@ -828,30 +835,33 @@ private fun TasksGradientTopBar(
 private fun WeeklyTab(
     thisWeek: WeekPlan?,
     currentWeek: Int,
+    weeklyCompletedTasks: Int,
+    weeklyTotalTasks: Int,
     studyProgressRepository: StudyProgressRepository,
+    dayStatuses: List<DayScheduleStatus>,
     onNavigateToPlan: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()
     val cardShape = RoundedCornerShape(16.dp)
+    val scope = rememberCoroutineScope()
 
-    // Calculate weekly stats from real plan data
-    val totalTasks = remember(thisWeek) {
-        thisWeek?.days?.sumOf { it.tasks.size } ?: 0
+    val totalTasks = remember(weeklyTotalTasks, thisWeek) {
+        if (weeklyTotalTasks > 0) weeklyTotalTasks else thisWeek?.days?.sumOf { it.tasks.size } ?: 0
     }
 
-    // For initial use: Show 0 completed tasks (user starts fresh)
-    // This will be updated when task completion tracking is integrated
-    val completedTasks = 0
+    val completedTasks = remember(weeklyCompletedTasks) { weeklyCompletedTasks.coerceAtMost(totalTasks) }
 
     val weekProgress = remember(completedTasks, totalTasks) {
-        if (totalTasks > 0) completedTasks.toFloat() / totalTasks else 0f
+        if (totalTasks > 0) (completedTasks.toFloat() / totalTasks).coerceIn(0f, 1f) else 0f
     }
 
-    val currentDayOfWeek = remember { LocalDate.now().dayOfWeek.value }
-    val daysCompleted = remember(currentDayOfWeek) {
-        currentDayOfWeek.coerceIn(1, 7) // Monday=1, Sunday=7
+    val daysCompleted = remember(dayStatuses) {
+        dayStatuses.count { it.state == DayCompletionState.COMPLETED }
     }
+    val totalDays = remember(dayStatuses, thisWeek) {
+        dayStatuses.size.takeIf { it > 0 } ?: (thisWeek?.days?.size ?: 7)
+    }
+    val currentDayOfWeek = remember { LocalDate.now().dayOfWeek.value }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -882,7 +892,7 @@ private fun WeeklyTab(
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                stringResource(R.string.tasks_week_day_progress, daysCompleted, 7),
+                                stringResource(R.string.tasks_week_day_progress, daysCompleted, totalDays),
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                             )
@@ -1123,7 +1133,7 @@ private fun WeeklyTab(
                         WeekStatItem(
                             icon = Icons.Filled.Circle,
                             label = stringResource(R.string.tasks_week_stat_remaining),
-                            value = "${totalTasks - completedTasks}",
+                            value = "${(totalTasks - completedTasks).coerceAtLeast(0)}",
                             color = MaterialTheme.colorScheme.secondary
                         )
                         WeekStatItem(
@@ -1485,6 +1495,10 @@ private fun DailyTab(
 ) {
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(false) }
+    val allTasks by taskRepository.getAllTasks().collectAsState(initial = emptyList())
+    val completedTaskIds = remember(allTasks) {
+        allTasks.filter { it.isCompleted }.map { it.id }.toSet()
+    }
 
     LaunchedEffect(selectedDay) {
         if (selectedDay != null) {
@@ -1556,7 +1570,7 @@ private fun DailyTab(
     }
 
     // Create study info based on selected day
-    val studyInfo = createDailyStudyInfo(selectedDay, currentWeek, context)
+    val studyInfo = createDailyStudyInfo(selectedDay, currentWeek, context, completedTaskIds)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -1637,8 +1651,10 @@ data class StudyUnit(
 )
 
 data class DailyTask(
+    val id: String,
     val title: String,
     val description: String,
+    val estimatedMinutes: Int,
     val estimatedDuration: String,
     val priority: Priority,
     val isCompleted: Boolean = false
@@ -1740,13 +1756,6 @@ private fun StudyBookCard(
     var isCreatingTask by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // Track completed Murphy tasks
-    val completedTasks by taskRepository.getAllTasks().collectAsState(initial = emptyList())
-    val murphyTaskIds = completedTasks
-        .filter { it.category == "Murphy Grammar" && it.isCompleted }
-        .map { it.id }
-        .toSet()
-
     Card(
         colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_1")),
         shape = RoundedCornerShape(12.dp)
@@ -1799,19 +1808,14 @@ private fun StudyBookCard(
                 // Create stable callback using remember
                 val onUnitClick = remember<(StudyUnit) -> Unit> { { unit ->
                     selectedUnit = unit
-                    val taskId = generateMurphyTaskId(book, unit)
-                    val isCompleted = murphyTaskIds.contains(taskId)
-                    if (!isCompleted && !isCreatingTask) {
+                    if (!unit.isCompleted && !isCreatingTask) {
                         isCreatingTask = true
                     }
                 }}
 
                 units.forEach { unit ->
-                    val taskId = generateMurphyTaskId(book, unit)
-                    val isCompleted = murphyTaskIds.contains(taskId)
-
                     StudyUnitItem(
-                        unit = unit.copy(isCompleted = isCompleted),
+                        unit = unit,
                         onClick = { onUnitClick(unit) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -1824,6 +1828,11 @@ private fun StudyBookCard(
     LaunchedEffect(selectedUnit, isCreatingTask) {
         if (selectedUnit != null && isCreatingTask) {
             val unit = selectedUnit!!
+            if (unit.isCompleted) {
+                isCreatingTask = false
+                selectedUnit = null
+                return@LaunchedEffect
+            }
             val taskId = generateMurphyTaskId(book, unit)
 
             // Check if task already exists
@@ -1973,6 +1982,8 @@ private fun DailyTaskItem(task: DailyTask) {
                 )
             }
 
+            val priorityLabel = task.priority.name.lowercase(Locale.getDefault()).replaceFirstChar { it.titlecase(Locale.getDefault()) }
+
             Surface(
                 color = when (task.priority) {
                     Priority.HIGH -> Color(0xFFE53935)
@@ -1982,7 +1993,7 @@ private fun DailyTaskItem(task: DailyTask) {
                 shape = RoundedCornerShape(4.dp)
             ) {
                 Text(
-                    text = task.priority.name,
+                    text = priorityLabel,
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -2121,15 +2132,15 @@ private fun NotesSection(notes: String) {
 }
 
 // Helper function to create DailyStudyInfo from DayPlan
-private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context: Context): DailyStudyInfo {
+private fun createDailyStudyInfo(
+    dayPlan: DayPlan,
+    currentWeek: Int = 1,
+    context: Context,
+    completedTaskIds: Set<String>
+): DailyStudyInfo {
     val dayIndex = PlanTaskLocalizer.dayIndex(dayPlan.day)
-
     val localizedDayName = PlanTaskLocalizer.localizeDayName(dayPlan.day, context)
 
-
-
-
-    // Assign books based on the 30-week curriculum progression
     val book = when (currentWeek) {
         in 1..8 -> StudyBook.RED_BOOK      // Weeks 1-8: Red Book Foundation
         in 9..18 -> StudyBook.BLUE_BOOK    // Weeks 9-18: Blue Book Intermediate
@@ -2137,25 +2148,143 @@ private fun createDailyStudyInfo(dayPlan: DayPlan, currentWeek: Int = 1, context
         else -> StudyBook.RED_BOOK         // Weeks 27-30: Exam Camp (mixed/review - default to Red for now)
     }
 
-        // Create neutral placeholders for initial plan generation
-    val units = emptyList<StudyUnit>()
-    val tasks = emptyList<DailyTask>()
-    val materials = emptyList<StudyMaterial>()
-    val estimatedTimeValue = context.getString(R.string.tasks_daily_estimated_time_default)
-    val notes = ""
+    val murphyUnits = murphyUnitsFor(book)
+    val murphyUnitNumbers = dayPlan.tasks
+        .flatMap { extractMurphyUnitNumbers(it.details) }
+        .distinct()
+        .sorted()
+
+    val studyUnits = murphyUnitNumbers.map { unitNumber ->
+        val murphyUnit = murphyUnits.firstOrNull { it.unitNumber == unitNumber }
+        val estimatedMinutes = murphyUnit?.estimatedTime?.let { parseEstimatedMinutes(it) } ?: 45
+        val taskId = generateMurphyTaskId(book, unitNumber)
+        StudyUnit(
+            title = murphyUnit?.title ?: "Unit $unitNumber",
+            unitNumber = unitNumber,
+            pages = murphyUnit?.pages ?: "-",
+            exercises = murphyUnit?.exercises ?: emptyList(),
+            isCompleted = completedTaskIds.contains(taskId),
+            estimatedMinutes = estimatedMinutes,
+            vocabulary = murphyUnit?.keyPoints ?: emptyList(),
+            grammarTopic = murphyUnit?.description ?: "",
+            murphyUnit = murphyUnit
+        )
+    }
+
+    var totalTaskMinutes = 0
+    val localizedTasks = dayPlan.tasks.map { PlanTaskLocalizer.localize(it, context) }
+    val dailyTasks = localizedTasks.mapIndexed { index, localizedTask ->
+        val rawTask = dayPlan.tasks[index]
+        val estimatedMinutes = estimatePlanTaskDuration(rawTask, localizedTask)
+        totalTaskMinutes += estimatedMinutes
+        DailyTask(
+            id = localizedTask.id,
+            title = localizedTask.desc,
+            description = localizedTask.details ?: rawTask.details ?: "",
+            estimatedMinutes = estimatedMinutes,
+            estimatedDuration = context.getString(R.string.task_minutes, estimatedMinutes),
+            priority = determineTaskPriority(rawTask, localizedTask),
+            isCompleted = completedTaskIds.contains(localizedTask.id)
+        )
+    }
+
+    val estimatedTimeValue = if (totalTaskMinutes > 0) {
+        context.getString(R.string.task_minutes, totalTaskMinutes)
+    } else {
+        context.getString(R.string.tasks_daily_estimated_time_default)
+    }
+
+    val completionPercentage = when {
+        studyUnits.isNotEmpty() -> {
+            val completedUnits = studyUnits.count { it.isCompleted }
+            if (studyUnits.isNotEmpty()) ((completedUnits.toFloat() / studyUnits.size) * 100).toInt() else 0
+        }
+        dailyTasks.isNotEmpty() -> {
+            val completed = dailyTasks.count { it.isCompleted }
+            ((completed.toFloat() / dailyTasks.size) * 100).toInt()
+        }
+        else -> 0
+    }.coerceIn(0, 100)
+
+    val weekTitle = context.getString(R.string.tasks_week_nav_label, currentWeek)
+    val weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY)
+    val dateLabel = weekStart.plusDays(dayIndex.toLong()).format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault()))
 
     return DailyStudyInfo(
-        weekTitle = context.getString(R.string.tasks_week_nav_label, currentWeek),
+        weekTitle = weekTitle,
         dayName = localizedDayName,
-        date = LocalDate.now().plusDays(dayIndex.toLong()).format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())),
+        date = dateLabel,
         book = book,
-        units = units,
-        tasks = tasks,
-        materials = materials,
+        units = studyUnits,
+        tasks = dailyTasks,
+        materials = emptyList(),
         estimatedTime = estimatedTimeValue,
-        completionPercentage = 0,
-        notes = notes
+        completionPercentage = completionPercentage,
+        notes = ""
     )
+}
+
+private fun murphyUnitsFor(book: StudyBook): List<MurphyUnit> =
+    book.murphyBook?.chapters?.flatMap { it.units } ?: emptyList()
+
+private fun extractMurphyUnitNumbers(details: String?): List<Int> {
+    if (details.isNullOrBlank()) return emptyList()
+    val normalized = details.lowercase(Locale.getDefault())
+    if (!normalized.contains("ünite") && !normalized.contains("unit")) return emptyList()
+
+    val rangeRegex = Regex("(\\d+)(?:\\s*[-–]\\s*(\\d+))?")
+    return rangeRegex.findAll(details)
+        .flatMap { matchResult ->
+            val start = matchResult.groupValues.getOrNull(1)?.toIntOrNull() ?: return@flatMap emptyList<Int>()
+            val end = matchResult.groupValues.getOrNull(2)?.toIntOrNull() ?: start
+            (start..end).asSequence()
+        }
+        .distinct()
+        .toList()
+}
+
+private fun estimatePlanTaskDuration(rawTask: PlanTask, localizedTask: PlanTask): Int {
+    val combinedText = buildString {
+        append(rawTask.desc).append(' ')
+        rawTask.details?.let { append(it).append(' ') }
+        append(localizedTask.desc).append(' ')
+        localizedTask.details?.let { append(it) }
+    }.lowercase(Locale.getDefault())
+
+    val hasMurphyUnits = extractMurphyUnitNumbers(rawTask.details).isNotEmpty()
+
+    return when {
+        combinedText.contains("tam deneme") || combinedText.contains("full practice exam") -> 180
+        combinedText.contains("mini deneme") || combinedText.contains("mini mock exam") -> 75
+        combinedText.contains("analysis") || combinedText.contains("analiz") -> 45
+        combinedText.contains("listening") || combinedText.contains("dinleme") -> 40
+        combinedText.contains("reading") || combinedText.contains("okuma") -> 45
+        combinedText.contains("vocabulary") || combinedText.contains("kelime") -> 30
+        combinedText.contains("practice") || combinedText.contains("pratik") -> 35
+        combinedText.contains("grammar") || combinedText.contains("gramer") -> if (hasMurphyUnits) 45 else 40
+        hasMurphyUnits -> 45
+        else -> 30
+    }
+}
+
+private fun determineTaskPriority(rawTask: PlanTask, localizedTask: PlanTask): Priority {
+    val combinedText = buildString {
+        append(rawTask.desc).append(' ')
+        rawTask.details?.let { append(it).append(' ') }
+        append(localizedTask.desc).append(' ')
+        localizedTask.details?.let { append(it) }
+    }.lowercase(Locale.getDefault())
+
+    return when {
+        combinedText.contains("tam deneme") ||
+            combinedText.contains("full practice exam") ||
+            combinedText.contains("mini deneme") ||
+            combinedText.contains("mock exam") -> Priority.HIGH
+        combinedText.contains("1. ders") || combinedText.contains("lesson 1") -> Priority.HIGH
+        combinedText.contains("2. ders") || combinedText.contains("lesson 2") -> Priority.MEDIUM
+        combinedText.contains("vocabulary") || combinedText.contains("kelime") -> Priority.MEDIUM
+        else -> Priority.MEDIUM
+    }
 }
 
 // Paginated Task List Component for Large Datasets
@@ -2411,7 +2540,11 @@ private fun TaskListItem(task: Task) {
  * Generate a unique task ID for a Murphy unit
  */
 private fun generateMurphyTaskId(book: StudyBook, unit: StudyUnit): String {
-    return "murphy_${book.name.replace(" ", "_").lowercase()}_unit_${unit.unitNumber}"
+    return generateMurphyTaskId(book, unit.unitNumber)
+}
+
+private fun generateMurphyTaskId(book: StudyBook, unitNumber: Int): String {
+    return "murphy_${book.name.replace(" ", "_").lowercase(Locale.getDefault())}_unit_${unitNumber}"
 }
 
 /**
