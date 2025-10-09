@@ -2,6 +2,7 @@ package com.mtlc.studyplan.core
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -485,9 +486,11 @@ private fun WeeklyPlanGradientTopBar(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFE3F2FD)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        shadowElevation = 8.dp,
+        color = Color.Transparent,
+        tonalElevation = 0.dp
     ) {
         Box(
             modifier = Modifier
@@ -499,9 +502,10 @@ private fun WeeklyPlanGradientTopBar(
                             Color(0xFFFCE4EC)
                         )
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(20.dp)
                 )
-                .padding(horizontal = 20.dp, vertical = 18.dp)
+                .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(20.dp))
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -519,39 +523,27 @@ private fun WeeklyPlanGradientTopBar(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = Color(0xFF0E2A3A),
                             modifier = Modifier.size(24.dp)
                         )
                     }
                     Icon(
                         imageVector = Icons.Filled.CalendarToday,
                         contentDescription = null,
-                        tint = if (isDarkTheme) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            Color.White
-                        },
+                        tint = Color(0xFF0E2A3A),
                         modifier = Modifier.size(24.dp)
                     )
                     Column {
                         Text(
                             text = "Weekly Study Plan",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                Color.White
-                            }
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF0E2A3A)
                         )
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                Color.White.copy(alpha = 0.9f)
-                            }
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                         )
                     }
                 }
@@ -566,11 +558,7 @@ private fun WeeklyPlanGradientTopBar(
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 2.dp,
-                            color = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                Color.White
-                            },
+                            color = Color(0xFF0E2A3A),
                             progress = { progress }
                         )
                     }
@@ -578,16 +566,8 @@ private fun WeeklyPlanGradientTopBar(
                         onClick = { /* reserved for future overview action */ },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.surfaceVariant
-                            } else {
-                                Color.White
-                            },
-                            contentColor = if (isDarkTheme) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                Color(0xFF1976D2)
-                            }
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF1976D2)
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                     ) {

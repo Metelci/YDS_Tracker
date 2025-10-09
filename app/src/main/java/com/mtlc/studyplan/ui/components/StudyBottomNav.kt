@@ -48,8 +48,6 @@ fun StudyBottomNav(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -57,13 +55,14 @@ fun StudyBottomNav(
                         Color(0xFFF0E6FF)  // Light pastel lavender (bottom)
                     )
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
+            .navigationBarsPadding()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

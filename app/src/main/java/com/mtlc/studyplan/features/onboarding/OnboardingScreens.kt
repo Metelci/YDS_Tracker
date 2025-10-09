@@ -37,6 +37,8 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -319,7 +321,9 @@ fun OnboardingRoute(onDone: () -> Unit) {
             // Navigation buttons with animations
             ResponsiveContainer {
                 Row(
-                    Modifier.fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -430,10 +434,10 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 
     val screenSize = rememberScreenSize()
     val screenWidth = rememberScreenWidth()
-    val calendarMinWidth = 360.dp
+    val calendarMinWidth = 340.dp
     val calendarMaxWidth = remember(screenSize, screenWidth) {
         when (screenSize) {
-            ScreenSize.Mobile -> screenWidth
+            ScreenSize.Mobile -> (screenWidth - 32.dp).coerceAtLeast(340.dp)
             ScreenSize.Tablet -> maxOf(screenWidth * 0.75f, 520.dp)
             ScreenSize.Desktop -> 720.dp
         }
@@ -529,49 +533,53 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 
         // Start Date Selection
         item {
-            ResponsiveCard(
-                containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainer,
-                modifier = Modifier.fillMaxWidth()
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainer),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(
-                    text = "Start Date",
-                    style = typography.cardTitle,
-                    color = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainerForeground,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                val startDateState = rememberDatePickerState(
-                    initialSelectedDateMillis = startDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                    yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
-                )
-
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    DatePicker(
-                        state = startDateState,
-                        title = null,
-                        showModeToggle = false,
+                    Text(
+                        text = "Start Date",
+                        style = typography.cardTitle,
+                        color = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainerForeground,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    val startDateState = rememberDatePickerState(
+                        initialSelectedDateMillis = startDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
+                    )
+
+                    // Calendar with minimal padding to show all days
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .then(
-                                if (screenSize == ScreenSize.Mobile) Modifier
-                                else Modifier.widthIn(max = calendarMaxWidth)
-                            )
-                            .defaultMinSize(minWidth = calendarMinWidth)
-                            .height(datePickerHeight)
-                    )
+                            .padding(horizontal = 0.dp)
+                    ) {
+                        DatePicker(
+                            state = startDateState,
+                            title = null,
+                            showModeToggle = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(datePickerHeight)
+                        )
+                    }
                 }
 
-                LaunchedEffect(startDateState.selectedDateMillis) {
-                    startDateState.selectedDateMillis?.let { millis ->
-                        val newStartDate = java.time.Instant.ofEpochMilli(millis)
-                            .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                        if (!newStartDate.isBefore(minStartDate)) {
-                            vm.setStartDate(newStartDate)
+                    LaunchedEffect(startDateState.selectedDateMillis) {
+                        startDateState.selectedDateMillis?.let { millis ->
+                            val newStartDate = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                            if (!newStartDate.isBefore(minStartDate)) {
+                                vm.setStartDate(newStartDate)
+                            }
                         }
                     }
                 }
@@ -582,56 +590,59 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
         item {
             if (selectedMode == "exam") {
                 // Exam Date Selection
-                ResponsiveCard(
-                    containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer,
-                    modifier = Modifier.fillMaxWidth()
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(
-                        text = "YDS Exam Date",
-                        style = typography.cardTitle,
-                        color = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainerForeground,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    val examDateState = rememberDatePickerState(
-                        initialSelectedDateMillis = examDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                        yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 2),
-                        selectableDates = object : SelectableDates {
-                            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                val date = java.time.Instant.ofEpochMilli(utcTimeMillis)
-                                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                                return !date.isBefore(startDate.plusWeeks(1))
-                            }
-                        }
-                    )
-
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        contentAlignment = Alignment.Center
+                            .padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        DatePicker(
-                            state = examDateState,
-                            title = null,
-                            showModeToggle = false,
+                        Text(
+                            text = "YDS Exam Date",
+                            style = typography.cardTitle,
+                            color = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainerForeground,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        val examDateState = rememberDatePickerState(
+                            initialSelectedDateMillis = examDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                            yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 2),
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    val date = java.time.Instant.ofEpochMilli(utcTimeMillis)
+                                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                                    return !date.isBefore(startDate.plusWeeks(1))
+                                }
+                            }
+                        )
+
+                        // Calendar with minimal padding to show all days
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .then(
-                                    if (screenSize == ScreenSize.Mobile) Modifier
-                                    else Modifier.widthIn(max = calendarMaxWidth)
-                                )
-                                .defaultMinSize(minWidth = calendarMinWidth)
-                                .height(datePickerHeight)
-                        )
-                    }
+                                .padding(horizontal = 0.dp)
+                        ) {
+                            DatePicker(
+                                state = examDateState,
+                                title = null,
+                                showModeToggle = false,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(datePickerHeight)
+                            )
+                        }
 
-                    LaunchedEffect(examDateState.selectedDateMillis) {
-                        examDateState.selectedDateMillis?.let { millis ->
-                            val newExamDate = java.time.Instant.ofEpochMilli(millis)
-                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                            if (!newExamDate.isBefore(startDate.plusWeeks(1)) && selectedMode == "exam") {
-                                vm.setExamDate(newExamDate)
+                        LaunchedEffect(examDateState.selectedDateMillis) {
+                            examDateState.selectedDateMillis?.let { millis ->
+                                val newExamDate = java.time.Instant.ofEpochMilli(millis)
+                                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                                if (!newExamDate.isBefore(startDate.plusWeeks(1)) && selectedMode == "exam") {
+                                    vm.setExamDate(newExamDate)
+                                }
                             }
                         }
                     }
