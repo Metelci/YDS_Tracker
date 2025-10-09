@@ -76,7 +76,7 @@ class AllScreensUITest {
         composeTestRule.setContent {
             WeeklyPlanScreen(
                 onNavigateBack = {},
-                onNavigateToDaily = {},
+                onNavigateToDaily = { _, _ -> },
                 modifier = androidx.compose.ui.Modifier
             )
         }
@@ -133,7 +133,7 @@ class AllScreensUITest {
                     appIntegrationManager = mockAppIntegrationManager,
                     onNavigateToTasks = {},
                     onNavigateToWeeklyPlan = {},
-                    onNavigateToStudyPlan = {},
+                onNavigateToStudyPlan = {},
                     onNavigateToExamDetails = {},
                     modifier = androidx.compose.ui.Modifier
                 )
@@ -157,7 +157,7 @@ class AllScreensUITest {
             setContent {
                 WeeklyPlanScreen(
                     onNavigateBack = {},
-                    onNavigateToDaily = {},
+                    onNavigateToDaily = { _, _ -> },
                     modifier = androidx.compose.ui.Modifier
                 )
             }

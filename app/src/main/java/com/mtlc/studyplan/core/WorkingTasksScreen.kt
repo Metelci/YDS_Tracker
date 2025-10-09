@@ -83,6 +83,7 @@ import com.mtlc.studyplan.data.DayPlan
 import com.mtlc.studyplan.data.MurphyBook
 import com.mtlc.studyplan.data.MurphyUnit
 import com.mtlc.studyplan.data.PlanDataSource
+import com.mtlc.studyplan.data.PlanTask
 import com.mtlc.studyplan.data.PlanTaskLocalizer
 import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.Task
@@ -2233,12 +2234,19 @@ private fun extractMurphyUnitNumbers(details: String?): List<Int> {
     if (!normalized.contains("ünite") && !normalized.contains("unit")) return emptyList()
 
     val rangeRegex = Regex("(\\d+)(?:\\s*[-–]\\s*(\\d+))?")
-    return rangeRegex.findAll(details)
-        .flatMap { matchResult ->
-            val start = matchResult.groupValues.getOrNull(1)?.toIntOrNull() ?: return@flatMap emptyList<Int>()
+    return rangeRegex.findAll(details).flatMap { matchResult ->
+        val start = matchResult.groupValues.getOrNull(1)?.toIntOrNull()
+        if (start == null) {
+            emptySequence()
+        } else {
             val end = matchResult.groupValues.getOrNull(2)?.toIntOrNull() ?: start
-            (start..end).asSequence()
+            sequence {
+                for (unitNumber in start..end) {
+                    yield(unitNumber)
+                }
+            }
         }
+    }
         .distinct()
         .toList()
 }

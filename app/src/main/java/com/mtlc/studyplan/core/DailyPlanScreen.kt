@@ -53,7 +53,6 @@ import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.koin.core.context.GlobalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +71,7 @@ fun DailyPlanScreen(
     val planRepository = remember { PlanRepository(overridesStore, settingsStore) }
     val resolvedTaskRepository = taskRepository ?: remember {
         runCatching { GlobalContext.get().get<TaskRepository>() }
-            .getOrElse { EmptyTaskRepository() }
+            .getOrElse { EmptyTaskRepository }
     }
 
     val planFlow: Flow<List<com.mtlc.studyplan.data.WeekPlan>> =
@@ -332,25 +331,4 @@ private fun EmptyDailyTasks() {
             )
         }
     }
-}
-
-private class EmptyTaskRepository : TaskRepository {
-    override fun getAllTasks(): Flow<List<com.mtlc.studyplan.data.Task>> = flowOf(emptyList())
-    override suspend fun getAllTasksSync(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getTaskById(id: String): com.mtlc.studyplan.data.Task? = null
-    override suspend fun insertTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
-    override suspend fun updateTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
-    override suspend fun deleteTask(id: String) {}
-    override suspend fun getTodaysTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getUpcomingTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getTasksByCategory(category: String): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getEarlyMorningCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getAllTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
-
-    override suspend fun getCompletedTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
-
-    override suspend fun getPendingTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
 }

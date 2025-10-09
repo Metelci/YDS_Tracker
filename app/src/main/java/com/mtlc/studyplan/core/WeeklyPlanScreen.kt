@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateBottomPadding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,7 +67,6 @@ import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 import com.mtlc.studyplan.utils.settingsDataStore
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.koin.core.context.GlobalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,6 +80,7 @@ fun WeeklyPlanScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val density = LocalDensity.current
 
     val resolvedStudyProgressRepository = studyProgressRepository ?: remember {
         runCatching { GlobalContext.get().get<StudyProgressRepository>() }
@@ -89,7 +89,7 @@ fun WeeklyPlanScreen(
 
     val resolvedTaskRepository = taskRepository ?: remember {
         runCatching { GlobalContext.get().get<TaskRepository>() }
-            .getOrElse { EmptyTaskRepository() }
+            .getOrElse { EmptyTaskRepository }
     }
 
     val settingsStore = remember { PlanSettingsStore(context.settingsDataStore) }
@@ -129,6 +129,9 @@ fun WeeklyPlanScreen(
             },
             contentWindowInsets = WindowInsets.navigationBars
         ) { padding ->
+            val navigationBarPadding = with(density) {
+                WindowInsets.navigationBars.getBottom(this).toDp()
+            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -137,9 +140,7 @@ fun WeeklyPlanScreen(
                     start = 16.dp,
                     end = 16.dp,
                     top = 16.dp,
-                    bottom = WindowInsets.navigationBars
-                        .asPaddingValues()
-                        .calculateBottomPadding() + 32.dp
+                    bottom = navigationBarPadding + 32.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
@@ -466,25 +467,6 @@ private fun EmptyPlanCard() {
             )
         }
     }
-}
-
-private class EmptyTaskRepository : TaskRepository {
-    override fun getAllTasks(): Flow<List<com.mtlc.studyplan.data.Task>> = flowOf(emptyList())
-    override suspend fun getAllTasksSync(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getTaskById(id: String): com.mtlc.studyplan.data.Task? = null
-    override suspend fun insertTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
-    override suspend fun updateTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
-    override suspend fun deleteTask(id: String) {}
-    override suspend fun getTodaysTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getUpcomingTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getTasksByCategory(category: String): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getEarlyMorningCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
-    override suspend fun getAllTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
-    override suspend fun getCompletedTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
-    override suspend fun getPendingTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
-        TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, false, false)
 }
 
 @Composable
