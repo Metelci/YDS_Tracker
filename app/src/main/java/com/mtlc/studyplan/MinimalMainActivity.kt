@@ -53,6 +53,7 @@ class MinimalMainActivity : LocaleAwareActivity() {
                 SideEffect {
                     // Draw behind system bars and control icon appearance explicitly
                     WindowCompat.setDecorFitsSystemWindows(window, false)
+                    @Suppress("DEPRECATION")
                     window.statusBarColor = Color.Transparent.toArgb()
                     val controller = WindowInsetsControllerCompat(window, window.decorView)
                     controller.isAppearanceLightStatusBars = useDarkIcons

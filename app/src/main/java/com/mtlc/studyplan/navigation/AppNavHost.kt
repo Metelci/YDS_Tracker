@@ -62,7 +62,7 @@ import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.features.onboarding.OnboardingRoute
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
 import com.mtlc.studyplan.utils.settingsDataStore
-import org.koin.core.context.GlobalContext
+import org.koin.compose.koinInject
 
 
 @Composable
@@ -83,17 +83,11 @@ fun AppNavHost(
     val context = LocalContext.current
 
     // Use provided dependencies or fallback to Koin with proper lifecycle management
-    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: remember {
-        GlobalContext.get().get<com.mtlc.studyplan.integration.AppIntegrationManager>()
-    }
+    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: org.koin.compose.koinInject()
+    
+    val resolvedStudyProgressRepository = studyProgressRepository ?: org.koin.compose.koinInject()
 
-    val resolvedStudyProgressRepository = studyProgressRepository ?: remember {
-        com.mtlc.studyplan.data.StudyProgressRepository(context)
-    }
-
-    val resolvedTaskRepository = taskRepository ?: remember {
-        GlobalContext.get().get<com.mtlc.studyplan.data.TaskRepository>()
-    }
+    val resolvedTaskRepository = taskRepository ?: org.koin.compose.koinInject()
 
     // Handle navigation events from SharedViewModel
     sharedViewModel?.let { viewModel ->

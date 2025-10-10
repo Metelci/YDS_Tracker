@@ -304,10 +304,10 @@
   <string name="social_privacy_banner_body">Gerçek kimliğiniz asla paylaşılmaz. Sadece seçtiğiniz kullanıcı adı ve avatar başkalarına görünür.</string>
   <string name="social_profile_title">Profiliniz</string>
   <string name="social_copy_username_cd">Kullanıcı adını kopyala</string>
-  <string name="social_username_hint">Bu başkalarının sizi nasıl göreceği (3–20 karakter)</string>
+  <string name="social_username_hint">Bu başkalarının sizi nasıl göreceği (3-20 karakter)</string>
   <string name="social_choose_username_title">Kullanıcı adınızı seçin</string>
   <string name="social_username_label">Kullanıcı adı</string>
-  <string name="social_username_error">3–20 küçük harf, rakam veya alt çizgi kullanın</string>
+  <string name="social_username_error">3-20 küçük harf, rakam veya alt çizgi kullanın</string>
   <string name="social_username_set_success">{username} kullanıcı adı olarak ayarlandı</string>
   <string name="social_login_required">Arkadas daveti icin Ayarlar sayfasindan giris yapin.</string>
   <string name="social_username_save_error">Kullanici adi kaydedilemedi. Lutfen tekrar deneyin.</string>

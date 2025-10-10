@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Settings Search -->
-    <string name="search_hint">Ayarlarda arama yapın…</string>
+    <string name="search_hint">Ayarlarda arama yapın...</string>
     <string name="search_clear">Aramayı temizle</string>
     <string name="search_results_count">%d sonuç bulundu</string>
     <string name="search_no_results">Sonuç bulunamadı</string>
@@ -9,7 +9,7 @@
     <string name="search_recent">Son aramalar</string>
     <string name="search_suggestions">Öneriler</string>
     <string name="search_clear_history">Arama geçmişini temizle</string>
-    <string name="search_loading">Arıyor…</string>
+    <string name="search_loading">Arıyor...</string>
 
     <!-- Settings Backup -->
     <string name="local_backup_title">Yerel Yedek</string>
@@ -94,16 +94,16 @@
     <string name="success_settings_imported">Ayarlar başarıyla içe aktarıldı</string>
 
     <!-- Loading States -->
-    <string name="loading_settings">Ayarlar yükleniyor…</string>
-    <string name="loading_backup">Yedek oluşturuluyor…</string>
-    <string name="loading_import">Ayarlar içe aktarılıyor…</string>
-    <string name="loading_search_index">Arama dizini oluşturuluyor…</string>
+    <string name="loading_settings">Ayarlar yükleniyor...</string>
+    <string name="loading_backup">Yedek oluşturuluyor...</string>
+    <string name="loading_import">Ayarlar içe aktarılıyor...</string>
+    <string name="loading_search_index">Arama dizini oluşturuluyor...</string>
 
     <!-- Progress Messages -->
-    <string name="progress_gathering_data">Ayar verileri toplanıyor…</string>
-    <string name="progress_creating_backup">Yedek dosyası oluşturuluyor…</string>
-    <string name="progress_applying_changes">Değişiklikler uygulanıyor…</string>
-    <string name="progress_resolving_conflicts">Çakışmalar çözülüyor…</string>
+    <string name="progress_gathering_data">Ayar verileri toplanıyor...</string>
+    <string name="progress_creating_backup">Yedek dosyası oluşturuluyor...</string>
+    <string name="progress_applying_changes">Değişiklikler uygulanıyor...</string>
+    <string name="progress_resolving_conflicts">Çakışmalar çözülüyor...</string>
 
     <!-- Undo Actions -->
     <string name="undo_setting_change">Ayar değişikliği geri alındı</string>
@@ -142,17 +142,17 @@
 
     <!-- Feature Discovery -->
     <string name="feature_search_title">Ayarlarınızda Arama Yapın</string>
-    <string name="feature_search_description">Akıllı aramımızla herhangi bir ayarı hızlıca bulun</string>
+    <string name="feature_search_description">Akıllı aramamızla herhangi bir ayarı hızlıca bulun</string>
     <string name="feature_backup_title">Ayarlarınızı Yedekleyin</string>
     <string name="feature_backup_description">Otomatik yedeklemelerle tercihlerinizi asla kaybetmeyin</string>
 
     <!-- Voice Search -->
-    <string name="voice_search_listening">Dinliyor…</string>
+    <string name="voice_search_listening">Dinliyor...</string>
 
     <!-- Conflict Resolution -->
     <string name="conflict_resolution_title">Ayar Çakışmalarını Çöz</string>
     <string name="conflict_stats_format" formatted="false">%d / %d çakışma çözüldü</string>
-    <string name="resolution_summary_format" formatted="false">Mevcut Tut: %d • Yedek Kullan: %d • Manuel İnceleme: %d</string>
+    <string name="resolution_summary_format" formatted="false">Mevcut Tut: %d - Yedek Kullan: %d - Manuel İnceleme: %d</string>
 
     <string name="apply_current_values_title">Tüm Mevcut Değerleri Uygula</string>
     <string name="apply_current_values_message">Bu işlem tüm mevcut ayarlarınızı koruyacak ve yedek değerlerini yok sayacak. Emin misiniz?</string>

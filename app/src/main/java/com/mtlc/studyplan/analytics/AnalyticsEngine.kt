@@ -1,5 +1,13 @@
 package com.mtlc.studyplan.analytics
 
+/**
+ * AnalyticsEngine is responsible for processing study data and generating insights,
+ * recommendations, and performance metrics for users.
+ * 
+ * This class contains complex business logic for analyzing user study patterns,
+ * performance trends, and generating AI-powered study recommendations.
+ */
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Insights
@@ -160,6 +168,20 @@ class AnalyticsEngine {
 
     private val smartScheduler = SmartScheduler()
 
+    /**
+     * Generates comprehensive analytics data based on user task logs and progress
+     * 
+     * This function performs time-series analysis, performance calculations, and
+     * generates personalized recommendations for the user. It applies multiple
+     * algorithms to identify patterns, calculate performance metrics, and provide
+     * actionable insights for improving study effectiveness.
+     * 
+     * @param days The number of days to analyze (timeframe for analytics)
+     * @param taskLogs The list of task logs to analyze (defaults to empty list)
+     * @param userProgress User's progress data for context (optional)
+     * @return AnalyticsData object containing all calculated metrics and insights
+     */
+
     suspend fun generateAnalytics(
         days: Int,
         taskLogs: List<TaskLog> = emptyList(),
@@ -251,6 +273,20 @@ class AnalyticsEngine {
     }
 
     // AI-powered analysis functions
+    /**
+     * Analyzes study patterns from the provided logs using multiple statistical methods
+     * 
+     * This method performs several types of analysis:
+     * - Time distribution analysis to identify when users are most productive
+     * - Category performance analysis to identify strengths/weaknesses
+     * - Weekly progress trends using exponential smoothing
+     * - Peak productivity time identification using clustering
+     * - Focus score calculation based on session continuity and accuracy
+     * - Time-of-day productivity analysis
+     * 
+     * @param logs List of TaskLog entries to analyze
+     * @return StudyPatternsUI object containing all pattern analysis results
+     */
     private fun analyzeStudyPatterns(logs: List<TaskLog>): StudyPatternsUI {
         // Time distribution analysis using statistical clustering
         val timeDistribution = analyzeTimeDistribution(logs)
@@ -285,6 +321,22 @@ class AnalyticsEngine {
         )
     }
 
+    /**
+     * Generates intelligent, personalized study recommendations based on user data
+     * 
+     * This method uses multiple analytical approaches:
+     * 1. Smart scheduling suggestions using AI from SmartScheduler
+     * 2. Performance-based recommendations using ML-like scoring
+     * 3. Time pattern recommendations using circadian rhythm analysis
+     * 4. Weak area identification using error pattern analysis
+     * 5. Consistency recommendations using streak analysis
+     * 
+     * Each recommendation includes a reasoning field explaining how it was generated.
+     * 
+     * @param logs List of TaskLog entries to analyze for recommendations
+     * @param userProgress User's progress data for context (optional)
+     * @return List of Recommendation objects prioritized by importance
+     */
     private suspend fun generateIntelligentRecommendations(
         logs: List<TaskLog>,
         userProgress: UserProgress?

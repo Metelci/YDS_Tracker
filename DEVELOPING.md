@@ -2,6 +2,18 @@
 
 This guide explains how to develop and extend the YDS Tracker app using **Material 3** components and the established design system.
 
+## Dependencies
+
+This project uses Gradle as the build system. Dependencies are managed in the `build.gradle.kts` files and the `libs.versions.toml` file.
+
+For a comprehensive overview of all project dependencies and their purposes, see [DEPENDENCIES.md](./DEPENDENCIES.md).
+
+### Dependency Verification
+To check the current dependency tree for conflicts or updates:
+- Run `./gradlew app:dependencies` to see the dependency tree
+- Run `./gradlew dependencyInsight --dependency <dependency-name>` for specific dependency details
+- Generated dependency reports are stored in the `deps.txt`, `deps2.txt`, `deps3.txt` files (for archiving/debugging purposes)
+
 ---
 
 ## 📋 Table of Contents

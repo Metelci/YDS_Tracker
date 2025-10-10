@@ -83,10 +83,7 @@ import kotlinx.coroutines.launch
 fun AnalyticsScreen(
     modifier: Modifier = Modifier
 ) {
-    val analyticsEngine = remember { AnalyticsEngine() }
-    val viewModel: AnalyticsViewModel = androidx.lifecycle.viewmodel.compose.viewModel {
-        AnalyticsViewModel(analyticsEngine)
-    }
+    val viewModel: AnalyticsViewModel = org.koin.androidx.compose.koinViewModel()
     val analyticsData by viewModel.analyticsData.collectAsState()
     val weeklyData by viewModel.weeklyData.collectAsState()
     val performanceData by viewModel.performanceData.collectAsState()

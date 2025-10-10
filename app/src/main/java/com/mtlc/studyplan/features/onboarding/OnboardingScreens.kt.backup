@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -84,10 +86,10 @@ import com.mtlc.studyplan.core.viewModelFactory
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.ui.responsive.OnboardingTypography
-import org.koin.androidx.compose.koinViewModel
 import com.mtlc.studyplan.ui.responsive.ResponsiveCard
 import com.mtlc.studyplan.ui.responsive.ResponsiveChipRow
 import com.mtlc.studyplan.ui.responsive.ResponsiveContainer
+import com.mtlc.studyplan.ui.responsive.ResponsiveHeights
 import com.mtlc.studyplan.ui.responsive.ResponsiveLazyColumn
 import com.mtlc.studyplan.ui.responsive.adaptiveComponentSizing
 import com.mtlc.studyplan.ui.responsive.adaptiveFontScale
@@ -111,7 +113,10 @@ import java.util.Locale
 
 @Composable
 fun OnboardingRoute(onDone: () -> Unit) {
-    val vm: OnboardingViewModel = org.koin.androidx.compose.koinViewModel()
+    val context = LocalContext.current
+    val repo = remember { OnboardingRepository(context.settingsDataStore) }
+    val settings = remember { PlanSettingsStore(context.settingsDataStore) }
+    val vm: OnboardingViewModel = viewModel(factory = viewModelFactory { OnboardingViewModel(repo, settings) })
 
     var step by rememberSaveable { mutableIntStateOf(0) }
     val haptics = LocalHapticFeedback.current
@@ -429,8 +434,8 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 
     val screenSize = rememberScreenSize()
     val screenWidth = rememberScreenWidth()
-    340.dp
-    remember(screenSize, screenWidth) {
+    val calendarMinWidth = 340.dp
+    val calendarMaxWidth = remember(screenSize, screenWidth) {
         when (screenSize) {
             ScreenSize.Mobile -> (screenWidth - 32.dp).coerceAtLeast(340.dp)
             ScreenSize.Tablet -> maxOf(screenWidth * 0.75f, 520.dp)
@@ -566,6 +571,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                                 .height(datePickerHeight)
                         )
                     }
+                }
 
                     LaunchedEffect(startDateState.selectedDateMillis) {
                         startDateState.selectedDateMillis?.let { millis ->
@@ -861,66 +867,62 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
         inactiveTickColor = Color.Transparent
     )
 
-    ResponsiveLazyColumn {
-        item {
-            ResponsiveCard(
-                containerColor = cardColor
-            ) {
-                Text(
-                    stringResource(R.string.availability_title),
-                    style = typography.cardTitle
-                )
-                DayOfWeek.entries
-                    .sortedBy { it.value }
-                    .forEach { day ->
-                        val label = day.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                        val value = (availability[day] ?: 0).coerceIn(0, 180)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = label,
-                                style = typography.sliderLabel
-                            )
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                tonalElevation = 0.dp
-                            ) {
-                                Text(
-                                    text = "$value min",
-                                    style = typography.sliderLabel,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                                )
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Slider(
-                                value = value.toFloat(),
-                                onValueChange = { newValue ->
-                                    vm.setAvailability(day, newValue.toInt())
-                                },
-                                valueRange = 0f..180f,
-                                colors = sliderColors,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(sliderHeight)
-                            )
-                        }
+    ResponsiveCard(
+        containerColor = cardColor
+    ) {
+        Text(
+            stringResource(R.string.availability_title),
+            style = typography.cardTitle
+        )
+        DayOfWeek.entries
+            .sortedBy { it.value }
+            .forEach { day ->
+                val label = day.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                val value = (availability[day] ?: 0).coerceIn(0, 180)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = label,
+                        style = typography.sliderLabel
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        tonalElevation = 0.dp
+                    ) {
+                        Text(
+                            text = "$value min",
+                            style = typography.sliderLabel,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
                     }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Slider(
+                        value = value.toFloat(),
+                        onValueChange = { newValue ->
+                            vm.setAvailability(day, newValue.toInt())
+                        },
+                        valueRange = 0f..180f,
+                        colors = sliderColors,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(sliderHeight)
+                    )
+                }
             }
-        }
     }
 }
 

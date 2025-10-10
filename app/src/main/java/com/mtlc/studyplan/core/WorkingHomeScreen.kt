@@ -211,7 +211,7 @@ fun WorkingHomeScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = if (isFirstTimeUser) "Welcome! 👋" else "Good morning! 👋",
+                            text = if (isFirstTimeUser) stringResource(R.string.welcome_first_time) else stringResource(R.string.good_morning),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (isDarkTheme) {
@@ -221,7 +221,7 @@ fun WorkingHomeScreen(
                             }
                         )
                         Text(
-                            text = "Ready to ace your YDS exam?",
+                            text = stringResource(R.string.ready_yds_exam),
                             fontSize = 14.sp,
                             color = if (isDarkTheme) {
                                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -338,7 +338,7 @@ fun WorkingHomeScreen(
                             color = Color(0xFF2C2C2C)
                         )
                         Text(
-                            text = "Days to YDS",
+                            text = stringResource(R.string.days_to_yds),
                             fontSize = 12.sp, // Reduced font size
                             color = Color(0xFF424242),
                             textAlign = TextAlign.Center
@@ -569,7 +569,7 @@ fun WorkingHomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "📅 Weekly Study Plan",
+                            text = "📅 " + stringResource(R.string.weekly_study_plan),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color(0xFF2C2C2C)
@@ -610,7 +610,7 @@ fun WorkingHomeScreen(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "Week Progress • ${weeklyPlan.weekProgressText}",
+                        text = stringResource(R.string.week_progress) + " • ${weeklyPlan.weekProgressText}",
                         fontSize = 12.sp,
                         color = Color(0xFF424242).copy(alpha = 0.7f)
                     )
@@ -657,7 +657,7 @@ fun WorkingHomeScreen(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "e-YDS 2025/10",
+                            text = stringResource(R.string.eyds_exam_name),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF2C2C2C)

@@ -382,7 +382,7 @@
     <string name="social_username_hint">This is how others will see you (3-20 characters)</string>
     <string name="social_choose_username_title">Choose your username</string>
     <string name="social_username_label">Username</string>
-    <string name="social_username_error">Use 3&#8211;20 lowercase letters, numbers, or underscore</string>
+    <string name="social_username_error">Use 3-20 lowercase letters, numbers, or underscore</string>
     <string name="social_username_set_success">Username set to {username}</string>
     <string name="social_login_required">Log in through Settings to invite friends.</string>
     <string name="social_username_save_error">Couldn\'t save username. Please try again.</string>
@@ -446,6 +446,15 @@
     <string name="social_stat_score">Your Score</string>
     <string name="social_stat_streak">Day Streak</string>
 
+    <!-- Home screen strings -->
+    <string name="weekly_study_plan">Weekly Study Plan</string>
+    <string name="week_progress">Week Progress</string>
+    <string name="welcome_first_time">Welcome! 👋</string>
+    <string name="good_morning">Good morning! 👋</string>
+    <string name="ready_yds_exam">Ready to ace your YDS exam?</string>
+    <string name="days_to_yds">Days to YDS</string>
+    <string name="eyds_exam_name">e-YDS 2025/10</string>
+
     <!-- Settings strings -->
     <string name="expand_selection">Expand selection</string>
     <string name="settings_category_description">%1$s: %2$s</string>
@@ -457,7 +466,7 @@
 
     <!-- Missing settings strings -->
     <string name="settings_title">Settings</string>
-    <string name="search_settings_hint">Search settings&#8230;</string>
+    <string name="search_settings_hint">Search settings...</string>
     <string name="no_results_found">No results found</string>
     <string name="no_settings_found">No settings found</string>
     <string name="try_different_search">Try a different search term</string>

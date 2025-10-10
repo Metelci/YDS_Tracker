@@ -1,7 +1,13 @@
 package com.mtlc.studyplan.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.mtlc.studyplan.analytics.AnalyticsEngine
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +28,10 @@ val koinAppModule = module {
     }
 
     single<Gson> { GsonBuilder().setPrettyPrinting().create() }
+    
+    single { AnalyticsEngine() }
+    
+    single<DataStore<Preferences>> { androidContext().settingsDataStore }
 
     // ThemeManager removed; app uses light theme only
 }

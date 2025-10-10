@@ -96,7 +96,8 @@ object PlanTaskLocalizer {
     }
 
     private fun isEnglish(context: Context): Boolean {
-        val lang = context.resources.configuration.locales[0].language
+        val locale = context.resources.configuration.locales.get(0)
+        val lang = locale?.language ?: "en"
         return lang.equals("en", ignoreCase = true)
     }
 

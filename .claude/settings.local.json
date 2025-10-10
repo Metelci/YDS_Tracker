@@ -16,7 +16,13 @@
       "Bash(test:*)",
       "Bash(xargs basename:*)",
       "Bash(gh pr create:*)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(cat:*)",
+      "Bash(awk:*)",
+      "Bash(chmod:*)",
+      "Bash(\"H:/StudioProjects/StudyPlan/fix_home_strings.sh\")",
+      "Bash(\"H:/StudioProjects/StudyPlan/fix_social_topbar.sh\")",
+      "Bash(timeout 60 ./gradlew compileDebugKotlin:*)"
     ],
     "deny": [],
     "ask": []

@@ -257,6 +257,9 @@ data class GamificationConfig(
  * ViewModel for app-wide integration management
  */
 private fun resolveNotificationManager(context: Context): NotificationManager {
+    // This function should be updated to receive NotificationManager as a parameter
+    // For now, keeping the original pattern since this is called in init blocks
+    // In a complete refactor, this would be passed as a constructor parameter
     return GlobalContext.get().get()
 }
 

@@ -413,7 +413,7 @@
     <string name="create_profile_title">Create Your Study Profile</string>
     <string name="social_choose_username_title">Choose your username</string>
     <string name="social_username_label">Username</string>
-    <string name="social_username_error">Use 3&#8211;20 lowercase letters, numbers, or underscore</string>
+    <string name="social_username_error">Use 3-20 lowercase letters, numbers, or underscore</string>
     <string name="expand_selection">Expand selection</string>
     <string name="settings_category_description">%1$s: %2$s</string>
     <string name="category_active">Active</string>
@@ -422,7 +422,7 @@
     <string name="import_settings">Import settings</string>
     <string name="reset_all_settings">Reset all settings</string>
     <string name="settings_title">Settings</string>
-    <string name="search_settings_hint">Search settings&#8230;</string>
+    <string name="search_settings_hint">Search settings...</string>
     <string name="no_results_found">No results found</string>
     <string name="no_settings_found">No settings found</string>
     <string name="try_different_search">Try a different search term</string>

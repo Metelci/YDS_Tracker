@@ -5,11 +5,37 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
+/**
+ * Repository for managing user study plans with complex business logic
+ * 
+ * This class implements sophisticated algorithms for:
+ * - Adapting curriculum duration to user's specified timeline
+ * - Merging user overrides with base curriculum
+ * - Aligning study plans to user's start date and availability
+ * - Packing tasks into daily schedules based on availability and priority
+ */
+
+/**
+ * Repository for managing user study plans with complex business logic
+ * 
+ * The plan generation pipeline follows this sequence:
+ * 1. Adapts base plan duration to user settings
+ * 2. Merges with user overrides (hidden tasks, custom tasks)
+ * 3. Aligns to user's specified start weekday
+ * 4. Optionally trims to user's specified end date
+ * 5. Distributes tasks according to user's time availability
+ */
 class PlanRepository(
     private val store: PlanOverridesStore,
     private val settings: PlanSettingsStore,
 ) {
 
+    /**
+     * Flow that emits the complete user study plan as an adaptive sequence of weeks and days
+     * 
+     * This flow combines settings and overrides to generate a personalized study plan
+     * using the full pipeline of adaptation, merging, alignment, and availability-based packing
+     */
     val planFlow: Flow<List<WeekPlan>> = combine(settings.settingsFlow, store.overridesFlow) { cfg, ov ->
         val base = PlanDataSource.planData
         val sized = adaptPlanDuration(base, cfg)
@@ -89,6 +115,20 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
     }
 }
 
+/**
+ * Adapts the base curriculum plan to match user's specified duration
+ * 
+ * This function implements a sophisticated stretching or compressing algorithm:
+ * - For longer plans: stretches the base plan by reusing weeks using interpolation
+ * - For shorter plans: compresses the base plan by selecting representative weeks
+ * - Maintains curriculum phase progression (foundation -> development -> advanced -> exam)
+ * - Properly maps and renames task IDs to reflect new week numbers
+ * - Updates titles to include appropriate phase labels
+ * 
+ * @param base The original curriculum plan
+ * @param cfg User's duration settings (total weeks, etc.)
+ * @return A new plan adapted to the specified duration while preserving curriculum progression
+ */
 internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings): List<WeekPlan> {
     val total = cfg.totalWeeks.coerceAtLeast(1)
     if (base.isEmpty()) return emptyList()
@@ -96,6 +136,15 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
     val lastIdx = base.size - 1
     val ctx = PlanDataSource.getAppContext()
 
+    /**
+     * Determines the curriculum phase label based on week index in the original plan
+     * 
+     * Phase mapping:
+     * - Weeks 0-7: Foundation level
+     * - Weeks 8-17: Development level  
+     * - Weeks 18-25: Advanced level
+     * - Weeks 26+: Exam camp
+     */
     fun phaseLabelForIndex(i: Int): String {
         return when {
             i < 8 -> ctx.getString(R.string.foundation_level)
@@ -105,12 +154,19 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
         }
     }
 
+    /**
+     * Remaps task IDs to reflect new week numbers after adaptation
+     * 
+     * For example, changes "w12-..." to "w5-..." when adapting to a shorter plan
+     */
     fun remapId(oldId: String, newWeek: Int): String {
         // Replace leading week marker like w12-...
         return oldId.replaceFirst(Regex("^w\\d+"), "w$newWeek")
     }
 
     return (0 until total).map { i ->
+        // Calculate which base week to map to using interpolation
+        // This ensures even distribution of content across the desired duration
         val mapped = kotlin.math.round(i * (lastIdx.toDouble() / (total - 1).coerceAtLeast(1)))
             .toInt()
             .coerceIn(0, lastIdx)
