@@ -1,3 +1,10 @@
+## [2.9.53] - 2025-10-11 (hotfix)
+
+### Bug Fixes
+- **Fixed type mismatch in kotlinOptions.jvmTarget**: Changed `JavaVersion.VERSION_17` to `"17"` for Kotlin 2.0.21 and AGP 8.7.2 compatibility
+  - Resolved "Type mismatch: inferred type is JavaVersion but String was expected" error in app/build.gradle.kts:113
+  - Ensures proper JVM target configuration for Kotlin compilation
+
 ## [2.9.52] - 2025-10-10 (hotfix)
 
 ### Bug Fixes

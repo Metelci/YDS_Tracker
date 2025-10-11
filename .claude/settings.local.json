@@ -22,7 +22,13 @@
       "Bash(chmod:*)",
       "Bash(\"H:/StudioProjects/StudyPlan/fix_home_strings.sh\")",
       "Bash(\"H:/StudioProjects/StudyPlan/fix_social_topbar.sh\")",
-      "Bash(timeout 60 ./gradlew compileDebugKotlin:*)"
+      "Bash(timeout 60 ./gradlew compileDebugKotlin:*)",
+      "Bash(keytool:*)",
+      "Bash(where keytool)",
+      "Bash(java:*)",
+      "Bash(\"C:\\Users\\metel\\AppData\\Local\\Android\\Sdk\\jbr\\bin\\keytool.exe\" -list -keystore \"H:\\StudioProjects\\StudyPlan\\studyplansign.jks\")",
+      "Bash(cmd.exe:*)",
+      "Bash(powershell.exe:*)"
     ],
     "deny": [],
     "ask": []

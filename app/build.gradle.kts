@@ -109,6 +109,9 @@ android {
             isReturnDefaultValues = true
         }
     }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 
     // Exclude data binding generated sources from unit test compilation via test task configuration
     // (sourceSets.exclude is not supported this way in AGP 8 Kotlin DSL)
