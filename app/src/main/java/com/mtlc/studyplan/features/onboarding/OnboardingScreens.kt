@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.features.onboarding
 
+// removed luminance-based dark theme checks
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -17,7 +18,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-// removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,14 +43,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,47 +62,41 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.coerceAtLeast
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.core.viewModelFactory
-import com.mtlc.studyplan.data.OnboardingRepository
-import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.ui.responsive.OnboardingTypography
-import org.koin.androidx.compose.koinViewModel
 import com.mtlc.studyplan.ui.responsive.ResponsiveCard
 import com.mtlc.studyplan.ui.responsive.ResponsiveChipRow
 import com.mtlc.studyplan.ui.responsive.ResponsiveContainer
 import com.mtlc.studyplan.ui.responsive.ResponsiveLazyColumn
+import com.mtlc.studyplan.ui.responsive.ScreenSize
 import com.mtlc.studyplan.ui.responsive.adaptiveComponentSizing
 import com.mtlc.studyplan.ui.responsive.adaptiveFontScale
 import com.mtlc.studyplan.ui.responsive.adaptiveLayoutConfig
-import com.mtlc.studyplan.ui.responsive.rememberScreenSize
-import com.mtlc.studyplan.ui.responsive.rememberScreenWidth
-import com.mtlc.studyplan.ui.responsive.ScreenSize
 import com.mtlc.studyplan.ui.responsive.isVerySmallScreen
 import com.mtlc.studyplan.ui.responsive.performanceConfig
 import com.mtlc.studyplan.ui.responsive.rememberDeviceProfile
 import com.mtlc.studyplan.ui.responsive.rememberSafeAreaInsets
+import com.mtlc.studyplan.ui.responsive.rememberScreenSize
+import com.mtlc.studyplan.ui.responsive.rememberScreenWidth
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.responsiveOnboardingTypography
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
-import com.mtlc.studyplan.utils.settingsDataStore
+import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -111,7 +105,7 @@ import java.util.Locale
 
 @Composable
 fun OnboardingRoute(onDone: () -> Unit) {
-    val vm: OnboardingViewModel = org.koin.androidx.compose.koinViewModel()
+    val vm: OnboardingViewModel = koinViewModel()
 
     var step by rememberSaveable { mutableIntStateOf(0) }
     val haptics = LocalHapticFeedback.current

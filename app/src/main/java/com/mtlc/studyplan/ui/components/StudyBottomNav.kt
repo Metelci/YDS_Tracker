@@ -48,14 +48,14 @@ fun StudyBottomNav(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFE8F5E8), // Light pastel green (top)
-                        Color(0xFFF0E6FF)  // Light pastel lavender (bottom)
+                        Color(0xFFE3F2FD), // Pastel light blue (top)
+                        Color(0xFFEDE7F6)  // Light pastel lavender (bottom)
                     )
-                ),
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                )
             )
             .navigationBarsPadding()
     ) {

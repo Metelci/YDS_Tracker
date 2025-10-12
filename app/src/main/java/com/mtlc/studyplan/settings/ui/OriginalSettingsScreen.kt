@@ -342,7 +342,7 @@ fun OriginalSettingsScreen(
                             tint = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Reset Progress (Danger)")
+                        Text(stringResource(R.string.reset_progress_danger))
                     }
                 }
             }
@@ -378,7 +378,7 @@ fun OriginalSettingsScreen(
                 onDismissRequest = { showResetDialog = false },
                 title = { Text(stringResource(R.string.reset_all_progress)) },
                 text = {
-                    Text("This will permanently delete all your study progress, achievements, and statistics. You will return to the welcome screen to start fresh. This action cannot be undone.")
+                    Text(stringResource(R.string.reset_progress_dialog_message))
                 },
                 confirmButton = {
                     TextButton(
@@ -431,7 +431,7 @@ fun OriginalSettingsScreen(
                                     }
                                 } catch (e: Exception) {
                                     Log.e("SettingsReset", "Failed to reset app", e)
-                                    Toast.makeText(context, "Failed to reset. Please try again.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.failed_to_reset), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -558,8 +558,8 @@ private fun TasksSettingsContent(settingsManager: SettingsPreferencesManager) {
         ) {
             SettingToggleItem(
                 icon = Icons.AutoMirrored.Outlined.EventNote,
-                title = "Daily Goal Reminders",
-                description = "Remind me of my daily study goals",
+                title = stringResource(R.string.daily_goal_reminders_title),
+                description = stringResource(R.string.daily_goal_reminders_desc),
                 checked = taskSettings.dailyGoalReminders,
                 onCheckedChange = { checked ->
                     settingsManager.updateTaskSettings(taskSettings.copy(dailyGoalReminders = checked))
@@ -575,7 +575,7 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
     val navSettings by settingsManager.navigationSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.NavigationSettings())
 
     SettingsCard(
-        title = "Navigation",
+        title = stringResource(R.string.navigation),
         icon = Icons.Outlined.Navigation
     ) {
         Column(
@@ -583,8 +583,8 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Navigation,
-                title = "Bottom Navigation",
-                description = "Show navigation at bottom of screen",
+                title = stringResource(R.string.bottom_navigation_title),
+                description = stringResource(R.string.bottom_navigation_desc),
                 checked = navSettings.bottomNavigation,
                 onCheckedChange = { checked ->
                     settingsManager.updateNavigationSettings(navSettings.copy(bottomNavigation = checked))
@@ -593,8 +593,8 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
 
             SettingToggleItem(
                 icon = Icons.Outlined.Settings,
-                title = "Haptic Feedback",
-                description = "Vibrate on button taps and interactions",
+                title = stringResource(R.string.haptic_feedback_title),
+                description = stringResource(R.string.haptic_feedback_desc),
                 checked = navSettings.hapticFeedback,
                 onCheckedChange = { checked ->
                     settingsManager.updateNavigationSettings(navSettings.copy(hapticFeedback = checked))
@@ -609,7 +609,7 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
     val notificationSettings by settingsManager.notificationSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.NotificationSettings())
 
     SettingsCard(
-        title = "Notifications",
+        title = stringResource(R.string.notifications),
         icon = Icons.Outlined.Notifications
     ) {
         Column(
@@ -617,8 +617,8 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Notifications,
-                title = "Push Notifications",
-                description = "Allow notifications from this app",
+                title = stringResource(R.string.push_notifications_title),
+                description = stringResource(R.string.push_notifications_desc),
                 checked = notificationSettings.pushNotifications,
                 onCheckedChange = { checked ->
                     settingsManager.updateNotificationSettings(notificationSettings.copy(pushNotifications = checked))
@@ -627,8 +627,8 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
 
             SettingToggleItem(
                 icon = Icons.Outlined.Schedule,
-                title = "Study Reminders",
-                description = "Daily reminders to study",
+                title = stringResource(R.string.study_reminders_title),
+                description = stringResource(R.string.study_reminders_desc),
                 checked = notificationSettings.studyReminders,
                 onCheckedChange = { checked ->
                     settingsManager.updateNotificationSettings(notificationSettings.copy(studyReminders = checked))
@@ -637,8 +637,8 @@ private fun NotificationsSettingsContent(settingsManager: SettingsPreferencesMan
 
             SettingToggleItem(
                 icon = Icons.Outlined.EmojiEvents,
-                title = "Achievement Alerts",
-                description = "Notifications for completed goals and achievements",
+                title = stringResource(R.string.achievement_alerts_title),
+                description = stringResource(R.string.achievement_alerts_desc),
                 checked = notificationSettings.achievementAlerts,
                 onCheckedChange = { checked ->
                     settingsManager.updateNotificationSettings(notificationSettings.copy(achievementAlerts = checked))
@@ -654,7 +654,7 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
     val gamificationSettings by settingsManager.gamificationSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.GamificationSettings())
 
     SettingsCard(
-        title = "Gamification",
+        title = stringResource(R.string.gamification),
         icon = Icons.Outlined.EmojiEvents
     ) {
         Column(
@@ -662,8 +662,8 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Star,
-                title = "Point System",
-                description = "Earn points for completing tasks",
+                title = stringResource(R.string.point_system_title),
+                description = stringResource(R.string.point_system_desc),
                 checked = gamificationSettings.pointsAndRewards,
                 onCheckedChange = { checked ->
                     settingsManager.updateGamificationSettings(gamificationSettings.copy(pointsAndRewards = checked))
@@ -672,8 +672,8 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
 
             SettingToggleItem(
                 icon = Icons.Outlined.EmojiEvents,
-                title = "Celebration Effects",
-                description = "Show animations and effects for achievements",
+                title = stringResource(R.string.celebration_effects_title),
+                description = stringResource(R.string.celebration_effects_desc),
                 checked = gamificationSettings.celebrationEffects,
                 onCheckedChange = { checked ->
                     settingsManager.updateGamificationSettings(gamificationSettings.copy(celebrationEffects = checked))
@@ -700,7 +700,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
     var isLoggingIn by remember { mutableStateOf(false) }
 
     SettingsCard(
-        title = "Social",
+        title = stringResource(R.string.nav_social),
         icon = Icons.Outlined.People
     ) {
         Column(
@@ -742,7 +742,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                         )
                         Column {
                             Text(
-                                text = user?.username ?: "Not logged in",
+                                text = user?.username ?: stringResource(R.string.not_logged_in),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (user != null) {
@@ -752,7 +752,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                                 }
                             )
                             Text(
-                                text = user?.email ?: "Log in to invite friends",
+                                text = user?.email ?: stringResource(R.string.log_in_to_invite_friends),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (user != null) {
                                     MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
@@ -768,7 +768,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             onClick = {
                                 coroutineScope.launch {
                                     authRepository.logout()
-                                    Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         ) {
@@ -778,7 +778,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(4.dp))
-                            Text("Logout")
+                            Text(stringResource(R.string.logout))
                         }
                     } else {
                         Button(
@@ -790,7 +790,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(4.dp))
-                            Text("Login")
+                            Text(stringResource(R.string.login))
                         }
                     }
                 }
@@ -798,8 +798,8 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
 
             SettingToggleItem(
                 icon = Icons.Outlined.People,
-                title = "Social Features",
-                description = "Enable social features and interactions",
+                title = stringResource(R.string.social_features_title),
+                description = stringResource(R.string.social_features_desc),
                 checked = socialSettings.socialFeatures,
                 onCheckedChange = { checked ->
                     settingsManager.updateSocialSettings(socialSettings.copy(socialFeatures = checked))
@@ -808,8 +808,8 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
 
             SettingToggleItem(
                 icon = Icons.Outlined.Star,
-                title = "Leaderboards",
-                description = "Participate in leaderboards and competitions",
+                title = stringResource(R.string.leaderboards_title),
+                description = stringResource(R.string.leaderboards_desc),
                 checked = socialSettings.leaderboards,
                 onCheckedChange = { checked ->
                     settingsManager.updateSocialSettings(socialSettings.copy(leaderboards = checked))
@@ -829,11 +829,11 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                 emailError = null
                 usernameError = null
             },
-            title = { Text("Login to Social Features") },
+            title = { Text(stringResource(R.string.login_to_social_features)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        "Log in with your email to invite friends and access social features.",
+                        stringResource(R.string.login_prompt),
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -843,7 +843,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             email = it
                             emailError = null
                         },
-                        label = { Text("Email") },
+                        label = { Text(stringResource(R.string.email)) },
                         isError = emailError != null,
                         supportingText = emailError?.let { { Text(it) } },
                         modifier = Modifier.fillMaxWidth(),
@@ -857,10 +857,10 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             username = it
                             usernameError = null
                         },
-                        label = { Text("Username") },
+                        label = { Text(stringResource(R.string.username)) },
                         isError = usernameError != null,
                         supportingText = usernameError?.let { { Text(it) } } ?: {
-                            Text("3+ characters, letters, numbers, and underscore only")
+                            Text(stringResource(R.string.username_hint))
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -873,19 +873,19 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                     onClick = {
                         // Validate
                         if (email.isBlank()) {
-                            emailError = "Email is required"
+                            emailError = context.getString(R.string.email_required)
                             return@TextButton
                         }
                         if (!AuthRepository.isValidEmail(email)) {
-                            emailError = "Please enter a valid email address"
+                            emailError = context.getString(R.string.valid_email_required)
                             return@TextButton
                         }
                         if (username.isBlank()) {
-                            usernameError = "Username is required"
+                            usernameError = context.getString(R.string.username_required)
                             return@TextButton
                         }
                         if (!AuthRepository.isValidUsername(username)) {
-                            usernameError = "Username must be 3+ characters (letters, numbers, underscore)"
+                            usernameError = context.getString(R.string.username_validation_error)
                             return@TextButton
                         }
 
@@ -893,12 +893,12 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                         coroutineScope.launch {
                             val result = authRepository.login(email, username)
                             if (result.isSuccess) {
-                                Toast.makeText(context, "Logged in successfully!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.logged_in_successfully), Toast.LENGTH_SHORT).show()
                                 showLoginDialog = false
                                 email = ""
                                 username = ""
                             } else {
-                                Toast.makeText(context, "Login failed: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, context.getString(R.string.login_failed, result.exceptionOrNull()?.message ?: ""), Toast.LENGTH_LONG).show()
                             }
                             isLoggingIn = false
                         }
@@ -911,7 +911,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Login")
+                        Text(stringResource(R.string.login))
                     }
                 }
             },
@@ -926,7 +926,7 @@ private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
                     },
                     enabled = !isLoggingIn
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -938,7 +938,7 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
     val privacySettings by settingsManager.privacySettings.collectAsState(initial = PrivacySettings())
 
     SettingsCard(
-        title = "Privacy",
+        title = stringResource(R.string.privacy),
         icon = Icons.Outlined.Lock
     ) {
         Column(
@@ -946,8 +946,8 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
         ) {
             SettingToggleItem(
                 icon = Icons.Outlined.Assessment,
-                title = "Progress Sharing",
-                description = "Share your progress with others",
+                title = stringResource(R.string.progress_sharing_title),
+                description = stringResource(R.string.progress_sharing_desc),
                 checked = privacySettings.progressSharing,
                 onCheckedChange = { checked ->
                     settingsManager.updatePrivacySettings(privacySettings.copy(progressSharing = checked))
@@ -956,8 +956,8 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
 
             SettingToggleItem(
                 icon = Icons.Outlined.People,
-                title = "Profile Sharing",
-                description = "Allow others to view your profile",
+                title = stringResource(R.string.profile_sharing_title),
+                description = stringResource(R.string.profile_sharing_desc),
                 checked = privacySettings.profileVisibility == ProfileVisibility.PUBLIC,
                 onCheckedChange = { checked ->
                     val newVisibility = if (checked) ProfileVisibility.PUBLIC else ProfileVisibility.FRIENDS_ONLY
@@ -1198,21 +1198,21 @@ private fun WeeklyGoalCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "3h (Casual)",
+                        text = stringResource(R.string.weekly_goal_casual, 3),
                         fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
                     )
                     Text(
-                        text = "15h (Balanced)",
+                        text = stringResource(R.string.weekly_goal_balanced, 15),
                         fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = "35h (Intensive)",
+                        text = stringResource(R.string.weekly_goal_intensive, 35),
                         fontSize = 11.sp,
                         color = WEEKLY_GOAL_SUPPORT_COLOR,
                         modifier = Modifier.weight(1f),
@@ -1271,7 +1271,7 @@ private fun SavedGoalChip(savedGoalHours: Int) {
         tonalElevation = 0.dp
     ) {
         Text(
-            text = "Goal Saved: ${savedGoalHours}h/week",
+            text = stringResource(R.string.goal_saved_format, savedGoalHours),
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
             color = WEEKLY_GOAL_SAVED_TEXT,

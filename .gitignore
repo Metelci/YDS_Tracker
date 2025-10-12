@@ -22,3 +22,7 @@ app/build/
 tmp_*
 nul
 logs/
+/app/release/release/app-release.aab
+/studyplan.pem
+/studyplansign.jks
+studyplansign

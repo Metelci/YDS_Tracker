@@ -153,11 +153,12 @@ fun AppNavHost(
     ) { padding ->
         navController.currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
 
-        NavHost(
-            navController = navController,
-            startDestination = WELCOME_ROUTE,
-            modifier = Modifier.padding(padding)
-        ) {
+        com.mtlc.studyplan.ui.components.GradientBackground {
+            NavHost(
+                navController = navController,
+                startDestination = WELCOME_ROUTE,
+                modifier = Modifier.padding(padding)
+            ) {
             composable(WELCOME_ROUTE) {
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val repo = remember { OnboardingRepository(context.settingsDataStore) }
@@ -461,6 +462,7 @@ fun AppNavHost(
                 }
             )
         }
+            }
         }
     }
 }

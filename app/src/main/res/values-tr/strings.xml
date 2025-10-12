@@ -534,5 +534,54 @@
   <string name="home_today_tasks_title">Bugunun Gorevleri</string>
   <string name="home_today_tasks_empty">Bugun icin planlanmis gorev yok.</string>
   <string name="home_new_placeholder">Yeni ana sayfa yer tutucusu - uygulama beklemede</string>
+
+  <!-- Settings screen translations -->
+  <string name="daily_goal_reminders_title">Günlük Hedef Hatırlatıcıları</string>
+  <string name="daily_goal_reminders_desc">Günlük çalışma hedeflerimi hatırlat</string>
+  <string name="bottom_navigation_title">Alt Navigasyon</string>
+  <string name="bottom_navigation_desc">Ekranın altında navigasyonu göster</string>
+  <string name="haptic_feedback_title">Dokunsal Geri Bildirim</string>
+  <string name="haptic_feedback_desc">Buton dokunuşlarında ve etkileşimlerde titreşim</string>
+  <string name="push_notifications_title">Bildirimler</string>
+  <string name="push_notifications_desc">Bu uygulamadan bildirimlere izin ver</string>
+  <string name="study_reminders_title">Çalışma Hatırlatıcıları</string>
+  <string name="study_reminders_desc">Günlük çalışma hatırlatıcıları</string>
+  <string name="achievement_alerts_title">Başarı Bildirimleri</string>
+  <string name="achievement_alerts_desc">Tamamlanan hedefler ve başarılar için bildirimler</string>
+  <string name="point_system_title">Puan Sistemi</string>
+  <string name="point_system_desc">Görevleri tamamlayarak puan kazan</string>
+  <string name="celebration_effects_title">Kutlama Efektleri</string>
+  <string name="celebration_effects_desc">Başarılar için animasyonlar ve efektler göster</string>
+  <string name="social_features_title">Sosyal Özellikler</string>
+  <string name="social_features_desc">Sosyal özellikleri ve etkileşimleri etkinleştir</string>
+  <string name="leaderboards_title">Lider Tablosu</string>
+  <string name="leaderboards_desc">Lider tablosuna ve yarışmalara katıl</string>
+  <string name="progress_sharing_title">İlerleme Paylaşımı</string>
+  <string name="progress_sharing_desc">İlerlemenizi başkalarıyla paylaşın</string>
+  <string name="profile_sharing_title">Profil Paylaşımı</string>
+  <string name="profile_sharing_desc">Başkalarının profilinizi görmesine izin ver</string>
+  <string name="not_logged_in">Giriş yapılmadı</string>
+  <string name="log_in_to_invite_friends">Arkadaşlarını davet etmek için giriş yap</string>
+  <string name="logged_out_successfully">Başarıyla çıkış yapıldı</string>
+  <string name="logout">Çıkış Yap</string>
+  <string name="login">Giriş Yap</string>
+  <string name="login_to_social_features">Sosyal Özelliklere Giriş Yap</string>
+  <string name="login_prompt">Arkadaşlarını davet etmek ve sosyal özelliklere erişmek için e-postanla giriş yap.</string>
+  <string name="email">E-posta</string>
+  <string name="username">Kullanıcı Adı</string>
+  <string name="username_hint">3+ karakter, harfler, rakamlar ve alt çizgi</string>
+  <string name="email_required">E-posta gereklidir</string>
+  <string name="valid_email_required">Lütfen geçerli bir e-posta adresi girin</string>
+  <string name="username_required">Kullanıcı adı gereklidir</string>
+  <string name="username_validation_error">Kullanıcı adı 3+ karakter olmalı (harfler, rakamlar, alt çizgi)</string>
+  <string name="logged_in_successfully">Başarıyla giriş yapıldı!</string>
+  <string name="login_failed">Giriş başarısız: %s</string>
+  <string name="reset_progress_danger">İlerlemeyi Sıfırla (Tehlikeli)</string>
+  <string name="reset_progress_dialog_message">Bu işlem tüm çalışma ilerlemenizi, başarılarınızı ve istatistiklerinizi kalıcı olarak silecektir. Hoş geldiniz ekranına dönüp yeni baştan başlayacaksınız. Bu işlem geri alınamaz.</string>
+  <string name="failed_to_reset">Sıfırlama başarısız. Lütfen tekrar deneyin.</string>
+  <string name="goal_saved_format">Hedef Kaydedildi: %dsa/hafta</string>
+  <string name="weekly_goal_casual">%dsa (Rahat)</string>
+  <string name="weekly_goal_balanced">%dsa (Dengeli)</string>
+  <string name="weekly_goal_intensive">%dsa (Yoğun)</string>
 </resources>
 
