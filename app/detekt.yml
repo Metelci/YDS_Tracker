@@ -221,6 +221,7 @@ naming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     functionPattern: '[a-z][a-zA-Z0-9]*'
+    ignoreAnnotated: ['Composable']
   FunctionParameterNaming:
     active: true
     parameterPattern: '[a-z][A-Za-z0-9]*'
@@ -230,6 +231,7 @@ naming:
     active: false
   MatchingDeclarationName:
     active: true
+    mustBeFirst: false
   MemberNameEqualsClassName:
     active: true
   NoNameShadowing:

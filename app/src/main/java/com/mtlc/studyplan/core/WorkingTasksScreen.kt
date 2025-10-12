@@ -220,40 +220,51 @@ data class CompressedStudySession(
     fun isHighProductivity(): Boolean = (flags and FLAG_HIGH_PRODUCTIVITY) != 0
 }
 
-class StudyHistoryCompressor {
-    private val compressedSessions = mutableListOf<CompressedStudySession>()
-    private val sessionCache = mutableMapOf<String, CompressedStudySession>()
+data class StudySessionData(
+    val sessionId: String,
+    val date: Long,
+    val duration: Int,
+    val tasksCompleted: Int,
+    val pointsEarned: Int,
+    val bookProgress: Map<String, Int>
+)
 
-    fun compressSession(
-        sessionId: String,
-        date: Long,
-        duration: Int,
-        tasksCompleted: Int,
-        pointsEarned: Int,
-        bookProgress: Map<String, Int>,
-        isEarlyMorning: Boolean = false,
-        isWeekend: Boolean = false,
-        isStudyStreak: Boolean = false,
-        isHighProductivity: Boolean = false
-    ): CompressedStudySession {
+data class StudySessionFlags(
+    val isEarlyMorning: Boolean = false,
+    val isWeekend: Boolean = false,
+    val isStudyStreak: Boolean = false,
+    val isHighProductivity: Boolean = false
+) {
+    fun toBitFlags(): Int {
         var flags = 0
         if (isEarlyMorning) flags = flags or CompressedStudySession.FLAG_EARLY_MORNING
         if (isWeekend) flags = flags or CompressedStudySession.FLAG_WEEKEND
         if (isStudyStreak) flags = flags or CompressedStudySession.FLAG_STUDY_STREAK
         if (isHighProductivity) flags = flags or CompressedStudySession.FLAG_HIGH_PRODUCTIVITY
+        return flags
+    }
+}
 
+class StudyHistoryCompressor {
+    private val compressedSessions = mutableListOf<CompressedStudySession>()
+    private val sessionCache = mutableMapOf<String, CompressedStudySession>()
+
+    fun compressSession(
+        data: StudySessionData,
+        flags: StudySessionFlags = StudySessionFlags()
+    ): CompressedStudySession {
         val compressed = CompressedStudySession(
-            sessionId = sessionId,
-            date = date,
-            duration = duration,
-            tasksCompleted = tasksCompleted,
-            pointsEarned = pointsEarned,
-            bookProgress = bookProgress,
-            flags = flags
+            sessionId = data.sessionId,
+            date = data.date,
+            duration = data.duration,
+            tasksCompleted = data.tasksCompleted,
+            pointsEarned = data.pointsEarned,
+            bookProgress = data.bookProgress,
+            flags = flags.toBitFlags()
         )
 
         compressedSessions.add(compressed)
-        sessionCache[sessionId] = compressed
+        sessionCache[data.sessionId] = compressed
 
         return compressed
     }
@@ -411,9 +422,10 @@ class StudySessionCompressor {
     }
 
     private fun String.fromJsonString(): List<CompressedStudySession> {
-        if (this.isEmpty() || this == "[]") return emptyList()
+        if (this.isEmpty() || this == "[]" || this.removeSurrounding("[", "]").isEmpty()) {
+            return emptyList()
+        }
         val jsonArray = this.removeSurrounding("[", "]")
-        if (jsonArray.isEmpty()) return emptyList()
 
         return jsonArray.split("},{").map { item ->
             val cleanItem = item.removeSurrounding("{", "}")
@@ -2229,9 +2241,10 @@ private fun murphyUnitsFor(book: StudyBook): List<MurphyUnit> =
     book.murphyBook?.chapters?.flatMap { it.units } ?: emptyList()
 
 private fun extractMurphyUnitNumbers(details: String?): List<Int> {
-    if (details.isNullOrBlank()) return emptyList()
-    val normalized = details.lowercase(Locale.getDefault())
-    if (!normalized.contains("ünite") && !normalized.contains("unit")) return emptyList()
+    val normalized = details?.lowercase(Locale.getDefault())
+    if (normalized.isNullOrBlank() || (!normalized.contains("ünite") && !normalized.contains("unit"))) {
+        return emptyList()
+    }
 
     val rangeRegex = Regex("(\\d+)(?:\\s*[-–]\\s*(\\d+))?")
     return rangeRegex.findAll(details).flatMap { matchResult ->

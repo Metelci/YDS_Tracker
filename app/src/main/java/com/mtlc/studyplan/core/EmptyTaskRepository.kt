@@ -14,7 +14,9 @@ object EmptyTaskRepository : TaskRepository {
     override suspend fun getTaskById(id: String): com.mtlc.studyplan.data.Task? = null
     override suspend fun insertTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
     override suspend fun updateTask(task: com.mtlc.studyplan.data.Task): com.mtlc.studyplan.data.Task = task
-    override suspend fun deleteTask(id: String) {}
+    override suspend fun deleteTask(id: String) {
+        // No-op for empty repository
+    }
     override suspend fun getTodaysTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
     override suspend fun getUpcomingTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
     override suspend fun getTasksByCategory(category: String): List<com.mtlc.studyplan.data.Task> = emptyList()
