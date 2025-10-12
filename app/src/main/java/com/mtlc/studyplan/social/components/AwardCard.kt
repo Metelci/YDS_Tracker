@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.social.Award
 import com.mtlc.studyplan.data.social.AwardIconType
@@ -206,7 +207,7 @@ fun AwardCard(
                     // Earned date or empty space
                     if (award.isUnlocked && award.unlockedDate != null) {
                         Text(
-                            text = "Earned ${award.unlockedDate}",
+                            text = stringResource(R.string.award_earned_date, award.unlockedDate),
                             style = MaterialTheme.typography.labelSmall,
                             color = metaContentColor,
                             fontSize = calculateResponsiveFontSize(baseSize = 9.sp)
@@ -261,7 +262,7 @@ fun AwardCard(
                                         .background(badgeContentColor)
                                 )
                                 Text(
-                                    text = "COMPLETED",
+                                    text = stringResource(R.string.award_completed),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = badgeContentColor,
                                     fontSize = calculateResponsiveFontSize(baseSize = 8.sp),
@@ -332,11 +333,13 @@ private fun getRarityBadgeColor(rarity: AwardRarity): Color = when (rarity) {
 }
 
 @Composable
-private fun rarityLabel(rarity: AwardRarity): String = when (rarity) {
-    AwardRarity.Common -> "common"
-    AwardRarity.Rare -> "rare"
-    AwardRarity.Epic -> "epic"
-    AwardRarity.Legendary -> "legendary"
+private fun rarityLabel(rarity: AwardRarity): String {
+    return when (rarity) {
+        AwardRarity.Common -> stringResource(R.string.award_rarity_common)
+        AwardRarity.Rare -> stringResource(R.string.award_rarity_rare)
+        AwardRarity.Epic -> stringResource(R.string.award_rarity_epic)
+        AwardRarity.Legendary -> stringResource(R.string.award_rarity_legendary)
+    }
 }
 
 @Composable

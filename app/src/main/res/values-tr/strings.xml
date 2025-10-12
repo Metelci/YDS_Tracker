@@ -370,7 +370,6 @@
   <string name="social_stat_rank">Sıralamanız</string>
   <string name="social_stat_score">Puanınız</string>
   <string name="social_stat_streak">Günlük Seri</string>
-  <string name="social_invite_friends_to_rank">Siralamanizi gormek icin birkac arkadasinizi davet edin</string>
   <string name="expand_selection">Seçimi genişlet</string>
   <string name="settings_category_description">%1$s: %2$s</string>
   <string name="category_active">Aktif</string>
@@ -583,5 +582,25 @@
   <string name="weekly_goal_casual">%dsa (Rahat)</string>
   <string name="weekly_goal_balanced">%dsa (Dengeli)</string>
   <string name="weekly_goal_intensive">%dsa (Yoğun)</string>
+
+  <!-- Award card translations -->
+  <string name="award_earned_date">%s tarihinde kazanıldı</string>
+  <string name="award_completed">TAMAMLANDI</string>
+  <string name="award_rarity_common">sıradan</string>
+  <string name="award_rarity_rare">nadir</string>
+  <string name="award_rarity_epic">destansı</string>
+  <string name="award_rarity_legendary">efsanevi</string>
+
+  <!-- Fix Turkish character encoding -->
+  <string name="social_invite_friends_to_rank">Sıralamanızı görmek için birkaç arkadaşınızı davet edin</string>
+
+  <!-- Home page / WorkingHomeScreen translations -->
+  <string name="welcome_first_time">Hoş geldiniz! 👋</string>
+  <string name="good_morning">Günaydın! 👋</string>
+  <string name="ready_yds_exam">YDS sınavına hazır mısınız?</string>
+  <string name="days_to_yds">YDS\'ye Kalan Gün</string>
+  <string name="weekly_study_plan">Haftalık Çalışma Planı</string>
+  <string name="week_progress">Hafta İlerlemesi</string>
+  <string name="eyds_exam_name">e-YDS 2025/10</string>
 </resources>
 

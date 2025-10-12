@@ -677,4 +677,12 @@
     <string name="weekly_goal_casual">%dh (Casual)</string>
     <string name="weekly_goal_balanced">%dh (Balanced)</string>
     <string name="weekly_goal_intensive">%dh (Intensive)</string>
+
+    <!-- Award card translations -->
+    <string name="award_earned_date">Earned %s</string>
+    <string name="award_completed">COMPLETED</string>
+    <string name="award_rarity_common">common</string>
+    <string name="award_rarity_rare">rare</string>
+    <string name="award_rarity_epic">epic</string>
+    <string name="award_rarity_legendary">legendary</string>
 </resources>

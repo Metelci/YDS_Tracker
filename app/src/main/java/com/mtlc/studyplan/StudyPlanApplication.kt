@@ -9,6 +9,7 @@ import com.mtlc.studyplan.di.koinEventBusModule
 import com.mtlc.studyplan.di.koinIntegrationModule
 import com.mtlc.studyplan.di.koinRepositoryModule
 import com.mtlc.studyplan.di.koinSettingsModule
+import com.mtlc.studyplan.di.koinViewModelModule
 import com.mtlc.studyplan.work.KoinWorkerFactory
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -28,7 +29,8 @@ class StudyPlanApplication : Application(), Configuration.Provider {
                 koinRepositoryModule,
                 koinEventBusModule,
                 koinSettingsModule,
-                koinIntegrationModule
+                koinIntegrationModule,
+                koinViewModelModule
             )
         }
         WorkManager.initialize(this, workManagerConfiguration)

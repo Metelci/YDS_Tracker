@@ -790,25 +790,30 @@ fun SocialHubTopBar(
             ) {
                 Column(
                     modifier = Modifier
-                        .weight(1f, fill = false)
+                        .weight(1f, fill = true)
                         .padding(end = 12.dp)
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontSize = if (title.length > 15) 18.sp else 24.sp
+                        ),
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2E7D32),
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        maxLines = 2,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Visible,
+                        lineHeight = 22.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = subtitle,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = if (subtitle.length > 40) 12.sp else 14.sp
+                        ),
                         color = Color(0xFF4A6741),
-                        maxLines = 2,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                        lineHeight = 18.sp,
+                        maxLines = 3,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Visible,
+                        lineHeight = 16.sp,
                     )
                 }
 
