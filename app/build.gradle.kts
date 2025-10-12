@@ -100,6 +100,7 @@ android {
         disable.add("FrequentlyChangingValue")
         disable.add("RememberInComposition")
         disable.add("AutoboxingStateCreation")
+        disable.add("MissingTranslation") // Temporarily disabled - translations will be completed incrementally
     }
 
     // Ensure unit tests do not try to compile data binding generated sources
