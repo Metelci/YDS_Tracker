@@ -544,9 +544,6 @@ fun SocialScreen(
                 verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
                 SocialHomeHeader(
-                    modifier = Modifier.fillMaxWidth()
-                )
-                SocialHubTopBar(
                     canInvite = canInviteFriends,
                     onInviteClick = {
                         if (canInviteFriends) {
@@ -748,61 +745,101 @@ fun SocialScreen(
 
 @Composable
 private fun SocialHomeHeader(
+    canInvite: Boolean,
+    onInviteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
     val context = LocalContext.current
-    val activity = context as? Activity
-    val languageManager = rememberLanguageManager(context)
-    val coroutineScope = rememberCoroutineScope()
-    val prussianBlue = Color(0xFF003153)
-    val gradient = Brush.horizontalGradient(
-        colors = listOf(
-            Color(0xFFE3F2FD),
-            Color(0xFFFCE4EC)
-        )
-    )
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         color = Color.Transparent
     ) {
         Box(
             modifier = Modifier
-                .background(gradient, RoundedCornerShape(16.dp))
-                .padding(horizontal = 20.dp, vertical = 18.dp)
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = stringResource(R.string.social_hub_title),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = prussianBlue
+                    Icon(
+                        imageVector = Icons.Outlined.PersonAdd,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        modifier = Modifier.size(24.dp)
                     )
-                    Text(
-                        text = stringResource(R.string.social_hub_subtitle),
-                        fontSize = 14.sp,
-                        color = prussianBlue.copy(alpha = 0.8f)
-                    )
+                    Column {
+                        Text(
+                            text = "Social",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = stringResource(R.string.social_hub_subtitle),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(spacing.sm))
-                LanguageSwitcher(
-                    currentLanguage = languageManager.currentLanguage,
-                    onLanguageChanged = { newLanguage ->
-                        coroutineScope.launch {
-                            languageManager.changeLanguage(newLanguage, activity)
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Invite Badge with pastel gradient (matching XP badge from Tasks)
+                if (canInvite) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .clickable(onClick = onInviteClick)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.PersonAdd,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.topbar_invite_action),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
-                )
+                }
             }
         }
     }
