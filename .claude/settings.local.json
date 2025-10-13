@@ -32,7 +32,8 @@
       "Bash(comm:*)",
       "Bash(for:*)",
       "Bash(do grep -m1 \"name=\"\"$name\"\"\" app/src/main/res/values/strings.xml)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(xmllint:*)"
     ],
     "deny": [],
     "ask": []

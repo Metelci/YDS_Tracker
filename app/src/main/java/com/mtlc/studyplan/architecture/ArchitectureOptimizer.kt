@@ -2,11 +2,8 @@ package com.mtlc.studyplan.architecture
 
 import android.app.Application
 import android.content.ComponentCallbacks2
-import android.content.Context
 import android.content.res.Configuration
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.mtlc.studyplan.image.CoilImageOptimizer
 import com.mtlc.studyplan.memory.MemoryManager
@@ -15,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.koin.core.context.GlobalContext
 
 /**
  * ArchitectureOptimizer - Coordinates all architectural optimizations for better performance
@@ -61,18 +57,18 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
     /**
      * Perform initial optimizations when app starts
      */
-    private suspend fun performInitialOptimizations() {
+    private fun performInitialOptimizations() {
         // Load essential features first
         FeatureModuleManager.initialize(application)
 
         // Optimize image loading
-        val imageLoader = CoilImageOptimizer.createOptimizedImageLoader(application)
+        CoilImageOptimizer.createOptimizedImageLoader(application)
     }
     
     /**
      * Perform periodic optimizations during app runtime
      */
-    private suspend fun performPeriodicOptimizations() {
+    private fun performPeriodicOptimizations() {
         // Check memory pressure and adjust accordingly
         val memoryPressure = MemoryManager.memoryPressure.value
         FeatureModuleManager.loadFeaturesBasedOnMemoryPressure(application, memoryPressure)
@@ -202,25 +198,5 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
     /**
      * Application lifecycle observer for architecture management
      */
-    inner class ApplicationLifecycleObserver : LifecycleObserver {
-        
-        @OnLifecycleEvent(Lifecycle.Event.ON_START)
-        fun onMoveToForeground() {
-            // App moved to foreground, load essential features
-            optimizationScope.launch {
-                FeatureModuleManager.loadFeature("core")
-                FeatureModuleManager.loadFeature("database")
-                FeatureModuleManager.loadFeature("repository")
-            }
-        }
-        
-        @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-        fun onMoveToBackground() {
-            // App moved to background, unload non-essential features
-            optimizationScope.launch {
-                FeatureModuleManager.unloadFeature("analytics")
-                FeatureModuleManager.unloadFeature("social")
-            }
-        }
-    }
+    inner class ApplicationLifecycleObserver : LifecycleObserver
 }
