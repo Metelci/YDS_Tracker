@@ -51,8 +51,6 @@
   - Resolved "Unresolved reference 'asStateFlow'" error in BaseViewModel.kt:18
   - Added `kotlinx.coroutines.flow.asStateFlow` import for proper StateFlow conversion
 
-### Notes
-- Hotfix only, no schema or API changes
 
 ## [2.9.51] - 2025-10-07 (hotfix)
 

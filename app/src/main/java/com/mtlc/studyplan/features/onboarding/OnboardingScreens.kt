@@ -226,7 +226,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
                     start = safeAreaInsets.start,
                     end = safeAreaInsets.end
                 ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Show loading state when generating plan
             if (isGeneratingPlan) {
@@ -545,11 +545,11 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
                     )
 
-                    // Calendar with minimal padding to show all days
+                    // Calendar with padding to show all days including Sunday
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 0.dp)
+                            .padding(horizontal = 4.dp)
                     ) {
                         DatePicker(
                             state = startDateState,
@@ -608,11 +608,11 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                             }
                         )
 
-                        // Calendar with minimal padding to show all days
+                        // Calendar with padding to show all days including Sunday
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 0.dp)
+                                .padding(horizontal = 4.dp)
                         ) {
                             DatePicker(
                                 state = examDateState,

@@ -1,6 +1,7 @@
 package com.mtlc.studyplan.social
 
 // import androidx.compose.material3.FloatingActionButton
+import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -84,6 +87,8 @@ import com.mtlc.studyplan.social.tabs.AwardsTab
 import com.mtlc.studyplan.social.tabs.FriendsTab
 import com.mtlc.studyplan.social.tabs.ProfileTab
 import com.mtlc.studyplan.social.tabs.RanksTab
+import com.mtlc.studyplan.localization.rememberLanguageManager
+import com.mtlc.studyplan.ui.components.LanguageSwitcher
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
@@ -430,17 +435,16 @@ fun SocialScreen(
     }
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            // Snackbar host
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
-
             // Username required dialog overlay
             if (showUsernameDialog) {
                 UsernameRequiredDialog(
@@ -533,9 +537,15 @@ fun SocialScreen(
             }
 
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = spacing.md),
+                verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-                // Fixed Social Hub Top Bar
+                SocialHomeHeader(
+                    modifier = Modifier.fillMaxWidth()
+                )
                 SocialHubTopBar(
                     canInvite = canInviteFriends,
                     onInviteClick = {
@@ -549,22 +559,15 @@ fun SocialScreen(
                                 )
                             }
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                SocialSegmentedTabs(
+                    selected = selectedTab,
+                    onTabSelected = { selectedTab = it }
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = spacing.md),
-                    verticalArrangement = Arrangement.spacedBy(spacing.md)
-                ) {
-                    SocialSegmentedTabs(
-                selected = selectedTab,
-                onTabSelected = { selectedTab = it }
-            )
-
-            when (selectedTab) {
+                when (selectedTab) {
                 SocialTab.Profile -> {
                     ProfileTab(
                         profile = profile,
@@ -619,131 +622,189 @@ fun SocialScreen(
                 )
                 SocialTab.Awards -> AwardsTab(awards = awards)
             }
-
-            // Section removed per product requirements
-                }
-            }
-
         }
-    }
 
-    // Invite Friend Dialog
-    if (showInviteFriendDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showInviteFriendDialog = false
-                friendEmail = ""
-                friendEmailError = null
-            },
-            title = { Text("Invite Friend") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        "Enter your friend's email address to send them a friend request.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    OutlinedTextField(
-                        value = friendEmail,
-                        onValueChange = {
-                            friendEmail = it
-                            friendEmailError = null
-                        },
-                        label = { Text("Friend's Email") },
-                        isError = friendEmailError != null,
-                        supportingText = friendEmailError?.let { { Text(it) } },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        enabled = !isInviting
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        // Validate email
-                        if (friendEmail.isBlank()) {
-                            friendEmailError = "Email is required"
-                            return@TextButton
-                        }
-                        if (!AuthRepository.isValidEmail(friendEmail)) {
-                            friendEmailError = "Please enter a valid email address"
-                            return@TextButton
-                        }
+        // Invite Friend Dialog
+        if (showInviteFriendDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showInviteFriendDialog = false
+                    friendEmail = ""
+                    friendEmailError = null
+                },
+                title = { Text("Invite Friend") },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            "Enter your friend's email address to send them a friend request.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        OutlinedTextField(
+                            value = friendEmail,
+                            onValueChange = {
+                                friendEmail = it
+                                friendEmailError = null
+                            },
+                            label = { Text("Friend's Email") },
+                            isError = friendEmailError != null,
+                            supportingText = friendEmailError?.let { { Text(it) } },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            enabled = !isInviting
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            // Validate email
+                            if (friendEmail.isBlank()) {
+                                friendEmailError = "Email is required"
+                                return@TextButton
+                            }
+                            if (!AuthRepository.isValidEmail(friendEmail)) {
+                                friendEmailError = "Please enter a valid email address"
+                                return@TextButton
+                            }
 
-                        // Check if user is logged in
-                        val user = currentAuthUser
-                        if (user == null) {
-                            friendEmailError = context.getString(R.string.social_login_required)
-                            return@TextButton
-                        }
+                            // Check if user is logged in
+                            val user = currentAuthUser
+                            if (user == null) {
+                                friendEmailError = context.getString(R.string.social_login_required)
+                                return@TextButton
+                            }
 
-                        isInviting = true
-                        scope.launch {
-                            try {
-                                // Save friend request locally
-                                val result = friendsRepository.sendFriendRequest(
-                                    currentUserId = user.id,
-                                    currentUserEmail = user.email,
-                                    currentUsername = user.username,
-                                    friendEmail = friendEmail
-                                )
-
-                                if (result.isSuccess) {
-                                    // Open email app to send the actual invite
-                                    sendFriendInviteEmail(
-                                        context = context,
-                                        friendEmail = friendEmail,
-                                        senderUsername = user.username,
-                                        senderEmail = user.email
+                            isInviting = true
+                            scope.launch {
+                                try {
+                                    // Save friend request locally
+                                    val result = friendsRepository.sendFriendRequest(
+                                        currentUserId = user.id,
+                                        currentUserEmail = user.email,
+                                        currentUsername = user.username,
+                                        friendEmail = friendEmail
                                     )
 
+                                    if (result.isSuccess) {
+                                        // Open email app to send the actual invite
+                                        sendFriendInviteEmail(
+                                            context = context,
+                                            friendEmail = friendEmail,
+                                            senderUsername = user.username,
+                                            senderEmail = user.email
+                                        )
+
+                                        snackbarHostState.showSnackbar(
+                                            message = "Opening email app to send invite to $friendEmail",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        showInviteFriendDialog = false
+                                        friendEmail = ""
+                                    } else {
+                                        snackbarHostState.showSnackbar(
+                                            message = "Failed to create friend request: ${result.exceptionOrNull()?.message}",
+                                            duration = SnackbarDuration.Long
+                                        )
+                                    }
+                                } catch (e: Exception) {
                                     snackbarHostState.showSnackbar(
-                                        message = "Opening email app to send invite to $friendEmail",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                    showInviteFriendDialog = false
-                                    friendEmail = ""
-                                } else {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Failed to create friend request: ${result.exceptionOrNull()?.message}",
+                                        message = "Error: ${e.message}",
                                         duration = SnackbarDuration.Long
                                     )
+                                } finally {
+                                    isInviting = false
                                 }
-                            } catch (e: Exception) {
-                                snackbarHostState.showSnackbar(
-                                    message = "Error: ${e.message}",
-                                    duration = SnackbarDuration.Long
-                                )
-                            } finally {
-                                isInviting = false
                             }
+                        },
+                        enabled = !isInviting
+                    ) {
+                        if (isInviting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Send Invite")
                         }
-                    },
-                    enabled = !isInviting
-                ) {
-                    if (isInviting) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Send Invite")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showInviteFriendDialog = false
+                            friendEmail = ""
+                            friendEmailError = null
+                        },
+                        enabled = !isInviting
+                    ) {
+                        Text("Cancel")
                     }
                 }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showInviteFriendDialog = false
-                        friendEmail = ""
-                        friendEmailError = null
-                    },
-                    enabled = !isInviting
-                ) {
-                    Text("Cancel")
-                }
-            }
+            )
+        }
+        }
+    }
+}
+
+@Composable
+private fun SocialHomeHeader(
+    modifier: Modifier = Modifier
+) {
+    val spacing = LocalSpacing.current
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val languageManager = rememberLanguageManager(context)
+    val coroutineScope = rememberCoroutineScope()
+    val prussianBlue = Color(0xFF003153)
+    val gradient = Brush.horizontalGradient(
+        colors = listOf(
+            Color(0xFFE3F2FD),
+            Color(0xFFFCE4EC)
         )
+    )
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Transparent
+    ) {
+        Box(
+            modifier = Modifier
+                .background(gradient, RoundedCornerShape(16.dp))
+                .padding(horizontal = 20.dp, vertical = 18.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.social_hub_title),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = prussianBlue
+                    )
+                    Text(
+                        text = stringResource(R.string.social_hub_subtitle),
+                        fontSize = 14.sp,
+                        color = prussianBlue.copy(alpha = 0.8f)
+                    )
+                }
+                Spacer(modifier = Modifier.width(spacing.sm))
+                LanguageSwitcher(
+                    currentLanguage = languageManager.currentLanguage,
+                    onLanguageChanged = { newLanguage ->
+                        coroutineScope.launch {
+                            languageManager.changeLanguage(newLanguage, activity)
+                        }
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -1506,10 +1567,5 @@ private fun SocialScreenPreview() {
         SocialScreen()
     }
 }
-
-
-
-
-
 
 

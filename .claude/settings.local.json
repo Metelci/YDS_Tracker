@@ -33,7 +33,9 @@
       "Bash(for:*)",
       "Bash(do grep -m1 \"name=\"\"$name\"\"\" app/src/main/res/values/strings.xml)",
       "Bash(done)",
-      "Bash(xmllint:*)"
+      "Bash(xmllint:*)",
+      "Bash(adb shell pm clear:*)",
+      "Bash(where adb)"
     ],
     "deny": [],
     "ask": []
