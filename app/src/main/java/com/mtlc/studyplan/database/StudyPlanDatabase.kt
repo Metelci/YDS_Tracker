@@ -36,7 +36,7 @@ import com.mtlc.studyplan.database.entities.UserSettingsEntity
         QuestionEntity::class,
         AvatarEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -63,6 +63,7 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                     "study_plan_database"
                 )
                     .addMigrations(MIGRATION_3_4)
+                    .addMigrations(MIGRATION_4_5)
 
                 // Only use destructive migration in debug builds
                 // For production, proper migrations should be implemented
@@ -266,6 +267,33 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                     }
                     return columns
                 }
+            }
+        }
+        
+        /**
+         * Migration from version 4 to 5 - Add optimized indexes for better query performance
+         */
+        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add optimized composite indexes for better query performance
+                // Skip indexes that might already exist from previous migrations
+                
+                // New indexes for version 5
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_tasks_active_priority_due_v5` ON `tasks` (`isActive`, `priority`, `dueDate`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_tasks_active_completed_priority_v5` ON `tasks` (`isActive`, `isCompleted`, `priority`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_tasks_category_priority_v5` ON `tasks` (`category`, `priority`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_tasks_due_date_completed_v5` ON `tasks` (`dueDate`, `isCompleted`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_tasks_reminder_time_status_v5` ON `tasks` (`reminderTime`, `isCompleted`, `isActive`)"
+                )
             }
         }
     }

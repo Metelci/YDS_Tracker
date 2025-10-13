@@ -3,6 +3,7 @@ package com.mtlc.studyplan.error
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,6 +50,100 @@ class ErrorHandler @Inject constructor(
 
         // Emit error event for UI handling
         _errors.emit(errorEvent)
+        
+        // Track error analytics for optimization purposes
+        trackErrorAnalytics(errorInfo, errorEvent)
+    }
+    
+    /**
+     * Track error analytics for optimization and improvement
+     */
+    private fun trackErrorAnalytics(errorInfo: ErrorInfo, errorEvent: ErrorEvent) {
+        // In a real implementation, this would send to an analytics service
+        // For now, we'll just log it
+        Log.d("ErrorHandler", "Error tracked: ${errorInfo.type} - ${errorEvent.context}")
+    }
+    
+    /**
+     * Enhanced safe execution with retry logic for better resilience
+     */
+    suspend fun <T> safeExecuteWithRetry(
+        operation: suspend () -> T,
+        maxRetries: Int = 3,
+        delayMillis: Long = 1000,
+        onError: suspend (Throwable, Int) -> Unit = { _, _ -> }
+    ): Result<T> {
+        var lastException: Throwable? = null
+        
+        repeat(maxRetries + 1) { attempt ->
+            try {
+                return Result.success(operation())
+            } catch (e: Exception) {
+                lastException = e
+                onError(e, attempt)
+                
+                // Don't delay after the last attempt
+                if (attempt < maxRetries) {
+                    delay(delayMillis * (attempt + 1).toLong()) // Exponential backoff
+                }
+            }
+        }
+        
+        return Result.failure(lastException ?: Exception("Operation failed after $maxRetries attempts"))
+    }
+    
+    /**
+     * Memory-efficient error tracking with history management
+     */
+    private val errorHistory = object : LinkedHashMap<String, ErrorEvent>(100, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ErrorEvent>?): Boolean {
+            return size > 100 // Keep only last 100 errors to prevent memory leaks
+        }
+    }
+    
+    /**
+     * Get recent errors for debugging and analytics
+     */
+    fun getRecentErrors(count: Int = 10): List<ErrorEvent> {
+        return errorHistory.values.reversed().take(count)
+    }
+    
+    /**
+     * Clear error history to free up memory
+     */
+    fun clearErrorHistory() {
+        errorHistory.clear()
+    }
+    
+    /**
+     * Enhanced network error handling with specific messaging
+     */
+    fun getNetworkErrorMessage(networkError: Throwable): String {
+        return when (networkError) {
+            is UnknownHostException -> "Unable to connect to server. Please check your internet connection."
+            is IOException -> "Network error occurred. Please try again later."
+            else -> "Network connection unavailable. Please check your internet settings."
+        }
+    }
+    
+    /**
+     * Enhanced database error handling
+     */
+    fun getDatabaseErrorMessage(databaseError: Throwable): String {
+        return when (databaseError) {
+            is SQLException -> "Database error occurred. Please restart the app."
+            else -> "Data storage error. Please try again or restart the app."
+        }
+    }
+    
+    /**
+     * Enhanced memory error handling
+     */
+    fun getMemoryErrorMessage(memoryError: Throwable): String {
+        return when (memoryError) {
+            is OutOfMemoryError -> "Device memory is low. Please free up some space and try again."
+            else -> "Insufficient memory. Please close other apps and try again."
+        }
     }
 
     private fun categorizeError(throwable: Throwable): ErrorInfo {

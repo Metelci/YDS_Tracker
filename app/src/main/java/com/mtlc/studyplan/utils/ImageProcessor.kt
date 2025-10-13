@@ -10,11 +10,19 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
+import coil.Coil
+import coil.ImageLoader
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
+import coil.transform.Transformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.min
 
 object ImageProcessor {
 
@@ -64,12 +72,77 @@ object ImageProcessor {
     }
 
     /**
+     * Create an optimized ImageLoader for memory-efficient image loading
+     */
+    fun createOptimizedImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .memoryCache {
+                MemoryCache.Builder(context)
+                    .maxSizePercent(0.25) // Use 25% of available memory for cache
+                    .build()
+            }
+            .crossfade(true)
+            .build()
+    }
+
+    /**
+     * Load avatar image with optimizations
+     */
+    fun loadAvatarImage(
+        context: Context,
+        imageUrl: String,
+        targetSize: Int = 256
+    ) {
+        val imageLoader = createOptimizedImageLoader(context)
+        
+        val request = ImageRequest.Builder(context)
+            .data(imageUrl)
+            .size(targetSize, targetSize)
+            .transformations(CircleCropTransformation())
+            .build()
+        
+        imageLoader.enqueue(request)
+    }
+
+    /**
+     * Preload images for better performance
+     */
+    fun preloadImages(
+        context: Context,
+        imageUrls: List<String>,
+        maxSize: Int = 128 // Smaller size for preloading
+    ) {
+        val imageLoader = createOptimizedImageLoader(context)
+        
+        imageUrls.take(10).forEach { url -> // Limit to 10 images to avoid memory issues
+            try {
+                val request = ImageRequest.Builder(context)
+                    .data(url)
+                    .size(maxSize, maxSize)
+                    .build()
+                
+                imageLoader.enqueue(request)
+            } catch (e: Exception) {
+                // Silently fail for preloading
+            }
+        }
+    }
+
+    /**
+     * Clear image cache to free up memory
+     */
+    fun clearImageCache(context: Context) {
+        val imageLoader = Coil.imageLoader(context)
+        imageLoader.memoryCache?.clear()
+    }
+
+    /**
      * Crop bitmap to square by taking center portion
      */
     private fun cropToSquare(bitmap: Bitmap): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
-        val size = minOf(width, height)
+        val size = min(width, height)
 
         val x = (width - size) / 2
         val y = (height - size) / 2
@@ -160,5 +233,16 @@ object ImageProcessor {
         } catch (e: Exception) {
             false
         }
+    }
+    
+    /**
+     * Extension function to convert Drawable to Bitmap
+     */
+    private fun android.graphics.drawable.Drawable.toBitmap(): Bitmap {
+        val bitmap = Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        setBounds(0, 0, canvas.width, canvas.height)
+        draw(canvas)
+        return bitmap
     }
 }
