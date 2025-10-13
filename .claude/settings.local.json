@@ -28,7 +28,11 @@
       "Bash(java:*)",
       "Bash(\"C:\\Users\\metel\\AppData\\Local\\Android\\Sdk\\jbr\\bin\\keytool.exe\" -list -keystore \"H:\\StudioProjects\\StudyPlan\\studyplansign.jks\")",
       "Bash(cmd.exe:*)",
-      "Bash(powershell.exe:*)"
+      "Bash(powershell.exe:*)",
+      "Bash(comm:*)",
+      "Bash(for:*)",
+      "Bash(do grep -m1 \"name=\"\"$name\"\"\" app/src/main/res/values/strings.xml)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
