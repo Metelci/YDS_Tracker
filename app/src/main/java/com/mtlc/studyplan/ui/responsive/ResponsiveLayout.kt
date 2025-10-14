@@ -138,7 +138,7 @@ fun ResponsiveGrid(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val columns = responsiveColumns()
+    responsiveColumns()
     val spacing = responsiveSpacing()
 
     Column(
@@ -330,7 +330,7 @@ fun ResponsiveListCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val deviceProfile = rememberDeviceProfile()
-    val spacing = responsiveSpacing()
+    responsiveSpacing()
 
     // Adaptive minimum height for touch interaction
     val minHeight = when {

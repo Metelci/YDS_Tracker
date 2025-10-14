@@ -1,278 +1,88 @@
 package com.mtlc.studyplan.social.tabs
 
-
-import androidx.compose.ui.graphics.Brush
-
-
-import androidx.compose.foundation.Image
-
-
-import androidx.compose.foundation.border
-
-
-import androidx.compose.foundation.BorderStroke
-
-
-
-
-import androidx.compose.foundation.clickable
-
-
-import androidx.compose.foundation.layout.Arrangement
-
-
-import androidx.compose.foundation.layout.Box
-
-
-import androidx.compose.foundation.layout.Column
-
-
-import androidx.compose.foundation.layout.Row
-
-
-import androidx.compose.foundation.layout.Spacer
-
-
-import androidx.compose.foundation.layout.aspectRatio
-
-
-import androidx.compose.foundation.layout.fillMaxWidth
-
-
-import androidx.compose.foundation.layout.heightIn
-
-
-import androidx.compose.foundation.layout.padding
-
-
-import androidx.compose.foundation.layout.size
-
-
-import androidx.compose.foundation.layout.width
-
-
-import androidx.compose.foundation.shape.CircleShape
-
-
-import androidx.compose.foundation.shape.RoundedCornerShape
-
-
-import androidx.compose.material.icons.Icons
-
-
-import androidx.compose.material.icons.outlined.ContentCopy
-
-
-import androidx.compose.material.icons.outlined.Image
-
-
-import androidx.compose.material.icons.automirrored.outlined.Redo
-
-
-import androidx.compose.material.icons.automirrored.outlined.Undo
-
-
-import androidx.compose.material3.ButtonDefaults
-
-
-import androidx.compose.material3.FilledTonalButton
-
-
-import androidx.compose.material3.HorizontalDivider
-
-
-import androidx.compose.material3.Icon
-
-
-import androidx.compose.material3.IconButton
-
-
-import androidx.compose.material3.MaterialTheme
-
-
-import androidx.compose.material3.Surface
-
-
-import androidx.compose.material3.Text
-
-
-import androidx.compose.runtime.Composable
-
-
-import androidx.compose.ui.Alignment
-
-
-import androidx.compose.ui.Modifier
-
-
-import androidx.compose.ui.draw.clip
-
-
-import androidx.compose.ui.graphics.Color
-
-import androidx.compose.ui.graphics.luminance
-
-
-
-import androidx.compose.ui.layout.ContentScale
-
-
-import androidx.compose.ui.res.stringResource
-
-
-import androidx.compose.ui.text.font.FontWeight
-
-
-import androidx.compose.ui.text.style.TextAlign
-
-
-import androidx.compose.ui.text.style.TextOverflow
-
-
-import androidx.compose.ui.tooling.preview.Preview
-
-
-import androidx.compose.ui.unit.dp
-
-
-import coil.compose.rememberAsyncImagePainter
-
-
 import android.net.Uri
-
-
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Redo
+import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.mtlc.studyplan.R
-
-
 import com.mtlc.studyplan.data.social.SocialProfile
-
-
-import com.mtlc.studyplan.ui.theme.DesignTokens
-
-
 import com.mtlc.studyplan.ui.theme.LocalSpacing
-
-
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 
-
-
-
-
-
 @Composable
-
-
 fun ProfileTab(
-
-
     profile: SocialProfile,
-
-
     onAvatarSelected: (String) -> Unit,
-
-
     onUploadAvatarClick: () -> Unit,
-
-
     onUndoAvatar: () -> Unit,
-
-
     onRedoAvatar: () -> Unit,
-
-
     canUndo: Boolean,
-
-
     canRedo: Boolean,
-
-
     isAvatarBusy: Boolean,
-
-
     modifier: Modifier = Modifier
-
-
 ) {
-
-
     val spacing = LocalSpacing.current
 
-
     Column(
-
-
-        modifier = modifier.padding(bottom = spacing.sm),
-
-
-        verticalArrangement = Arrangement.spacedBy(spacing.xs)
-
-
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(spacing.sm)
     ) {
-
-
-        Box(
-
-
-            modifier = Modifier.fillMaxWidth(),
-
-
-            contentAlignment = Alignment.Center
-
-
-        ) {
-
-
-            ProfileCard(
-
-
-                profile = profile,
-
-
-                onAvatarSelected = onAvatarSelected,
-
-
-                onUploadAvatarClick = onUploadAvatarClick,
-
-
-                onUndoAvatar = onUndoAvatar,
-
-
-                onRedoAvatar = onRedoAvatar,
-
-
-                canUndo = canUndo,
-
-
-                canRedo = canRedo,
-
-
-                isAvatarBusy = isAvatarBusy,
-
-
-                modifier = Modifier
-
-
-                    .fillMaxWidth()
-
-
-                    .padding(horizontal = spacing.xs)
-
-
-            )
-
-
-        }
-
-
+        ProfileCard(
+            profile = profile,
+            onAvatarSelected = onAvatarSelected,
+            onUploadAvatarClick = onUploadAvatarClick,
+            onUndoAvatar = onUndoAvatar,
+            onRedoAvatar = onRedoAvatar,
+            canUndo = canUndo,
+            canRedo = canRedo,
+            isAvatarBusy = isAvatarBusy,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
-
-
 }
-
-
-
-
 
 @Composable
 private fun ProfileCard(
@@ -287,14 +97,17 @@ private fun ProfileCard(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    val prussianBlue = Color(0xFF003153)
-    val isDarkTheme = false
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+    val headlineColor = MaterialTheme.colorScheme.onPrimaryContainer
+    val subtitleColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
 
-    Surface(
-        modifier = modifier
-            .border(BorderStroke(1.dp, prussianBlue), RoundedCornerShape(16.dp)),
-        color = DesignTokens.PrimaryContainer.copy(alpha = 0.45f),
-        shape = RoundedCornerShape(16.dp)
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, borderColor),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+        )
     ) {
         Column(
             modifier = Modifier
@@ -302,87 +115,77 @@ private fun ProfileCard(
                 .padding(spacing.md),
             verticalArrangement = Arrangement.spacedBy(spacing.md)
         ) {
-            // Header with title
             Text(
                 text = stringResource(id = R.string.social_profile_title),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = prussianBlue
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            // Main profile section with avatar and info
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(spacing.md),
                 verticalAlignment = Alignment.Top
             ) {
-                // Large avatar display
                 AvatarDisplay(
                     profile = profile,
-                    size = 80.dp
+                    size = 72.dp
                 )
 
-                // User info column
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .padding(top = spacing.xs),
                     verticalArrangement = Arrangement.spacedBy(spacing.xs)
                 ) {
-                    // Username with copy button
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(spacing.xs)
                     ) {
                         Text(
                             text = profile.username,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = prussianBlue,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f, fill = false),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         IconButton(
-                            onClick = { /* Copy username functionality */ },
+                            onClick = { /* Copy username */ },
                             modifier = Modifier.size(32.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.ContentCopy,
                                 contentDescription = stringResource(id = R.string.social_copy_username_cd),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                tint = subtitleColor,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
                     }
 
-                    // Study level
                     Text(
                         text = stringResource(id = R.string.social_study_level, profile.studyLevel),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Bio/description placeholder
                     Text(
                         text = stringResource(id = R.string.social_username_hint),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            // Divider
             HorizontalDivider(
-                color = prussianBlue.copy(alpha = 0.2f),
+                color = borderColor,
                 thickness = 1.dp
             )
 
-            // Avatar selection section
             Column(
                 verticalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
-                // Section header with undo/redo
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -392,7 +195,7 @@ private fun ProfileCard(
                         text = stringResource(id = R.string.social_profile_photo_label),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = prussianBlue
+                        color = headlineColor
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         IconButton(
@@ -403,12 +206,7 @@ private fun ProfileCard(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.Undo,
                                 contentDescription = stringResource(id = R.string.social_avatar_undo_cd),
-                                tint = if (canUndo && !isAvatarBusy) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                },
-                                modifier = Modifier.size(20.dp)
+                                tint = if (canUndo && !isAvatarBusy) MaterialTheme.colorScheme.primary else subtitleColor
                             )
                         }
                         IconButton(
@@ -419,204 +217,112 @@ private fun ProfileCard(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.Redo,
                                 contentDescription = stringResource(id = R.string.social_avatar_redo_cd),
-                                tint = if (canRedo && !isAvatarBusy) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                },
-                                modifier = Modifier.size(20.dp)
+                                tint = if (canRedo && !isAvatarBusy) MaterialTheme.colorScheme.primary else subtitleColor
                             )
                         }
                     }
                 }
 
-                // Avatar grid with responsive wrapping
-                if (profile.availableAvatars.isNotEmpty()) {
-                    // Create rows with maximum 4 items per row
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(spacing.sm)
-                    ) {
-                        profile.availableAvatars.chunked(4).forEach { rowAvatars ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(spacing.sm)
-                            ) {
-                                rowAvatars.forEach { option ->
-                                    val isSelected = option.id == profile.selectedAvatarId
-                                    Surface(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .aspectRatio(1f)
-                                            .clickable(enabled = !isAvatarBusy) {
-                                                onAvatarSelected(option.id)
-                                            },
-                                        shape = CircleShape,
-                                        color = if (isSelected) {
-                                            DesignTokens.PrimaryContainer
-                                        } else {
-                                            DesignTokens.Surface
-                                        },
-                                        border = if (isSelected) {
-                                            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-                                        } else {
-                                            BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                                        },
-                                        tonalElevation = if (isSelected) 4.dp else 1.dp
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                text = avatarEmoji(option.id),
-                                                style = MaterialTheme.typography.headlineMedium,
-                                                color = if (isSelected) {
-                                                    DesignTokens.PrimaryContainerForeground
-                                                } else {
-                                                    MaterialTheme.colorScheme.onSurface
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                                // Fill empty spaces to maintain grid alignment
-                                repeat(4 - rowAvatars.size) {
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
-                            }
-                        }
-                    }
-                }
+                AvatarSelectionGrid(
+                    profile = profile,
+                    onAvatarSelected = onAvatarSelected,
+                    isBusy = isAvatarBusy
+                )
 
-                // Upload button
                 FilledTonalButton(
                     onClick = onUploadAvatarClick,
-                    enabled = !isAvatarBusy,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 48.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = DesignTokens.Primary,
-                        contentColor = DesignTokens.PrimaryForeground
-                    )
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    enabled = !isAvatarBusy
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Image,
-                        contentDescription = stringResource(id = R.string.social_avatar_upload_icon_cd),
-                        modifier = Modifier.size(20.dp),
-                        tint = DesignTokens.PrimaryForeground
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(spacing.xs))
-                    Text(
-                        text = if (isAvatarBusy) {
-                            stringResource(id = R.string.social_avatar_action_in_progress)
-                        } else {
-                            stringResource(id = R.string.social_upload_avatar_button)
-                        },
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Medium,
-                        color = DesignTokens.PrimaryForeground
-                    )
+                    Text(text = stringResource(id = R.string.social_upload_avatar))
                 }
-
-                // Format hint
-                Text(
-                    text = stringResource(id = R.string.social_avatar_supported_formats_hint),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
     }
 }
 
+@Composable
+private fun AvatarSelectionGrid(
+    profile: SocialProfile,
+    onAvatarSelected: (String) -> Unit,
+    isBusy: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val spacing = LocalSpacing.current
+    val availableAvatars = listOf("target", "rocket", "star", "flame", "diamond", "trophy", "puzzle", "sun")
 
-
+    androidx.compose.foundation.layout.FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(spacing.sm)
+    ) {
+        availableAvatars.forEach { avatarId ->
+            val isSelected = profile.selectedAvatarId == avatarId
+            Surface(
+                modifier = Modifier
+                    .size(56.dp)
+                    .aspectRatio(1f)
+                    .clickable(enabled = !isBusy) { onAvatarSelected(avatarId) },
+                shape = CircleShape,
+                color = if (isSelected)
+                    MaterialTheme.colorScheme.primaryContainer
+                else
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                border = if (isSelected)
+                    BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                else null,
+                tonalElevation = if (isSelected) 2.dp else 0.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = avatarEmoji(avatarId),
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
-
-
 private fun AvatarDisplay(
-
-
     profile: SocialProfile,
-
-
     modifier: Modifier = Modifier,
-
-
-    size: androidx.compose.ui.unit.Dp = 40.dp
-
-
+    size: Dp = 40.dp
 ) {
-
-
     if (profile.selectedAvatarId == "custom" && !profile.customAvatarUri.isNullOrEmpty()) {
-
-
         Image(
-
-
             painter = rememberAsyncImagePainter(model = Uri.parse(profile.customAvatarUri)),
-
-
             contentDescription = stringResource(id = R.string.social_avatar_custom_cd),
-
-
             modifier = modifier
-
-
                 .size(size)
-
-
                 .clip(CircleShape),
-
-
             contentScale = ContentScale.Crop
-
-
         )
-
-
     } else {
-
-
         Surface(
-
-
             modifier = modifier.size(size),
-
-
             shape = CircleShape,
-
-
-            color = DesignTokens.PrimaryContainer,
-
-
-            tonalElevation = 1.dp
-
-
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+            tonalElevation = 0.dp
         ) {
-
-
             Box(contentAlignment = Alignment.Center) {
-
-
                 Text(
-
-
                     text = avatarEmoji(profile.selectedAvatarId),
-
-
                     style = MaterialTheme.typography.titleMedium,
-
-
                     fontWeight = FontWeight.Bold,
-
-
-                    color = DesignTokens.PrimaryContainerForeground
-
-
+                    color = MaterialTheme.colorScheme.primary
                 )
 
 
@@ -744,6 +450,10 @@ private fun ProfileTabPreview() {
 
 
 }
+
+
+
+
 
 
 

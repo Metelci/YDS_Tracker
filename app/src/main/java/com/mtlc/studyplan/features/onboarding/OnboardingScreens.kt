@@ -4,7 +4,6 @@ package com.mtlc.studyplan.features.onboarding
 // removed luminance-based dark theme checks
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -16,35 +15,57 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -62,12 +83,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -83,7 +107,6 @@ import com.mtlc.studyplan.ui.responsive.ResponsiveCard
 import com.mtlc.studyplan.ui.responsive.ResponsiveChipRow
 import com.mtlc.studyplan.ui.responsive.ResponsiveContainer
 import com.mtlc.studyplan.ui.responsive.ResponsiveLazyColumn
-import com.mtlc.studyplan.ui.responsive.ScreenSize
 import com.mtlc.studyplan.ui.responsive.adaptiveComponentSizing
 import com.mtlc.studyplan.ui.responsive.adaptiveFontScale
 import com.mtlc.studyplan.ui.responsive.adaptiveLayoutConfig
@@ -91,16 +114,18 @@ import com.mtlc.studyplan.ui.responsive.isVerySmallScreen
 import com.mtlc.studyplan.ui.responsive.performanceConfig
 import com.mtlc.studyplan.ui.responsive.rememberDeviceProfile
 import com.mtlc.studyplan.ui.responsive.rememberSafeAreaInsets
-import com.mtlc.studyplan.ui.responsive.rememberScreenSize
-import com.mtlc.studyplan.ui.responsive.rememberScreenWidth
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.responsiveOnboardingTypography
-import com.mtlc.studyplan.ui.responsive.touchTargetSize
+import com.mtlc.studyplan.ui.theme.DesignTokens
 import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -130,6 +155,7 @@ fun OnboardingRoute(onDone: () -> Unit) {
     adaptiveLayoutConfig()
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             // Settings-style topbar with pastel gradient
             Box(
@@ -217,23 +243,20 @@ fun OnboardingRoute(onDone: () -> Unit) {
             }
         }
     ) { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(
-                    top = maxOf(padding.calculateTopPadding(), safeAreaInsets.top),
-                    bottom = maxOf(padding.calculateBottomPadding(), safeAreaInsets.bottom),
-                    start = safeAreaInsets.start,
-                    end = safeAreaInsets.end
-                ),
-            verticalArrangement = Arrangement.SpaceBetween
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
             // Show loading state when generating plan
             if (isGeneratingPlan) {
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxSize()
+                        .padding(
+                            top = maxOf(padding.calculateTopPadding(), safeAreaInsets.top),
+                            bottom = maxOf(padding.calculateBottomPadding(), safeAreaInsets.bottom),
+                            start = safeAreaInsets.start,
+                            end = safeAreaInsets.end
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -252,6 +275,8 @@ fun OnboardingRoute(onDone: () -> Unit) {
                     )
                 }
             } else {
+                val fabBottomPadding = safeAreaInsets.bottom + 24.dp
+                val contentBottomPadding = fabBottomPadding + 8.dp
                 // Animated content with slide transitions
                 AnimatedContent(
                     targetState = step,
@@ -296,7 +321,14 @@ fun OnboardingRoute(onDone: () -> Unit) {
                             )
                         }
                     },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = maxOf(padding.calculateTopPadding(), safeAreaInsets.top),
+                            bottom = contentBottomPadding,
+                            start = safeAreaInsets.start,
+                            end = safeAreaInsets.end
+                        ),
                     label = "onboarding_step_transition"
                 ) { currentStep ->
                     when (currentStep) {
@@ -305,66 +337,71 @@ fun OnboardingRoute(onDone: () -> Unit) {
                         else -> OnboardingStepSkills(vm)
                     }
                 }
-            }
+                // Floating action buttons for navigation
+                val nextIcon = if (step < 2) Icons.AutoMirrored.Filled.ArrowForward else Icons.Filled.Check
+                val nextEnabled = !isGeneratingPlan
 
-            // Navigation buttons with animations
-            ResponsiveContainer {
                 Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = fabBottomPadding),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                AnimatedVisibility(
-                    visible = step > 0,
-                    enter = slideInHorizontally(
-                        initialOffsetX = { -it },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        )
-                    ) + fadeIn(),
-                    exit = slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        )
-                    ) + fadeOut()
-                ) {
-                    TextButton(onClick = { step -= 1 }) {
-                        Text(stringResource(R.string.back_onboarding))
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        if (step < 2) {
-                            // Light feedback for next step
-                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            step += 1
-                        } else {
-                            // Special feedback for completing onboarding
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            vm.finish(onDone)
-                        }
-                    },
-                    enabled = !isGeneratingPlan,
-                    modifier = Modifier
-                        .height(touchTargetSize())
-                        .animateContentSize(
+                    AnimatedVisibility(
+                        visible = step > 0,
+                        enter = slideInHorizontally(
+                            initialOffsetX = { -it },
                             animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                dampingRatio = Spring.DampingRatioNoBouncy,
                                 stiffness = Spring.StiffnessMedium
                             )
+                        ) + fadeIn(),
+                        exit = slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            )
+                        ) + fadeOut()
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                if (nextEnabled) {
+                                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    step -= 1
+                                }
+                            },
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back_onboarding)
+                            )
+                        }
+                    }
+
+                    FloatingActionButton(
+                        onClick = {
+                            if (!nextEnabled) return@FloatingActionButton
+                            if (step < 2) {
+                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                step += 1
+                            } else {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                vm.finish(onDone)
+                            }
+                        },
+                        modifier = Modifier.alpha(if (nextEnabled) 1f else 0.5f),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ) {
+                        Icon(
+                            imageVector = nextIcon,
+                            contentDescription = if (step < 2) stringResource(R.string.next_onboarding) else stringResource(R.string.generate_plan)
                         )
-                ) {
-                    Text(
-                        if (step < 2) stringResource(R.string.next_onboarding)
-                        else stringResource(R.string.generate_plan)
-                    )
-                }
+                    }
                 }
             }
         }
@@ -376,34 +413,20 @@ fun OnboardingRoute(onDone: () -> Unit) {
 private fun OnboardingStepDate(vm: OnboardingViewModel) {
     val examDate by vm.examDate.collectAsState()
     val startDate by vm.startDate.collectAsState()
-    var selectedMode by remember { mutableStateOf("exam") } // "exam" or "duration"
-    var selectedDuration by remember { mutableStateOf(3) } // months
 
-    remember { LocalDate.now().plusWeeks(1) }
-    val minStartDate = remember { LocalDate.now().minusDays(1) } // Allow starting yesterday
+    var selectedMode by remember { mutableStateOf("exam") }
+    var selectedDuration by remember { mutableStateOf(3) }
 
-    // Enhanced responsive utilities
+    val minStartDate = remember { LocalDate.now().minusDays(1) }
     val typography = responsiveOnboardingTypography()
     val heights = responsiveHeights()
     val isVerySmall = isVerySmallScreen()
-    val deviceProfile = rememberDeviceProfile()
-    val adaptiveSizing = adaptiveComponentSizing()
+    rememberDeviceProfile()
+    adaptiveComponentSizing()
     adaptiveLayoutConfig()
     adaptiveFontScale()
 
-    // Calculate study period
-    val studyPeriod = remember(startDate, examDate, selectedMode, selectedDuration) {
-        val period = if (selectedMode == "exam") {
-            java.time.Period.between(startDate, examDate)
-        } else {
-            java.time.Period.ofMonths(selectedDuration)
-        }
-        // Ensure period is not negative
-        if (period.isNegative) java.time.Period.ofDays(1) else period
-    }
-
-    // Calculate end date for duration mode
-    val calculatedEndDate = remember(startDate, selectedDuration, selectedMode) {
+    val finalEndDate = remember(startDate, examDate, selectedMode, selectedDuration) {
         if (selectedMode == "duration") {
             startDate.plusMonths(selectedDuration.toLong())
         } else {
@@ -411,404 +434,636 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
         }
     }
 
-    val finalEndDate = if (selectedMode == "duration") calculatedEndDate else examDate
+    val studyPeriod = remember(startDate, finalEndDate) {
+        val period = java.time.Period.between(startDate, finalEndDate)
+        if (period.isNegative) java.time.Period.ofDays(1) else period
+    }
 
-    val datePickerHeight = remember(deviceProfile, adaptiveSizing) {
-        if (deviceProfile.isLandscape) {
-            (adaptiveSizing.datePicker + 80.dp).coerceAtLeast(340.dp)
+    val totalWeeks = remember(startDate, finalEndDate) {
+        maxOf(0L, ChronoUnit.WEEKS.between(startDate, finalEndDate)).toInt()
+    }
+
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, MMM dd") }
+    val fullFormatter = remember { DateTimeFormatter.ofPattern("MMM dd, yyyy") }
+
+    val totalMonths = remember(studyPeriod) { (studyPeriod.years * 12) + studyPeriod.months }
+    val durationLabel = remember(totalMonths, studyPeriod) {
+        buildString {
+            if (totalMonths > 0) {
+                append("$totalMonths month")
+                if (totalMonths != 1) append('s')
+            }
+            if (studyPeriod.days > 0) {
+                if (isNotEmpty()) append(", ")
+                append("${studyPeriod.days} day")
+                if (studyPeriod.days != 1) append('s')
+            }
+            if (isEmpty()) append("Less than a week")
+        }
+    }
+    val weeksLabel = remember(totalWeeks) {
+        if (totalWeeks > 0) {
+            "$totalWeeks week" + if (totalWeeks != 1) "s" else ""
         } else {
-            (adaptiveSizing.datePicker + 80.dp).coerceAtLeast(440.dp)
+            "Less than a week"
         }
     }
 
-    val screenSize = rememberScreenSize()
-    val screenWidth = rememberScreenWidth()
-    340.dp
-    remember(screenSize, screenWidth) {
-        when (screenSize) {
-            ScreenSize.Mobile -> (screenWidth - 32.dp).coerceAtLeast(340.dp)
-            ScreenSize.Tablet -> maxOf(screenWidth * 0.75f, 520.dp)
-            ScreenSize.Desktop -> 720.dp
+    val suggestion = remember(totalWeeks) { plannerSuggestionForWeeks(totalWeeks) }
+
+    var showStartPicker by remember { mutableStateOf(false) }
+    var showEndPicker by remember { mutableStateOf(false) }
+
+    val updateExamDate: (LocalDate) -> Unit = remember(selectedMode, startDate) {
+        { proposed ->
+            val coerced = if (proposed.isBefore(startDate.plusWeeks(1))) {
+                startDate.plusWeeks(1)
+            } else {
+                proposed
+            }
+            vm.setExamDate(coerced)
+            if (selectedMode == "duration") {
+                val months = ((ChronoUnit.DAYS.between(startDate, coerced) / 30.0).roundToInt()).coerceIn(1, 12)
+                selectedDuration = months
+            }
         }
     }
+
+    val quickDurationWeeks = listOf(4, 6, 8, 12)
 
     ResponsiveLazyColumn {
         item {
             ResponsiveContainer {
-                Text(
-                    text = "Plan Your Study Schedule",
-                    style = typography.stepTitle,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        // Mode Selection
-        item {
-            ResponsiveCard(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ) {
-                Text(
-                    text = "Study Plan Mode",
-                    style = typography.cardTitle,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                ResponsiveChipRow {
-                    AssistChip(
-                        onClick = { selectedMode = "exam" },
-                        label = {
-                            Text(
-                                "Target Exam Date",
-                                style = typography.chipText
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.CalendarToday,
-                                contentDescription = null,
-                                modifier = Modifier.size(if (isVerySmall) 16.dp else 18.dp)
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-                            containerColor = if (selectedMode == "exam")
-                                com.mtlc.studyplan.ui.theme.DesignTokens.PrimaryContainer
-                            else MaterialTheme.colorScheme.surface,
-                            labelColor = if (selectedMode == "exam")
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurface,
-                            leadingIconContentColor = if (selectedMode == "exam")
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                    AssistChip(
-                        onClick = {
-                            selectedMode = "duration"
-                            // Immediately update exam date when switching to duration mode
-                            vm.setExamDate(startDate.plusMonths(selectedDuration.toLong()))
-                        },
-                        label = {
-                            Text(
-                                "Study Duration",
-                                style = typography.chipText
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Schedule,
-                                contentDescription = null,
-                                modifier = Modifier.size(if (isVerySmall) 16.dp else 18.dp)
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-                            containerColor = if (selectedMode == "duration")
-                                com.mtlc.studyplan.ui.theme.DesignTokens.PrimaryContainer
-                            else MaterialTheme.colorScheme.surface,
-                            labelColor = if (selectedMode == "duration")
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurface,
-                            leadingIconContentColor = if (selectedMode == "duration")
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
-            }
-        }
-
-        // Start Date Selection
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainer),
-                shape = RoundedCornerShape(12.dp)
-            ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Start Date",
-                        style = typography.cardTitle,
-                        color = com.mtlc.studyplan.ui.theme.DesignTokens.SecondaryContainerForeground,
-                        modifier = Modifier.fillMaxWidth()
+                        text = "Plan Your Study Schedule",
+                        style = typography.stepTitle,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-
-                    val startDateState = rememberDatePickerState(
-                        initialSelectedDateMillis = startDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                        yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1)
+                    Text(
+                        text = "Pick your prep window and we rebalance the workload instantly.",
+                        style = typography.cardSubtitle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-
-                    // Calendar with padding to show all days including Sunday
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp)
-                    ) {
-                        DatePicker(
-                            state = startDateState,
-                            title = null,
-                            showModeToggle = false,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(datePickerHeight)
-                        )
-                    }
-
-                    LaunchedEffect(startDateState.selectedDateMillis) {
-                        startDateState.selectedDateMillis?.let { millis ->
-                            val newStartDate = java.time.Instant.ofEpochMilli(millis)
-                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                            if (!newStartDate.isBefore(minStartDate)) {
-                                vm.setStartDate(newStartDate)
-                            }
-                        }
-                    }
                 }
             }
         }
 
-        // End Date or Duration Selection
         item {
-            if (selectedMode == "exam") {
-                // Exam Date Selection
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "YDS Exam Date",
-                            style = typography.cardTitle,
-                            color = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainerForeground,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        val examDateState = rememberDatePickerState(
-                            initialSelectedDateMillis = examDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                            yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 2),
-                            selectableDates = object : SelectableDates {
-                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                    val date = java.time.Instant.ofEpochMilli(utcTimeMillis)
-                                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                                    return !date.isBefore(startDate.plusWeeks(1))
-                                }
-                            }
-                        )
-
-                        // Calendar with padding to show all days including Sunday
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp)
-                        ) {
-                            DatePicker(
-                                state = examDateState,
-                                title = null,
-                                showModeToggle = false,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(datePickerHeight)
-                            )
-                        }
-
-                        LaunchedEffect(examDateState.selectedDateMillis) {
-                            examDateState.selectedDateMillis?.let { millis ->
-                                val newExamDate = java.time.Instant.ofEpochMilli(millis)
-                                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                                if (!newExamDate.isBefore(startDate.plusWeeks(1)) && selectedMode == "exam") {
-                                    vm.setExamDate(newExamDate)
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Duration Selection
-                ResponsiveCard(
-                    containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainer
-                ) {
-                    Text(
-                        text = "Study Duration",
-                        style = typography.cardTitle,
-                        color = com.mtlc.studyplan.ui.theme.DesignTokens.TertiaryContainerForeground,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+            PlannerGradientCard(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "Planning mode",
+                    style = typography.cardTitle,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "Countdown to an exam date or choose a fixed duration — switch anytime.",
+                    style = typography.cardSubtitle,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                )
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    SegmentedButton(
+                        selected = selectedMode == "exam",
+                        onClick = { selectedMode = "exam" },
+                        shape = SegmentedButtonDefaults.itemShape(0, 2),
+                        icon = { Icon(Icons.Filled.CalendarToday, contentDescription = null) },
+                        label = { Text("Target exam date") }
                     )
-
-                    Text(
-                        text = "$selectedDuration month${if (selectedDuration > 1) "s" else ""}",
-                        style = typography.previewValue,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Slider(
-                        value = selectedDuration.toFloat(),
-                        onValueChange = { newValue ->
-                            selectedDuration = newValue.toInt()
-                            // Immediately update exam date when slider changes
-                            if (selectedMode == "duration") {
-                                vm.setExamDate(startDate.plusMonths(newValue.toLong()))
-                            }
+                    SegmentedButton(
+                        selected = selectedMode == "duration",
+                        onClick = {
+                            selectedMode = "duration"
+                            updateExamDate(startDate.plusMonths(selectedDuration.toLong()))
                         },
-                        valueRange = 1f..6f,
-                        steps = 4,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(heights.slider)
+                        shape = SegmentedButtonDefaults.itemShape(1, 2),
+                        icon = { Icon(Icons.Filled.Schedule, contentDescription = null) },
+                        label = { Text("Study duration") }
+                    )
+                }
+            }
+        }
+
+        item {
+            PlannerGradientCard(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                gradient = plannerTonalGradient()
+            ) {
+                Text(
+                    text = "Schedule period",
+                    style = typography.cardTitle,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Adjust start and end dates without leaving onboarding.",
+                    style = typography.cardSubtitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                PlannerDateField(
+                    label = "Start date",
+                    value = startDate.format(dateFormatter),
+                    typography = typography,
+                    icon = Icons.Filled.Flag,
+                    onClick = { showStartPicker = true }
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                )
+
+                if (selectedMode == "exam") {
+                    PlannerDateField(
+                        label = "Exam date",
+                        value = examDate.format(dateFormatter),
+                        typography = typography,
+                        icon = Icons.Filled.Event,
+                        supportingText = "Minimum one week after your start date",
+                        onClick = { showEndPicker = true }
+                    )
+                } else {
+                    PlannerDateField(
+                        label = "End date",
+                        value = finalEndDate.format(dateFormatter),
+                        typography = typography,
+                        icon = Icons.Filled.CheckCircle,
+                        supportingText = "$selectedDuration month" + if (selectedDuration != 1) "s" else "",
+                        onClick = { showEndPicker = true }
                     )
 
+                    Text(
+                        text = "Quick picks",
+                        style = typography.cardSubtitle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                     ResponsiveChipRow {
-                        listOf(1, 3, 6).forEach { months ->
+                        quickDurationWeeks.forEach { weeks ->
+                            val isClose = abs(totalWeeks - weeks) <= 1
                             AssistChip(
-                                onClick = {
-                                    selectedDuration = months
-                                    // Immediately update exam date when duration changes
-                                    if (selectedMode == "duration") {
-                                        vm.setExamDate(startDate.plusMonths(months.toLong()))
-                                    }
-                                },
-                                label = {
-                                    Text(
-                                        "${months}mo",
-                                        style = typography.chipText
+                                onClick = { updateExamDate(startDate.plusWeeks(weeks.toLong())) },
+                                label = { Text("${weeks}w") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Bolt,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(if (isVerySmall) 16.dp else 18.dp)
                                     )
                                 },
-                                modifier = Modifier.weight(1f),
-                                colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-                                    containerColor = if (selectedDuration == months)
-                                        com.mtlc.studyplan.ui.theme.DesignTokens.PrimaryContainer
-                                    else MaterialTheme.colorScheme.surface
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = if (isClose) {
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                    } else {
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                                    },
+                                    labelColor = if (isClose) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
+                                    leadingIconContentColor = if (isClose) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    }
                                 )
                             )
                         }
                     }
 
-                    // Update exam date for duration mode
-                    LaunchedEffect(selectedDuration, startDate, selectedMode) {
-                        if (selectedMode == "duration") {
-                            vm.setExamDate(startDate.plusMonths(selectedDuration.toLong()))
-                        }
-                    }
+                    Slider(
+                        value = selectedDuration.toFloat(),
+                        onValueChange = { newValue ->
+                            val coerced = newValue.roundToInt().coerceIn(1, 12)
+                            if (coerced != selectedDuration) {
+                                selectedDuration = coerced
+                                updateExamDate(startDate.plusMonths(coerced.toLong()))
+                            }
+                        },
+                        valueRange = 1f..12f,
+                        steps = 10,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(heights.slider)
+                            .padding(top = 12.dp)
+                    )
                 }
             }
         }
 
-        // Study Plan Preview
         item {
-            ResponsiveCard(
-                containerColor = com.mtlc.studyplan.ui.theme.DesignTokens.SuccessContainer
+            PlannerGradientCard(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                gradient = plannerInfoGradient()
             ) {
                 Text(
-                    text = "Study Plan Preview",
+                    text = "Study plan preview",
                     style = typography.cardTitle,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
-                if (isVerySmall) {
-                    // Stack items vertically on very small screens
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        StudyPlanPreviewItem(
-                            label = "Start Date",
-                            value = startDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                            typography = typography
-                        )
-                        StudyPlanPreviewItem(
-                            label = "End Date",
-                            value = finalEndDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                            typography = typography
-                        )
-                        StudyPlanPreviewItem(
-                            label = "Duration",
-                            value = "${studyPeriod.months} months, ${studyPeriod.days} days",
-                            typography = typography
-                        )
-                        StudyPlanPreviewItem(
-                            label = "Total Weeks",
-                            value = "${(studyPeriod.toTotalMonths() * 4.3).toInt()} weeks",
-                            typography = typography
-                        )
+                StudyPlanPreviewGrid(
+                    startLabel = startDate.format(fullFormatter),
+                    endLabel = finalEndDate.format(fullFormatter),
+                    durationLabel = durationLabel,
+                    weeksLabel = weeksLabel,
+                    typography = typography,
+                    isCompact = isVerySmall
+                )
+                PlannerSuggestionCard(
+                    suggestion = suggestion,
+                    typography = typography,
+                    onExtendByWeeks = { extraWeeks ->
+                        updateExamDate(finalEndDate.plusWeeks(extraWeeks.toLong()))
                     }
-                } else {
-                    // Use rows on larger screens
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            StudyPlanPreviewItem(
-                                label = "Start Date",
-                                value = startDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                                typography = typography
-                            )
-                            StudyPlanPreviewItem(
-                                label = "End Date",
-                                value = finalEndDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                                typography = typography
-                            )
-                        }
+                )
+            }
+        }
+    }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            StudyPlanPreviewItem(
-                                label = "Duration",
-                                value = "${studyPeriod.months} months, ${studyPeriod.days} days",
-                                typography = typography
-                            )
-                            StudyPlanPreviewItem(
-                                label = "Total Weeks",
-                                value = "${(studyPeriod.toTotalMonths() * 4.3).toInt()} weeks",
-                                typography = typography
-                            )
-                        }
-                    }
+    if (showStartPicker) {
+        val startPickerState = rememberDatePickerState(
+            initialSelectedDateMillis = startDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 1),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val date = java.time.Instant.ofEpochMilli(utcTimeMillis)
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                    return !date.isBefore(minStartDate)
                 }
+            }
+        )
+        DatePickerDialog(
+            onDismissRequest = { showStartPicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        startPickerState.selectedDateMillis?.let { millis ->
+                            val newStart = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                            vm.setStartDate(newStart)
+                            if (selectedMode == "duration") {
+                                vm.setExamDate(newStart.plusMonths(selectedDuration.toLong()))
+                            } else if (examDate.isBefore(newStart.plusWeeks(1))) {
+                                vm.setExamDate(newStart.plusWeeks(1))
+                            }
+                        }
+                        showStartPicker = false
+                    }
+                ) {
+                    Text("Done")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showStartPicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = startPickerState,
+                showModeToggle = false
+            )
+        }
+    }
 
-                // Validation warnings
-                when {
-                    studyPeriod.toTotalMonths() < 1 -> {
-                        Text(
-                            text = "⚠️ Very short study period. Consider extending for better preparation.",
-                            style = typography.cardSubtitle,
-                            color = com.mtlc.studyplan.ui.theme.DesignTokens.Warning,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+    if (showEndPicker) {
+        val endPickerState = rememberDatePickerState(
+            initialSelectedDateMillis = finalEndDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            yearRange = IntRange(LocalDate.now().year, LocalDate.now().year + 2),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val date = java.time.Instant.ofEpochMilli(utcTimeMillis)
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                    return !date.isBefore(startDate.plusWeeks(1))
+                }
+            }
+        )
+        DatePickerDialog(
+            onDismissRequest = { showEndPicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        endPickerState.selectedDateMillis?.let { millis ->
+                            val newDate = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                            updateExamDate(newDate)
+                        }
+                        showEndPicker = false
                     }
-                    studyPeriod.toTotalMonths() > 12 -> {
-                        Text(
-                            text = "📚 Long study period. Great for thorough preparation!",
-                            style = typography.cardSubtitle,
-                            color = com.mtlc.studyplan.ui.theme.DesignTokens.Success,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    studyPeriod.isNegative -> {
-                        Text(
-                            text = "❌ Invalid date range. Please check your start and end dates.",
-                            style = typography.cardSubtitle,
-                            color = com.mtlc.studyplan.ui.theme.DesignTokens.Error,
-                            modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Done")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEndPicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = endPickerState,
+                showModeToggle = false
+            )
+        }
+    }
+
+    LaunchedEffect(selectedDuration, startDate, selectedMode) {
+        if (selectedMode == "duration") {
+            vm.setExamDate(startDate.plusMonths(selectedDuration.toLong()))
+        }
+    }
+}
+
+private val PlannerGradientStart = Color(0xFF67AAC8)
+private val PlannerGradientMid = Color(0xFF84AB86)
+private val PlannerGradientEnd = Color(0xFFCC8974)
+
+@Composable
+private fun plannerPrimaryGradient(): Brush {
+    val surface = MaterialTheme.colorScheme.surface
+    val colors = listOf(
+        lerp(PlannerGradientStart, surface, 0.25f),
+        lerp(PlannerGradientMid, surface, 0.3f),
+        lerp(PlannerGradientEnd, surface, 0.2f)
+    )
+    return Brush.linearGradient(colors = colors, start = Offset.Zero, end = Offset.Infinite)
+}
+
+@Composable
+private fun plannerTonalGradient(): Brush {
+    val surface = MaterialTheme.colorScheme.surface
+    val colors = listOf(
+        lerp(PlannerGradientStart, surface, 0.55f),
+        lerp(PlannerGradientMid, surface, 0.6f),
+        lerp(PlannerGradientEnd, surface, 0.55f)
+    )
+    return Brush.linearGradient(colors = colors, start = Offset.Zero, end = Offset.Infinite)
+}
+
+@Composable
+private fun plannerInfoGradient(): Brush {
+    val surface = MaterialTheme.colorScheme.surface
+    val colors = listOf(
+        lerp(PlannerGradientStart, surface, 0.7f),
+        lerp(PlannerGradientMid, surface, 0.75f),
+        lerp(PlannerGradientEnd, surface, 0.7f)
+    )
+    return Brush.linearGradient(colors = colors, start = Offset.Zero, end = Offset.Infinite)
+}
+
+@Composable
+private fun PlannerGradientCard(
+    modifier: Modifier = Modifier,
+    gradient: Brush = plannerPrimaryGradient(),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val shape = RoundedCornerShape(24.dp)
+    val outline = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = Color.Transparent,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        Box(
+            modifier = Modifier
+                .background(gradient, shape)
+                .border(1.dp, outline, shape)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = content
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlannerDateField(
+    label: String,
+    value: String,
+    typography: OnboardingTypography,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    supportingText: String? = null,
+    icon: ImageVector = Icons.Filled.CalendarToday
+) {
+    val shape = RoundedCornerShape(18.dp)
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .clickable(onClick = onClick),
+        shape = shape,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+        tonalElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = label,
+                    style = typography.cardSubtitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = value,
+                    style = typography.previewValue.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                supportingText?.let {
+                    Text(
+                        text = it,
+                        style = typography.cardSubtitle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StudyPlanPreviewGrid(
+    startLabel: String,
+    endLabel: String,
+    durationLabel: String,
+    weeksLabel: String,
+    typography: OnboardingTypography,
+    isCompact: Boolean
+) {
+    if (isCompact) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            StudyPlanPreviewItem("Start date", startLabel, typography)
+            StudyPlanPreviewItem("End date", endLabel, typography)
+            StudyPlanPreviewItem("Duration", durationLabel, typography)
+            StudyPlanPreviewItem("Total weeks", weeksLabel, typography)
+        }
+    } else {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                StudyPlanPreviewItem(
+                    label = "Start date",
+                    value = startLabel,
+                    typography = typography,
+                    modifier = Modifier.weight(1f)
+                )
+                StudyPlanPreviewItem(
+                    label = "End date",
+                    value = endLabel,
+                    typography = typography,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                StudyPlanPreviewItem(
+                    label = "Duration",
+                    value = durationLabel,
+                    typography = typography,
+                    modifier = Modifier.weight(1f)
+                )
+                StudyPlanPreviewItem(
+                    label = "Total weeks",
+                    value = weeksLabel,
+                    typography = typography,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+private enum class PlannerSuggestionTone { Warning, Info, Success }
+
+private data class PlannerSuggestion(
+    val tone: PlannerSuggestionTone,
+    val headline: String,
+    val body: String,
+    val icon: ImageVector,
+    val recommendedWeeks: List<Int>
+)
+
+private fun plannerSuggestionForWeeks(weeks: Int): PlannerSuggestion {
+    return when {
+        weeks <= 4 -> PlannerSuggestion(
+            tone = PlannerSuggestionTone.Warning,
+            headline = "Four weeks is a sprint",
+            body = "Extend your plan by 2–4 weeks or schedule intensive weekend sessions to cover all sections.",
+            icon = Icons.Filled.WarningAmber,
+            recommendedWeeks = listOf(2, 4)
+        )
+        weeks in 5..7 -> PlannerSuggestion(
+            tone = PlannerSuggestionTone.Info,
+            headline = "Tight but doable",
+            body = "Aim for two deep practice blocks each week. Adding a 2-week buffer keeps revision realistic.",
+            icon = Icons.Filled.Lightbulb,
+            recommendedWeeks = listOf(2)
+        )
+        weeks >= 20 -> PlannerSuggestion(
+            tone = PlannerSuggestionTone.Success,
+            headline = "Great runway",
+            body = "Use the extra time for full mocks and spaced repetition. Keep checking weak topics monthly.",
+            icon = Icons.Filled.TaskAlt,
+            recommendedWeeks = emptyList()
+        )
+        else -> PlannerSuggestion(
+            tone = PlannerSuggestionTone.Info,
+            headline = "Balanced schedule",
+            body = "Stay consistent with weekly checkpoints. Add a buffer week if you expect travel or busy periods.",
+            icon = Icons.Filled.AutoAwesome,
+            recommendedWeeks = listOf(1)
+        )
+    }
+}
+
+@Composable
+private fun PlannerSuggestionCard(
+    suggestion: PlannerSuggestion,
+    typography: OnboardingTypography,
+    onExtendByWeeks: (Int) -> Unit
+) {
+    val (containerColor, contentColor) = when (suggestion.tone) {
+        PlannerSuggestionTone.Warning -> DesignTokens.Warning.copy(alpha = 0.18f) to DesignTokens.Warning
+        PlannerSuggestionTone.Info -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f) to MaterialTheme.colorScheme.onPrimaryContainer
+        PlannerSuggestionTone.Success -> DesignTokens.Success.copy(alpha = 0.18f) to DesignTokens.Success
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = containerColor,
+        tonalElevation = 0.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = suggestion.icon,
+                    contentDescription = null,
+                    tint = contentColor
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = suggestion.headline,
+                        style = typography.cardTitle,
+                        color = contentColor
+                    )
+                    Text(
+                        text = suggestion.body,
+                        style = typography.cardSubtitle,
+                        color = contentColor.copy(alpha = 0.9f)
+                    )
+                }
+            }
+
+            if (suggestion.recommendedWeeks.isNotEmpty()) {
+                ResponsiveChipRow {
+                    suggestion.recommendedWeeks.forEach { weeks ->
+                        AssistChip(
+                            onClick = { onExtendByWeeks(weeks) },
+                            label = { Text("Add ${weeks}w") },
+                            leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent,
+                                labelColor = contentColor,
+                                leadingIconContentColor = contentColor
+                            ),
+                            border = BorderStroke(1.dp, contentColor.copy(alpha = 0.4f))
                         )
                     }
                 }
@@ -821,9 +1076,10 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
 private fun StudyPlanPreviewItem(
     label: String,
     value: String,
-    typography: OnboardingTypography
+    typography: OnboardingTypography,
+    modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(modifier = modifier) {
         Text(
             text = label,
             style = typography.cardSubtitle,
@@ -831,14 +1087,11 @@ private fun StudyPlanPreviewItem(
         )
         Text(
             text = value,
-            style = typography.cardSubtitle.copy(
-                fontWeight = FontWeight.Medium
-            ),
+            style = typography.cardSubtitle.copy(fontWeight = FontWeight.Medium),
             color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
-
 
 @Composable
 private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
@@ -867,54 +1120,64 @@ private fun OnboardingStepAvailability(vm: OnboardingViewModel) {
                 DayOfWeek.entries
                     .sortedBy { it.value }
                     .forEach { day ->
-                        val label = day.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                        val value = (availability[day] ?: 0).coerceIn(0, 180)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = label,
-                                style = typography.sliderLabel
-                            )
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                tonalElevation = 0.dp
-                            ) {
-                                Text(
-                                    text = "$value min",
-                                    style = typography.sliderLabel,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                                )
+                        val label = day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                        val minutes = (availability[day] ?: 0).coerceIn(0, 180)
+                        AvailabilityRow(
+                            label = label,
+                            minutes = minutes,
+                            typography = typography,
+                            sliderColors = sliderColors,
+                            sliderHeight = sliderHeight,
+                            onMinutesChanged = { snapped ->
+                                vm.setAvailability(day, snapped)
                             }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Slider(
-                                value = value.toFloat(),
-                                onValueChange = { newValue ->
-                                    vm.setAvailability(day, newValue.toInt())
-                                },
-                                valueRange = 0f..180f,
-                                colors = sliderColors,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(sliderHeight)
-                            )
-                        }
+                        )
                     }
             }
         }
+    }
+}
+
+@Composable
+private fun AvailabilityRow(
+    label: String,
+    minutes: Int,
+    typography: OnboardingTypography,
+    sliderColors: SliderColors,
+    sliderHeight: Dp,
+    onMinutesChanged: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = label,
+            style = typography.sliderLabel,
+            modifier = Modifier.widthIn(min = 32.dp)
+        )
+        Slider(
+            value = minutes.toFloat(),
+            onValueChange = { newValue ->
+                val snapped = (newValue / 15f).roundToInt().coerceIn(0, 12) * 15
+                onMinutesChanged(snapped)
+            },
+            valueRange = 0f..180f,
+            steps = 11,
+            colors = sliderColors,
+            modifier = Modifier
+                .weight(1f)
+                .height(sliderHeight)
+        )
+        Text(
+            text = "$minutes min",
+            style = typography.sliderLabel,
+            textAlign = TextAlign.End,
+            modifier = Modifier.widthIn(min = 56.dp)
+        )
     }
 }
 
@@ -976,16 +1239,32 @@ private fun SkillRow(
     typography: OnboardingTypography,
     sliderHeight: Dp
 ) {
-    Text(
-        "$label: ${"%.1f".format(value)}x",
-        style = typography.sliderLabel
-    )
-    Slider(
-        value = value,
-        onValueChange = onChange,
-        valueRange = 0.5f..1.5f,
-        steps = 10,
-        modifier = Modifier.height(sliderHeight)
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = label,
+            style = typography.sliderLabel,
+            modifier = Modifier.widthIn(min = 80.dp)
+        )
+        Slider(
+            value = value,
+            onValueChange = onChange,
+            valueRange = 0.5f..1.5f,
+            steps = 10,
+            modifier = Modifier
+                .weight(1f)
+                .height(sliderHeight)
+        )
+        Text(
+            text = "${"%.1f".format(value)}x",
+            style = typography.sliderLabel,
+            textAlign = TextAlign.End,
+            modifier = Modifier.widthIn(min = 48.dp)
+        )
+    }
 }
-

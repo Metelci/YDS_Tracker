@@ -90,6 +90,7 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
     
     // ComponentCallbacks2 implementation for memory management
     
+    @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
         when (level) {
             ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE -> {
@@ -127,6 +128,7 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
         // Handle configuration changes (orientation, font scale, etc.)
     }
     
+    @Deprecated("Deprecated in Java")
     override fun onLowMemory() {
         // System is running low on memory, release everything we can
         handleCriticalMemoryPressure()

@@ -5,7 +5,6 @@ import android.content.ComponentCallbacks2
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.mtlc.studyplan.architecture.ArchitectureOptimizer
-import com.mtlc.studyplan.architecture.FeatureModuleManager
 import com.mtlc.studyplan.di.koinAppModule
 import com.mtlc.studyplan.di.koinDatabaseModule
 import com.mtlc.studyplan.di.koinEventBusModule
@@ -62,6 +61,7 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
         architectureOptimizer.onTrimMemory(level)
     }
     
+    @Deprecated("Deprecated in Java")
     override fun onLowMemory() {
         super.onLowMemory()
         // System is running critically low on memory

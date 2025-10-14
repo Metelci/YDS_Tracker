@@ -56,6 +56,7 @@ import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
+import com.mtlc.studyplan.navigation.NavigationHelper
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.today.todayGraph
@@ -125,6 +126,8 @@ fun AppNavHost(
     LaunchedEffect(Unit) {
         // Smart content prefetch worker removed with progress functionality
     }
+    val navigationHelper = remember { NavigationHelper() }
+
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, stringResource(R.string.nav_home)),
         Triple("tasks", Icons.Filled.CheckCircle, stringResource(R.string.nav_tasks)),
@@ -133,12 +136,12 @@ fun AppNavHost(
     )
     Scaffold(
         bottomBar = {
-            if (bottomBarEnabled) {
-                val currentBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = currentBackStackEntry?.destination?.route ?: "home"
-
+            val currentBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = currentBackStackEntry?.destination?.route
+            if (navigationHelper.shouldShowBottomNav(currentRoute, bottomBarEnabled)) {
+                val resolvedRoute = navigationHelper.getDefaultRouteIfInvalid(currentRoute)
                 com.mtlc.studyplan.ui.components.StudyBottomNav(
-                    currentRoute = currentRoute,
+                    currentRoute = resolvedRoute,
                     tabs = tabs,
                     onTabSelected = { route ->
                         if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)

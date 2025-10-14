@@ -1,14 +1,14 @@
 package com.mtlc.studyplan.social
 
 // import androidx.compose.material3.FloatingActionButton
-import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -77,6 +78,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.auth.AuthRepository
+import com.mtlc.studyplan.auth.FriendsRepository
 import com.mtlc.studyplan.data.social.Friend
 import com.mtlc.studyplan.data.social.PersistentSocialRepository
 import com.mtlc.studyplan.data.social.SocialProfile
@@ -87,8 +90,6 @@ import com.mtlc.studyplan.social.tabs.AwardsTab
 import com.mtlc.studyplan.social.tabs.FriendsTab
 import com.mtlc.studyplan.social.tabs.ProfileTab
 import com.mtlc.studyplan.social.tabs.RanksTab
-import com.mtlc.studyplan.localization.rememberLanguageManager
-import com.mtlc.studyplan.ui.components.LanguageSwitcher
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
@@ -96,9 +97,6 @@ import com.mtlc.studyplan.utils.AvatarPreview
 import com.mtlc.studyplan.utils.ImageProcessingUtils
 import com.mtlc.studyplan.utils.socialDataStore
 import kotlinx.coroutines.launch
-import com.mtlc.studyplan.auth.AuthRepository
-import com.mtlc.studyplan.auth.FriendsRepository
-import android.content.Intent
 
 // import com.mtlc.studyplan.social.components.AwardNotification
 
@@ -161,7 +159,7 @@ private fun sendFriendInviteEmail(
         val chooserIntent = Intent.createChooser(intent, "Send friend invite via email")
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooserIntent)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         // If no email app is available, fallback to generic share
         val fallbackIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
@@ -215,7 +213,20 @@ fun SocialScreen(
     var friendEmailError by remember { mutableStateOf<String?>(null) }
     var isInviting by remember { mutableStateOf(false) }
 
-        // Avatar upload + preview state
+    val handleInviteClick: () -> Unit = {
+        if (canInviteFriends) {
+            showInviteFriendDialog = true
+        } else {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.social_login_required),
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
+
+    // Avatar upload + preview state
     var showAvatarUploadDialog by remember { mutableStateOf(false) }
     val undoStack = remember { mutableStateListOf<AvatarSnapshot>() }
     val redoStack = remember { mutableStateListOf<AvatarSnapshot>() }
@@ -436,6 +447,20 @@ fun SocialScreen(
 
 
     Scaffold(
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = spacing.md, vertical = spacing.sm)
+            ) {
+                SocialHomeHeader(
+                    canInvite = canInviteFriends,
+                    onInviteClick = handleInviteClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         }
@@ -543,22 +568,7 @@ fun SocialScreen(
                     .padding(horizontal = spacing.md),
                 verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-                SocialHomeHeader(
-                    canInvite = canInviteFriends,
-                    onInviteClick = {
-                        if (canInviteFriends) {
-                            showInviteFriendDialog = true
-                        } else {
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.social_login_required),
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Spacer(modifier = Modifier.height(spacing.md))
                 SocialSegmentedTabs(
                     selected = selectedTab,
                     onTabSelected = { selectedTab = it }
@@ -749,8 +759,8 @@ private fun SocialHomeHeader(
     onInviteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val spacing = LocalSpacing.current
-    val context = LocalContext.current
+    LocalSpacing.current
+    LocalContext.current
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -1143,7 +1153,7 @@ fun ProfileSection(
                                     MaterialTheme.colorScheme.surface,
                                 shape = RoundedCornerShape(12.dp),
                                 border = if (isSelected)
-                                    androidx.compose.foundation.BorderStroke(
+                                    BorderStroke(
                                         2.dp,
                                         MaterialTheme.colorScheme.primary
                                     )

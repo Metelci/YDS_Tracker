@@ -35,7 +35,8 @@
       "Bash(done)",
       "Bash(xmllint:*)",
       "Bash(adb shell pm clear:*)",
-      "Bash(where adb)"
+      "Bash(where adb)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
