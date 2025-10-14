@@ -1,3 +1,12 @@
+## [2.9.55] - 2025-10-16 (hotfix)
+
+### UI
+- **Social hub polish**: Top bar now sits flush with the status bar and tabs hug the header for faster switching.
+- **Onboarding tweaks**: Weekly availability and skill weighting sliders are more compact, and navigation FABs are centered with minimal padding.
+
+### Build
+- Bumped Android versionCode to 87 / versionName 2.9.55.
+
 ## [2.9.54] - 2025-10-12 (code quality & ci/cd)
 
 ### Code Quality & CI/CD Improvements
@@ -736,7 +745,6 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
-
 
 
 

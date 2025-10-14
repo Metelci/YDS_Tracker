@@ -1,7 +1,7 @@
  # 🎓 Road to YDS - English Exam Preparation App
 
   [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-  [![Version](https://img.shields.io/badge/version-2.9.39-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+  [![Version](https://img.shields.io/badge/version-2.9.55-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
   [![Test Coverage](https://img.shields.io/badge/coverage-1%25-orange.svg)](https://github.com/Metelci/YDS_Tracker/actions)
   [![Tests](https://img.shields.io/badge/tests-156%20passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
   [![Code Quality](https://img.shields.io/badge/detekt-0%20issues-brightgreen.svg)](https://detekt.dev/)
@@ -53,6 +53,7 @@
   - **Dark Mode Support**: Comfortable studying in any lighting
   - **Accessibility Features**: Screen reader support, high contrast options
   - **Smooth Animations**: Fluid transitions and micro-interactions
+  - **Polished Navigation**: Social hub header tightened with tabs and onboarding availability sliders made more compact for quicker setup
 
   ## 🛠️ Tech Stack
 

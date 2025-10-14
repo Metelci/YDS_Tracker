@@ -452,7 +452,8 @@ fun SocialScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(horizontal = spacing.md, vertical = spacing.sm)
+                    .padding(horizontal = spacing.md)
+                    .padding(top = spacing.xs / 4)
             ) {
                 SocialHomeHeader(
                     canInvite = canInviteFriends,
@@ -566,8 +567,8 @@ fun SocialScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = spacing.md)
-                    .padding(top = spacing.xs),
-                verticalArrangement = Arrangement.spacedBy(spacing.md)
+                    .padding(top = spacing.xs / 2),
+                verticalArrangement = Arrangement.spacedBy(spacing.sm)
             ) {
                 SocialSegmentedTabs(
                     selected = selectedTab,
