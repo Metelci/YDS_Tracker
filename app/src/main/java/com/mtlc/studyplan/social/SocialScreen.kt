@@ -565,10 +565,10 @@ fun SocialScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = spacing.md),
+                    .padding(horizontal = spacing.md)
+                    .padding(top = spacing.xs),
                 verticalArrangement = Arrangement.spacedBy(spacing.md)
             ) {
-                Spacer(modifier = Modifier.height(spacing.md))
                 SocialSegmentedTabs(
                     selected = selectedTab,
                     onTabSelected = { selectedTab = it }
