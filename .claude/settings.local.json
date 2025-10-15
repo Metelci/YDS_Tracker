@@ -36,7 +36,8 @@
       "Bash(xmllint:*)",
       "Bash(adb shell pm clear:*)",
       "Bash(where adb)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(timeout 120 ./gradlew:*)"
     ],
     "deny": [],
     "ask": []

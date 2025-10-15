@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -39,7 +40,7 @@ fun EmptyState(
         verticalArrangement = Arrangement.Center
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null)
+            Icon(icon, contentDescription = title)
             Spacer(Modifier.height(LocalSpacing.current.md))
         }
         Text(title, style = MaterialTheme.typography.titleLarge)
@@ -70,7 +71,7 @@ fun ErrorState(
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = null
+            contentDescription = stringResource(R.string.cd_error)
         )
         Spacer(Modifier.height(LocalSpacing.current.md))
         Text(title, style = MaterialTheme.typography.titleLarge)

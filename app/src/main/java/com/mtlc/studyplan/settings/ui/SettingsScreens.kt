@@ -139,7 +139,7 @@ fun SettingsScreen(
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = null, tint = DesignTokens.Primary)
+                        Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Navigation", tint = DesignTokens.Primary)
                         Spacer(Modifier.width(8.dp))
                         Text("Navigation", fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
                     }
@@ -175,7 +175,7 @@ fun SettingsScreen(
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = DesignTokens.Error),
                 border = BorderStroke(1.dp, DesignTokens.Error)
             ) {
-                Icon(Icons.Outlined.Celebration, contentDescription = null, tint = DesignTokens.Error)
+                Icon(Icons.Outlined.Celebration, contentDescription = "Reset progress", tint = DesignTokens.Error)
                 Spacer(Modifier.width(8.dp))
                 Text("Reset Progress (Danger)")
             }
@@ -321,7 +321,7 @@ private fun SettingToggleRow(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(icon, contentDescription = null, tint = DesignTokens.Primary)
+                Icon(icon, contentDescription = title, tint = DesignTokens.Primary)
                 Spacer(Modifier.width(10.dp))
                 Column {
                     Text(title, fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)

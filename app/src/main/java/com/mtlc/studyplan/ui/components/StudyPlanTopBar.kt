@@ -212,7 +212,7 @@ fun StudyPlanTopBar(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (navigationIcon != null && onNavigationClick != null) {
                         IconButton(onClick = onNavigationClick) {
-                            Icon(imageVector = navigationIcon, contentDescription = null, tint = appearance.iconColor)
+                            Icon(imageVector = navigationIcon, contentDescription = stringResource(R.string.cd_back), tint = appearance.iconColor)
                         }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -290,7 +290,7 @@ fun StudyPlanTopBar(
                         ) {
                             Icon(
                                 imageVector = card.icon,
-                                contentDescription = null,
+                                contentDescription = card.title,
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
@@ -522,7 +522,7 @@ fun TasksHeaderTopBar(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.FlashOn,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_tasks),
                         tint = appearance.titleColor.copy(alpha = 0.25f),
                         modifier = Modifier
                             .padding(end = 10.dp)
@@ -563,7 +563,7 @@ fun TasksHeaderTopBar(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.FlashOn,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_tasks),
                             tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
@@ -613,7 +613,7 @@ fun SocialHeaderTopBar(cards: List<TopBarCard>, modifier: Modifier = Modifier) {
         ) {
             cards.take(4).forEach { card ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Icon(card.icon, null, tint = appearance.titleColor.copy(alpha = 0.85f))
+                    Icon(card.icon, contentDescription = card.title, tint = appearance.titleColor.copy(alpha = 0.85f))
                     Column {
                         Text(card.title, color = appearance.titleColor, fontWeight = FontWeight.SemiBold)
                         Text(card.subtitle, style = MaterialTheme.typography.labelSmall, color = appearance.subtitleColor)

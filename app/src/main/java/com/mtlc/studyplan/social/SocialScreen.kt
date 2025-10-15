@@ -795,7 +795,7 @@ private fun SocialHomeHeader(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.PersonAdd,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_social),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         modifier = Modifier.size(24.dp)
                     )
@@ -838,7 +838,7 @@ private fun SocialHomeHeader(
                         ) {
                             Icon(
                                 Icons.Outlined.PersonAdd,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_invite_friend),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -945,7 +945,7 @@ fun SocialHubTopBar(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.PersonAdd,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_invite_friend),
                             modifier = Modifier.size(18.dp),
                             tint = if (canInvite) Color(0xFF2E7D32) else disabledContent
                         )
@@ -1039,7 +1039,7 @@ fun ProfileSection(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Person,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_profile_icon),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
@@ -1068,7 +1068,7 @@ fun ProfileSection(
                     )
                     if (!editing) {
                         TextButton(onClick = { editing = true; input = profile.username; error = null }) {
-                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = stringResource(R.string.cd_edit), modifier = Modifier.size(16.dp))
                             Text(text = "Edit", modifier = Modifier.padding(start = 6.dp))
                         }
                     }
@@ -1205,7 +1205,7 @@ fun ProfileSection(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Image,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_avatar_upload),
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -1419,7 +1419,7 @@ private fun AvatarPreviewDialog(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Undo,
-                            contentDescription = stringResource(id = R.string.social_avatar_undo_cd)
+                            contentDescription = stringResource(R.string.cd_avatar_undo)
                         )
                     }
                     IconButton(
@@ -1428,7 +1428,7 @@ private fun AvatarPreviewDialog(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Redo,
-                            contentDescription = stringResource(id = R.string.social_avatar_redo_cd)
+                            contentDescription = stringResource(R.string.cd_avatar_redo)
                         )
                     }
                 }
@@ -1569,7 +1569,7 @@ fun AvatarUploadDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Image,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_image),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
@@ -1584,7 +1584,7 @@ fun AvatarUploadDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Person, // Using Person as placeholder for camera
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_person),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))

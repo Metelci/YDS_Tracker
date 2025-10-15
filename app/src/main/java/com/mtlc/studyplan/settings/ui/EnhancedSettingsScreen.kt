@@ -24,7 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.settings.viewmodel.*
 import com.mtlc.studyplan.settings.data.*
@@ -512,7 +514,7 @@ private fun SystemSettings(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Filled.FileDownload, contentDescription = null)
+                    Icon(Icons.Filled.FileDownload, contentDescription = stringResource(R.string.cd_download))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Export Settings")
                 }
@@ -524,7 +526,7 @@ private fun SystemSettings(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Filled.Clear, contentDescription = null)
+                    Icon(Icons.Filled.Clear, contentDescription = stringResource(R.string.cd_close))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Clear Cache")
                 }
@@ -583,7 +585,7 @@ private fun SettingsGradientTopBar(
                     }
                     Icon(
                         imageVector = Icons.Outlined.Settings,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_settings),
                         tint = if (isDarkTheme) {
                             MaterialTheme.colorScheme.onSurface
                         } else {

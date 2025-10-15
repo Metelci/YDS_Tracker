@@ -144,7 +144,7 @@ fun SocialSettingsScreen(onBack: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Info,
-                        contentDescription = null,
+                        contentDescription = "Privacy information",
                         tint = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Spacer(Modifier.width(8.dp))
@@ -239,7 +239,7 @@ private fun NavigationCategoryCard() {
 @Composable
 private fun CategoryCardHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.width(8.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
     }

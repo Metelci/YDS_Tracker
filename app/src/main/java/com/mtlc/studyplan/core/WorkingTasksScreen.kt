@@ -1357,7 +1357,7 @@ private fun PlanTab(
             Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_surface_block"))) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Filled.CalendarToday, contentDescription = stringResource(R.string.cd_calendar), tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.tasks_plan_card_title), fontWeight = FontWeight.SemiBold)
                     }

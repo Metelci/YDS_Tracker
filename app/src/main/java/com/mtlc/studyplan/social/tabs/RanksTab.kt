@@ -58,7 +58,7 @@ fun RanksTab(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_trophy),
                         tint = DesignTokens.Primary
                     )
                     Text(
@@ -73,7 +73,7 @@ fun RanksTab(
                             containerColor = DesignTokens.Surface
                         )
                     ) {
-                        Icon(imageVector = Icons.Outlined.GroupAdd, contentDescription = null)
+                        Icon(imageVector = Icons.Outlined.GroupAdd, contentDescription = stringResource(R.string.cd_invite_friend))
                         Text(
                             text = stringResource(id = R.string.social_invite_friends),
                             modifier = Modifier.padding(start = spacing.xs)
@@ -98,7 +98,7 @@ fun RanksTab(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.EmojiEvents,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_trophy),
                             tint = DesignTokens.Primary
                         )
                         Text(

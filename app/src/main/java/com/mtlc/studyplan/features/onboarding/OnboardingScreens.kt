@@ -531,7 +531,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                         selected = selectedMode == "exam",
                         onClick = { selectedMode = "exam" },
                         shape = SegmentedButtonDefaults.itemShape(0, 2),
-                        icon = { Icon(Icons.Filled.CalendarToday, contentDescription = null) },
+                        icon = { Icon(Icons.Filled.CalendarToday, contentDescription = "Target exam date") },
                         label = { Text("Target exam date") }
                     )
                     SegmentedButton(
@@ -541,7 +541,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                             updateExamDate(startDate.plusMonths(selectedDuration.toLong()))
                         },
                         shape = SegmentedButtonDefaults.itemShape(1, 2),
-                        icon = { Icon(Icons.Filled.Schedule, contentDescription = null) },
+                        icon = { Icon(Icons.Filled.Schedule, contentDescription = "Study duration") },
                         label = { Text("Study duration") }
                     )
                 }
@@ -1057,7 +1057,7 @@ private fun PlannerSuggestionCard(
                         AssistChip(
                             onClick = { onExtendByWeeks(weeks) },
                             label = { Text("Add ${weeks}w") },
-                            leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_add)) },
                             colors = AssistChipDefaults.assistChipColors(
                                 containerColor = Color.Transparent,
                                 labelColor = contentColor,

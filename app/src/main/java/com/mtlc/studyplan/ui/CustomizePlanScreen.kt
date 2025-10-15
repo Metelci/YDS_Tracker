@@ -162,11 +162,11 @@ private fun TaskRow(
             IconButton(onClick = { onToggleHidden(!hidden) }) {
                 Icon(
                     imageVector = if (hidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                    contentDescription = null
+                    contentDescription = if (hidden) "Show task" else "Hide task"
                 )
             }
             IconButton(onClick = onRequestEdit) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                Icon(imageVector = Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit))
             }
         }
     }

@@ -207,7 +207,7 @@ fun TimeframeSelector(
                     label = { Text(timeframe.displayName) },
                     selected = selectedTimeframe == timeframe,
                     leadingIcon = if (selectedTimeframe == timeframe) {
-                        { Icon(Icons.Filled.Check, contentDescription = null, Modifier.size(18.dp)) }
+                        { Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.cd_check), Modifier.size(18.dp)) }
                     } else null
                 )
             }
@@ -701,7 +701,7 @@ fun WeakAreaItem(
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.TrendingDown,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_progress),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(16.dp)
         )
@@ -805,7 +805,7 @@ fun EmptyStateCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = title,
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
