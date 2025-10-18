@@ -24,7 +24,7 @@ fun pastelContainerFor(key: String): Color {
 }
 
 /** Feature-aware pastel palettes for consistent hues by section. */
-enum class FeatureKey { TODAY, ANALYTICS, SETTINGS, TASKS, AUTH, DEFAULT }
+enum class FeatureKey { TODAY, ANALYTICS, SETTINGS, TASKS, DEFAULT }
 
 private val FeaturePalettes: Map<FeatureKey, List<Color>> = mapOf(
     FeatureKey.TODAY to listOf(
@@ -49,11 +49,6 @@ private val FeaturePalettes: Map<FeatureKey, List<Color>> = mapOf(
         DesignTokens.PastelPrussia,
         DesignTokens.PastelLightGray,
         DesignTokens.PastelMint
-    ),
-    FeatureKey.AUTH to listOf(
-        DesignTokens.PastelPrussia,
-        DesignTokens.PastelMint,
-        DesignTokens.PastelLightGray
     ),
     FeatureKey.DEFAULT to listOf(
         DesignTokens.PastelLightGray,
@@ -103,12 +98,6 @@ fun featureFromPackage(pkg: String): FeatureKey {
             "com.mtlc.studyplan.core.weeklyplan",
             "com.mtlc.studyplan.core.tasks"
         ) -> FeatureKey.TASKS
-
-        // Auth
-        startsWith(
-            "com.mtlc.studyplan.auth",
-            "com.mtlc.studyplan.login"
-        ) -> FeatureKey.AUTH
 
         else -> FeatureKey.DEFAULT
     }

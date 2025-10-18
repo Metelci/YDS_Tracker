@@ -78,6 +78,12 @@
     <string name="apply">Apply</string>
     <string name="days_short_suffix">d</string>
 
+    <!-- Study Plan Overview -->
+    <string name="study_overview_title">Study Plan Overview</string>
+    <string name="study_overview_subtitle">Track your YDS preparation progress</string>
+    <string name="study_ready_to_plan">Ready to plan your study session</string>
+    <string name="study_tasks_summary">%1$d tasks &#8226; %2$s</string>
+
     <!-- Awards/Achievements (localized via award_<id>_title/desc) -->
     <!-- Task Completion Milestones -->
     <string name="award_task_starter_title">Getting Started</string>
@@ -642,19 +648,6 @@
     <string name="point_system_desc">Earn points for completing tasks</string>
     <string name="celebration_effects_title">Celebration Effects</string>
     <string name="celebration_effects_desc">Show animations and effects for achievements</string>
-    <string name="not_logged_in">Not logged in</string>
-    <string name="logged_out_successfully">Logged out successfully</string>
-    <string name="logout">Logout</string>
-    <string name="login">Login</string>
-    <string name="email">Email</string>
-    <string name="username">Username</string>
-    <string name="username_hint">3+ characters, letters, numbers, and underscore only</string>
-    <string name="email_required">Email is required</string>
-    <string name="valid_email_required">Please enter a valid email address</string>
-    <string name="username_required">Username is required</string>
-    <string name="username_validation_error">Username must be 3+ characters (letters, numbers, underscore)</string>
-    <string name="logged_in_successfully">Logged in successfully!</string>
-    <string name="login_failed">Login failed: %s</string>
     <string name="reset_progress_danger">Reset Progress (Danger)</string>
     <string name="reset_progress_dialog_message">This will permanently delete all your study progress, achievements, and statistics. You will return to the welcome screen to start fresh. This action cannot be undone.</string>
     <string name="failed_to_reset">Failed to reset. Please try again.</string>
@@ -712,3 +705,5 @@
     <string name="cd_trophy">Trophy</string>
     <string name="cd_error">Error</string>
 </resources>
+
+

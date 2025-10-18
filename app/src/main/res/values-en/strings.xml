@@ -552,7 +552,6 @@
     <string name="study_reminders_title">Study Reminders</string>
     <string name="username">Username</string>
     <string name="username_hint">3+ characters, letters, numbers, and underscore only</string>
-    <string name="username_required">Username is required</string>
     <string name="username_validation_error">Username must be 3+ characters (letters, numbers, underscore)</string>
     <string name="valid_email_required">Please enter a valid email address</string>
     <string name="week_progress">Week Progress</string>

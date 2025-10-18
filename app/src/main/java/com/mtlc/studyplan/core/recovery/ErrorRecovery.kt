@@ -329,12 +329,6 @@ class ErrorRecoveryManager(
     private fun getSecurityRecoveryOptions(): List<RecoveryOption> {
         return listOf(
             RecoveryOption(
-                id = "login_again",
-                title = "Login Again",
-                description = "Re-authenticate and retry",
-                icon = "login"
-            ),
-            RecoveryOption(
                 id = "check_permissions",
                 title = "Check Permissions",
                 description = "Review app permissions",

@@ -467,7 +467,6 @@ private fun getRecoveryOptionIcon(iconName: String): ImageVector {
         "wifi" -> Icons.Default.Wifi
         "delete" -> Icons.Default.Delete
         "restore" -> Icons.Default.Restore
-        "login" -> Icons.Default.Person
         "security" -> Icons.Default.Security
         "edit" -> Icons.Default.Edit
         "restart" -> Icons.Default.RestartAlt

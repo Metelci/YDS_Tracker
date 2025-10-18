@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -101,7 +102,7 @@ fun StudyPlanOverviewScreen(
                             IconButton(onClick = onNavigateBack) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back",
+                                    contentDescription = stringResource(com.mtlc.studyplan.R.string.navigate_up),
                                     tint = Color(0xFF424242)
                                 )
                             }
@@ -110,13 +111,13 @@ fun StudyPlanOverviewScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Text(
-                                    text = "Study Plan Overview",
+                                    text = stringResource(com.mtlc.studyplan.R.string.study_overview_title),
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = Color(0xFF424242)
                                 )
                                 Text(
-                                    text = "Track your YDS preparation progress",
+                                    text = stringResource(com.mtlc.studyplan.R.string.study_overview_subtitle),
                                     fontSize = 14.sp,
                                     color = Color(0xFF616161)
                                 )
@@ -228,14 +229,18 @@ private fun StudyPlanTabChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+            val tabLabel = when (tab) {
+                StudyPlanTab.WEEKLY -> stringResource(com.mtlc.studyplan.R.string.tasks_tab_weekly)
+                StudyPlanTab.DAILY -> stringResource(com.mtlc.studyplan.R.string.tasks_tab_daily)
+            }
             Icon(
                 imageVector = tab.icon,
-                contentDescription = tab.title,
+                contentDescription = tabLabel,
                 tint = contentColor,
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = tab.title,
+                text = tabLabel,
                 color = contentColor,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
@@ -267,7 +272,7 @@ private fun WeeklyScheduleView(
         // Daily Schedule Cards
         item {
             Text(
-                text = "This Week's Schedule",
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_week_schedule_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -323,7 +328,7 @@ private fun CurrentWeekCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Current Week Progress",
+                    text = stringResource(com.mtlc.studyplan.R.string.week_progress),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -360,9 +365,9 @@ private fun CurrentWeekCard(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     val realProgress = taskStats.getProgressPercentage()
-                    ProgressMetric("Completed", "${taskStats.completedTasks}")
-                    ProgressMetric("Remaining", "${maxOf(0, taskStats.totalTasks - taskStats.completedTasks)}")
-                    ProgressMetric("Progress", "${realProgress}%")
+                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_completed), "${taskStats.completedTasks}")
+                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_remaining), "${maxOf(0, taskStats.totalTasks - taskStats.completedTasks)}")
+                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.week_progress), "${realProgress}%")
                 }
             }
         }
@@ -410,16 +415,16 @@ private fun DailyScheduleCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = dailySchedule.dayName,
+                    text = when (dailySchedule.dayName.lowercase()) { "monday" -> stringResource(com.mtlc.studyplan.R.string.monday); "tuesday" -> stringResource(com.mtlc.studyplan.R.string.tuesday); "wednesday" -> stringResource(com.mtlc.studyplan.R.string.wednesday); "thursday" -> stringResource(com.mtlc.studyplan.R.string.thursday); "friday" -> stringResource(com.mtlc.studyplan.R.string.friday); "saturday" -> stringResource(com.mtlc.studyplan.R.string.saturday); "sunday" -> stringResource(com.mtlc.studyplan.R.string.sunday); else -> dailySchedule.dayName },
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = if (dailySchedule.tasks.isEmpty() && dailySchedule.estimatedTime.isEmpty()) {
-                        "Ready to plan your study session"
+                        stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
                     } else {
-                        "${dailySchedule.tasks.size} tasks • ${dailySchedule.estimatedTime}"
+                        stringResource(com.mtlc.studyplan.R.string.study_tasks_summary, dailySchedule.tasks.size, dailySchedule.estimatedTime)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -768,13 +773,13 @@ private fun DailyScheduleView(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Select a Day from the Weekly Plan",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_placeholder_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Click on any day in the Weekly tab to view detailed study materials and tasks",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_placeholder_body),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -784,7 +789,7 @@ private fun DailyScheduleView(
                     onClick = onBackToWeekly,
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Text("Go to Weekly Plan")
+                    Text(stringResource(com.mtlc.studyplan.R.string.tasks_daily_placeholder_button))
                 }
             }
         }
@@ -803,7 +808,7 @@ private fun DailyScheduleView(
             ) {
                 CircularProgressIndicator()
                 Text(
-                    text = "Loading ${selectedDay.dayName} Study Plan...",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_loading_message, selectedDay.dayName),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -895,7 +900,7 @@ private fun DailyStudyHeader(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Weekly")
+                    Text(stringResource(com.mtlc.studyplan.R.string.tasks_tab_weekly))
                 }
             }
 
@@ -908,7 +913,7 @@ private fun DailyStudyHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Estimated Time: ${dayInfo.estimatedTime}",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_estimated_time, dayInfo.estimatedTime),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -983,7 +988,7 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
             if (units.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Units for Today",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_units_title),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
@@ -1022,19 +1027,19 @@ private fun StudyUnitItem(unit: StudyUnit) {
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Unit ${unit.unitNumber}: ${unit.title}",
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_unit_title, unit.unitNumber, unit.title),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Pages ${unit.pages}",
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_unit_pages, unit.pages),
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             if (unit.exercises.isNotEmpty()) {
                 Text(
-                    text = "Exercises: ${unit.exercises.joinToString(", ")}",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_unit_exercises, unit.exercises.joinToString(", ")),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1054,7 +1059,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Daily Tasks",
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_tasks_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -1064,7 +1069,7 @@ private fun DailyTasksSection(tasks: List<DailyTask>) {
 
             if (tasks.isEmpty()) {
                 Text(
-                    text = "No specific tasks for today. Focus on your study units!",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_no_tasks),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -1150,7 +1155,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Study Materials",
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_materials_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -1160,7 +1165,7 @@ private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
 
             if (materials.isEmpty()) {
                 Text(
-                    text = "No additional materials for today. Focus on your textbook units!",
+                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_no_materials),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -1250,12 +1255,12 @@ private fun NotesSection(notes: String) {
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Study Notes",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            Text(
+                text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_notes_title),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -1269,5 +1274,10 @@ private fun NotesSection(notes: String) {
         }
     }
 }
+
+
+
+
+
 
 

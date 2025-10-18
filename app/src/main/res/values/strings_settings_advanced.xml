@@ -165,7 +165,6 @@
     <string name="use_backup_value">Use Backup</string>
     <string name="manual_review">Manual Review</string>
     <string name="apply_selected">Apply Selected</string>
-    <string name="apply">Apply</string>
 
     <string name="current_value">Current Value</string>
     <string name="backup_value">Backup Value</string>

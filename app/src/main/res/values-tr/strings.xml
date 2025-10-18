@@ -295,6 +295,12 @@
   <string name="tip_read_carefully">Soruları dikkatle okuyun</string>
   <string name="apply">Başvur</string>
   <string name="days_short_suffix">g</string>
+
+  <!-- Study Plan Overview (TR) -->
+  <string name="study_overview_title">Çalışma Planı Özeti</string>
+  <string name="study_overview_subtitle">YDS hazırlık ilerlemenizi takip edin</string>
+  <string name="study_ready_to_plan">Çalışma oturumunuzu planlamaya hazır</string>
+  <string name="study_tasks_summary">%1$d görev &#8226; %2$s</string>
   
   <!-- Ödüller/Başarılar (award_<id>_title/desc) -->
   <!-- Görev Tamamlama Dönüm Noktaları -->
@@ -548,19 +554,6 @@
   <string name="point_system_desc">Görevleri tamamlayarak puan kazan</string>
   <string name="celebration_effects_title">Kutlama Efektleri</string>
   <string name="celebration_effects_desc">Başarılar için animasyonlar ve efektler göster</string>
-  <string name="not_logged_in">Giriş yapılmadı</string>
-  <string name="logged_out_successfully">Başarıyla çıkış yapıldı</string>
-  <string name="logout">Çıkış Yap</string>
-  <string name="login">Giriş Yap</string>
-  <string name="email">E-posta</string>
-  <string name="username">Kullanıcı Adı</string>
-  <string name="username_hint">3+ karakter, harfler, rakamlar ve alt çizgi</string>
-  <string name="email_required">E-posta gereklidir</string>
-  <string name="valid_email_required">Lütfen geçerli bir e-posta adresi girin</string>
-  <string name="username_required">Kullanıcı adı gereklidir</string>
-  <string name="username_validation_error">Kullanıcı adı 3+ karakter olmalı (harfler, rakamlar, alt çizgi)</string>
-  <string name="logged_in_successfully">Başarıyla giriş yapıldı!</string>
-  <string name="login_failed">Giriş başarısız: %s</string>
   <string name="reset_progress_danger">İlerlemeyi Sıfırla (Tehlikeli)</string>
   <string name="reset_progress_dialog_message">Bu işlem tüm çalışma ilerlemenizi, başarılarınızı ve istatistiklerinizi kalıcı olarak silecektir. Hoş geldiniz ekranına dönüp yeni baştan başlayacaksınız. Bu işlem geri alınamaz.</string>
   <string name="failed_to_reset">Sıfırlama başarısız. Lütfen tekrar deneyin.</string>

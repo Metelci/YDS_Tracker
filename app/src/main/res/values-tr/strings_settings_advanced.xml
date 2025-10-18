@@ -165,7 +165,6 @@
     <string name="use_backup_value">Yedek Değeri Kullan</string>
     <string name="manual_review">Manuel İnceleme</string>
     <string name="apply_selected">Seçilenleri Uygula</string>
-    <string name="apply">Uygula</string>
 
     <string name="current_value">Mevcut Değer</string>
     <string name="backup_value">Yedek Değer</string>
