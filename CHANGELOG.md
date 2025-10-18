@@ -1,3 +1,19 @@
+## [2.9.6] - 2025-10-17
+
+### UI
+- **Awards tab refresh**: restyled the Tasks > Awards view with gradient cards, richer badges, and celebratory fireworks when new achievements unlock.
+
+### Gameplay & Progression
+- **Achievement roster update**: added the hidden “Multidisciplinary Maestro” milestone and adjusted “Perfectionist Supreme” totals to maintain completion accuracy.
+
+### Platform & Settings
+- **Settings privacy fix**: restoring the profile visibility toggle flow so UI tests and repository calls stay in sync.
+- **Internationalisation**: localized the crash-reporting prompt and all accessibility content-description strings for English and Turkish builds to satisfy lint.
+
+### Build
+- Bumped Android `versionCode` to 88 / `versionName` to 2.9.6.
+- Ran full `lintDebug` to refresh the baseline with the new translations.
+
 ## [2.9.55] - 2025-10-16 (hotfix)
 
 ### UI
@@ -745,6 +761,5 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - User-facing changes are documented in the main changelog above
 - Follow semantic versioning for all releases
 - Maintain consistent date format (YYYY-MM-DD) for all entries
-
 
 

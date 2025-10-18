@@ -1,7 +1,7 @@
  # 🎓 Road to YDS - English Exam Preparation App
 
   [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-  [![Version](https://img.shields.io/badge/version-2.9.55-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+  [![Version](https://img.shields.io/badge/version-2.9.6-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
   [![Test Coverage](https://img.shields.io/badge/coverage-1%25-orange.svg)](https://github.com/Metelci/YDS_Tracker/actions)
   [![Tests](https://img.shields.io/badge/tests-156%20passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
   [![Code Quality](https://img.shields.io/badge/detekt-0%20issues-brightgreen.svg)](https://detekt.dev/)
@@ -26,8 +26,7 @@
   - 🔒 **Security-First**: End-to-end encryption, biometric authentication, offline-first design
   - 🎨 **Modern UI**: Material 3 design with dark mode and accessibility support
   - 📱 **Offline-First**: Full functionality without internet connectivity
-  - 🏆 **Social Features**: Friend connections, leaderboards, and study groups
-
+  
   ## 🚀 Features
 
   ### 📖 Study Program
@@ -53,7 +52,7 @@
   - **Dark Mode Support**: Comfortable studying in any lighting
   - **Accessibility Features**: Screen reader support, high contrast options
   - **Smooth Animations**: Fluid transitions and micro-interactions
-  - **Polished Navigation**: Social hub header tightened with tabs and onboarding availability sliders made more compact for quicker setup
+  - **Polished Navigation**: Onboarding availability sliders made more compact for quicker setup
 
   ## 🛠️ Tech Stack
 
@@ -181,7 +180,6 @@
   │   └── models/                     # Data models
   ├── 🎯 features/                    # Feature modules
   │   ├── studyplan/                  # Study plan management
-  │   ├── social/                     # Social features
   │   ├── exam/                       # Exam preparation
   │   └── settings/                   # App configuration
   └── 🛠️ utils/                       # Utility classes
@@ -254,3 +252,7 @@
   - Android Team for comprehensive security APIs
   - Kotlin Team for the modern development experience
   - Open Source Community for valuable libraries and tools
+
+
+
+
