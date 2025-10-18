@@ -628,7 +628,7 @@ private fun YdsExamGradientTopBar(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = "${daysRemaining}d",
+                            text = daysRemaining.toString() + stringResource(id = R.string.days_short_suffix),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,

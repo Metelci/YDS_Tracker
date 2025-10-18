@@ -76,6 +76,7 @@
     <string name="tip_turn_off_devices">Turn off all electronic devices</string>
     <string name="tip_read_carefully">Read questions carefully</string>
     <string name="apply">Apply</string>
+    <string name="days_short_suffix">d</string>
 
     <!-- Awards/Achievements (localized via award_<id>_title/desc) -->
     <!-- Task Completion Milestones -->

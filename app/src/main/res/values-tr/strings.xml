@@ -294,6 +294,7 @@
   <string name="tip_turn_off_devices">Tüm elektronik cihazları kapatın</string>
   <string name="tip_read_carefully">Soruları dikkatle okuyun</string>
   <string name="apply">Başvur</string>
+  <string name="days_short_suffix">g</string>
   
   <!-- Ödüller/Başarılar (award_<id>_title/desc) -->
   <!-- Görev Tamamlama Dönüm Noktaları -->

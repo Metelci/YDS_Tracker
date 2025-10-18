@@ -713,7 +713,7 @@ fun WorkingHomeScreen(
                     }
 
                     Text(
-                        text = "${examTracker.daysToExam}d",
+                        text = examTracker.daysToExam.toString() + stringResource(id = R.string.days_short_suffix),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2C2C2C)
