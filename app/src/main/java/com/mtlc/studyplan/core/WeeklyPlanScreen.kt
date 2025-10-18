@@ -7,15 +7,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,7 +50,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -470,105 +473,54 @@ private fun WeeklyPlanGradientTopBar(
     currentWeek: Int,
     totalWeeks: Int
 ) {
-    val isDarkTheme = false
-    val subtitle = if (totalWeeks > 0) {
-        "Week $currentWeek of $totalWeeks • Raymond Murphy schedule"
-    } else {
-        "Raymond Murphy schedule"
-    }
-
-    Surface(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(20.dp),
-        shadowElevation = 8.dp,
-        color = Color.Transparent,
-        tonalElevation = 0.dp
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = Brush.horizontalGradient(
+                    brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFE3F2FD),
-                            Color(0xFFFCE4EC)
-                        )
+                            Color(0xFFFBE9E7),
+                            Color(0xFFE3F2FD)
+                        ),
+                        start = Offset.Zero,
+                        end = Offset.Infinite
                     ),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(24.dp)
                 )
-                .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(20.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier.size(40.dp)
-                    ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF0E2A3A),
-                            modifier = Modifier.size(24.dp)
+                            tint = Color(0xFF424242)
                         )
                     }
-                    Icon(
-                        imageVector = Icons.Filled.CalendarToday,
-                        contentDescription = null,
-                        tint = Color(0xFF0E2A3A),
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Column {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "Weekly Study Plan",
-                            fontSize = 20.sp,
+                            text = stringResource(com.mtlc.studyplan.R.string.study_overview_title),
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF0E2A3A)
+                            color = Color(0xFF424242)
                         )
                         Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
-                        )
-                    }
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (totalWeeks > 0) {
-                        val progress = (currentWeek.coerceAtLeast(1)
-                            .coerceAtMost(totalWeeks).toFloat() / totalWeeks.toFloat())
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 2.dp,
-                            color = Color(0xFF0E2A3A),
-                            progress = { progress }
-                        )
-                    }
-                    FilledTonalButton(
-                        onClick = { /* reserved for future overview action */ },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color.White,
-                            contentColor = Color(0xFF1976D2)
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Overview",
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold
+                            text = stringResource(com.mtlc.studyplan.R.string.study_overview_subtitle),
+                            fontSize = 14.sp,
+                            color = Color(0xFF616161)
                         )
                     }
                 }
@@ -576,3 +528,8 @@ private fun WeeklyPlanGradientTopBar(
         }
     }
 }
+
+
+
+
+

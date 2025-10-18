@@ -512,6 +512,7 @@
   <string name="home_today_progress_minutes">%1$d dakika calisildi</string>
   <string name="home_today_progress_points">Bugun %1$d XP kazanildi</string>
   <string name="home_today_progress_streak">%1$d gunluk seri</string>
+  <string name="home_today_progress_achievements">%1$d basari acildi</string>
   <string name="home_exam_card_title">Siradaki Sinav: %1$s</string>
   <string name="home_exam_card_date">Tarih: %1$s</string>
   <string name="home_exam_card_status">Durum: %1$s</string>

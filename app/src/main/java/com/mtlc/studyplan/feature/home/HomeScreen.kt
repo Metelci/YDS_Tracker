@@ -34,6 +34,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
+import com.mtlc.studyplan.data.ExamCountdownManager
 import java.util.Locale
 
 
@@ -45,6 +46,13 @@ fun HomeScreen() {
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
     val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
+    val examCountdownManager = remember { ExamCountdownManager.getInstance(appContext) }
+    val examData by examCountdownManager.examData.collectAsState()
+
+    LaunchedEffect(examCountdownManager) {
+        YdsExamService.refreshFromNetwork(force = true)
+        examCountdownManager.refreshNow()
+    }
 
     val plan by planRepo.planFlow.collectAsState(initial = emptyList())
     val progress by progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
@@ -118,7 +126,8 @@ fun HomeScreen() {
                 val completedTasks = todayStats.tasksCompleted
                 val studyMinutes = todayStats.studyMinutes
                 val pointsEarned = todayStats.pointsEarned
-                val currentStreak = todayStats.streak
+                val currentStreak = progress.streakCount
+                val totalAchievements = progress.unlockedAchievements.size
                 val ratio = if (plannedTasks > 0) (completedTasks.toFloat() / plannedTasks).coerceIn(0f, 1f) else 0f
 
                 Card(
@@ -144,18 +153,30 @@ fun HomeScreen() {
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
-                        if (pointsEarned > 0) {
+
+                        // Always show points (even if 0)
+                        Text(
+                            text = stringResource(R.string.home_today_progress_points, pointsEarned),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = if (pointsEarned > 0) FontWeight.SemiBold else FontWeight.Normal
+                        )
+
+                        // Always show streak (even if 0)
+                        Text(
+                            text = stringResource(R.string.home_today_progress_streak, currentStreak),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = if (currentStreak > 0) FontWeight.SemiBold else FontWeight.Normal
+                        )
+
+                        // Always show awards/achievements count (even if 0)
+                        if (totalAchievements > 0) {
                             Text(
-                                text = stringResource(R.string.home_today_progress_points, pointsEarned),
-                                style = MaterialTheme.typography.bodySmall
+                                text = stringResource(R.string.home_today_progress_achievements, totalAchievements),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
-                        if (currentStreak > 0) {
-                            Text(
-                                text = stringResource(R.string.home_today_progress_streak, currentStreak),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+
                         LinearProgressIndicator(
                             progress = { ratio },
                             modifier = Modifier
@@ -171,7 +192,7 @@ fun HomeScreen() {
                 // Real exam countdown using YdsExamService
                 val nextExam = YdsExamService.getNextExam()
                 if (nextExam != null) {
-                    val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
+                    val rawDaysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
                     val registrationStatus = YdsExamService.getRegistrationStatus()
 
                     // Get current locale for date formatting
@@ -187,11 +208,11 @@ fun HomeScreen() {
 
                     // Get localized status message
                     val statusMessage = when {
-                        daysToExam == 0L -> stringResource(R.string.exam_status_exam_day)
-                        daysToExam < 0 -> stringResource(R.string.exam_status_completed)
-                        daysToExam <= 7 -> stringResource(R.string.exam_status_final_week)
-                        daysToExam <= 30 -> stringResource(R.string.exam_status_almost_there)
-                        daysToExam <= 90 -> when (registrationStatus) {
+                        rawDaysToExam == 0 -> stringResource(R.string.exam_status_exam_day)
+                        rawDaysToExam < 0 -> stringResource(R.string.exam_status_completed)
+                        rawDaysToExam <= 7 -> stringResource(R.string.exam_status_final_week)
+                        rawDaysToExam <= 30 -> stringResource(R.string.exam_status_almost_there)
+                        rawDaysToExam <= 90 -> when (registrationStatus) {
                             YdsExamService.RegistrationStatus.NOT_OPEN_YET -> stringResource(R.string.exam_status_registration_opens_soon)
                             YdsExamService.RegistrationStatus.OPEN -> stringResource(R.string.exam_status_registration_open)
                             YdsExamService.RegistrationStatus.LATE_REGISTRATION -> stringResource(R.string.exam_status_late_registration)
@@ -206,31 +227,61 @@ fun HomeScreen() {
                         colors = CardDefaults.cardColors(containerColor = cardColors[1 % cardColors.size])
                     ) {
                         Column(Modifier.padding(12.dp)) {
-                            Text(stringResource(R.string.home_exam_card_title, nextExam.name), style = MaterialTheme.typography.titleSmall)
-                            Text(stringResource(R.string.home_exam_card_date, formattedExamDate), style = MaterialTheme.typography.bodySmall)
-                            Text(stringResource(R.string.home_exam_card_status, statusMessage), style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                stringResource(R.string.home_exam_card_title, nextExam.name),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                stringResource(R.string.home_exam_card_date, formattedExamDate),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                stringResource(R.string.home_exam_card_status, statusMessage),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                             LinearProgressIndicator(
-                                progress = { if (daysToExam > 0) (100 - daysToExam.coerceAtMost(100)) / 100f else 1f },
+                                progress = {
+                                    if (rawDaysToExam > 0) (100 - rawDaysToExam.coerceAtMost(100)) / 100f else 1f
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(4.dp)
                                     .padding(top = 8.dp),
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             )
-                            Text(stringResource(R.string.home_exam_card_days_remaining, daysToExam), style = MaterialTheme.typography.bodySmall)
+                            val safeDaysToExam = rawDaysToExam.coerceAtLeast(0)
+                            Text(stringResource(R.string.home_exam_card_days_remaining, safeDaysToExam),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
 
                             // Show registration info if relevant
                             when (registrationStatus) {
                                 YdsExamService.RegistrationStatus.OPEN -> {
-                                    Text(stringResource(R.string.home_exam_card_registration_period, formattedRegStart, formattedRegEnd),
-                                         style = MaterialTheme.typography.bodySmall,
-                                         color = MaterialTheme.colorScheme.primary)
+                                    Text(
+                                        stringResource(
+                                            R.string.home_exam_card_registration_period,
+                                            formattedRegStart,
+                                            formattedRegEnd
+                                        ),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                 }
+
                                 YdsExamService.RegistrationStatus.LATE_REGISTRATION -> {
-                                    Text(stringResource(R.string.home_exam_card_late_registration, formattedLateRegEnd),
-                                         style = MaterialTheme.typography.bodySmall,
-                                         color = MaterialTheme.colorScheme.error)
+                                    Text(
+                                        stringResource(
+                                            R.string.home_exam_card_late_registration,
+                                            formattedLateRegEnd
+                                        ),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
                                 }
+
                                 else -> {}
                             }
                         }
@@ -314,3 +365,4 @@ fun HomeScreen() {
         }
     }
 }
+

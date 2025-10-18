@@ -1,0 +1,15 @@
+## [2.9.62] - 2025-10-19 (hotfix)
+
+### UI
+- Weekly Study Plan top bar now matches Study Plan Overview header style and strings exactly.
+- Daily tab header in Study Plan Overview replaced with compact pill-style back button; removed unrelated full-width bar.
+- Bottom navigation converted to a frosted, floating pill with stronger shadow, semi‑transparent gradient, and rounded shape.
+- Bottom navigation moved into Scaffold bottomBar to anchor at the bottom and respect system navigation insets; content no longer scrolls underneath.
+- Top bars across app adjusted to sit flush at the top (removed extra status-bar padding on Overview and YDS Exam pages).
+
+### Exam Info
+- Unified remaining days calculation and safeguarded ÖSYM fetch: only applies fetched sessions when there is at least one upcoming exam; prevents days resetting to 0.
+
+### Build
+- No schema changes; project compiles cleanly. Known resource warnings remain about base strings missing for some keys (email, login, etc.).
+

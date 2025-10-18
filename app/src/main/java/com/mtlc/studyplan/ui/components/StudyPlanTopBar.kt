@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -46,9 +46,9 @@ import com.mtlc.studyplan.localization.rememberLanguageManager
 import kotlinx.coroutines.launch
 
 // Palette based on provided HSL/HEX (darkened by 20%)
-private val TopBarPrimary = Color(0xFF67AAC8)   // darker light blue
-private val TopBarSecondary = Color(0xFF84AB86) // darker light green
-private val TopBarTertiary = Color(0xFFCC8974)  // darker soft coral
+private val TopBarPrimary = Color(0xFFC6E6FF)
+private val TopBarSecondary = Color(0xFFCFF5E9)
+private val TopBarTertiary = Color(0xFFFFE3F2)
 private val TopBarWarning = Color(0xFFCCB266)   // darker golden yellow
 private val TopBarSuccess = TopBarSecondary
 private val TitleDark = Color(0xFF0E2A3A)       // deep navy for titles
@@ -74,24 +74,24 @@ internal data class StudyPlanTopBarAppearance(
 
 private fun topBarStops(style: StudyPlanTopBarStyle): List<Pair<Color, Float>>? = when (style) {
     StudyPlanTopBarStyle.Home -> listOf(
-        TopBarPrimary to 0.25f,
-        TopBarSecondary to 0.20f,
-        TopBarTertiary to 0.30f
+        TopBarPrimary to 1f,
+        TopBarSecondary to 1f,
+        TopBarTertiary to 1f
     )
     StudyPlanTopBarStyle.Tasks -> listOf(
-        TopBarPrimary to 0.30f,
-        TopBarSecondary to 0.25f,
-        TopBarTertiary to 0.20f
+        TopBarPrimary to 1f,
+        TopBarSecondary to 1f,
+        TopBarTertiary to 1f
     )
     StudyPlanTopBarStyle.Progress -> listOf(
-        TopBarTertiary to 0.25f,
-        TopBarPrimary to 0.30f,
-        TopBarSecondary to 0.20f
+        TopBarTertiary to 1f,
+        TopBarPrimary to 1f,
+        TopBarSecondary to 1f
     )
     StudyPlanTopBarStyle.Settings -> listOf(
-        TopBarWarning to 0.25f,
-        TopBarPrimary to 0.30f,
-        TopBarTertiary to 0.20f
+        TopBarSecondary to 1f,
+        TopBarPrimary to 1f,
+        TopBarTertiary to 1f
     )
     else -> null
 }
@@ -110,20 +110,11 @@ internal fun rememberTopBarAppearance(style: StudyPlanTopBarStyle): StudyPlanTop
     }
 
     val stops = remember(style) { topBarStops(style) }
-    val brush = remember(style, stops, isDarkTheme) {
+    val brush = remember(style, stops) {
         stops?.let { gradientStops ->
-            val colors = gradientStops.map { (color, alpha) ->
-                if (isDarkTheme) {
-                    val brightened = lerp(color, Color.White, 0.6f)
-                    brightened.copy(alpha = (alpha + 0.55f).coerceIn(0.5f, 0.95f))
-                } else {
-                    color.copy(alpha = alpha)
-                }
-            }
-            Brush.horizontalGradient(colors = colors)
+            Brush.horizontalGradient(colors = gradientStops.map { it.first })
         }
     }
-
     val iconColor = when {
         style == StudyPlanTopBarStyle.Default -> baseOnSurface
         isDarkTheme -> colorScheme.onSurface
@@ -164,7 +155,7 @@ fun StudyPlanTopBar(
     val colorScheme = MaterialTheme.colorScheme
     val baseBackground = colorScheme.surface
     val isDarkThemeSurface = false
-    val borderColor = if (isDarkThemeSurface) {
+    if (isDarkThemeSurface) {
         Color.White.copy(alpha = 0.2f)
     } else {
         Color.Black.copy(alpha = 0.05f)
@@ -173,6 +164,7 @@ fun StudyPlanTopBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .then(Modifier),
         shape = capsuleShape,
@@ -410,6 +402,7 @@ fun TasksHeaderTopBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(horizontal = 12.dp, vertical = 8.dp),
         shape = capsuleShape,
         shadowElevation = 8.dp,
@@ -417,7 +410,7 @@ fun TasksHeaderTopBar(
         tonalElevation = 0.dp
     ) {
         val bg = if (appearance.brush != null) {
-            Modifier.background(appearance.brush!!, capsuleShape)
+            Modifier.background(appearance.brush, capsuleShape)
         } else {
             Modifier.background(baseBackground, capsuleShape)
         }

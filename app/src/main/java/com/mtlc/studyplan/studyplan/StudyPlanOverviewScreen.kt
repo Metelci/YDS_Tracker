@@ -2,6 +2,7 @@ package com.mtlc.studyplan.studyplan
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,16 +28,20 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +54,18 @@ fun StudyPlanOverviewScreen(
     var selectedTab by remember { mutableStateOf(initialTab) }
     var selectedDay by remember { mutableStateOf<DailyStudyInfo?>(null) }
 
+    val context = LocalContext.current
+    val appContext = context.applicationContext
+    val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
+    val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
+    val planRepository = remember { PlanRepository(overridesStore, settingsStore) }
+    val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
+
+    val plan by planRepository.planFlow.collectAsState(initial = emptyList())
+    val settings by settingsStore.settingsFlow.collectAsState(initial = PlanDurationSettings())
+    val userProgress by progressRepo.userProgressFlow.collectAsState(initial = UserProgress())
+    val completedTaskIds = remember(userProgress) { userProgress.completedTasks }
+
     // Collect data from AppIntegrationManager
     val taskStats by appIntegrationManager.getTaskStatsFlow().collectAsState(
         initial = TaskStats(0, 0, 0, 0)
@@ -57,16 +74,76 @@ fun StudyPlanOverviewScreen(
     // Get current week from study progress repository
     val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
 
-    // Create WeeklyStudyPlan with actual current week
-    val weeklyPlan = remember(currentWeek) {
-        WeeklyStudyPlan(
-            title = "YDS Study Plan",
-            currentWeek = currentWeek,
-            // Neutralize computed percentage for initial use
-            progressPercentage = 0f
-        )
+    val startDate = remember(settings.startEpochDay) { LocalDate.ofEpochDay(settings.startEpochDay) }
+    val dateFormatter = remember(settings.dateFormatPattern) {
+        val pattern = settings.dateFormatPattern?.takeIf { it.isNotBlank() }
+        val locale = Locale.getDefault()
+        pattern?.let { DateTimeFormatter.ofPattern(it, locale) }
+            ?: DateTimeFormatter.ofPattern("MMM dd", locale)
     }
-    val studySchedule = remember { createStudyScheduleData() }
+
+    val currentWeekPlan = remember(plan, currentWeek) {
+        plan.firstOrNull { it.week == currentWeek } ?: plan.firstOrNull()
+    }
+
+    val daysBeforeCurrentWeek = remember(plan, currentWeekPlan) {
+        if (currentWeekPlan == null) 0 else {
+            val index = plan.indexOfFirst { it.week == currentWeekPlan.week }
+            if (index <= 0) 0 else plan.take(index).sumOf { it.days.size }
+        }
+    }
+
+    val studySchedule = remember(
+        plan,
+        currentWeekPlan,
+        completedTaskIds,
+        dateFormatter,
+        startDate,
+        daysBeforeCurrentWeek
+    ) {
+        if (currentWeekPlan == null) {
+            StudyScheduleData(emptyList(), emptyList())
+        } else {
+            val dailySchedules = currentWeekPlan.days.mapIndexed { dayIndex, dayPlan ->
+                val globalIndex = daysBeforeCurrentWeek + dayIndex
+                val date = startDate.plusDays(globalIndex.toLong())
+                val planTasks = dayPlan.tasks
+                val estimatedMinutes = planTasks.sumOf { estimateTaskDurationMinutes(it) }
+                val completedCount = planTasks.count { completedTaskIds.contains(it.id) }
+                DailySchedule(
+                    weekNumber = currentWeekPlan.week,
+                    weekTitle = currentWeekPlan.title,
+                    dayIndex = dayIndex,
+                    dayName = normalizeDayKey(dayPlan.day),
+                    date = dateFormatter.format(date),
+                    tasks = planTasks.map { it.desc },
+                    estimatedTime = formatEstimatedTime(estimatedMinutes),
+                    completionPercentage = if (planTasks.isNotEmpty()) (completedCount * 100 / planTasks.size) else 0,
+                    planTasks = planTasks,
+                    dateValue = date,
+                    isToday = date == LocalDate.now()
+                )
+            }
+
+            StudyScheduleData(
+                dailySchedules = dailySchedules,
+                weeklyGoals = emptyList()
+            )
+        }
+    }
+
+    LaunchedEffect(studySchedule.dailySchedules) {
+        val currentSelected = selectedDay
+        if (currentSelected != null) {
+            val match = studySchedule.dailySchedules.firstOrNull { schedule ->
+                schedule.dayName == normalizeDayKey(currentSelected.dayName) &&
+                    schedule.date == currentSelected.date
+            }
+            if (match != null) {
+                selectedDay = createDailyStudyInfo(match, completedTaskIds)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -74,7 +151,7 @@ fun StudyPlanOverviewScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -159,9 +236,9 @@ fun StudyPlanOverviewScreen(
             // Content based on selected tab
             when (selectedTab) {
                 StudyPlanTab.WEEKLY -> WeeklyScheduleView(
-                    weeklyPlan = weeklyPlan,
                     studySchedule = studySchedule,
                     taskStats = taskStats,
+                    completedTaskIds = completedTaskIds,
                     onDayClick = { dayInfo ->
                         selectedDay = dayInfo
                         selectedTab = StudyPlanTab.DAILY
@@ -251,15 +328,15 @@ private fun StudyPlanTabChip(
 
 @Composable
 private fun WeeklyScheduleView(
-    weeklyPlan: WeeklyStudyPlan,
     studySchedule: StudyScheduleData,
     taskStats: TaskStats,
+    completedTaskIds: Set<String>,
     onDayClick: (DailyStudyInfo) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         // Current Week Overview
@@ -284,14 +361,16 @@ private fun WeeklyScheduleView(
             DailyScheduleCard(
                 dailySchedule = dailySchedule,
                 onClick = {
-                    onDayClick(createDailyStudyInfo(dailySchedule, weeklyPlan.currentWeek))
+                    onDayClick(createDailyStudyInfo(dailySchedule, completedTaskIds))
                 }
             )
         }
 
         // Study Goals
-        item {
-            StudyGoalsCard(studySchedule.weeklyGoals)
+        if (studySchedule.weeklyGoals.isNotEmpty()) {
+            item {
+                StudyGoalsCard(studySchedule.weeklyGoals)
+            }
         }
     }
 }
@@ -302,75 +381,147 @@ private fun CurrentWeekCard(
     taskStats: TaskStats
 ) {
     val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val primary = MaterialTheme.colorScheme.primary
+    val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer
+
     val gradientBrush = Brush.linearGradient(
         colors = listOf(
             primaryContainer,
+            primaryContainer.copy(alpha = 0.85f),
             primaryContainer.copy(alpha = 0.7f)
         ),
         start = Offset(0f, 0f),
-        end = Offset(1000f, 1000f)
+        end = Offset(1000f, 800f)
     )
+
+    val progressPercentage = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
+    val remainingTasks = maxOf(0, taskStats.totalTasks - taskStats.completedTasks)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(gradientBrush)
-                .padding(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = stringResource(com.mtlc.studyplan.R.string.week_progress),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-
-                Box(
-                    modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        progress = {
-                            val realProgress = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
-                            realProgress / 100f
-                        },
-                        modifier = Modifier.size(44.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                    )
-                    Text(
-                        text = if (taskStats.totalTasks > 0) "${taskStats.getProgressPercentage()}%" else "0%",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            // Only show metrics when user has real task data
-            if (taskStats.totalTasks > 0 && taskStats.completedTasks > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
+                // Header with title and circular progress
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val realProgress = taskStats.getProgressPercentage()
-                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_completed), "${taskStats.completedTasks}")
-                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_remaining), "${maxOf(0, taskStats.totalTasks - taskStats.completedTasks)}")
-                    ProgressMetric(stringResource(com.mtlc.studyplan.R.string.week_progress), "${realProgress}%")
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(com.mtlc.studyplan.R.string.week_progress),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = onPrimaryContainer
+                        )
+                        if (taskStats.totalTasks > 0) {
+                            Text(
+                                text = "${taskStats.completedTasks} / ${taskStats.totalTasks} tasks",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = onPrimaryContainer.copy(alpha = 0.8f),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Larger, more prominent circular progress
+                    Box(
+                        modifier = Modifier.size(64.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { progressPercentage / 100f },
+                            modifier = Modifier.size(64.dp),
+                            color = primary,
+                            strokeWidth = 6.dp,
+                            trackColor = primary.copy(alpha = 0.2f)
+                        )
+                        Text(
+                            text = "$progressPercentage%",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = onPrimaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Show detailed metrics when user has task data
+                if (taskStats.totalTasks > 0) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Stats row with better visual separation
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        StatCard(
+                            label = stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_completed),
+                            value = "${taskStats.completedTasks}",
+                            icon = Icons.Filled.CheckCircle,
+                            color = primary
+                        )
+
+                        StatCard(
+                            label = stringResource(com.mtlc.studyplan.R.string.tasks_week_stat_remaining),
+                            value = "$remainingTasks",
+                            icon = Icons.Filled.Schedule,
+                            color = onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+
+                        StatCard(
+                            label = "Total",
+                            value = "${taskStats.totalTasks}",
+                            icon = Icons.AutoMirrored.Filled.Assignment,
+                            color = onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun StatCard(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    color: Color
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(20.dp)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -399,67 +550,103 @@ private fun DailyScheduleCard(
     dailySchedule: DailySchedule,
     onClick: () -> Unit
 ) {
-    Card(
+    val capsuleShape = RoundedCornerShape(32.dp)
+    val highlightColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+    val neutralColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+    val backgroundColor = if (dailySchedule.isToday) highlightColor else neutralColor
+    val border = if (dailySchedule.isToday) {
+        BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+    } else {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+    }
+
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp)
+        shape = capsuleShape,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        color = backgroundColor,
+        border = border
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 18.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = when (dailySchedule.dayName.lowercase()) { "monday" -> stringResource(com.mtlc.studyplan.R.string.monday); "tuesday" -> stringResource(com.mtlc.studyplan.R.string.tuesday); "wednesday" -> stringResource(com.mtlc.studyplan.R.string.wednesday); "thursday" -> stringResource(com.mtlc.studyplan.R.string.thursday); "friday" -> stringResource(com.mtlc.studyplan.R.string.friday); "saturday" -> stringResource(com.mtlc.studyplan.R.string.saturday); "sunday" -> stringResource(com.mtlc.studyplan.R.string.sunday); else -> dailySchedule.dayName },
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                val summaryText = if (dailySchedule.tasks.isEmpty() && dailySchedule.estimatedTime.isEmpty()) {
-                    stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
-                } else {
-                    val parts = mutableListOf<String>()
-                    if (dailySchedule.tasks.isNotEmpty()) {
-                        parts += stringResource(com.mtlc.studyplan.R.string.tasks_week_task_count, dailySchedule.tasks.size)
-                    }
-                    if (dailySchedule.estimatedTime.isNotEmpty()) {
-                        parts += dailySchedule.estimatedTime
-                    }
-                    parts.joinToString(" • ").ifEmpty {
-                        stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (dailySchedule.isToday) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(50),
+                        tonalElevation = 0.dp,
+                        shadowElevation = 0.dp
+                    ) {
+                        Text(
+                            text = stringResource(com.mtlc.studyplan.R.string.today_label),
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
-                Text(
-                    text = summaryText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = localizedDayLabel(dailySchedule.dayName),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = if (dailySchedule.tasks.isEmpty()) {
+                            stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
+                        } else {
+                            stringResource(
+                                com.mtlc.studyplan.R.string.study_tasks_summary,
+                                dailySchedule.tasks.size,
+                                dailySchedule.estimatedTime
+                            )
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
-            // Only show progress indicator when there is actual progress data
             if (dailySchedule.completionPercentage > 0) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    Text(
+                        text = "${dailySchedule.completionPercentage}%",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     LinearProgressIndicator(
                         progress = { dailySchedule.completionPercentage / 100f },
                         modifier = Modifier
-                            .width(60.dp)
+                            .width(72.dp)
                             .height(4.dp)
-                            .clip(RoundedCornerShape(2.dp)),
-                        color = if (dailySchedule.completionPercentage >= 100) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "${dailySchedule.completionPercentage}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                            .clip(RoundedCornerShape(50)),
+                        color = if (dailySchedule.completionPercentage >= 100) {
+                            MaterialTheme.colorScheme.tertiary
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                     )
                 }
             }
@@ -479,11 +666,16 @@ data class StudyScheduleData(
 )
 
 data class DailySchedule(
+    val weekNumber: Int,
+    val weekTitle: String,
+    val dayIndex: Int,
     val dayName: String,
     val date: String,
     val tasks: List<String>,
     val estimatedTime: String,
     val completionPercentage: Int,
+    val planTasks: List<PlanTask>,
+    val dateValue: LocalDate?,
     val isToday: Boolean = false
 )
 
@@ -496,152 +688,209 @@ data class StudyGoal(
 
 enum class Priority { HIGH, MEDIUM, LOW }
 
-private fun createStudyScheduleData(): StudyScheduleData {
-    // Generate current week dates for labels only
-    val today = LocalDate.now()
-    val startOfWeek = today.minusDays(today.dayOfWeek.value.toLong() - 1)
-    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd")
-
-    // Neutral schedule with no fabricated subjects, durations, or progress
-    val dailySchedules = listOf(
-        DailySchedule("Monday", startOfWeek.format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 1),
-        DailySchedule("Tuesday", startOfWeek.plusDays(1).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 2),
-        DailySchedule("Wednesday", startOfWeek.plusDays(2).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 3),
-        DailySchedule("Thursday", startOfWeek.plusDays(3).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 4),
-        DailySchedule("Friday", startOfWeek.plusDays(4).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 5),
-        DailySchedule("Saturday", startOfWeek.plusDays(5).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 6),
-        DailySchedule("Sunday", startOfWeek.plusDays(6).format(dateFormatter), emptyList(), "", 0, today.dayOfWeek.value == 7)
-    )
-
-    // No pre-filled goals until there is real data
-    val weeklyGoals = emptyList<StudyGoal>()
-
-    return StudyScheduleData(dailySchedules, weeklyGoals)
-}
-
 // Helper function to create DailyStudyInfo from DailySchedule
-private fun createDailyStudyInfo(dailySchedule: DailySchedule, currentWeek: Int = 1): DailyStudyInfo {
-    val dayIndex = when (dailySchedule.dayName.lowercase()) {
-        "monday" -> 0
-        "tuesday" -> 1
-        "wednesday" -> 2
-        "thursday" -> 3
-        "friday" -> 4
-        "saturday" -> 5
-        "sunday" -> 6
-        else -> 0
+private fun createDailyStudyInfo(
+    dailySchedule: DailySchedule,
+    completedTaskIds: Set<String>
+): DailyStudyInfo {
+    val planTasks = dailySchedule.planTasks
+    val totalMinutes = planTasks.sumOf { estimateTaskDurationMinutes(it) }
+
+    val tasks = planTasks.map { task ->
+        DailyTask(
+            title = task.desc,
+            description = task.details.orEmpty(),
+            estimatedDuration = formatEstimatedTime(estimateTaskDurationMinutes(task)),
+            priority = determineTaskPriority(task),
+            isCompleted = completedTaskIds.contains(task.id)
+        )
     }
 
-    // Use the current week from WeeklyStudyPlan parameter
+    val materials = planTasks
+        .flatMap { buildStudyMaterials(it) }
+        .distinctBy { it.title to it.type }
 
-    // Assign books based on the 30-week curriculum progression
-    val book = when (currentWeek) {
-        in 1..8 -> StudyBook.RED_BOOK      // Weeks 1-8: Red Book Foundation
-        in 9..18 -> StudyBook.BLUE_BOOK    // Weeks 9-18: Blue Book Intermediate
-        in 19..26 -> StudyBook.GREEN_BOOK  // Weeks 19-26: Green Book Advanced
-        else -> StudyBook.RED_BOOK         // Weeks 27-30: Exam Camp (mixed/review - default to Red for now)
-    }
-
-    // Create realistic units based on the curriculum and book progression
-    val units = when (// Red Book: Units 1-115 across 8 weeks
-        book) {
-        StudyBook.RED_BOOK -> {
-            val baseUnitNumber = (currentWeek - 1) * 14 + dayIndex * 2 + 1 // Roughly 14 units per week
-            listOf(
-                StudyUnit(
-                    title = when (baseUnitNumber % 10) {
-                        0 -> "Present Simple and Continuous"
-                        1 -> "Past Simple and Continuous"
-                        2 -> "Present Perfect"
-                        3 -> "Modal Verbs"
-                        4 -> "Future Forms"
-                        5 -> "Conditionals"
-                        6 -> "Passive Voice"
-                        7 -> "Reported Speech"
-                        8 -> "Gerunds and Infinitives"
-                        else -> "Questions and Negatives"
-                    },
-                    unitNumber = minOf(baseUnitNumber, 115),
-                    pages = "${baseUnitNumber * 2}-${baseUnitNumber * 2 + 3}",
-                    exercises = listOf("${baseUnitNumber}.1", "${baseUnitNumber}.2"),
-                    isCompleted = dailySchedule.completionPercentage > 50
-                )
-            )
-        }
-
-        // Blue Book: Intermediate level topics
-        StudyBook.BLUE_BOOK -> {
-            val weekInBlueBook = currentWeek - 8 // Blue book starts at week 9
-            listOf(
-                StudyUnit(
-                    title = when (weekInBlueBook) {
-                        1 -> "Tenses Review (All Tenses Comparison)"
-                        2 -> "Future in Detail (Continuous/Perfect)"
-                        3 -> "Modals 1 (Ability, Permission, Advice)"
-                        4 -> "Modals 2 (Deduction, Obligation, Regret)"
-                        5 -> "Conditionals & Wish (All Types)"
-                        6 -> "Passive Voice (All Tenses) & 'have something done'"
-                        7 -> "Reported Speech (Questions, Commands, Advanced)"
-                        8 -> "Noun Clauses & Relative Clauses"
-                        9 -> "Gerunds & Infinitives (Advanced patterns)"
-                        10 -> "Conjunctions & Connectors"
-                        else -> "Advanced Grammar Review"
-                    },
-                    unitNumber = weekInBlueBook * 10 + dayIndex,
-                    pages = "${weekInBlueBook * 8}-${weekInBlueBook * 8 + 7}",
-                    exercises = listOf("${weekInBlueBook}.1", "${weekInBlueBook}.2", "${weekInBlueBook}.3"),
-                    isCompleted = dailySchedule.completionPercentage > 50
-                )
-            )
-        }
-
-        // Green Book: Advanced level topics
-        StudyBook.GREEN_BOOK -> {
-            val weekInGreenBook = currentWeek - 18 // Green book starts at week 19
-            listOf(
-                StudyUnit(
-                    title = when (weekInGreenBook) {
-                        1 -> "Advanced Tense Nuances & Narrative Tenses"
-                        2 -> "Inversion & Emphasis (Not only, Hardly...)"
-                        3 -> "Advanced Modals (Speculation, Hypothetical)"
-                        4 -> "Participle Clauses (-ing and -ed clauses)"
-                        5 -> "Advanced Connectors & Discourse Markers"
-                        6 -> "Hypothetical Meaning & Subjunctives"
-                        7 -> "Adjectives & Adverbs (Advanced Uses)"
-                        else -> "Prepositions & Phrasal Verbs (Advanced)"
-                    },
-                    unitNumber = weekInGreenBook * 5 + dayIndex,
-                    pages = "${weekInGreenBook * 6}-${weekInGreenBook * 6 + 5}",
-                    exercises = listOf("${weekInGreenBook}.1", "${weekInGreenBook}.2"),
-                    isCompleted = dailySchedule.completionPercentage > 50
-                )
-            )
-        }
-        else -> emptyList()
-    }
-
-    // No fabricated tasks - only show real user-created tasks
-    val tasks = emptyList<DailyTask>()
-
-    // No fabricated materials - only show real user-added materials
-    val materials = emptyList<StudyMaterial>()
-
-    // No fabricated notes - only show real user notes
-    val notes = ""
+    val units = extractStudyUnits(planTasks, completedTaskIds)
 
     return DailyStudyInfo(
-        weekTitle = "Week $currentWeek - ${book.description}",
+        weekTitle = dailySchedule.weekTitle,
         dayName = dailySchedule.dayName,
         date = dailySchedule.date,
-        book = book,
+        book = studyBookForWeek(dailySchedule.weekNumber),
         units = units,
         tasks = tasks,
         materials = materials,
-        estimatedTime = dailySchedule.estimatedTime,
+        estimatedTime = dailySchedule.estimatedTime.ifBlank { formatEstimatedTime(totalMinutes) },
         completionPercentage = dailySchedule.completionPercentage,
-        notes = notes
+        notes = ""
     )
 }
+
+private fun normalizeDayKey(raw: String): String {
+    val normalized = normalizeText(raw.trim())
+    return when {
+        normalized.startsWith("pazartesi") || normalized.startsWith("pzt") || normalized.startsWith("mon") -> "monday"
+        normalized.startsWith("sali") || normalized.startsWith("sal") || normalized.startsWith("tue") -> "tuesday"
+        normalized.startsWith("carsamba") || normalized.startsWith("car") || normalized.startsWith("wed") -> "wednesday"
+        normalized.startsWith("persembe") || normalized.startsWith("per") || normalized.startsWith("thu") -> "thursday"
+        normalized.startsWith("cuma") || normalized.startsWith("fri") -> "friday"
+        normalized.startsWith("cumartesi") || normalized.startsWith("cmt") || normalized.startsWith("sat") -> "saturday"
+        normalized.startsWith("pazar") || normalized.startsWith("sun") -> "sunday"
+        else -> normalized.ifEmpty { raw.lowercase(Locale.getDefault()) }
+    }
+}
+
+private fun normalizeText(value: String): String {
+    if (value.isEmpty()) return value
+    val lower = value.lowercase(Locale.getDefault())
+    val builder = StringBuilder(lower.length)
+    for (ch in lower) {
+        builder.append(
+            when (ch) {
+                '\u00E7', '\u00C7' -> 'c'
+                '\u011F', '\u011E' -> 'g'
+                '\u015F', '\u015E' -> 's'
+                '\u0131', '\u0130' -> 'i'
+                '\u00F6', '\u00D6' -> 'o'
+                '\u00FC', '\u00DC' -> 'u'
+                else -> ch
+            }
+        )
+    }
+    return builder.toString()
+}
+
+private fun formatEstimatedTime(minutes: Int): String {
+    if (minutes <= 0) return "-"
+    val hours = minutes / 60
+    val remainder = minutes % 60
+    return when {
+        hours > 0 && remainder > 0 -> "${hours}h ${remainder}m"
+        hours > 0 -> "${hours}h"
+        else -> "${remainder}m"
+    }
+}
+
+private fun determineTaskPriority(task: PlanTask): Priority {
+    val text = normalizeText(task.desc + " " + (task.details ?: ""))
+    return when {
+        listOf("deneme", "exam", "quiz", "test", "soru").any { text.contains(it) } -> Priority.HIGH
+        listOf("okuma", "reading", "dinleme", "listening", "analiz", "analysis").any { text.contains(it) } -> Priority.MEDIUM
+        else -> Priority.LOW
+    }
+}
+
+private fun estimateTaskDurationMinutes(task: PlanTask): Int {
+    val text = normalizeText(task.desc + " " + (task.details ?: ""))
+    val explicit = Regex("(\\d{2,3})\\s*(-\\s*(\\d{2,3}))?\\s*(dk|dakika|minute|min)", RegexOption.IGNORE_CASE)
+    explicit.find(text)?.let { match ->
+        val start = match.groupValues[1].toIntOrNull()
+        val end = match.groupValues.getOrNull(3)?.toIntOrNull()
+        if (start != null) {
+            return if (end != null) (start + end) / 2 else start
+        }
+    }
+    return when {
+        text.contains("tam deneme") || text.contains("full exam") -> 180
+        text.contains("mini deneme") || text.contains("mini exam") -> 70
+        text.contains("okuma") || text.contains("reading") -> 45
+        text.contains("kelime") || text.contains("vocab") -> 30
+        text.contains("analiz") || text.contains("analysis") -> 30
+        text.contains("dinleme") || text.contains("listening") -> 30
+        text.contains("gramer") || text.contains("grammar") -> 40
+        text.contains("pratik") || text.contains("practice") || text.contains("drill") -> 25
+        else -> 30
+    }
+}
+
+private fun buildStudyMaterials(task: PlanTask): List<StudyMaterial> {
+    val details = task.details.orEmpty()
+    val normalized = normalizeText(task.desc + " " + details)
+    val url = Regex("(https?://\\S+)").find(details)?.value ?: ""
+    val type = when {
+        listOf("video", "dizi", "watch", "youtube").any { normalized.contains(it) } -> MaterialType.VIDEO
+        listOf("podcast", "dinle", "listening", "audio").any { normalized.contains(it) } -> MaterialType.AUDIO
+        listOf("pdf", "kitap", "book", "dokuman", "document").any { normalized.contains(it) } -> MaterialType.PDF
+        listOf("quiz", "deneme", "test", "soru").any { normalized.contains(it) } -> MaterialType.QUIZ
+        listOf("alistirma", "pratik", "exercise", "practice", "drill").any { normalized.contains(it) } -> MaterialType.EXERCISE
+        else -> MaterialType.READING
+    }
+    return listOf(
+        StudyMaterial(
+            title = task.desc,
+            type = type,
+            url = url,
+            description = details
+        )
+    )
+}
+
+private fun extractStudyUnits(
+    planTasks: List<PlanTask>,
+    completedTaskIds: Set<String>
+): List<StudyUnit> {
+    val unitRegex = Regex("(?:unite|unit|units)[^0-9]*(\\d[\\d,\\s\\-]*)", RegexOption.IGNORE_CASE)
+    val numberRegex = Regex("\\d+")
+    val pagesRegex = Regex("(?:sayfa|page|pages)[:\\s]*(\\d+(?:-\\d+)?)", RegexOption.IGNORE_CASE)
+    val exerciseRegex = Regex("(?:exercise|alistirma|practice)[:\\s]*(\\d+(?:[\\-,]\\s*\\d+)*)", RegexOption.IGNORE_CASE)
+
+    val units = mutableListOf<StudyUnit>()
+    planTasks.forEach { task ->
+        val details = task.details ?: return@forEach
+        val normalized = normalizeText(details)
+        val unitMatch = unitRegex.find(normalized)
+        val numbers = unitMatch
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.let { numberRegex.findAll(it).mapNotNull { match -> match.value.toIntOrNull() }.toList() }
+            .orEmpty()
+
+        if (numbers.isEmpty()) return@forEach
+
+        val pages = pagesRegex.find(normalized)?.groupValues?.getOrNull(1) ?: "-"
+        val exercises = exerciseRegex.find(normalized)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.let { numberRegex.findAll(it).map { match -> match.value }.toList() }
+            ?: emptyList()
+
+        numbers.forEach { unitNumber ->
+            units += StudyUnit(
+                title = task.desc,
+                unitNumber = unitNumber,
+                pages = pages,
+                exercises = exercises,
+                isCompleted = completedTaskIds.contains(task.id)
+            )
+        }
+    }
+
+    return units.distinctBy { it.unitNumber to it.title }
+}
+
+private fun studyBookForWeek(weekNumber: Int): StudyBook = when (weekNumber) {
+    in 1..8 -> StudyBook.RED_BOOK
+    in 9..18 -> StudyBook.BLUE_BOOK
+    in 19..26 -> StudyBook.GREEN_BOOK
+    else -> StudyBook.RED_BOOK
+}
+
+@Composable
+private fun localizedDayLabel(dayKey: String): String {
+    return when (dayKey.lowercase(Locale.getDefault())) {
+        "monday" -> stringResource(com.mtlc.studyplan.R.string.monday)
+        "tuesday" -> stringResource(com.mtlc.studyplan.R.string.tuesday)
+        "wednesday" -> stringResource(com.mtlc.studyplan.R.string.wednesday)
+        "thursday" -> stringResource(com.mtlc.studyplan.R.string.thursday)
+        "friday" -> stringResource(com.mtlc.studyplan.R.string.friday)
+        "saturday" -> stringResource(com.mtlc.studyplan.R.string.saturday)
+        "sunday" -> stringResource(com.mtlc.studyplan.R.string.sunday)
+        else -> dayKey.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
+    }
+}
+
 
 // Additional composables for other sections...
 
@@ -830,7 +1079,7 @@ private fun DailyScheduleView(
     // Daily content
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         // Header with day info
@@ -870,83 +1119,8 @@ private fun DailyStudyHeader(
     dayInfo: DailyStudyInfo,
     onBackToWeekly: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = dayInfo.book.color.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = dayInfo.dayName,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = dayInfo.book.color
-                    )
-                    Text(
-                        text = dayInfo.date,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = dayInfo.weekTitle,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-
-                TextButton(onClick = onBackToWeekly) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(stringResource(com.mtlc.studyplan.R.string.tasks_tab_weekly))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Progress and time
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_estimated_time, dayInfo.estimatedTime),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Surface(
-                    color = when {
-                        dayInfo.completionPercentage >= 100 -> MaterialTheme.colorScheme.primary
-                        dayInfo.completionPercentage > 0 -> MaterialTheme.colorScheme.tertiary
-                        else -> MaterialTheme.colorScheme.outline
-                    },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "${dayInfo.completionPercentage}%",
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-        }
-    }
+    // Empty header - button removed per user request
+    Spacer(modifier = Modifier.height(0.dp))
 }
 
 @Composable
@@ -957,7 +1131,7 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(12.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -965,49 +1139,49 @@ private fun StudyBookCard(book: StudyBook, units: List<StudyUnit>) {
             ) {
                 Surface(
                     color = book.color,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.size(48.dp)
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
                             text = book.name.first().toString(),
                             color = Color.White,
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = book.name,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = book.description,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
             if (units.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = stringResource(com.mtlc.studyplan.R.string.tasks_daily_units_title),
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 units.forEach { unit ->
                     StudyUnitItem(unit)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
         }
@@ -1284,6 +1458,8 @@ private fun NotesSection(notes: String) {
         }
     }
 }
+
+
 
 
 

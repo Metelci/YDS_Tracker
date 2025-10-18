@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 // removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -64,13 +65,14 @@ fun ExamDetailsScreen(
 
     // Refresh exam data when screen loads and try fetching official dates
     LaunchedEffect(Unit) {
-        examCountdownManager.forceRefresh()
-        // Try best‑effort refresh from ÖSYM; fall back to built‑in data if parsing fails
-        runCatching {
-            val fetched = OsymExamCalendarClient.fetchYdsExams()
-            if (fetched.isNotEmpty()) {
-                allUpcomingExams = fetched
-            }
+        val fetched = runCatching { OsymExamCalendarClient.fetchYdsExams() }
+            .getOrElse { emptyList() }
+        if (fetched.isNotEmpty()) {
+            allUpcomingExams = fetched
+            examCountdownManager.refreshNow()
+        } else {
+            YdsExamService.refreshFromNetwork()
+            examCountdownManager.refreshNow()
         }
     }
 
@@ -78,9 +80,7 @@ fun ExamDetailsScreen(
         // Custom YDS Exam Information Top Bar (matching Settings topbar design)
         YdsExamGradientTopBar(
             onNavigateBack = onNavigateBack,
-            daysRemaining = selectedExam?.let { exam ->
-                ChronoUnit.DAYS.between(LocalDate.now(), exam.examDate).toInt()
-            } ?: 0
+            daysRemaining = examData.daysToExam.coerceAtLeast(0)
         )
 
         Column(
@@ -141,7 +141,7 @@ fun ExamDetailsScreen(
 
             // Selected Exam Details
             selectedExam?.let { exam ->
-                val daysToExam = ChronoUnit.DAYS.between(LocalDate.now(), exam.examDate).toInt()
+                val daysToExam = examData.daysToExam.coerceAtLeast(0)
                 val registrationStatus = getRegistrationStatusForExam(exam)
 
                 // Countdown Card
@@ -566,7 +566,7 @@ private fun YdsExamGradientTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Box(
             modifier = Modifier
@@ -640,4 +640,8 @@ private fun YdsExamGradientTopBar(
         }
     }
 }
+
+
+
+
 

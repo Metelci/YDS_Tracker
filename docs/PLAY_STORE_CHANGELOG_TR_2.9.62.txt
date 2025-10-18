@@ -1,0 +1,11 @@
+2.9.62 (90) - Hata Düzeltme ve Arayüz İyileştirmeleri
+
+• Haftalık Çalışma Planı üst çubuğu, “Çalışma Planı Genel Bakış” üst çubuğuyla aynı tasarım ve metinleri kullanacak şekilde güncellendi.
+• Genel Bakış > Günlük sekmesindeki büyük başlık kaldırıldı; onun yerine küçük ve sade bir “Haftalık” geri düğmesi (pill) gösteriliyor.
+• Alt gezinme çubuğu (Bottom Nav) “frosted” görünüm, yarı saydam gradyan ve daha güçlü gölge ile yenilendi; uygulamanın altına sabitlendi ve sistem gezinme alanıyla çakışmıyor.
+• Üst çubukların sayfa başına hizası düzeltildi; gereksiz durum çubuğu boşlukları kaldırıldı (Genel Bakış ve YDS Sınav Bilgisi sayfaları).
+• YDS geri sayımında “0 gün”a düşmeye neden olan durum düzeltildi: ÖSYM’den veri alımı yalnızca yaklaşan en az bir sınav bulunduğunda uygulanıyor.
+
+Notlar
+• Derleme şeması değiştirilmedi; uygulama temiz şekilde derleniyor.
+• Android sürümü: versionCode 90 / versionName 2.9.62.

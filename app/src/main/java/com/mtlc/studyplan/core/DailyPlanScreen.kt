@@ -106,7 +106,7 @@ fun DailyPlanScreen(
                     subtitle = "Week ${week?.week ?: weekIndex + 1}, Day ${dayIndex + 1}",
                     navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationClick = onNavigateBack,
-                    style = StudyPlanTopBarStyle.Tasks
+                    style = StudyPlanTopBarStyle.Home
                 )
             }
         ) { padding ->
@@ -329,3 +329,4 @@ private fun EmptyDailyTasks() {
         }
     }
 }
+

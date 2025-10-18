@@ -2,11 +2,16 @@ package com.mtlc.studyplan.data
 
 import android.content.Context
 import androidx.work.*
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Manager for exam countdown updates and background refresh
@@ -14,6 +19,7 @@ import java.util.concurrent.TimeUnit
  */
 class ExamCountdownManager(private val context: Context) {
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val _examData = MutableStateFlow(createCurrentExamData())
     val examData: StateFlow<ExamTracker> = _examData.asStateFlow()
 
@@ -22,7 +28,9 @@ class ExamCountdownManager(private val context: Context) {
         scheduleDailyCountdownUpdate()
 
         // Initial update
-        updateExamData()
+        scope.launch {
+            refreshNow(forceNetwork = true)
+        }
     }
 
     /**
@@ -54,7 +62,9 @@ class ExamCountdownManager(private val context: Context) {
      * Update exam data (call this when app becomes active)
      */
     fun updateExamData() {
-        _examData.value = createCurrentExamData()
+        scope.launch {
+            refreshNow(forceNetwork = false)
+        }
     }
 
     /**
@@ -93,7 +103,19 @@ class ExamCountdownManager(private val context: Context) {
      * Force refresh exam data (useful for testing or manual refresh)
      */
     fun forceRefresh() {
-        updateExamData()
+        scope.launch {
+            refreshNow(forceNetwork = true)
+        }
+    }
+
+    suspend fun refreshNow(forceNetwork: Boolean = false) {
+        val fetchForce = if (forceNetwork) true else false
+        if (fetchForce) {
+            YdsExamService.refreshFromNetwork(force = true)
+        } else {
+            YdsExamService.refreshFromNetwork()
+        }
+        _examData.value = createCurrentExamData()
     }
 
     companion object {
@@ -120,7 +142,9 @@ class ExamCountdownWorker(
         return try {
             // Update exam data in the background
             val manager = ExamCountdownManager.getInstance(applicationContext)
-            manager.updateExamData()
+            runBlocking {
+                manager.refreshNow()
+            }
 
             Result.success()
         } catch (e: Exception) {

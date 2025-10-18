@@ -22,11 +22,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -40,11 +42,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -126,34 +130,42 @@ fun AppNavHost(
         Triple("tasks", Icons.Filled.CheckCircle, stringResource(R.string.nav_tasks)),
         Triple("settings", Icons.Filled.Settings, stringResource(R.string.nav_settings)),
     )
-    Scaffold(
-        bottomBar = {
-            val currentBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = currentBackStackEntry?.destination?.route
-            if (navigationHelper.shouldShowBottomNav(currentRoute)) {
-                val resolvedRoute = navigationHelper.getDefaultRouteIfInvalid(currentRoute)
-                com.mtlc.studyplan.ui.components.StudyBottomNav(
-                    currentRoute = resolvedRoute,
-                    tabs = tabs,
-                    onTabSelected = { route ->
-                        if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        navController.navigate(route) {
-                            popUpTo("home")
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
-        },
-    ) { padding ->
-        navController.currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
 
+    // Extract navigation state outside Scaffold for floating nav bar
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route ?: WELCOME_ROUTE
+    val shouldShowNav = navigationHelper.shouldShowBottomNav(currentRoute)
+    val resolvedRoute = navigationHelper.getDefaultRouteIfInvalid(currentRoute)
+
+    Scaffold(bottomBar = {
+        if (shouldShowNav) {
+            com.mtlc.studyplan.ui.components.StudyBottomNav(
+                currentRoute = resolvedRoute,
+                tabs = tabs,
+                onTabSelected = { route ->
+                    if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    navController.navigate(route) {
+                        popUpTo("home")
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+    }) { padding ->
         com.mtlc.studyplan.ui.components.GradientBackground {
-            NavHost(
-                navController = navController,
-                startDestination = WELCOME_ROUTE,
-                modifier = Modifier.padding(padding)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             ) {
+                // NavHost with bottom padding to prevent content from being hidden under floating nav bar
+                NavHost(
+                    navController = navController,
+                    startDestination = WELCOME_ROUTE,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        
+                ) {
             composable(WELCOME_ROUTE) {
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val repo = remember { OnboardingRepository(context.settingsDataStore) }
@@ -423,97 +435,8 @@ fun AppNavHost(
                 }
             )
         }
-            }
         }
-    }
-}
-
-@Composable
-private fun EnhancedNavigationBar(
-    currentRoute: String,
-    tabs: List<Triple<String, androidx.compose.ui.graphics.vector.ImageVector, String>>,
-    onTabSelected: (String) -> Unit
-) {
-    NavigationBar(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        tabs.forEachIndexed { index, (route, icon, label) ->
-            val isSelected = currentRoute.startsWith(route)
-
-            // Enhanced selection animation
-            val selectionScale by animateFloatAsState(
-                targetValue = if (isSelected) 1.1f else 1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
-                ),
-                label = "navigation_selection_scale_$index"
-            )
-
-            // Color transition for icon
-            val iconColor by animateColorAsState(
-                targetValue = if (isSelected)
-                    MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-                animationSpec = tween(durationMillis = 300),
-                label = "navigation_icon_color_$index"
-            )
-
-            // Indicator animation
-            val indicatorAlpha by animateFloatAsState(
-                targetValue = if (isSelected) 1f else 0f,
-                animationSpec = tween(durationMillis = 400),
-                label = "navigation_indicator_alpha_$index"
-            )
-
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = { onTabSelected(route) },
-                icon = {
-                    Box {
-                        // Animated indicator behind icon
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer.copy(
-                                        alpha = indicatorAlpha * 0.3f
-                                    ),
-                                    shape = CircleShape
-                                )
-                                .scale(selectionScale)
-                        )
-
-                        // Icon with enhanced animations
-                        Icon(
-                            icon,
-                            contentDescription = label,
-                            tint = iconColor,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .align(Alignment.Center)
-                                .scale(selectionScale)
-                            )
-                    }
-                },
-                label = {
-                    Text(
-                        text = label,
-                        color = if (isSelected)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .scale(if (isSelected) 1.05f else 1f)
-                            .animateContentSize(
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioNoBouncy,
-                                    stiffness = Spring.StiffnessMedium
-                                )
-                            )
-                    )
-                }
-            )
-        }
-    }
+            } // End Box
+        } // End GradientBackground
+    } // End Scaffold
 }

@@ -338,7 +338,7 @@ fun OriginalSettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(24.dp)) }
+            item { Spacer(modifier = Modifier.height(12.dp)) }
 
             // Footer
             item {
