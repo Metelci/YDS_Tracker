@@ -300,7 +300,6 @@
   <string name="study_overview_title">Çalışma Planı Özeti</string>
   <string name="study_overview_subtitle">YDS hazırlık ilerlemenizi takip edin</string>
   <string name="study_ready_to_plan">Çalışma oturumunuzu planlamaya hazır</string>
-  <string name="study_tasks_summary">%1$d görev &#8226; %2$s</string>
   
   <!-- Ödüller/Başarılar (award_<id>_title/desc) -->
   <!-- Görev Tamamlama Dönüm Noktaları -->

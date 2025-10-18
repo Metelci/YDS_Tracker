@@ -420,12 +420,22 @@ private fun DailyScheduleCard(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Text(
-                    text = if (dailySchedule.tasks.isEmpty() && dailySchedule.estimatedTime.isEmpty()) {
+                val summaryText = if (dailySchedule.tasks.isEmpty() && dailySchedule.estimatedTime.isEmpty()) {
+                    stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
+                } else {
+                    val parts = mutableListOf<String>()
+                    if (dailySchedule.tasks.isNotEmpty()) {
+                        parts += stringResource(com.mtlc.studyplan.R.string.tasks_week_task_count, dailySchedule.tasks.size)
+                    }
+                    if (dailySchedule.estimatedTime.isNotEmpty()) {
+                        parts += dailySchedule.estimatedTime
+                    }
+                    parts.joinToString(" • ").ifEmpty {
                         stringResource(com.mtlc.studyplan.R.string.study_ready_to_plan)
-                    } else {
-                        stringResource(com.mtlc.studyplan.R.string.study_tasks_summary, dailySchedule.tasks.size, dailySchedule.estimatedTime)
-                    },
+                    }
+                }
+                Text(
+                    text = summaryText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
