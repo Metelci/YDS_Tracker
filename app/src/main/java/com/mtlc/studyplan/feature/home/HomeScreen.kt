@@ -30,6 +30,11 @@ import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.os.ConfigurationCompat
+import java.util.Locale
 
 
 @Composable
@@ -169,6 +174,17 @@ fun HomeScreen() {
                     val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
                     val registrationStatus = YdsExamService.getRegistrationStatus()
 
+                    // Get current locale for date formatting
+                    val configuration = LocalConfiguration.current
+                    val locale = ConfigurationCompat.getLocales(configuration)[0] ?: Locale.getDefault()
+                    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)
+
+                    // Format dates according to locale
+                    val formattedExamDate = nextExam.examDate.format(dateFormatter)
+                    val formattedRegStart = nextExam.registrationStart.format(dateFormatter)
+                    val formattedRegEnd = nextExam.registrationEnd.format(dateFormatter)
+                    val formattedLateRegEnd = nextExam.lateRegistrationEnd.format(dateFormatter)
+
                     // Get localized status message
                     val statusMessage = when {
                         daysToExam == 0L -> stringResource(R.string.exam_status_exam_day)
@@ -191,7 +207,7 @@ fun HomeScreen() {
                     ) {
                         Column(Modifier.padding(12.dp)) {
                             Text(stringResource(R.string.home_exam_card_title, nextExam.name), style = MaterialTheme.typography.titleSmall)
-                            Text(stringResource(R.string.home_exam_card_date, nextExam.examDate), style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.home_exam_card_date, formattedExamDate), style = MaterialTheme.typography.bodySmall)
                             Text(stringResource(R.string.home_exam_card_status, statusMessage), style = MaterialTheme.typography.bodySmall)
                             LinearProgressIndicator(
                                 progress = { if (daysToExam > 0) (100 - daysToExam.coerceAtMost(100)) / 100f else 1f },
@@ -206,12 +222,12 @@ fun HomeScreen() {
                             // Show registration info if relevant
                             when (registrationStatus) {
                                 YdsExamService.RegistrationStatus.OPEN -> {
-                                    Text(stringResource(R.string.home_exam_card_registration_period, nextExam.registrationStart, nextExam.registrationEnd),
+                                    Text(stringResource(R.string.home_exam_card_registration_period, formattedRegStart, formattedRegEnd),
                                          style = MaterialTheme.typography.bodySmall,
                                          color = MaterialTheme.colorScheme.primary)
                                 }
                                 YdsExamService.RegistrationStatus.LATE_REGISTRATION -> {
-                                    Text(stringResource(R.string.home_exam_card_late_registration, nextExam.lateRegistrationEnd),
+                                    Text(stringResource(R.string.home_exam_card_late_registration, formattedLateRegEnd),
                                          style = MaterialTheme.typography.bodySmall,
                                          color = MaterialTheme.colorScheme.error)
                                 }

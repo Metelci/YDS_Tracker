@@ -258,6 +258,117 @@
   <string name="study_analytics">Çalışma Analitiği</string>
   <string name="analytics_loading_results">\"%s\" için arama sonuçları yükleniyor...</string>
   <string name="analytics_recent_achievements_title">Son Basarilar</string>
+  <!-- YDS Sınav Bilgileri (Turkish) -->
+  <string name="yds_exam_info_title">YDS Sınav Bilgileri</string>
+  <string name="yds_exam_info_subtitle">Sınav hazırlığını takip et</string>
+  <string name="upcoming_yds_exams">Yaklaşan YDS Sınavları</string>
+  <string name="no_exams_cd">Sınav Yok</string>
+  <string name="no_upcoming_exams_title">Yaklaşan YDS Sınavı Yok</string>
+  <string name="no_upcoming_exams_message">Yeni sınav duyuruları için lütfen daha sonra tekrar kontrol edin</string>
+  <string name="days_remaining">Kalan Gün</string>
+  <string name="days_remaining_chip">%1$d gün kaldı</string>
+  <string name="exam_information">Sınav Bilgileri</string>
+  <string name="registration_information">Kayıt Bilgileri</string>
+  <string name="exam_name_label">Sınav Adı</string>
+  <string name="yds_exam_default">YDS Sınavı</string>
+  <string name="exam_date_label">Sınav Tarihi</string>
+  <string name="exam_time_label">Sınav Saati</string>
+  <string name="exam_time_value">10:15</string>
+  <string name="exam_duration_label">Süre</string>
+  <string name="exam_duration_value">3 saat</string>
+  <string name="exam_question_count_label">Soru Sayısı</string>
+  <string name="exam_question_count_value">80 soru</string>
+  <string name="registration_status_label">Kayıt Durumu</string>
+  <string name="registration_status_open">Açık</string>
+  <string name="registration_status_closed">Kapalı</string>
+  <string name="registration_status_late">Geç Kayıt</string>
+  <string name="registration_status_opens_soon">Yakında Açılacak</string>
+  <string name="registration_status_none">Yaklaşan Sınav Yok</string>
+  <string name="application_period_label">Başvuru Dönemi</string>
+  <string name="late_registration_label">Geç Kayıt</string>
+  <string name="results_date_label">Sonuç Tarihi</string>
+  <string name="important_reminders">Önemli Hatırlatmalar</string>
+  <string name="tip_bring_id">Kimlik ve sınav belgesini yanınıza alın</string>
+  <string name="tip_arrive_early">Sınav saatinden 30 dakika önce ulaşın</string>
+  <string name="tip_bring_tools">HB kurşun kalem ve silgi getirin</string>
+  <string name="tip_turn_off_devices">Tüm elektronik cihazları kapatın</string>
+  <string name="tip_read_carefully">Soruları dikkatle okuyun</string>
+  <string name="apply">Başvur</string>
+  
+  <!-- Ödüller/Başarılar (award_<id>_title/desc) -->
+  <!-- Görev Tamamlama Dönüm Noktaları -->
+  <string name="award_task_starter_title">Başlangıç</string>
+  <string name="award_task_starter_desc">İlk görevinizi tamamlayın</string>
+  <string name="award_committed_learner_title">Kararlı Öğrenci</string>
+  <string name="award_committed_learner_desc">10 görev tamamlayın</string>
+  <string name="award_task_crusher_title">Görev Avcısı</string>
+  <string name="award_task_crusher_desc">25 görev tamamlayın</string>
+  <string name="award_task_master_title">Görev Ustası</string>
+  <string name="award_task_master_desc">50 görev tamamlayın</string>
+  <string name="award_century_maker_title">Yüz Görev Ustası</string>
+  <string name="award_century_maker_desc">100 görev tamamlayın</string>
+  <string name="award_task_legend_title">Görev Efsanesi</string>
+  <string name="award_task_legend_desc">250 görev tamamlayın</string>
+  <string name="award_unstoppable_title">Durdurulamaz</string>
+  <string name="award_unstoppable_desc">500 görev tamamlayın</string>
+
+  <!-- Seri Başarıları -->
+  <string name="award_streak_builder_title">Seri Kurucusu</string>
+  <string name="award_streak_builder_desc">3 günlük çalışma serisi koruyun</string>
+  <string name="award_streak_master_title">Seri Ustası</string>
+  <string name="award_streak_master_desc">7 günlük çalışma serisi koruyun</string>
+  <string name="award_week_warrior_title">Hafta Savaşçısı</string>
+  <string name="award_week_warrior_desc">14 günlük çalışma serisi koruyun</string>
+  <string name="award_monthly_champion_title">Aylık Şampiyon</string>
+  <string name="award_monthly_champion_desc">30 günlük çalışma serisi koruyun</string>
+  <string name="award_consistency_king_title">Tutarlılık Kralı</string>
+  <string name="award_consistency_king_desc">60 günlük çalışma serisi koruyun</string>
+  <string name="award_legendary_streak_title">Efsanevi Seri</string>
+  <string name="award_legendary_streak_desc">100 günlük çalışma serisi koruyun</string>
+
+  <!-- Zaman Bazlı Başarılar -->
+  <string name="award_early_bird_title">Erken Kuş</string>
+  <string name="award_early_bird_desc">09:00\'dan önce 5 görev tamamlayın</string>
+  <string name="award_night_owl_title">Gece Kuşu</string>
+  <string name="award_night_owl_desc">21:00\'dan sonra 10 görev tamamlayın</string>
+  <string name="award_weekday_warrior_title">Hafta İçi Savaşçısı</string>
+  <string name="award_weekday_warrior_desc">Hafta içi 20 görev tamamlayın</string>
+  <string name="award_weekend_hustler_title">Hafta Sonu Çalışkanı</string>
+  <string name="award_weekend_hustler_desc">Hafta sonu 10 görev tamamlayın</string>
+
+  <!-- Öncelik Bazlı Başarılar -->
+  <string name="award_priority_master_title">Öncelik Ustası</string>
+  <string name="award_priority_master_desc">10 yüksek öncelikli görev tamamlayın</string>
+  <string name="award_crisis_manager_title">Kriz Yöneticisi</string>
+  <string name="award_crisis_manager_desc">5 kritik öncelikli görev tamamlayın</string>
+
+  <!-- Kategori Bazlı Başarılar -->
+  <string name="award_vocabulary_wizard_title">Kelime Büyücüsü</string>
+  <string name="award_vocabulary_wizard_desc">25 kelime görevi tamamlayın</string>
+  <string name="award_grammar_guru_title">Gramer Gurusu</string>
+  <string name="award_grammar_guru_desc">25 gramer görevi tamamlayın</string>
+  <string name="award_reading_expert_title">Okuma Uzmanı</string>
+  <string name="award_reading_expert_desc">25 okuma görevi tamamlayın</string>
+  <string name="award_listening_master_title">Dinleme Ustası</string>
+  <string name="award_listening_master_desc">25 dinleme görevi tamamlayın</string>
+  <string name="award_yds_allstar_title">YDS Yıldızı</string>
+  <string name="award_yds_allstar_desc">Her YDS kategorisinde en az 10 görev tamamlayın</string>
+
+  <!-- Hız ve Verimlilik -->
+  <string name="award_speed_demon_title">Hız Canavarı</string>
+  <string name="award_speed_demon_desc">Bir günde 5 görev tamamlayın</string>
+  <string name="award_marathon_runner_title">Maraton Koşucusu</string>
+  <string name="award_marathon_runner_desc">Bir günde 10 görev tamamlayın</string>
+
+  <!-- Puanlar ve Ödüller -->
+  <string name="award_point_collector_title">Puan Toplayıcı</string>
+  <string name="award_point_collector_desc">Toplam 500 puan kazanın</string>
+  <string name="award_point_master_title">Puan Ustası</string>
+  <string name="award_point_master_desc">Toplam 1000 puan kazanın</string>
+  <string name="award_point_legend_title">Puan Efsanesi</string>
+  <string name="award_point_legend_desc">Toplam 2500 puan kazanın</string>
+  <string name="award_point_tycoon_title">Puan Baronu</string>
+  <string name="award_point_tycoon_desc">Toplam 5000 puan kazanın</string>
   <string name="time_by_skill">Becereğe Göre Zaman</string>
   <string name="weekly_study_minutes">Haftalık Çalışma Dakikaları</string>
   <string name="performance_insights">Performans İçgörüleri</string>

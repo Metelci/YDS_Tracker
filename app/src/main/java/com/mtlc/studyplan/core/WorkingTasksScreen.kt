@@ -1597,15 +1597,29 @@ private fun AchievementCard(
                 Spacer(Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
+                    val context = LocalContext.current
+                    // Resolve localized title/description via resource keys: award_<id>_title/desc
+                    val titleResId = context.resources.getIdentifier(
+                        "award_${achievement.id}_title",
+                        "string",
+                        context.packageName
+                    )
+                    val descResId = context.resources.getIdentifier(
+                        "award_${achievement.id}_desc",
+                        "string",
+                        context.packageName
+                    )
+                    val localizedTitle = if (titleResId != 0) stringResource(id = titleResId) else achievement.title
+                    val localizedDesc = if (descResId != 0) stringResource(id = descResId) else achievement.description
                     Text(
-                        text = achievement.title,
+                        text = localizedTitle,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
                     )
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = achievement.description,
+                        text = localizedDesc,
                         fontSize = 13.sp,
                         color = if (achievement.isUnlocked) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                         maxLines = 2

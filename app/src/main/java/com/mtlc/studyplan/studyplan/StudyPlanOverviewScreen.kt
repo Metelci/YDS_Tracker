@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 // removed luminance-based dark theme checks
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -184,12 +183,12 @@ private fun StudyPlanTabRow(
     onTabSelected: (StudyPlanTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-        contentPadding = PaddingValues(horizontal = 4.dp)
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(StudyPlanTab.entries) { tab ->
+        StudyPlanTab.entries.forEach { tab ->
             StudyPlanTabChip(
                 tab = tab,
                 isSelected = selectedTab == tab,
@@ -297,14 +296,25 @@ private fun WeeklyScheduleView(
 private fun CurrentWeekCard(
     taskStats: TaskStats
 ) {
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val gradientBrush = Brush.linearGradient(
+        colors = listOf(
+            primaryContainer,
+            primaryContainer.copy(alpha = 0.7f)
+        ),
+        start = Offset(0f, 0f),
+        end = Offset(1000f, 1000f)
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(gradientBrush)
                 .padding(12.dp)
         ) {
             Row(

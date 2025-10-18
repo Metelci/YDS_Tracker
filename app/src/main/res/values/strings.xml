@@ -40,6 +40,118 @@
     <string name="application_started">applications started today!</string>
     <string name="application_deadline_today">today is the last day for applications!</string>
 
+    <!-- YDS Exam Info (English) -->
+    <string name="yds_exam_info_title">YDS Exam Information</string>
+    <string name="yds_exam_info_subtitle">Track your exam preparation</string>
+    <string name="upcoming_yds_exams">Upcoming YDS Exams</string>
+    <string name="no_exams_cd">No Exams</string>
+    <string name="no_upcoming_exams_title">No Upcoming YDS Exams</string>
+    <string name="no_upcoming_exams_message">Check back later for new exam announcements from ÖSYM</string>
+    <string name="days_remaining">Days Remaining</string>
+    <string name="days_remaining_chip">%1$d days remaining</string>
+    <string name="exam_information">Exam Information</string>
+    <string name="registration_information">Registration Information</string>
+    <string name="exam_name_label">Exam Name</string>
+    <string name="yds_exam_default">YDS Exam</string>
+    <string name="exam_date_label">Exam Date</string>
+    <string name="exam_time_label">Exam Time</string>
+    <string name="exam_time_value">10:15</string>
+    <string name="exam_duration_label">Duration</string>
+    <string name="exam_duration_value">3 hours</string>
+    <string name="exam_question_count_label">Question Count</string>
+    <string name="exam_question_count_value">80 questions</string>
+    <string name="registration_status_label">Registration Status</string>
+    <string name="registration_status_open">Open</string>
+    <string name="registration_status_closed">Closed</string>
+    <string name="registration_status_late">Late Registration</string>
+    <string name="registration_status_opens_soon">Opens Soon</string>
+    <string name="registration_status_none">No Upcoming Exam</string>
+    <string name="application_period_label">Application Period</string>
+    <string name="late_registration_label">Late Registration</string>
+    <string name="results_date_label">Results Date</string>
+    <string name="important_reminders">Important Reminders</string>
+    <string name="tip_bring_id">Bring your ID and exam document</string>
+    <string name="tip_arrive_early">Arrive 30 minutes before exam time</string>
+    <string name="tip_bring_tools">Bring HB pencil and eraser</string>
+    <string name="tip_turn_off_devices">Turn off all electronic devices</string>
+    <string name="tip_read_carefully">Read questions carefully</string>
+    <string name="apply">Apply</string>
+
+    <!-- Awards/Achievements (localized via award_<id>_title/desc) -->
+    <!-- Task Completion Milestones -->
+    <string name="award_task_starter_title">Getting Started</string>
+    <string name="award_task_starter_desc">Complete your first task</string>
+    <string name="award_committed_learner_title">Committed Learner</string>
+    <string name="award_committed_learner_desc">Complete 10 tasks</string>
+    <string name="award_task_crusher_title">Task Crusher</string>
+    <string name="award_task_crusher_desc">Complete 25 tasks</string>
+    <string name="award_task_master_title">Task Master</string>
+    <string name="award_task_master_desc">Complete 50 tasks</string>
+    <string name="award_century_maker_title">Century Maker</string>
+    <string name="award_century_maker_desc">Complete 100 tasks</string>
+    <string name="award_task_legend_title">Task Legend</string>
+    <string name="award_task_legend_desc">Complete 250 tasks</string>
+    <string name="award_unstoppable_title">Unstoppable</string>
+    <string name="award_unstoppable_desc">Complete 500 tasks</string>
+
+    <!-- Streak Achievements -->
+    <string name="award_streak_builder_title">Streak Builder</string>
+    <string name="award_streak_builder_desc">Maintain a 3-day study streak</string>
+    <string name="award_streak_master_title">Streak Master</string>
+    <string name="award_streak_master_desc">Maintain a 7-day study streak</string>
+    <string name="award_week_warrior_title">Week Warrior</string>
+    <string name="award_week_warrior_desc">Maintain a 14-day study streak</string>
+    <string name="award_monthly_champion_title">Monthly Champion</string>
+    <string name="award_monthly_champion_desc">Maintain a 30-day study streak</string>
+    <string name="award_consistency_king_title">Consistency King</string>
+    <string name="award_consistency_king_desc">Maintain a 60-day study streak</string>
+    <string name="award_legendary_streak_title">Legendary Streak</string>
+    <string name="award_legendary_streak_desc">Maintain a 100-day study streak</string>
+
+    <!-- Time-Based Achievements -->
+    <string name="award_early_bird_title">Early Bird</string>
+    <string name="award_early_bird_desc">Complete 5 tasks before 9 AM</string>
+    <string name="award_night_owl_title">Night Owl</string>
+    <string name="award_night_owl_desc">Complete 10 tasks after 9 PM</string>
+    <string name="award_weekday_warrior_title">Weekday Warrior</string>
+    <string name="award_weekday_warrior_desc">Complete 20 tasks on weekdays</string>
+    <string name="award_weekend_hustler_title">Weekend Hustler</string>
+    <string name="award_weekend_hustler_desc">Complete 10 tasks on weekends</string>
+
+    <!-- Priority-Based Achievements -->
+    <string name="award_priority_master_title">Priority Master</string>
+    <string name="award_priority_master_desc">Complete 10 high-priority tasks</string>
+    <string name="award_crisis_manager_title">Crisis Manager</string>
+    <string name="award_crisis_manager_desc">Complete 5 critical-priority tasks</string>
+
+    <!-- Category-Based Achievements -->
+    <string name="award_vocabulary_wizard_title">Vocabulary Wizard</string>
+    <string name="award_vocabulary_wizard_desc">Complete 25 vocabulary tasks</string>
+    <string name="award_grammar_guru_title">Grammar Guru</string>
+    <string name="award_grammar_guru_desc">Complete 25 grammar tasks</string>
+    <string name="award_reading_expert_title">Reading Expert</string>
+    <string name="award_reading_expert_desc">Complete 25 reading tasks</string>
+    <string name="award_listening_master_title">Listening Master</string>
+    <string name="award_listening_master_desc">Complete 25 listening tasks</string>
+    <string name="award_yds_allstar_title">YDS All-Star</string>
+    <string name="award_yds_allstar_desc">Complete at least 10 tasks in each YDS category</string>
+
+    <!-- Speed & Efficiency -->
+    <string name="award_speed_demon_title">Speed Demon</string>
+    <string name="award_speed_demon_desc">Complete 5 tasks in one day</string>
+    <string name="award_marathon_runner_title">Marathon Runner</string>
+    <string name="award_marathon_runner_desc">Complete 10 tasks in one day</string>
+
+    <!-- Points & Rewards -->
+    <string name="award_point_collector_title">Point Collector</string>
+    <string name="award_point_collector_desc">Earn 500 total points</string>
+    <string name="award_point_master_title">Point Master</string>
+    <string name="award_point_master_desc">Earn 1000 total points</string>
+    <string name="award_point_legend_title">Point Legend</string>
+    <string name="award_point_legend_desc">Earn 2500 total points</string>
+    <string name="award_point_tycoon_title">Point Tycoon</string>
+    <string name="award_point_tycoon_desc">Earn 5000 total points</string>
+
     <string name="red_book">Red Book - Essential Grammar in Use</string>
     <string name="blue_book">Blue Book - English Grammar in Use</string>
     <string name="green_book">Green Book - Advanced Grammar in Use</string>

@@ -344,7 +344,25 @@ fun WorkingHomeScreen(
                         )
                         Spacer(modifier = Modifier.height(1.dp)) // Reduced spacing
                         Text(
-                            text = examTracker.statusMessage,
+                            text = run {
+                                val d = examTracker.daysToExam
+                                val status = com.mtlc.studyplan.data.YdsExamService.getRegistrationStatus()
+                                val resId = when {
+                                    d == 0 -> R.string.exam_status_exam_day
+                                    d < 0 -> R.string.exam_status_completed
+                                    d <= 7 -> R.string.exam_status_final_week
+                                    d <= 30 -> R.string.exam_status_almost_there
+                                    d <= 90 -> when (status) {
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.NOT_OPEN_YET -> R.string.exam_status_registration_opens_soon
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.OPEN -> R.string.exam_status_registration_open
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.LATE_REGISTRATION -> R.string.exam_status_late_registration
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.CLOSED -> R.string.exam_status_registration_closed
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> R.string.exam_status_preparation_time
+                                    }
+                                    else -> R.string.exam_status_long_term_planning
+                                }
+                                stringResource(resId)
+                            },
                             fontSize = 9.sp, // Reduced font size
                             color = Color(0xFF424242).copy(alpha = 0.7f),
                             textAlign = TextAlign.Center,
@@ -656,13 +674,31 @@ fun WorkingHomeScreen(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(R.string.eyds_exam_name),
+                            text = examTracker.examName,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF2C2C2C)
                         )
                         Text(
-                            text = examTracker.statusMessage,
+                            text = run {
+                                val d = examTracker.daysToExam
+                                val status = com.mtlc.studyplan.data.YdsExamService.getRegistrationStatus()
+                                val resId = when {
+                                    d == 0 -> R.string.exam_status_exam_day
+                                    d < 0 -> R.string.exam_status_completed
+                                    d <= 7 -> R.string.exam_status_final_week
+                                    d <= 30 -> R.string.exam_status_almost_there
+                                    d <= 90 -> when (status) {
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.NOT_OPEN_YET -> R.string.exam_status_registration_opens_soon
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.OPEN -> R.string.exam_status_registration_open
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.LATE_REGISTRATION -> R.string.exam_status_late_registration
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.CLOSED -> R.string.exam_status_registration_closed
+                                        com.mtlc.studyplan.data.YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> R.string.exam_status_preparation_time
+                                    }
+                                    else -> R.string.exam_status_long_term_planning
+                                }
+                                stringResource(resId)
+                            },
                             fontSize = 14.sp,
                             color = Color(0xFF424242).copy(alpha = 0.8f)
                         )

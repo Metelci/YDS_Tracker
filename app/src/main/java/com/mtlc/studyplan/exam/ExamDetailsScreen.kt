@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import com.mtlc.studyplan.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,7 +93,7 @@ fun ExamDetailsScreen(
             // Header
             if (allUpcomingExams.isNotEmpty()) {
                 Text(
-                    text = "Upcoming YDS Exams",
+                    text = stringResource(id = R.string.upcoming_yds_exams),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -113,13 +115,13 @@ fun ExamDetailsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.EventBusy,
-                            contentDescription = "No Exams",
+                            contentDescription = stringResource(id = R.string.no_exams_cd),
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No Upcoming YDS Exams",
+                            text = stringResource(id = R.string.no_upcoming_exams_title),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -127,7 +129,7 @@ fun ExamDetailsScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Check back later for new exam announcements from ÖSYM",
+                            text = stringResource(id = R.string.no_upcoming_exams_message),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -176,14 +178,14 @@ fun ExamDetailsScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Days Remaining",
+                                text = stringResource(id = R.string.days_remaining),
                                 fontSize = 16.sp,
                                 color = Color.White.copy(alpha = 0.9f),
                                 fontWeight = FontWeight.Medium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = getStatusMessageForExam(exam),
+                                text = stringResource(id = getStatusMessageResForExam(exam)),
                                 fontSize = 14.sp,
                                 color = Color.White.copy(alpha = 0.8f),
                                 textAlign = TextAlign.Center
@@ -194,30 +196,32 @@ fun ExamDetailsScreen(
 
                 // Enhanced Exam Information Card with Apply Button
                 ExamInfoCardWithAction(
-                    title = "Exam Information",
+                    title = stringResource(id = R.string.exam_information),
+                    isExamInfoCard = true,
                     icon = Icons.Filled.Event,
                     examSession = exam,
                     daysRemaining = daysToExam,
                     content = {
-                        InfoRow("Exam Name", exam.name.takeIf { it.isNotBlank() } ?: "YDS Exam")
-                        InfoRow("Exam Date", formatDate(exam.examDate))
-                        InfoRow("Exam Time", "10:15") // Standard YDS time
-                        InfoRow("Duration", "3 hours")
-                        InfoRow("Question Count", "80 questions")
+                        InfoRow(stringResource(id = R.string.exam_name_label), exam.name.takeIf { it.isNotBlank() } ?: stringResource(id = R.string.yds_exam_default))
+                        InfoRow(stringResource(id = R.string.exam_date_label), formatDate(exam.examDate))
+                        InfoRow(stringResource(id = R.string.exam_time_label), stringResource(id = R.string.exam_time_value))
+                        InfoRow(stringResource(id = R.string.exam_duration_label), stringResource(id = R.string.exam_duration_value))
+                        InfoRow(stringResource(id = R.string.exam_question_count_label), stringResource(id = R.string.exam_question_count_value))
                     }
                 )
 
                 // Enhanced Registration Information Card with Apply Button
                 ExamInfoCardWithAction(
-                    title = "Registration Information",
+                    title = stringResource(id = R.string.registration_information),
+                    isExamInfoCard = false,
                     icon = Icons.Filled.AssignmentInd,
                     examSession = exam,
                     daysRemaining = daysToExam,
                     content = {
-                        InfoRow("Registration Status", getRegistrationStatusText(registrationStatus))
-                        InfoRow("Application Period", formatDate(exam.registrationStart) + " - " + formatDate(exam.registrationEnd))
-                        InfoRow("Late Registration", "Until " + formatDate(exam.lateRegistrationEnd))
-                        InfoRow("Results Date", formatDate(exam.resultDate))
+                        InfoRow(stringResource(id = R.string.registration_status_label), getRegistrationStatusText(registrationStatus))
+                        InfoRow(stringResource(id = R.string.application_period_label), formatDate(exam.registrationStart) + " - " + formatDate(exam.registrationEnd))
+                        InfoRow(stringResource(id = R.string.late_registration_label), formatDate(exam.lateRegistrationEnd))
+                        InfoRow(stringResource(id = R.string.results_date_label), formatDate(exam.resultDate))
                     }
                 )
             }
@@ -225,17 +229,17 @@ fun ExamDetailsScreen(
 
             // Tips and Reminders Card
             ExamInfoCard(
-                title = "Important Reminders",
+                title = stringResource(id = R.string.important_reminders),
                 icon = Icons.Filled.Lightbulb,
                 content = {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        TipItem("📋", "Bring your ID and exam document")
-                        TipItem("⏰", "Arrive 30 minutes before exam time")
-                        TipItem("✏️", "Bring HB pencil and eraser")
-                        TipItem("📱", "Turn off all electronic devices")
-                        TipItem("🎯", "Read questions carefully")
+                        TipItem("📋", stringResource(id = R.string.tip_bring_id))
+                        TipItem("⏰", stringResource(id = R.string.tip_arrive_early))
+                        TipItem("✏️", stringResource(id = R.string.tip_bring_tools))
+                        TipItem("📱", stringResource(id = R.string.tip_turn_off_devices))
+                        TipItem("🎯", stringResource(id = R.string.tip_read_carefully))
                     }
                 }
             )
@@ -246,6 +250,7 @@ fun ExamDetailsScreen(
 @Composable
 private fun ExamInfoCardWithAction(
     title: String,
+    isExamInfoCard: Boolean,
     icon: ImageVector,
     examSession: YdsExamService.YdsExamSession,
     daysRemaining: Int,
@@ -268,7 +273,7 @@ private fun ExamInfoCardWithAction(
                 .fillMaxWidth()
                 .background(
                     brush = Brush.linearGradient(
-                        colors = if (title == "Exam Information") {
+                        colors = if (isExamInfoCard) {
                             listOf(
                                 Color(0xFFF0F8FF), // Light blue pastel
                                 Color(0xFFF5F0FF), // Light lavender
@@ -345,7 +350,7 @@ private fun ExamInfoCardWithAction(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = daysRemaining.toString() + " days remaining",
+                        text = stringResource(id = R.string.days_remaining_chip, daysRemaining),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
@@ -358,7 +363,7 @@ private fun ExamInfoCardWithAction(
                 }
 
                 // Additional apply button for exam info card if registration is open
-                if (title == "Exam Information" &&
+                if (isExamInfoCard &&
                     (registrationStatus == YdsExamService.RegistrationStatus.OPEN ||
                      registrationStatus == YdsExamService.RegistrationStatus.LATE_REGISTRATION)) {
 
@@ -378,13 +383,13 @@ private fun ExamInfoCardWithAction(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                            contentDescription = "Apply",
+                            contentDescription = stringResource(id = R.string.apply),
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Apply",
+                            text = stringResource(id = R.string.apply),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -510,23 +515,23 @@ private fun getRegistrationStatusForExam(exam: YdsExamService.YdsExamSession): Y
     }
 }
 
-private fun getStatusMessageForExam(exam: YdsExamService.YdsExamSession): String {
+private fun getStatusMessageResForExam(exam: YdsExamService.YdsExamSession): Int {
     val daysToExam = ChronoUnit.DAYS.between(LocalDate.now(), exam.examDate).toInt()
     val registrationStatus = getRegistrationStatusForExam(exam)
 
     return when {
-        daysToExam == 0 -> "Exam day!"
-        daysToExam < 0 -> "Exam completed"
-        daysToExam <= 7 -> "Final week!"
-        daysToExam <= 30 -> "Almost there!"
+        daysToExam == 0 -> R.string.exam_status_exam_day
+        daysToExam < 0 -> R.string.exam_status_completed
+        daysToExam <= 7 -> R.string.exam_status_final_week
+        daysToExam <= 30 -> R.string.exam_status_almost_there
         daysToExam <= 90 -> when (registrationStatus) {
-            YdsExamService.RegistrationStatus.NOT_OPEN_YET -> "Registration opens soon"
-            YdsExamService.RegistrationStatus.OPEN -> "Registration open!"
-            YdsExamService.RegistrationStatus.LATE_REGISTRATION -> "Late registration period"
-            YdsExamService.RegistrationStatus.CLOSED -> "Registration closed"
-            YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> "Preparation time"
+            YdsExamService.RegistrationStatus.NOT_OPEN_YET -> R.string.exam_status_registration_opens_soon
+            YdsExamService.RegistrationStatus.OPEN -> R.string.exam_status_registration_open
+            YdsExamService.RegistrationStatus.LATE_REGISTRATION -> R.string.exam_status_late_registration
+            YdsExamService.RegistrationStatus.CLOSED -> R.string.exam_status_registration_closed
+            YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> R.string.exam_status_preparation_time
         }
-        else -> "Long-term planning"
+        else -> R.string.exam_status_long_term_planning
     }
 }
 
@@ -535,14 +540,16 @@ private fun formatShortDate(date: LocalDate): String {
     return date.format(formatter)
 }
 
+@Composable
 private fun getRegistrationStatusText(status: YdsExamService.RegistrationStatus): String {
-    return when (status) {
-        YdsExamService.RegistrationStatus.NOT_OPEN_YET -> "Opens Soon"
-        YdsExamService.RegistrationStatus.OPEN -> "Open"
-        YdsExamService.RegistrationStatus.LATE_REGISTRATION -> "Late Registration"
-        YdsExamService.RegistrationStatus.CLOSED -> "Closed"
-        YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> "No Upcoming Exam"
+    val resId = when (status) {
+        YdsExamService.RegistrationStatus.NOT_OPEN_YET -> R.string.registration_status_opens_soon
+        YdsExamService.RegistrationStatus.OPEN -> R.string.registration_status_open
+        YdsExamService.RegistrationStatus.LATE_REGISTRATION -> R.string.registration_status_late
+        YdsExamService.RegistrationStatus.CLOSED -> R.string.registration_status_closed
+        YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> R.string.registration_status_none
     }
+    return stringResource(id = resId)
 }
 
 private fun formatDate(date: java.time.LocalDate): String {
@@ -592,7 +599,7 @@ private fun YdsExamGradientTopBar(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(id = R.string.navigate_up),
                             tint = Color(0xFF424242), // Same as homepage text color
                             modifier = Modifier.size(20.dp)
                         )
@@ -601,13 +608,13 @@ private fun YdsExamGradientTopBar(
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
-                            text = "YDS Exam Information",
+                            text = stringResource(id = R.string.yds_exam_info_title),
                             fontSize = 20.sp, // Reduced from 24sp
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFF424242) // Same as homepage
                         )
                         Text(
-                            text = "Track your exam preparation",
+                            text = stringResource(id = R.string.yds_exam_info_subtitle),
                             fontSize = 14.sp,
                             color = Color(0xFF616161) // Same as homepage
                         )
