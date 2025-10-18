@@ -59,8 +59,8 @@ object EnhancedNavigation {
             // Detail screens
             to.contains("detail") || to.contains("edit") -> NavigationTransitionStyle.SLIDE_VERTICAL
 
-            // Settings and profile
-            to.contains("settings") || to.contains("profile") -> NavigationTransitionStyle.SLIDE_UP
+            // Settings
+            to.contains("settings") -> NavigationTransitionStyle.SLIDE_UP
 
             // Default
             else -> NavigationTransitionStyle.FADE

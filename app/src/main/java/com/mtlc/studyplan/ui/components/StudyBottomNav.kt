@@ -70,7 +70,6 @@ fun StudyBottomNav(
                 val isSelected = when {
                     route == "home" -> currentRoute == "home" || currentRoute.isBlank()
                     route == "tasks" -> currentRoute.startsWith("tasks")
-                    route == "social" -> currentRoute.startsWith("social")
                     route == "settings" -> currentRoute.startsWith("settings")
                     else -> currentRoute.startsWith(route)
                 }

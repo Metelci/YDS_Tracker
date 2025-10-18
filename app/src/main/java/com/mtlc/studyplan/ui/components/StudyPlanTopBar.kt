@@ -61,7 +61,6 @@ enum class StudyPlanTopBarStyle {
     Home,
     Tasks,
     Progress,
-    Social,
     Settings
 }
 
@@ -88,11 +87,6 @@ private fun topBarStops(style: StudyPlanTopBarStyle): List<Pair<Color, Float>>? 
         TopBarTertiary to 0.25f,
         TopBarPrimary to 0.30f,
         TopBarSecondary to 0.20f
-    )
-    StudyPlanTopBarStyle.Social -> listOf(
-        TopBarSuccess to 0.25f,
-        TopBarSecondary to 0.30f,
-        TopBarPrimary to 0.20f
     )
     StudyPlanTopBarStyle.Settings -> listOf(
         TopBarWarning to 0.25f,
@@ -319,87 +313,6 @@ fun StudyPlanTopBar(
                         }
                     }
                 }
-                
-                /**
-                 * Social header topbar with cards layout replicating the provided screenshot.
-                 */
-                @Composable
-                fun SocialHeaderTopBar(
-                    cards: List<TopBarCard>,
-                    modifier: Modifier = Modifier
-                ) {
-                    val primary = MaterialTheme.colorScheme.primary
-                    val secondary = MaterialTheme.colorScheme.secondary
-                    val tertiary = MaterialTheme.colorScheme.tertiary
-                
-                    val gradient = Brush.horizontalGradient(
-                        colors = listOf(
-                            primary.copy(alpha = 0.45f),
-                            secondary.copy(alpha = 0.60f),
-                            tertiary.copy(alpha = 0.55f)
-                        )
-                    )
-                
-                    val capsuleShape = RoundedCornerShape(20.dp)
-                
-                    Surface(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        shape = capsuleShape,
-                        shadowElevation = 8.dp,
-                        color = Color.Transparent,
-                        tonalElevation = 0.dp
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(gradient, capsuleShape)
-                                .border(2.dp, Color(0xFF0066FF), capsuleShape)
-                                .drawBehind {
-                                    // Primary blur circle
-                                    drawCircle(
-                                        color = primary.copy(alpha = 0.5f),
-                                        radius = size.minDimension * 0.3f,
-                                        center = Offset(size.width * 0.2f, size.height * 0.3f)
-                                    )
-                                    // Secondary blur circle
-                                    drawCircle(
-                                        color = secondary.copy(alpha = 0.45f),
-                                        radius = size.minDimension * 0.25f,
-                                        center = Offset(size.width * 0.8f, size.height * 0.7f)
-                                    )
-                                }
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                // Title on the left
-                                Text(
-                                    text = "Social",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = FontFamily.SansSerif,
-                                    color = TitleDark,
-                                    style = TextStyle(
-                                        shadow = Shadow(
-                                            color = Color.White.copy(alpha = 0.8f),
-                                            offset = Offset(0f, 2f),
-                                            blurRadius = 4f
-                                        )
-                                    )
-                                )
-                                // Cards on the right
-                                cards.forEach { card ->
-                                    TopBarCardItem(card = card, modifier = Modifier.weight(1f))
-                                }
-                            }
-                        }
-                    }
-                }
-
                 // Right: actions + optional language switcher
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     actions()
@@ -580,46 +493,3 @@ fun TasksHeaderTopBar(
     }
 }
 
-// Lightweight cards for Social header (to satisfy imports and provide visuals)
-data class TopBarCard(
-    val icon: ImageVector,
-    val title: String,
-    val subtitle: String,
-    val badgeText: String? = null
-)
-
-@Composable
-fun SocialHeaderTopBar(cards: List<TopBarCard>, modifier: Modifier = Modifier) {
-    val appearance = rememberTopBarAppearance(StudyPlanTopBarStyle.Social)
-    val capsuleShape = RoundedCornerShape(20.dp)
-    val baseBackground = MaterialTheme.colorScheme.surface
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = capsuleShape,
-        shadowElevation = 8.dp,
-        color = Color.Transparent,
-        tonalElevation = 0.dp
-    ) {
-        val bg = if (appearance.brush != null) {
-            Modifier.background(appearance.brush!!, capsuleShape)
-        } else { Modifier.background(baseBackground, capsuleShape) }
-        Row(
-            modifier = bg.border(2.dp, Color(0xFF0066FF), capsuleShape)
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            cards.take(4).forEach { card ->
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Icon(card.icon, contentDescription = card.title, tint = appearance.titleColor.copy(alpha = 0.85f))
-                    Column {
-                        Text(card.title, color = appearance.titleColor, fontWeight = FontWeight.SemiBold)
-                        Text(card.subtitle, style = MaterialTheme.typography.labelSmall, color = appearance.subtitleColor)
-                    }
-                }
-            }
-        }
-    }
-}

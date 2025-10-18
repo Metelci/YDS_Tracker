@@ -23,7 +23,6 @@ data class SettingsCategory(
         const val GAMIFICATION_ID = "gamification"
         const val TASKS_ID = "tasks"
         const val NAVIGATION_ID = "navigation"
-        const val SOCIAL_ID = "social"
         const val ACCESSIBILITY_ID = "accessibility"
         const val DATA_ID = "data"
     }

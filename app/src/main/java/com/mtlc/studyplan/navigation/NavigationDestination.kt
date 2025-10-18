@@ -8,5 +8,4 @@ sealed class NavigationDestination {
     data class Tasks(val filter: String? = null, val highlightId: String? = null) : NavigationDestination()
     data class TaskDetail(val taskId: String) : NavigationDestination()
     data class Progress(val timeRange: String? = null, val highlight: String? = null) : NavigationDestination()
-    data class Social(val tab: String? = null, val achievementId: String? = null) : NavigationDestination()
 }

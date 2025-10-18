@@ -430,12 +430,25 @@ object AdvancedAchievementDataSource {
         ),
 
         AdvancedAchievement(
+            id = "multidisciplinary_maestro",
+            category = AchievementCategory.PROGRESS_PIONEER,
+            tier = AchievementTier.PLATINUM,
+            title = "Multidisciplinary Maestro",
+            description = "Reach elite mastery across every study category",
+            targetValue = 4,
+            pointsReward = 3200,
+            rarity = AchievementRarity.EPIC,
+            isHidden = true,
+            hiddenHint = "Balance vocabulary, grammar, reading, and listening progress"
+        ),
+
+        AdvancedAchievement(
             id = "perfectionist_supreme",
             category = AchievementCategory.PROGRESS_PIONEER,
             tier = AchievementTier.PLATINUM,
             title = "Perfectionist Supreme",
             description = "Unlock all achievements in the app",
-            targetValue = 25, // Total number of achievements
+            targetValue = 26, // Total number of achievements
             pointsReward = 10000,
             rarity = AchievementRarity.MYTHIC,
             isHidden = true,

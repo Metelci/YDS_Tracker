@@ -90,7 +90,6 @@ class SettingsManager @Inject constructor(
                 SettingsKey.OFFLINE_MODE -> currentSettings.copy(offlineModeEnabled = value as Boolean)
                 SettingsKey.AUTO_SYNC -> currentSettings.copy(autoSyncEnabled = value as Boolean)
                 SettingsKey.GAMIFICATION_ENABLED -> currentSettings.copy(gamificationEnabled = value as Boolean)
-                SettingsKey.SOCIAL_SHARING -> currentSettings.copy(socialSharingEnabled = value as Boolean)
                 SettingsKey.HAPTIC_FEEDBACK -> currentSettings.copy(hapticFeedbackEnabled = value as Boolean)
                 SettingsKey.STREAK_WARNINGS -> currentSettings.copy(streakWarningsEnabled = value as Boolean)
                 SettingsKey.DAILY_GOAL_REMINDERS -> currentSettings.copy(dailyGoalRemindersEnabled = value as Boolean)

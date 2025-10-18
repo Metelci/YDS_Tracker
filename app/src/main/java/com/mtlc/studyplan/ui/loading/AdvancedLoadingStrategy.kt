@@ -100,13 +100,6 @@ object SmartLoadingManager {
                 semanticLabel = "Loading analytics"
             )
 
-            ContentType.SOCIAL_FEED -> LoadingConfiguration(
-                priority = LoadingPriority.LOW,
-                pattern = if (isReducedMotion) LoadingPattern.SKELETON else LoadingPattern.PULSE,
-                duration = 1200L,
-                semanticLabel = "Loading social content"
-            )
-
             ContentType.BACKGROUND_SYNC -> LoadingConfiguration(
                 priority = LoadingPriority.LAZY,
                 pattern = LoadingPattern.FADE_IN,
@@ -157,7 +150,6 @@ enum class ContentType {
     CRITICAL_UI,
     USER_DATA,
     ANALYTICS,
-    SOCIAL_FEED,
     BACKGROUND_SYNC
 }
 

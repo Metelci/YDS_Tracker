@@ -21,7 +21,6 @@ class NavigationHelper {
             is NavigationDestination.Tasks -> buildTasksRoute(destination)
             is NavigationDestination.TaskDetail -> buildTaskDetailRoute(destination)
             is NavigationDestination.Progress -> buildProgressRoute(destination)
-            is NavigationDestination.Social -> buildSocialRoute(destination)
             is NavigationDestination.Custom -> buildCustomRoute(destination)
             is NavigationDestination.Back -> buildBackRoute(destination)
         }
@@ -45,13 +44,6 @@ class NavigationHelper {
         return if (params.isEmpty()) "progress" else "progress?${params.joinToString("&")}"
     }
 
-    private fun buildSocialRoute(destination: NavigationDestination.Social): String {
-        val params = mutableListOf<String>()
-        destination.tab?.let { params.add("tab=$it") }
-        destination.achievementId?.let { params.add("achievementId=$it") }
-        return if (params.isEmpty()) "social" else "social?${params.joinToString("&")}"
-    }
-
     private fun buildCustomRoute(destination: NavigationDestination.Custom): String {
         val params = destination.params.entries.joinToString("&") { "${it.key}=${it.value}" }
         return if (params.isEmpty()) destination.route else "${destination.route}?$params"
@@ -65,7 +57,7 @@ class NavigationHelper {
      * Validates if a route is a valid tab destination.
      */
     fun isValidTabRoute(route: String): Boolean {
-        return route in listOf("home", "tasks", "social", "settings", "progress")
+        return route in listOf("home", "tasks", "settings", "progress")
     }
 
     /**
@@ -103,9 +95,7 @@ class NavigationHelper {
     /**
      * Determines if bottom navigation should be visible for a given route.
      */
-    fun shouldShowBottomNav(route: String?, bottomNavEnabled: Boolean): Boolean {
-        if (!bottomNavEnabled) return false
-
+    fun shouldShowBottomNav(route: String?): Boolean {
         val routesWithoutBottomNav = listOf("welcome", "onboarding", "reader")
         val currentRoute = route ?: "home"
 
@@ -119,7 +109,6 @@ class NavigationHelper {
         return when (event::class.simpleName) {
             "GoToHome" -> "home"
             "GoToTasks" -> "tasks"
-            "GoToSocial" -> "social"
             "GoToSettings" -> "settings"
             "GoToProgress" -> "progress"
             else -> null

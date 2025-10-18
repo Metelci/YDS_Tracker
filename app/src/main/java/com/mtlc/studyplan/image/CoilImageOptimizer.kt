@@ -7,7 +7,6 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
 import java.io.File
 
 /**
@@ -90,38 +89,6 @@ object CoilImageOptimizer {
             imageLoader.enqueue(request)
         } catch (e: Exception) {
             Log.e(TAG, "Error loading image: $imageUrl", e)
-        }
-    }
-    
-    /**
-     * Load avatar image with circular cropping and optimized settings
-     */
-    fun loadAvatarImage(
-        context: Context,
-        imageUrl: String,
-        target: coil.target.Target? = null,
-        size: Int = 256
-    ) {
-        try {
-            val imageLoader = getOptimizedImageLoader(context)
-            
-            val requestBuilder = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .size(size, size)
-                .transformations(CircleCropTransformation())
-                .crossfade(true)
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .diskCachePolicy(CachePolicy.ENABLED)
-            
-            // Apply target if provided
-            if (target != null) {
-                requestBuilder.target(target)
-            }
-            
-            val request = requestBuilder.build()
-            imageLoader.enqueue(request)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error loading avatar image: $imageUrl", e)
         }
     }
     

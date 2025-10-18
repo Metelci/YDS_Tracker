@@ -154,15 +154,6 @@ class SettingsValidationManager {
             )
         }
 
-        // Social sharing validation
-        if (!settings.socialSharingEnabled) {
-            results.add(
-                ValidationResult.Info(
-                    "Social sharing is disabled. You won't be able to share achievements or progress."
-                )
-            )
-        }
-
         return results
     }
 

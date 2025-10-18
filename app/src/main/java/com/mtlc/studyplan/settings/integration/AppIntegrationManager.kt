@@ -149,7 +149,6 @@ class AppIntegrationManager(
             AppFeature.CELEBRATION_EFFECTS -> _appState.value.gamificationState.celebrationEffectsEnabled
             AppFeature.ACHIEVEMENT_BADGES -> _appState.value.gamificationState.achievementBadgesEnabled
             AppFeature.DAILY_CHALLENGES -> _appState.value.gamificationState.dailyChallengesEnabled
-            AppFeature.LEADERBOARD -> _appState.value.gamificationState.leaderboardEnabled
         }
     }
 
@@ -198,7 +197,6 @@ class AppIntegrationManager(
             enableAchievementBadges = gamificationState.achievementBadgesEnabled,
             enableLevelProgression = gamificationState.levelProgressionEnabled,
             enableDailyChallenges = gamificationState.dailyChallengesEnabled,
-            enableLeaderboard = gamificationState.leaderboardEnabled,
             enableRewardAnimations = gamificationState.rewardAnimationsEnabled
         )
     }
@@ -218,7 +216,6 @@ enum class AppFeature {
     CELEBRATION_EFFECTS,
     ACHIEVEMENT_BADGES,
     DAILY_CHALLENGES,
-    LEADERBOARD
 }
 
 data class ThemeConfig(
@@ -249,7 +246,6 @@ data class GamificationConfig(
     val enableAchievementBadges: Boolean,
     val enableLevelProgression: Boolean,
     val enableDailyChallenges: Boolean,
-    val enableLeaderboard: Boolean,
     val enableRewardAnimations: Boolean
 )
 
@@ -315,3 +311,4 @@ class AppIntegrationViewModel(
         return appIntegrationManager.getGamificationConfig()
     }
 }
+

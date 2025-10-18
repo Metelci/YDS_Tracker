@@ -93,7 +93,6 @@ enum class LoadingType {
 object LoadingKeys {
     const val TASKS_LOADING = "tasks_loading"
     const val PROGRESS_LOADING = "progress_loading"
-    const val SOCIAL_LOADING = "social_loading"
     const val SETTINGS_LOADING = "settings_loading"
     const val SYNC_LOADING = "sync_loading"
     const val TASK_COMPLETION = "task_completion"

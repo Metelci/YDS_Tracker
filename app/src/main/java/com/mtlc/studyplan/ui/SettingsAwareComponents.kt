@@ -56,12 +56,6 @@ fun shouldEnableHapticFeedback(): Boolean {
     return settings.hapticFeedbackEnabled
 }
 
-@Composable
-fun shouldShowSocialFeatures(): Boolean {
-    val settings = LocalUserSettings.current
-    return settings.socialSharingEnabled
-}
-
 // Smart scheduling flag removed
 @Composable
 fun SettingsAwareButton(

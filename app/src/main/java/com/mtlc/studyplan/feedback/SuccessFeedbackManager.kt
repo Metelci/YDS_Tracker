@@ -84,12 +84,6 @@ class SuccessFeedbackManager(private val context: Context) {
         }
     }
 
-    fun showSocialShareSuccess(platform: String, likes: Int) {
-        showSuccessAnimation(AnimationType.SOCIAL_SUCCESS) {
-            showSocialShareMessage(platform, likes)
-        }
-    }
-
     fun showGoalProgress(goalTitle: String, progressPercentage: Int) {
         if (progressPercentage >= 100) {
             showGoalAchievement(StudyGoal(title = goalTitle, description = "", targetHours = 0, deadline = java.time.LocalDate.now(), primaryCategory = com.mtlc.studyplan.shared.TaskCategory.OTHER, difficulty = com.mtlc.studyplan.shared.TaskDifficulty.MEDIUM))
@@ -141,7 +135,6 @@ class SuccessFeedbackManager(private val context: Context) {
             AnimationType.ACHIEVEMENT_UNLOCKED -> createTrophyAnimation()
             AnimationType.GOAL_ACHIEVEMENT -> createGoalCompletionAnimation()
             AnimationType.LEVEL_UP -> createLevelUpAnimation()
-            AnimationType.SOCIAL_SUCCESS -> createSocialAnimation()
             AnimationType.MAJOR_STREAK -> createMajorStreakAnimation()
             AnimationType.LEGENDARY_STREAK -> createLegendaryStreakAnimation()
             AnimationType.MAJOR_PROGRESS -> createProgressAnimation()
@@ -302,28 +295,6 @@ class SuccessFeedbackManager(private val context: Context) {
 
     private fun createLevelUpAnimation(): View = createStarBurstAnimation() // Similar to star burst
 
-    private fun createSocialAnimation(): View {
-        val container = FrameLayout(context)
-        val textView = TextView(context).apply {
-            text = "📱✨"
-            textSize = 56f
-            layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.CENTER
-            }
-        }
-
-        container.addView(textView)
-
-        val pulse = ObjectAnimator.ofFloat(textView, "alpha", 1f, 0.5f, 1f)
-        pulse.duration = 800
-        pulse.repeatCount = 2
-        pulse.start()
-
-        return container
-    }
 
     private fun createMajorStreakAnimation(): View = createFireAnimation()
 
@@ -423,11 +394,6 @@ class SuccessFeedbackManager(private val context: Context) {
         showSuccessDialog("Level Up!", message)
     }
 
-    private fun showSocialShareMessage(platform: String, likes: Int) {
-        val message = "📱 Shared successfully!\n\nYour achievement has been shared on $platform.\nAlready received $likes reactions!"
-        showSuccessDialog("Shared!", message)
-    }
-
     private fun showGoalProgressMessage(goalTitle: String, progressPercentage: Int) {
         val message = "📈 Great Progress!\n\n$progressPercentage% complete on:\n$goalTitle\n\nKeep up the excellent work!"
         showSuccessDialog("Progress Update!", message)
@@ -449,10 +415,12 @@ enum class AnimationType(val duration: Long) {
     ACHIEVEMENT_UNLOCKED(1500),
     GOAL_ACHIEVEMENT(1800),
     LEVEL_UP(1200),
-    SOCIAL_SUCCESS(1000),
     MAJOR_STREAK(1800),
     LEGENDARY_STREAK(2000),
     MAJOR_PROGRESS(1000),
     GOOD_PROGRESS(800)
 }
+
+
+
 

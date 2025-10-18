@@ -64,9 +64,6 @@ class NavigationIntegrationTest {
         val progressRoute = navigationHelper.buildRoute(NavigationDestination.Progress())
         assertEquals("progress", progressRoute)
 
-        val socialRoute = navigationHelper.buildRoute(NavigationDestination.Social())
-        assertEquals("social", socialRoute)
-
         val customRoute = navigationHelper.buildRoute(
             NavigationDestination.Custom(route = "custom/path", params = emptyMap())
         )
@@ -80,52 +77,42 @@ class NavigationIntegrationTest {
 
     @Test
     fun `Bottom navigation visibility logic works correctly`() {
-        // Bottom nav should show for tab routes when enabled
+        // Bottom nav should show for tab routes
         assertTrue(
             "Should show bottom nav for home",
-            navigationHelper.shouldShowBottomNav("home", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("home")
         )
         assertTrue(
             "Should show bottom nav for tasks",
-            navigationHelper.shouldShowBottomNav("tasks", bottomNavEnabled = true)
-        )
-        assertTrue(
-            "Should show bottom nav for social",
-            navigationHelper.shouldShowBottomNav("social", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("tasks")
         )
         assertTrue(
             "Should show bottom nav for settings",
-            navigationHelper.shouldShowBottomNav("settings", bottomNavEnabled = true)
-        )
-
-        // Bottom nav should NOT show when disabled
-        assertFalse(
-            "Should not show when disabled",
-            navigationHelper.shouldShowBottomNav("home", bottomNavEnabled = false)
+            navigationHelper.shouldShowBottomNav("settings")
         )
 
         // Bottom nav should NOT show for blacklisted routes
         assertFalse(
             "Should not show for welcome",
-            navigationHelper.shouldShowBottomNav("welcome", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("welcome")
         )
         assertFalse(
             "Should not show for onboarding",
-            navigationHelper.shouldShowBottomNav("onboarding", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("onboarding")
         )
         assertFalse(
             "Should not show for reader",
-            navigationHelper.shouldShowBottomNav("reader", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("reader")
         )
 
         // Bottom nav SHOULD show for non-blacklisted routes (including detail screens)
         assertTrue(
             "Should show for task details when enabled",
-            navigationHelper.shouldShowBottomNav("tasks/123", bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav("tasks/123")
         )
         assertTrue(
             "Should show for null route (defaults to home)",
-            navigationHelper.shouldShowBottomNav(null, bottomNavEnabled = true)
+            navigationHelper.shouldShowBottomNav(null)
         )
     }
 
@@ -161,7 +148,6 @@ class NavigationIntegrationTest {
         // Valid tab routes should be preserved
         assertEquals("home", navigationHelper.getDefaultRouteIfInvalid("home"))
         assertEquals("tasks", navigationHelper.getDefaultRouteIfInvalid("tasks"))
-        assertEquals("social", navigationHelper.getDefaultRouteIfInvalid("social"))
         assertEquals("settings", navigationHelper.getDefaultRouteIfInvalid("settings"))
     }
 
@@ -170,7 +156,6 @@ class NavigationIntegrationTest {
         // All main tabs should be valid
         assertTrue(navigationHelper.isValidTabRoute("home"))
         assertTrue(navigationHelper.isValidTabRoute("tasks"))
-        assertTrue(navigationHelper.isValidTabRoute("social"))
         assertTrue(navigationHelper.isValidTabRoute("settings"))
 
         // Non-tab routes should be invalid
@@ -275,20 +260,18 @@ class NavigationIntegrationTest {
     @Test
     fun `All tab routes have consistent validation`() {
         // Ensure all tab routes pass validation consistently
-        val tabRoutes = listOf("home", "tasks", "social", "settings")
+        val tabRoutes = listOf("home", "tasks", "settings")
 
         tabRoutes.forEach { route ->
             assertTrue("$route should be valid tab route", navigationHelper.isValidTabRoute(route))
-            assertTrue("$route should show bottom nav when enabled",
-                navigationHelper.shouldShowBottomNav(route, bottomNavEnabled = true))
-            assertFalse("$route should not show bottom nav when disabled",
-                navigationHelper.shouldShowBottomNav(route, bottomNavEnabled = false))
+            assertTrue("$route should show bottom nav",
+                navigationHelper.shouldShowBottomNav(route))
         }
     }
 
     @Test
     fun `Navigation between all tabs uses correct pop behavior`() {
-        val tabs = listOf("home", "tasks", "social", "settings")
+        val tabs = listOf("home", "tasks", "settings")
 
         // Test navigation from each tab to every other tab
         for (fromTab in tabs) {

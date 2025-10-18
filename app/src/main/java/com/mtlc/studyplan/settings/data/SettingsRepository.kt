@@ -40,9 +40,7 @@ class SettingsRepository(
     private val gamificationState = MutableStateFlow(loadGamificationData())
 
     private val privacyKeys = setOf(
-        SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
-        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
-        SettingsKeys.Privacy.PROGRESS_SHARING
+        SettingsKeys.Privacy.CRASH_REPORTING
     )
 
     private val notificationKeys = setOf(
@@ -766,7 +764,7 @@ class SettingsRepository(
         val result = when (id) {
             "profile_visibility_enabled" -> {
                 val enabled = value as? Boolean
-                    ?: throw IllegalArgumentException("Expected boolean for profile visibility enabled")
+                    ?: throw IllegalArgumentException("Expected boolean for profile visibility")
                 updateSetting(
                     SettingsUpdateRequest.UpdateBoolean(
                         SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
@@ -774,25 +772,12 @@ class SettingsRepository(
                     )
                 )
             }
-            "profile_visibility_level" -> {
-                val level = when (value) {
-                    is ProfileVisibilityLevel -> value
-                    is String -> ProfileVisibilityLevel.valueOf(value)
-                    else -> throw IllegalArgumentException("Expected profile visibility level value")
-                }
-                updateSetting(
-                    SettingsUpdateRequest.UpdateString(
-                        SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
-                        level.name
-                    )
-                )
-            }
-            "progress_sharing" -> {
+            "crash_reporting" -> {
                 val enabled = value as? Boolean
-                    ?: throw IllegalArgumentException("Expected boolean for progress sharing")
+                    ?: throw IllegalArgumentException("Expected boolean for crash reporting")
                 updateSetting(
                     SettingsUpdateRequest.UpdateBoolean(
-                        SettingsKeys.Privacy.PROGRESS_SHARING,
+                        SettingsKeys.Privacy.CRASH_REPORTING,
                         enabled
                     )
                 )
@@ -938,32 +923,19 @@ class SettingsRepository(
 
     suspend fun clearAllPersonalData() {
         preferences.edit {
-            putBoolean(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED, true)
-            putString(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL, ProfileVisibilityLevel.FRIENDS_ONLY.name)
-            putBoolean(SettingsKeys.Privacy.PROGRESS_SHARING, true)
+            putBoolean(SettingsKeys.Privacy.CRASH_REPORTING, true)
         }
 
-        valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED)
-        valueCache.remove(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL)
-        valueCache.remove(SettingsKeys.Privacy.PROGRESS_SHARING)
+        valueCache.remove(SettingsKeys.Privacy.CRASH_REPORTING)
 
         privacyState.value = loadPrivacyData()
     }
 
     private fun loadPrivacyData(): PrivacyData {
         return PrivacyData(
-            profileVisibilityEnabled = preferences.getBoolean(
-                SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
-                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED)
-            ),
-            profileVisibilityLevel = preferences.getString(
-                SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
-                ProfileVisibilityLevel.FRIENDS_ONLY.name
-            )?.let { runCatching { ProfileVisibilityLevel.valueOf(it) }.getOrDefault(ProfileVisibilityLevel.FRIENDS_ONLY) }
-                ?: ProfileVisibilityLevel.FRIENDS_ONLY,
-            progressSharing = preferences.getBoolean(
-                SettingsKeys.Privacy.PROGRESS_SHARING,
-                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.PROGRESS_SHARING)
+            crashReporting = preferences.getBoolean(
+                SettingsKeys.Privacy.CRASH_REPORTING,
+                defaultValues.getBooleanOrDefault(SettingsKeys.Privacy.CRASH_REPORTING)
             )
         )
     }
@@ -1052,7 +1024,6 @@ class SettingsRepository(
                 offlineModeEnabled = getBoolean(SettingsKeys.Data.OFFLINE_MODE, false),
                 autoSyncEnabled = getBoolean(SettingsKeys.Data.AUTO_SYNC, true),
                 gamificationEnabled = getBoolean(SettingsKeys.Gamification.STREAK_TRACKING, true),
-                socialSharingEnabled = getBoolean(SettingsKeys.Social.SHARE_ACTIVITY, false),
                 hapticFeedbackEnabled = getBoolean(SettingsKeys.Navigation.HAPTIC_FEEDBACK, true),
                 weekendModeEnabled = getBoolean(SettingsKeys.Tasks.WEEKEND_MODE, false),
                 autoDifficultyEnabled = getBoolean(SettingsKeys.Tasks.AUTO_DIFFICULTY, true),
@@ -1079,13 +1050,8 @@ private object defaultValues {
     private val defaults: Map<String, Any> = buildMap {
 
         // Privacy defaults
-        put(SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED, true)
-        put(SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL, ProfileVisibilityLevel.FRIENDS_ONLY.name)
-        put(SettingsKeys.Privacy.PROGRESS_SHARING, true)
         put(SettingsKeys.Privacy.DATA_COLLECTION_CONSENT, false)
         put(SettingsKeys.Privacy.CRASH_REPORTING, true)
-        put(SettingsKeys.Privacy.LOCATION_SHARING, false)
-        put(SettingsKeys.Privacy.CONTACT_SYNC, false)
 
         // Notification defaults
         put(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true)
@@ -1097,7 +1063,6 @@ private object defaultValues {
         put(SettingsKeys.Notifications.WEEKLY_REPORTS, true)
         put(SettingsKeys.Notifications.STREAK_WARNINGS, true)
         put(SettingsKeys.Notifications.GOAL_REMINDERS, true)
-        put(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, true)
         put(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, false)
         put(SettingsKeys.Notifications.QUIET_HOURS_START, "22:00")
         put(SettingsKeys.Notifications.QUIET_HOURS_END, "08:00")
@@ -1112,7 +1077,6 @@ private object defaultValues {
         put(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, true)
         put(SettingsKeys.Gamification.LEVEL_PROGRESSION, true)
         put(SettingsKeys.Gamification.DAILY_CHALLENGES, true)
-        put(SettingsKeys.Gamification.LEADERBOARD_ENABLED, true)
         put(SettingsKeys.Gamification.XP_MULTIPLIERS, true)
         put(SettingsKeys.Gamification.REWARD_ANIMATIONS, true)
 
@@ -1130,24 +1094,12 @@ private object defaultValues {
         put(SettingsKeys.Tasks.CUSTOM_GOALS, false)
 
         // Navigation defaults
-        put(SettingsKeys.Navigation.BOTTOM_NAVIGATION, true)
         put(SettingsKeys.Navigation.HAPTIC_FEEDBACK, true)
         put(SettingsKeys.Navigation.GESTURE_NAVIGATION, false)
         put(SettingsKeys.Navigation.SWIPE_ACTIONS, true)
         put(SettingsKeys.Navigation.QUICK_ACCESS_TOOLBAR, false)
         put(SettingsKeys.Navigation.TAB_PERSISTENCE, true)
         put(SettingsKeys.Navigation.DOUBLE_TAP_EXIT, true)
-
-        // Social defaults
-        put(SettingsKeys.Social.STUDY_BUDDY_MATCHING, false)
-        put(SettingsKeys.Social.SHARE_ACTIVITY, false)
-        put(SettingsKeys.Social.GROUP_NOTIFICATIONS, true)
-        put(SettingsKeys.Social.LEADERBOARD_PARTICIPATION, false)
-        put(SettingsKeys.Social.FRIEND_REQUESTS, true)
-        put(SettingsKeys.Social.ACHIEVEMENT_SHARING, true)
-        put(SettingsKeys.Social.PROGRESS_COMPARISON, false)
-        put(SettingsKeys.Social.COLLABORATIVE_LEARNING, false)
-        put(SettingsKeys.Social.PEER_CHALLENGES, false)
 
         // Study defaults
         put(SettingsKeys.Study.DEFAULT_SESSION_LENGTH, 25)
@@ -1224,6 +1176,12 @@ private object defaultValues {
         }
     }
 }
+
+
+
+
+
+
 
 
 

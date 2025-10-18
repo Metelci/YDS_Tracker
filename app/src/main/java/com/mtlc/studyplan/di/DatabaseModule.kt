@@ -4,7 +4,6 @@ import androidx.room.Room
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.database.dao.AchievementDao
 import com.mtlc.studyplan.database.dao.ProgressDao
-import com.mtlc.studyplan.database.dao.SocialDao
 import com.mtlc.studyplan.database.dao.StreakDao
 import com.mtlc.studyplan.database.dao.TaskDao
 import com.mtlc.studyplan.database.dao.UserSettingsDao
@@ -27,5 +26,4 @@ val koinDatabaseModule = module {
     single<AchievementDao> { get<StudyPlanDatabase>().achievementDao() }
     single<StreakDao> { get<StudyPlanDatabase>().streakDao() }
     single<UserSettingsDao> { get<StudyPlanDatabase>().settingsDao() }
-    single<SocialDao> { get<StudyPlanDatabase>().socialDao() }
 }

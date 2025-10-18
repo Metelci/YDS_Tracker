@@ -18,6 +18,12 @@ interface TaskRepository {
     suspend fun getUpcomingTasks(): List<Task>
     suspend fun getTasksByCategory(category: String): List<Task>
     suspend fun getEarlyMorningCompletedTasks(): List<Task>
+    suspend fun getLateNightCompletedTasks(): List<Task>
+    suspend fun getWeekendCompletedTasks(): List<Task>
+    suspend fun getWeekdayCompletedTasks(): List<Task>
+    suspend fun getTasksByPriority(priority: TaskPriority): List<Task>
+    suspend fun getTotalPointsEarned(): Int
+    suspend fun getMaxTasksCompletedInOneDay(): Int
 
     // Pagination support for large datasets
     data class PaginatedTasks(
@@ -94,6 +100,64 @@ class TaskRepositoryImpl @Inject constructor(
             .map { it.toTask() }
     }
 
+    override suspend fun getLateNightCompletedTasks(): List<Task> {
+        return databaseTaskRepository.allTasks.first()
+            .filter { entity ->
+                entity.isCompleted && entity.completedAt != null && isLateNight(entity.completedAt)
+            }
+            .map { it.toTask() }
+    }
+
+    override suspend fun getWeekendCompletedTasks(): List<Task> {
+        return databaseTaskRepository.allTasks.first()
+            .filter { entity ->
+                entity.isCompleted && entity.completedAt != null && isWeekend(entity.completedAt)
+            }
+            .map { it.toTask() }
+    }
+
+    override suspend fun getWeekdayCompletedTasks(): List<Task> {
+        return databaseTaskRepository.allTasks.first()
+            .filter { entity ->
+                entity.isCompleted && entity.completedAt != null && !isWeekend(entity.completedAt)
+            }
+            .map { it.toTask() }
+    }
+
+    override suspend fun getTasksByPriority(priority: TaskPriority): List<Task> {
+        val sharedPriority = when (priority) {
+            TaskPriority.LOW -> com.mtlc.studyplan.shared.TaskPriority.LOW
+            TaskPriority.MEDIUM -> com.mtlc.studyplan.shared.TaskPriority.MEDIUM
+            TaskPriority.HIGH -> com.mtlc.studyplan.shared.TaskPriority.HIGH
+            TaskPriority.CRITICAL -> com.mtlc.studyplan.shared.TaskPriority.CRITICAL
+        }
+        return databaseTaskRepository.allTasks.first()
+            .filter { entity -> entity.isCompleted && entity.priority == sharedPriority }
+            .map { it.toTask() }
+    }
+
+    override suspend fun getTotalPointsEarned(): Int {
+        return databaseTaskRepository.allTasks.first()
+            .filter { it.isCompleted }
+            .sumOf { it.pointsValue }
+    }
+
+    override suspend fun getMaxTasksCompletedInOneDay(): Int {
+        val completedTasks = databaseTaskRepository.allTasks.first()
+            .filter { it.isCompleted && it.completedAt != null }
+
+        if (completedTasks.isEmpty()) return 0
+
+        // Group by date and count
+        val calendar = Calendar.getInstance()
+        val tasksByDate = completedTasks.groupBy { task ->
+            calendar.timeInMillis = task.completedAt ?: 0
+            "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.DAY_OF_YEAR)}"
+        }
+
+        return tasksByDate.values.maxOfOrNull { it.size } ?: 0
+    }
+
     override suspend fun getAllTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks {
         val result = databaseTaskRepository.getAllTasksPaginated(page, pageSize)
         return TaskRepository.PaginatedTasks(
@@ -135,6 +199,20 @@ class TaskRepositoryImpl @Inject constructor(
         calendar.timeInMillis = timestamp
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         return hour < 9 // Before 9 AM
+    }
+
+    private fun isLateNight(timestamp: Long): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        return hour >= 21 // After 9 PM
+    }
+
+    private fun isWeekend(timestamp: Long): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY
     }
 
     private fun com.mtlc.studyplan.database.entities.TaskEntity.toTask(): Task {

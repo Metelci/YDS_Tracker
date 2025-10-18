@@ -188,13 +188,6 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-
-    fun navigateToSocial(section: SocialSection? = null) {
-        viewModelScope.launch {
-            _navigationEvent.emit(NavigationEvent.GoToSocial(section))
-        }
-    }
-
     fun navigateToSettings() {
         viewModelScope.launch {
             _navigationEvent.emit(NavigationEvent.GoToSettings)
@@ -430,7 +423,6 @@ enum class AchievementCategory(val displayName: String) {
     MILESTONES("Milestones"),
     STUDY_TIME("Study Time"),
     PERFORMANCE("Performance"),
-    SOCIAL("Social"),
     GENERAL("General")
 }
 
@@ -441,7 +433,6 @@ enum class FeedbackType { SUCCESS, ERROR, INFO, WARNING, CELEBRATION }
 sealed class NavigationEvent {
     object GoToHome : NavigationEvent()
     data class GoToTasks(val filter: TaskFilter? = null) : NavigationEvent()
-    data class GoToSocial(val section: SocialSection? = null) : NavigationEvent()
     object GoToSettings : NavigationEvent()
 }
 
@@ -454,10 +445,3 @@ sealed class TaskFilter {
     object IncompleteOnly : TaskFilter()
 }
 
-
-sealed class SocialSection {
-    object Friends : SocialSection()
-    object Groups : SocialSection()
-    object Achievements : SocialSection()
-    object Leaderboard : SocialSection()
-}

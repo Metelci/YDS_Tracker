@@ -55,7 +55,6 @@ class SettingsIntegrationValidator {
             offlineModeEnabled = true,
             autoSyncEnabled = true,
             gamificationEnabled = true,
-            socialSharingEnabled = true,
             hapticFeedbackEnabled = true,
             weekendModeEnabled = true,
             // smartSchedulingEnabled removed
@@ -74,7 +73,6 @@ class SettingsIntegrationValidator {
             offlineModeEnabled = false,
             autoSyncEnabled = false,
             gamificationEnabled = false,
-            socialSharingEnabled = false,
             hapticFeedbackEnabled = false,
             weekendModeEnabled = false,
             // smartSchedulingEnabled removed

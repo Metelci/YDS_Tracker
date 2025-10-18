@@ -1,15 +1,23 @@
 package com.mtlc.studyplan.uat
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.test.swipeUp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.mtlc.studyplan.MinimalMainActivity
-import kotlinx.coroutines.delay
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.Assert.assertTrue
 
 /**
  * User Acceptance Testing Suite
@@ -35,7 +43,7 @@ class UserAcceptanceTestSuite {
         // Should have navigation elements visible
         try {
             composeTestRule.onAllNodesWithContentDescription("Navigation").assertCountEquals(1)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Alternative check - any navigation-related content
             composeTestRule.onRoot().assertExists()
         }
@@ -46,14 +54,14 @@ class UserAcceptanceTestSuite {
         composeTestRule.waitForIdle()
 
         // Test navigation to different sections
-        val navigationItems = listOf("Home", "Tasks", "Social", "Settings")
+        val navigationItems = listOf("Home", "Tasks", "Settings")
 
         navigationItems.forEach { item ->
             try {
                 composeTestRule.onNodeWithText(item).performClick()
                 composeTestRule.waitForIdle()
                 Thread.sleep(500) // Allow navigation to complete
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Some navigation might be different, ensure app doesn't crash
                 composeTestRule.onRoot().assertExists()
             }
@@ -72,12 +80,12 @@ class UserAcceptanceTestSuite {
             // Should show study-related content
             composeTestRule.onRoot().assertExists()
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Try alternative navigation
             try {
                 composeTestRule.onNodeWithContentDescription("Tasks").performClick()
                 composeTestRule.waitForIdle()
-            } catch (e2: Exception) {
+            } catch (_: Exception) {
                 // Ensure app is still responsive
                 composeTestRule.onRoot().assertExists()
             }
@@ -99,29 +107,8 @@ class UserAcceptanceTestSuite {
             // Try to interact with settings
             Thread.sleep(1000)
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ensure app remains stable even if settings navigation differs
-            composeTestRule.onRoot().assertExists()
-        }
-    }
-
-    @Test
-    fun `UAT005 - Social features are accessible and stable`() {
-        composeTestRule.waitForIdle()
-
-        try {
-            // Navigate to social section
-            composeTestRule.onNodeWithText("Social", ignoreCase = true).performClick()
-            composeTestRule.waitForIdle()
-
-            // Social screen should load
-            composeTestRule.onRoot().assertExists()
-
-            // Allow time for data loading
-            Thread.sleep(2000)
-
-        } catch (e: Exception) {
-            // Ensure social features don't crash the app
             composeTestRule.onRoot().assertExists()
         }
     }
@@ -151,7 +138,7 @@ class UserAcceptanceTestSuite {
             composeTestRule.waitForIdle()
             composeTestRule.onRoot().assertExists()
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ensure app doesn't crash during rotation
             composeTestRule.onRoot().assertExists()
         }
@@ -177,7 +164,7 @@ class UserAcceptanceTestSuite {
                 composeTestRule.waitForIdle()
                 Thread.sleep(200)
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Continue testing even if specific gestures fail
                 composeTestRule.onRoot().assertExists()
             }
@@ -214,7 +201,7 @@ class UserAcceptanceTestSuite {
             // App should remain responsive
             composeTestRule.onRoot().assertExists()
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Even with errors, app should not crash
             composeTestRule.onRoot().assertExists()
         }
@@ -236,7 +223,7 @@ class UserAcceptanceTestSuite {
                 }
                 Thread.sleep(50)
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Continue testing
             }
         }
@@ -274,9 +261,11 @@ class UserAcceptanceTestSuite {
             // Should maintain consistent state
             composeTestRule.onRoot().assertExists()
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ensure navigation works even if UI differs
             composeTestRule.onRoot().assertExists()
         }
     }
 }
+
+

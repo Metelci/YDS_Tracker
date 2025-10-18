@@ -14,7 +14,6 @@ data class UserSettingsEntity(
     val dailyReminderTime: String = "09:00", // HH:mm format
     val streakReminderEnabled: Boolean = true,
     val achievementNotificationsEnabled: Boolean = true,
-    val socialNotificationsEnabled: Boolean = true,
     val weeklyReportEnabled: Boolean = true,
     val weeklyReportDay: String = "Sunday",
 
@@ -44,14 +43,8 @@ data class UserSettingsEntity(
     val adaptiveGoals: Boolean = true,
     val goalDifficulty: String = "medium", // easy, medium, hard
 
-    // Privacy and Social Settings
-    val socialSharingEnabled: Boolean = false,
+    // Privacy Settings
     val profilePublic: Boolean = false,
-    val shareAchievements: Boolean = true,
-    val shareStreak: Boolean = true,
-    val shareProgress: Boolean = false,
-    val allowFriendRequests: Boolean = true,
-    val showOnLeaderboards: Boolean = false,
 
     // Data and Sync Settings
     val autoSyncEnabled: Boolean = true,

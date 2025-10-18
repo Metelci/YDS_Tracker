@@ -12,7 +12,6 @@
 
     <!-- Specific badge types -->
     <color name="badge_tasks">#FF1976D2</color>
-    <color name="badge_social">#9C27B0</color>
     <color name="badge_achievements">#FFD700</color>
     <color name="badge_settings">#607D8B</color>
     <color name="badge_streak_warning">#F44336</color>

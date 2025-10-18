@@ -9,18 +9,14 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlin.io.use
 import com.mtlc.studyplan.database.dao.AchievementDao
-import com.mtlc.studyplan.database.dao.AvatarDao
 import com.mtlc.studyplan.database.dao.ProgressDao
 import com.mtlc.studyplan.database.dao.QuestionDao
-import com.mtlc.studyplan.database.dao.SocialDao
 import com.mtlc.studyplan.database.dao.StreakDao
 import com.mtlc.studyplan.database.dao.TaskDao
 import com.mtlc.studyplan.database.dao.UserSettingsDao
 import com.mtlc.studyplan.database.entities.AchievementEntity
-import com.mtlc.studyplan.database.entities.AvatarEntity
 import com.mtlc.studyplan.database.entities.ProgressEntity
 import com.mtlc.studyplan.database.entities.QuestionEntity
-import com.mtlc.studyplan.database.entities.SocialActivityEntity
 import com.mtlc.studyplan.database.entities.StreakEntity
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.database.entities.UserSettingsEntity
@@ -32,11 +28,9 @@ import com.mtlc.studyplan.database.entities.UserSettingsEntity
         ProgressEntity::class,
         StreakEntity::class,
         UserSettingsEntity::class,
-        SocialActivityEntity::class,
-        QuestionEntity::class,
-        AvatarEntity::class
+        QuestionEntity::class
     ],
-    version = 5,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -47,10 +41,7 @@ abstract class StudyPlanDatabase : RoomDatabase() {
     abstract fun progressDao(): ProgressDao
     abstract fun streakDao(): StreakDao
     abstract fun settingsDao(): UserSettingsDao
-    abstract fun socialDao(): SocialDao
     abstract fun questionDao(): QuestionDao
-    abstract fun avatarDao(): AvatarDao
-
     companion object {
         @Volatile
         private var INSTANCE: StudyPlanDatabase? = null
@@ -64,6 +55,9 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 )
                     .addMigrations(MIGRATION_3_4)
                     .addMigrations(MIGRATION_4_5)
+                    .addMigrations(MIGRATION_5_6)
+                    .addMigrations(MIGRATION_6_7)
+                    .addMigrations(MIGRATION_7_8)
 
                 // Only use destructive migration in debug builds
                 // For production, proper migrations should be implemented
@@ -296,6 +290,158 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 )
             }
         }
+
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS `social_activities`")
+            }
+        }
+
+        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS `avatars`")
+            }
+        }
+
+        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Migration 7 to 8: Remove social-related columns from user_settings if they exist
+                // Since SQLite doesn't support DROP COLUMN directly, we need to recreate the table
+
+                // Check if table exists
+                val cursor = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='user_settings'")
+                val tableExists = cursor.count > 0
+                cursor.close()
+
+                if (!tableExists) {
+                    // Table doesn't exist, nothing to migrate
+                    return
+                }
+
+                // Create new table with correct schema
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `user_settings_new` (
+                        `id` TEXT NOT NULL,
+                        `userId` TEXT NOT NULL,
+                        `notificationsEnabled` INTEGER NOT NULL,
+                        `dailyReminderEnabled` INTEGER NOT NULL,
+                        `dailyReminderTime` TEXT NOT NULL,
+                        `streakReminderEnabled` INTEGER NOT NULL,
+                        `achievementNotificationsEnabled` INTEGER NOT NULL,
+                        `weeklyReportEnabled` INTEGER NOT NULL,
+                        `weeklyReportDay` TEXT NOT NULL,
+                        `theme` TEXT NOT NULL,
+                        `accentColor` TEXT NOT NULL,
+                        `useDynamicColors` INTEGER NOT NULL,
+                        `fontSize` TEXT NOT NULL,
+                        `reducedAnimations` INTEGER NOT NULL,
+                        `compactMode` INTEGER NOT NULL,
+                        `defaultStudySessionLength` INTEGER NOT NULL,
+                        `defaultBreakLength` INTEGER NOT NULL,
+                        `longBreakLength` INTEGER NOT NULL,
+                        `sessionsUntilLongBreak` INTEGER NOT NULL,
+                        `autoStartBreaks` INTEGER NOT NULL,
+                        `autoStartSessions` INTEGER NOT NULL,
+                        `soundEnabled` INTEGER NOT NULL,
+                        `vibrationEnabled` INTEGER NOT NULL,
+                        `dailyStudyGoalMinutes` INTEGER NOT NULL,
+                        `dailyTaskGoal` INTEGER NOT NULL,
+                        `weeklyStudyGoalMinutes` INTEGER NOT NULL,
+                        `weeklyTaskGoal` INTEGER NOT NULL,
+                        `adaptiveGoals` INTEGER NOT NULL,
+                        `goalDifficulty` TEXT NOT NULL,
+                        `profilePublic` INTEGER NOT NULL,
+                        `autoSyncEnabled` INTEGER NOT NULL,
+                        `syncOnlyOnWifi` INTEGER NOT NULL,
+                        `dataUsageOptimization` INTEGER NOT NULL,
+                        `offlineMode` INTEGER NOT NULL,
+                        `backupEnabled` INTEGER NOT NULL,
+                        `backupFrequency` TEXT NOT NULL,
+                        `highContrastMode` INTEGER NOT NULL,
+                        `largeTextMode` INTEGER NOT NULL,
+                        `screenReaderOptimized` INTEGER NOT NULL,
+                        `reducedMotion` INTEGER NOT NULL,
+                        `colorBlindFriendly` INTEGER NOT NULL,
+                        `analyticsEnabled` INTEGER NOT NULL,
+                        `crashReportingEnabled` INTEGER NOT NULL,
+                        `betaFeaturesEnabled` INTEGER NOT NULL,
+                        `debugModeEnabled` INTEGER NOT NULL,
+                        `experimentalFeaturesEnabled` INTEGER NOT NULL,
+                        `language` TEXT NOT NULL,
+                        `dateFormat` TEXT NOT NULL,
+                        `timeFormat` TEXT NOT NULL,
+                        `firstDayOfWeek` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                """.trimIndent())
+
+                // Copy data from old table to new table (only columns that exist in both)
+                db.execSQL("""
+                    INSERT INTO `user_settings_new`
+                    SELECT
+                        `id`,
+                        `userId`,
+                        COALESCE(`notificationsEnabled`, 1),
+                        COALESCE(`dailyReminderEnabled`, 1),
+                        COALESCE(`dailyReminderTime`, '09:00'),
+                        COALESCE(`streakReminderEnabled`, 1),
+                        COALESCE(`achievementNotificationsEnabled`, 1),
+                        COALESCE(`weeklyReportEnabled`, 1),
+                        COALESCE(`weeklyReportDay`, 'Sunday'),
+                        COALESCE(`theme`, 'system'),
+                        COALESCE(`accentColor`, '#1976D2'),
+                        COALESCE(`useDynamicColors`, 1),
+                        COALESCE(`fontSize`, 'medium'),
+                        COALESCE(`reducedAnimations`, 0),
+                        COALESCE(`compactMode`, 0),
+                        COALESCE(`defaultStudySessionLength`, 25),
+                        COALESCE(`defaultBreakLength`, 5),
+                        COALESCE(`longBreakLength`, 15),
+                        COALESCE(`sessionsUntilLongBreak`, 4),
+                        COALESCE(`autoStartBreaks`, 0),
+                        COALESCE(`autoStartSessions`, 0),
+                        COALESCE(`soundEnabled`, 1),
+                        COALESCE(`vibrationEnabled`, 1),
+                        COALESCE(`dailyStudyGoalMinutes`, 120),
+                        COALESCE(`dailyTaskGoal`, 5),
+                        COALESCE(`weeklyStudyGoalMinutes`, 840),
+                        COALESCE(`weeklyTaskGoal`, 35),
+                        COALESCE(`adaptiveGoals`, 1),
+                        COALESCE(`goalDifficulty`, 'medium'),
+                        COALESCE(`profilePublic`, 0),
+                        COALESCE(`autoSyncEnabled`, 1),
+                        COALESCE(`syncOnlyOnWifi`, 0),
+                        COALESCE(`dataUsageOptimization`, 1),
+                        COALESCE(`offlineMode`, 0),
+                        COALESCE(`backupEnabled`, 1),
+                        COALESCE(`backupFrequency`, 'weekly'),
+                        COALESCE(`highContrastMode`, 0),
+                        COALESCE(`largeTextMode`, 0),
+                        COALESCE(`screenReaderOptimized`, 0),
+                        COALESCE(`reducedMotion`, 0),
+                        COALESCE(`colorBlindFriendly`, 0),
+                        COALESCE(`analyticsEnabled`, 1),
+                        COALESCE(`crashReportingEnabled`, 1),
+                        COALESCE(`betaFeaturesEnabled`, 0),
+                        COALESCE(`debugModeEnabled`, 0),
+                        COALESCE(`experimentalFeaturesEnabled`, 0),
+                        COALESCE(`language`, 'system'),
+                        COALESCE(`dateFormat`, 'system'),
+                        COALESCE(`timeFormat`, 'system'),
+                        COALESCE(`firstDayOfWeek`, 'system'),
+                        COALESCE(`createdAt`, strftime('%s','now') * 1000),
+                        COALESCE(`updatedAt`, strftime('%s','now') * 1000)
+                    FROM `user_settings`
+                """.trimIndent())
+
+                // Drop old table
+                db.execSQL("DROP TABLE `user_settings`")
+
+                // Rename new table to original name
+                db.execSQL("ALTER TABLE `user_settings_new` RENAME TO `user_settings`")
+            }
+        }
     }
 }
-

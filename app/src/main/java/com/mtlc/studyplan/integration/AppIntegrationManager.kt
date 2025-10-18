@@ -25,45 +25,222 @@ private data class AchievementDefinition(
     val id: String,
     val title: String,
     val description: String,
-    val condition: (TaskStats, StudyStreak, Int) -> Boolean
+    val condition: (AchievementContext) -> Boolean
+)
+
+data class AchievementContext(
+    val stats: TaskStats,
+    val streak: StudyStreak,
+    val earlyCompletions: Int,
+    val lateNightCompletions: Int,
+    val weekendCompletions: Int,
+    val weekdayCompletions: Int,
+    val highPriorityCount: Int,
+    val criticalPriorityCount: Int,
+    val totalPoints: Int,
+    val maxDailyTasks: Int,
+    val vocabularyCount: Int,
+    val grammarCount: Int,
+    val readingCount: Int,
+    val listeningCount: Int
 )
 
 private val achievementDefinitions = listOf(
+    // Task Completion Milestones
     AchievementDefinition(
         id = "task_starter",
         title = "Getting Started",
         description = "Complete your first task",
-        condition = { stats, _, _ -> stats.completedTasks >= 1 }
+        condition = { ctx -> ctx.stats.completedTasks >= 1 }
+    ),
+    AchievementDefinition(
+        id = "committed_learner",
+        title = "Committed Learner",
+        description = "Complete 10 tasks",
+        condition = { ctx -> ctx.stats.completedTasks >= 10 }
     ),
     AchievementDefinition(
         id = "task_crusher",
         title = "Task Crusher",
         description = "Complete 25 tasks",
-        condition = { stats, _, _ -> stats.completedTasks >= 25 }
+        condition = { ctx -> ctx.stats.completedTasks >= 25 }
     ),
     AchievementDefinition(
         id = "task_master",
         title = "Task Master",
         description = "Complete 50 tasks",
-        condition = { stats, _, _ -> stats.completedTasks >= 50 }
+        condition = { ctx -> ctx.stats.completedTasks >= 50 }
     ),
+    AchievementDefinition(
+        id = "century_maker",
+        title = "Century Maker",
+        description = "Complete 100 tasks",
+        condition = { ctx -> ctx.stats.completedTasks >= 100 }
+    ),
+    AchievementDefinition(
+        id = "task_legend",
+        title = "Task Legend",
+        description = "Complete 250 tasks",
+        condition = { ctx -> ctx.stats.completedTasks >= 250 }
+    ),
+    AchievementDefinition(
+        id = "unstoppable",
+        title = "Unstoppable",
+        description = "Complete 500 tasks",
+        condition = { ctx -> ctx.stats.completedTasks >= 500 }
+    ),
+
+    // Streak Achievements
     AchievementDefinition(
         id = "streak_builder",
         title = "Streak Builder",
         description = "Maintain a 3-day study streak",
-        condition = { _, streak, _ -> streak.currentStreak >= 3 }
+        condition = { ctx -> ctx.streak.currentStreak >= 3 }
     ),
     AchievementDefinition(
         id = "streak_master",
         title = "Streak Master",
         description = "Maintain a 7-day study streak",
-        condition = { _, streak, _ -> streak.currentStreak >= 7 }
+        condition = { ctx -> ctx.streak.currentStreak >= 7 }
     ),
+    AchievementDefinition(
+        id = "week_warrior",
+        title = "Week Warrior",
+        description = "Maintain a 14-day study streak",
+        condition = { ctx -> ctx.streak.currentStreak >= 14 }
+    ),
+    AchievementDefinition(
+        id = "monthly_champion",
+        title = "Monthly Champion",
+        description = "Maintain a 30-day study streak",
+        condition = { ctx -> ctx.streak.currentStreak >= 30 }
+    ),
+    AchievementDefinition(
+        id = "consistency_king",
+        title = "Consistency King",
+        description = "Maintain a 60-day study streak",
+        condition = { ctx -> ctx.streak.currentStreak >= 60 }
+    ),
+    AchievementDefinition(
+        id = "legendary_streak",
+        title = "Legendary Streak",
+        description = "Maintain a 100-day study streak",
+        condition = { ctx -> ctx.streak.currentStreak >= 100 }
+    ),
+
+    // Time-Based Achievements
     AchievementDefinition(
         id = "early_bird",
         title = "Early Bird",
         description = "Complete 5 tasks before 9 AM",
-        condition = { _, _, earlyCompletions -> earlyCompletions >= 5 }
+        condition = { ctx -> ctx.earlyCompletions >= 5 }
+    ),
+    AchievementDefinition(
+        id = "night_owl",
+        title = "Night Owl",
+        description = "Complete 10 tasks after 9 PM",
+        condition = { ctx -> ctx.lateNightCompletions >= 10 }
+    ),
+    AchievementDefinition(
+        id = "weekday_warrior",
+        title = "Weekday Warrior",
+        description = "Complete 20 tasks on weekdays",
+        condition = { ctx -> ctx.weekdayCompletions >= 20 }
+    ),
+    AchievementDefinition(
+        id = "weekend_hustler",
+        title = "Weekend Hustler",
+        description = "Complete 10 tasks on weekends",
+        condition = { ctx -> ctx.weekendCompletions >= 10 }
+    ),
+
+    // Priority-Based Achievements
+    AchievementDefinition(
+        id = "priority_master",
+        title = "Priority Master",
+        description = "Complete 10 high-priority tasks",
+        condition = { ctx -> ctx.highPriorityCount >= 10 }
+    ),
+    AchievementDefinition(
+        id = "crisis_manager",
+        title = "Crisis Manager",
+        description = "Complete 5 critical-priority tasks",
+        condition = { ctx -> ctx.criticalPriorityCount >= 5 }
+    ),
+
+    // Category-Based Achievements (YDS Focused)
+    AchievementDefinition(
+        id = "vocabulary_wizard",
+        title = "Vocabulary Wizard",
+        description = "Complete 25 vocabulary tasks",
+        condition = { ctx -> ctx.vocabularyCount >= 25 }
+    ),
+    AchievementDefinition(
+        id = "grammar_guru",
+        title = "Grammar Guru",
+        description = "Complete 25 grammar tasks",
+        condition = { ctx -> ctx.grammarCount >= 25 }
+    ),
+    AchievementDefinition(
+        id = "reading_expert",
+        title = "Reading Expert",
+        description = "Complete 25 reading tasks",
+        condition = { ctx -> ctx.readingCount >= 25 }
+    ),
+    AchievementDefinition(
+        id = "listening_master",
+        title = "Listening Master",
+        description = "Complete 25 listening tasks",
+        condition = { ctx -> ctx.listeningCount >= 25 }
+    ),
+    AchievementDefinition(
+        id = "yds_allstar",
+        title = "YDS All-Star",
+        description = "Complete at least 10 tasks in each YDS category",
+        condition = { ctx ->
+            ctx.vocabularyCount >= 10 && ctx.grammarCount >= 10 &&
+            ctx.readingCount >= 10 && ctx.listeningCount >= 10
+        }
+    ),
+
+    // Speed & Efficiency
+    AchievementDefinition(
+        id = "speed_demon",
+        title = "Speed Demon",
+        description = "Complete 5 tasks in one day",
+        condition = { ctx -> ctx.maxDailyTasks >= 5 }
+    ),
+    AchievementDefinition(
+        id = "marathon_runner",
+        title = "Marathon Runner",
+        description = "Complete 10 tasks in one day",
+        condition = { ctx -> ctx.maxDailyTasks >= 10 }
+    ),
+
+    // Points & Rewards
+    AchievementDefinition(
+        id = "point_collector",
+        title = "Point Collector",
+        description = "Earn 500 total points",
+        condition = { ctx -> ctx.totalPoints >= 500 }
+    ),
+    AchievementDefinition(
+        id = "point_master",
+        title = "Point Master",
+        description = "Earn 1000 total points",
+        condition = { ctx -> ctx.totalPoints >= 1000 }
+    ),
+    AchievementDefinition(
+        id = "point_legend",
+        title = "Point Legend",
+        description = "Earn 2500 total points",
+        condition = { ctx -> ctx.totalPoints >= 2500 }
+    ),
+    AchievementDefinition(
+        id = "point_tycoon",
+        title = "Point Tycoon",
+        description = "Earn 5000 total points",
+        condition = { ctx -> ctx.totalPoints >= 5000 }
     )
 )
 
@@ -88,7 +265,6 @@ class AppIntegrationManager @Inject constructor(
     val achievements: StateFlow<List<AchievementBadge>> = _achievements.asStateFlow()
 
     private val _newAchievementsCount = MutableStateFlow(0)
-    private val _unreadSocialCount = MutableStateFlow(0)
     private val _settingsUpdateCount = MutableStateFlow(0)
 
     // Core data flows for badge system
@@ -102,10 +278,6 @@ class AppIntegrationManager @Inject constructor(
         return _newAchievementsCount.asStateFlow()
     }
 
-    fun getUnreadSocialCount(): Flow<Int> {
-        return _unreadSocialCount.asStateFlow()
-    }
-
     fun getStreakRiskStatus(): Flow<Boolean> {
         return studyStreak.map { streak ->
             !streak.isActiveToday() && streak.currentStreak > 0
@@ -114,10 +286,6 @@ class AppIntegrationManager @Inject constructor(
 
     fun getSettingsUpdateCount(): Flow<Int> {
         return _settingsUpdateCount.asStateFlow()
-    }
-
-    fun getUnreadSocialNotifications(): Flow<Int> {
-        return _unreadSocialCount.asStateFlow()
     }
 
     // Core task operations
@@ -228,12 +396,30 @@ class AppIntegrationManager @Inject constructor(
     private suspend fun checkForNewAchievements() {
         val stats = getTaskStats()
         val streak = _studyStreak.value
-        val earlyMorningCompletions = taskRepository.getEarlyMorningCompletedTasks().size
+
+        // Build comprehensive achievement context
+        val context = AchievementContext(
+            stats = stats,
+            streak = streak,
+            earlyCompletions = taskRepository.getEarlyMorningCompletedTasks().size,
+            lateNightCompletions = taskRepository.getLateNightCompletedTasks().size,
+            weekendCompletions = taskRepository.getWeekendCompletedTasks().size,
+            weekdayCompletions = taskRepository.getWeekdayCompletedTasks().size,
+            highPriorityCount = taskRepository.getTasksByPriority(com.mtlc.studyplan.data.TaskPriority.HIGH).size,
+            criticalPriorityCount = taskRepository.getTasksByPriority(com.mtlc.studyplan.data.TaskPriority.CRITICAL).size,
+            totalPoints = taskRepository.getTotalPointsEarned(),
+            maxDailyTasks = taskRepository.getMaxTasksCompletedInOneDay(),
+            vocabularyCount = taskRepository.getTasksByCategory("YDS Vocabulary").count { it.isCompleted },
+            grammarCount = taskRepository.getTasksByCategory("YDS Grammar").count { it.isCompleted },
+            readingCount = taskRepository.getTasksByCategory("YDS Reading").count { it.isCompleted },
+            listeningCount = taskRepository.getTasksByCategory("YDS Listening").count { it.isCompleted }
+        )
+
         val previous = _achievements.value.associateBy { it.id }
 
         val updatedBadges = achievementDefinitions.map { definition ->
             val wasUnlocked = previous[definition.id]?.isUnlocked == true
-            val isUnlocked = definition.condition(stats, streak, earlyMorningCompletions)
+            val isUnlocked = definition.condition(context)
             val unlockedAt = when {
                 !isUnlocked -> null
                 wasUnlocked -> previous[definition.id]?.unlockedAt
@@ -296,22 +482,12 @@ class AppIntegrationManager @Inject constructor(
         }
     }
 
-    // Social features (mock implementation)
-    suspend fun markSocialNotificationsAsRead() {
-        _unreadSocialCount.value = 0
-    }
-
     suspend fun markAchievementsAsViewed() {
         _newAchievementsCount.value = 0
     }
 
     suspend fun markSettingsUpdatesAsViewed() {
         _settingsUpdateCount.value = 0
-    }
-
-    // Simulation methods for testing
-    fun simulateNewSocialNotification() {
-        _unreadSocialCount.value = _unreadSocialCount.value + 1
     }
 
     fun simulateSettingsUpdate() {

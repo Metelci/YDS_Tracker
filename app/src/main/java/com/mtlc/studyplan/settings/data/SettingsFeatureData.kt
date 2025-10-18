@@ -1,14 +1,8 @@
 package com.mtlc.studyplan.settings.data
 
 data class PrivacyData(
-    val profileVisibilityEnabled: Boolean = true,
-    val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
-    val progressSharing: Boolean = true
+    val crashReporting: Boolean = true
 )
-
-enum class ProfileVisibilityLevel {
-    PUBLIC, FRIENDS_ONLY, PRIVATE
-}
 
 data class NotificationData(
     val pushNotifications: Boolean = true,
@@ -25,3 +19,4 @@ data class GamificationData(
     val celebrationEffects: Boolean = true,
     val streakRiskWarnings: Boolean = true
 )
+

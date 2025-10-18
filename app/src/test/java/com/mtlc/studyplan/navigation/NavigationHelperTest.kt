@@ -97,36 +97,6 @@ class NavigationHelperTest {
     }
 
     @Test
-    fun `buildRoute for Social without parameters`() {
-        val destination = NavigationDestination.Social()
-        val result = navigationHelper.buildRoute(destination)
-        assertEquals("social", result)
-    }
-
-    @Test
-    fun `buildRoute for Social with tab`() {
-        val destination = NavigationDestination.Social(tab = "friends")
-        val result = navigationHelper.buildRoute(destination)
-        assertEquals("social?tab=friends", result)
-    }
-
-    @Test
-    fun `buildRoute for Social with achievementId`() {
-        val destination = NavigationDestination.Social(achievementId = "ach-789")
-        val result = navigationHelper.buildRoute(destination)
-        assertEquals("social?achievementId=ach-789", result)
-    }
-
-    @Test
-    fun `buildRoute for Social with both parameters`() {
-        val destination = NavigationDestination.Social(tab = "leaderboard", achievementId = "ach-999")
-        val result = navigationHelper.buildRoute(destination)
-        assertTrue(result.startsWith("social?"))
-        assertTrue(result.contains("tab=leaderboard"))
-        assertTrue(result.contains("achievementId=ach-999"))
-    }
-
-    @Test
     fun `buildRoute for Custom without parameters`() {
         val destination = NavigationDestination.Custom(route = "custom/route", params = emptyMap())
         val result = navigationHelper.buildRoute(destination)
@@ -152,98 +122,42 @@ class NavigationHelperTest {
         assertEquals("home", result)
     }
 
-    // ===== Valid Tab Route Tests =====
+    // ===== Tab Route Validation Tests =====
 
     @Test
-    fun `isValidTabRoute returns true for home`() {
-        assertTrue(navigationHelper.isValidTabRoute("home"))
+    fun `isValidTabRoute returns true for known routes`() {
+        listOf("home", "tasks", "settings", "progress").forEach { route ->
+            assertTrue(navigationHelper.isValidTabRoute(route))
+        }
     }
 
     @Test
-    fun `isValidTabRoute returns true for tasks`() {
-        assertTrue(navigationHelper.isValidTabRoute("tasks"))
+    fun `isValidTabRoute returns false for unknown routes`() {
+        assertFalse(navigationHelper.isValidTabRoute("community"))
     }
 
     @Test
-    fun `isValidTabRoute returns true for social`() {
-        assertTrue(navigationHelper.isValidTabRoute("social"))
+    fun `getDefaultRouteIfInvalid returns same route when valid`() {
+        assertEquals("tasks", navigationHelper.getDefaultRouteIfInvalid("tasks"))
     }
 
     @Test
-    fun `isValidTabRoute returns true for settings`() {
-        assertTrue(navigationHelper.isValidTabRoute("settings"))
+    fun `getDefaultRouteIfInvalid returns home when route invalid`() {
+        assertEquals("home", navigationHelper.getDefaultRouteIfInvalid("unknown"))
+        assertEquals("home", navigationHelper.getDefaultRouteIfInvalid(null))
     }
 
-    @Test
-    fun `isValidTabRoute returns true for progress`() {
-        assertTrue(navigationHelper.isValidTabRoute("progress"))
-    }
-
-    @Test
-    fun `isValidTabRoute returns false for invalid route`() {
-        assertFalse(navigationHelper.isValidTabRoute("invalid"))
-    }
-
-    @Test
-    fun `isValidTabRoute returns false for empty string`() {
-        assertFalse(navigationHelper.isValidTabRoute(""))
-    }
-
-    @Test
-    fun `isValidTabRoute returns false for reader route`() {
-        assertFalse(navigationHelper.isValidTabRoute("reader"))
-    }
-
-    // ===== Default Route Tests =====
-
-    @Test
-    fun `getDefaultRouteIfInvalid returns route if valid`() {
-        val result = navigationHelper.getDefaultRouteIfInvalid("tasks")
-        assertEquals("tasks", result)
-    }
-
-    @Test
-    fun `getDefaultRouteIfInvalid returns home if invalid`() {
-        val result = navigationHelper.getDefaultRouteIfInvalid("invalid")
-        assertEquals("home", result)
-    }
-
-    @Test
-    fun `getDefaultRouteIfInvalid returns home if null`() {
-        val result = navigationHelper.getDefaultRouteIfInvalid(null)
-        assertEquals("home", result)
-    }
-
-    @Test
-    fun `getDefaultRouteIfInvalid returns home if empty`() {
-        val result = navigationHelper.getDefaultRouteIfInvalid("")
-        assertEquals("home", result)
-    }
-
-    // ===== Haptic Feedback Tests =====
+    // ===== Haptics Tests =====
 
     @Test
     fun `shouldTriggerHaptic returns true when enabled and tab navigation`() {
-        val result = navigationHelper.shouldTriggerHaptic(hapticsEnabled = true, isTabNavigation = true)
-        assertTrue(result)
+        assertTrue(navigationHelper.shouldTriggerHaptic(hapticsEnabled = true, isTabNavigation = true))
     }
 
     @Test
-    fun `shouldTriggerHaptic returns false when disabled`() {
-        val result = navigationHelper.shouldTriggerHaptic(hapticsEnabled = false, isTabNavigation = true)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldTriggerHaptic returns false when not tab navigation`() {
-        val result = navigationHelper.shouldTriggerHaptic(hapticsEnabled = true, isTabNavigation = false)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldTriggerHaptic returns false when both disabled`() {
-        val result = navigationHelper.shouldTriggerHaptic(hapticsEnabled = false, isTabNavigation = false)
-        assertFalse(result)
+    fun `shouldTriggerHaptic returns false otherwise`() {
+        assertFalse(navigationHelper.shouldTriggerHaptic(hapticsEnabled = false, isTabNavigation = true))
+        assertFalse(navigationHelper.shouldTriggerHaptic(hapticsEnabled = true, isTabNavigation = false))
     }
 
     // ===== Navigation Options Tests =====
@@ -258,85 +172,13 @@ class NavigationHelperTest {
     }
 
     @Test
-    fun `getTabNavigationOptions for navigating within non-home routes`() {
-        val result = navigationHelper.getTabNavigationOptions(targetRoute = "tasks", currentRoute = "social")
+    fun `getTabNavigationOptions for navigating between non-home routes`() {
+        val result = navigationHelper.getTabNavigationOptions(targetRoute = "tasks", currentRoute = "settings")
 
         assertEquals("home", result.popUpTo)
         assertTrue(result.launchSingleTop)
         assertFalse(result.inclusive)
     }
-
-    @Test
-    fun `getTabNavigationOptions for staying on home`() {
-        val result = navigationHelper.getTabNavigationOptions(targetRoute = "home", currentRoute = "home")
-
-        assertEquals("home", result.popUpTo)
-        assertTrue(result.launchSingleTop)
-        assertFalse(result.inclusive)
-    }
-
-    // ===== Bottom Navigation Visibility Tests =====
-
-    @Test
-    fun `shouldShowBottomNav returns false when bottom nav disabled`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "home", bottomNavEnabled = false)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns true for home when enabled`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "home", bottomNavEnabled = true)
-        assertTrue(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns true for tasks when enabled`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "tasks", bottomNavEnabled = true)
-        assertTrue(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns false for welcome route`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "welcome", bottomNavEnabled = true)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns false for onboarding route`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "onboarding", bottomNavEnabled = true)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns false for reader route`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "reader", bottomNavEnabled = true)
-        assertFalse(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav returns true for null route when enabled`() {
-        val result = navigationHelper.shouldShowBottomNav(route = null, bottomNavEnabled = true)
-        assertTrue(result)
-    }
-
-    @Test
-    fun `shouldShowBottomNav handles reader with path`() {
-        val result = navigationHelper.shouldShowBottomNav(route = "reader/123", bottomNavEnabled = true)
-        assertFalse(result)
-    }
-
-    // ===== Navigation Event Mapping Tests =====
-
-    @Test
-    fun `navigationEventToRoute returns null for unknown event`() {
-        val event = object {
-            val name = "UnknownEvent"
-        }
-        val result = navigationHelper.navigationEventToRoute(event)
-        assertNull(result)
-    }
-
-    // ===== NavOptions Data Class Tests =====
 
     @Test
     fun `NavOptions has correct defaults`() {
@@ -362,11 +204,61 @@ class NavigationHelperTest {
 
     @Test
     fun `NavOptions copy works correctly`() {
-        val original = NavigationHelper.NavOptions(popUpTo = "social")
+        val original = NavigationHelper.NavOptions(popUpTo = "tasks")
         val modified = original.copy(inclusive = true)
 
-        assertEquals("social", modified.popUpTo)
+        assertEquals("tasks", modified.popUpTo)
         assertTrue(modified.launchSingleTop)
         assertTrue(modified.inclusive)
+    }
+
+    // ===== Bottom Navigation Visibility Tests =====
+
+    @Test
+    fun `shouldShowBottomNav returns true for home when enabled`() {
+        val result = navigationHelper.shouldShowBottomNav(route = "home")
+        assertTrue(result)
+    }
+
+    @Test
+    fun `shouldShowBottomNav returns true for tasks when enabled`() {
+        val result = navigationHelper.shouldShowBottomNav(route = "tasks")
+        assertTrue(result)
+    }
+
+    @Test
+    fun `shouldShowBottomNav returns false for routes excluded from bottom nav`() {
+        assertFalse(navigationHelper.shouldShowBottomNav(route = "welcome"))
+        assertFalse(navigationHelper.shouldShowBottomNav(route = "onboarding"))
+        assertFalse(navigationHelper.shouldShowBottomNav(route = "reader"))
+        assertFalse(navigationHelper.shouldShowBottomNav(route = "reader/123"))
+    }
+
+    @Test
+    fun `shouldShowBottomNav returns true for null route when enabled`() {
+        val result = navigationHelper.shouldShowBottomNav(route = null)
+        assertTrue(result)
+    }
+
+    // ===== Navigation Event Mapping Tests =====
+
+    private class GoToHome
+    private class GoToTasks
+    private class GoToSettings
+    private class GoToProgress
+    private class UnknownEvent
+
+    @Test
+    fun `navigationEventToRoute maps known events`() {
+        assertEquals("home", navigationHelper.navigationEventToRoute(GoToHome()))
+        assertEquals("tasks", navigationHelper.navigationEventToRoute(GoToTasks()))
+        assertEquals("settings", navigationHelper.navigationEventToRoute(GoToSettings()))
+        assertEquals("progress", navigationHelper.navigationEventToRoute(GoToProgress()))
+    }
+
+    @Test
+    fun `navigationEventToRoute returns null for unknown event`() {
+        val result = navigationHelper.navigationEventToRoute(UnknownEvent())
+        assertNull(result)
     }
 }

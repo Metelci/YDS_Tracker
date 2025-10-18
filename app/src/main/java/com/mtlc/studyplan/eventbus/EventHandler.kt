@@ -18,7 +18,6 @@ class EventHandler @Inject constructor(
     private val taskRepository: TaskRepository,
     private val achievementRepository: AchievementRepository,
     private val streakRepository: StreakRepository,
-    private val socialRepository: SocialRepository,
     @ApplicationScope private val applicationScope: CoroutineScope
 ) {
 
@@ -31,7 +30,6 @@ class EventHandler @Inject constructor(
         handleProgressEvents()
         handleAchievementEvents()
         handleStreakEvents()
-        handleSocialEvents()
         handleSettingsEvents()
         handleSyncEvents()
         handleNotificationEvents()
@@ -114,18 +112,6 @@ class EventHandler @Inject constructor(
     }
 
     /**
-     * Handle social-related events
-     */
-    private fun handleSocialEvents() {
-        // Handle activity creation
-        eventBus.subscribeToSocialEvents<SocialEvent.ActivityCreated>()
-            .onEach { event ->
-                handleActivityCreation(event)
-            }
-            .launchIn(applicationScope)
-    }
-
-    /**
      * Handle settings-related events
      */
     private fun handleSettingsEvents() {
@@ -178,17 +164,6 @@ class EventHandler @Inject constructor(
                 // Check and update achievements
                 val unlockedAchievements = achievementRepository.checkAndUpdateTaskAchievements(
                     taskRepository.getCompletedTasksCount()
-                )
-
-                // Create social activity
-                socialRepository.createTaskCompletionActivity(
-                    userId = "default_user",
-                    taskId = event.taskId,
-                    taskTitle = event.taskTitle,
-                    category = event.category,
-                    difficulty = "Normal", // Could be enhanced to get from task
-                    pointsEarned = event.pointsEarned,
-                    studyMinutes = event.studyMinutes
                 )
 
                 // Check if daily goal is reached
@@ -257,16 +232,6 @@ class EventHandler @Inject constructor(
                 // Check for achievements
                 achievementRepository.checkAndUpdateTaskAchievements(event.actualValue)
 
-                // Create social activity for goal achievement
-                socialRepository.createCustomActivity(
-                    userId = "default_user",
-                    activityType = "DAILY_GOAL_REACHED",
-                    title = "Daily ${event.goalType} goal reached!",
-                    description = "Completed ${event.actualValue} ${event.goalType} (goal: ${event.goalValue})",
-                    pointsEarned = 50,
-                    isHighlight = true
-                )
-
                 // Show celebration UI
                 eventBus.publish(
                     UIEvent.DialogRequested(
@@ -313,15 +278,6 @@ class EventHandler @Inject constructor(
     private suspend fun handleAchievementUnlocked(event: AchievementEvent.AchievementUnlocked) {
         applicationScope.launch {
             try {
-                // Create social activity
-                socialRepository.createAchievementActivity(
-                    userId = "default_user",
-                    achievementId = event.achievementId,
-                    achievementTitle = event.achievementTitle,
-                    achievementDescription = event.achievementDescription,
-                    pointsEarned = event.pointsReward
-                )
-
                 // Show achievement notification
                 eventBus.publish(
                     UIEvent.DialogRequested(
@@ -392,13 +348,6 @@ class EventHandler @Inject constructor(
     private suspend fun handleStreakMilestone(event: StreakEvent.StreakMilestone) {
         applicationScope.launch {
             try {
-                // Create social activity
-                socialRepository.createStreakMilestoneActivity(
-                    userId = "default_user",
-                    streakDay = event.milestone,
-                    pointsEarned = event.milestone * 10 // 10 points per milestone day
-                )
-
                 // Check for achievements
                 achievementRepository.checkAndUpdateStreakAchievements(event.currentStreak)
 
@@ -426,14 +375,6 @@ class EventHandler @Inject constructor(
     private suspend fun handlePerfectDay(event: StreakEvent.PerfectDay) {
         applicationScope.launch {
             try {
-                // Create social activity
-                socialRepository.createPerfectDayActivity(
-                    userId = "default_user",
-                    tasksCompleted = event.tasksCompleted,
-                    studyMinutes = event.studyMinutes,
-                    pointsEarned = event.pointsEarned
-                )
-
                 // Update streak with perfect day
                 val dailyStreak = streakRepository.getOrCreateDailyStreak()
                 streakRepository.incrementPerfectDays(dailyStreak.id)
@@ -458,24 +399,6 @@ class EventHandler @Inject constructor(
             }
         }
     }
-
-    private suspend fun handleActivityCreation(event: SocialEvent.ActivityCreated) {
-        applicationScope.launch {
-            // Track analytics
-            eventBus.publish(
-                AnalyticsEvent.UserActionTracked(
-                    action = "social_activity_created",
-                    screen = "social",
-                    properties = mapOf(
-                        "activity_type" to event.activityType,
-                        "points_earned" to event.pointsEarned.toString(),
-                        "is_public" to event.isPublic.toString()
-                    )
-                )
-            )
-        }
-    }
-
     private suspend fun handleGoalUpdate(event: SettingsEvent.GoalUpdated) {
         applicationScope.launch {
             // Refresh relevant UI components

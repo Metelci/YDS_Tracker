@@ -140,7 +140,6 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
         optimizationScope.launch {
             // Unload non-essential features
             FeatureModuleManager.unloadFeature("analytics")
-            FeatureModuleManager.unloadFeature("social")
             
             // Clear image cache
             CoilImageOptimizer.clearImageCache(application)
@@ -154,7 +153,6 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
         optimizationScope.launch {
             // Unload more features
             FeatureModuleManager.unloadFeature("analytics")
-            FeatureModuleManager.unloadFeature("social")
             FeatureModuleManager.unloadFeature("notifications")
             
             // Clear all caches
@@ -193,7 +191,6 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
         optimizationScope.launch {
             // Release background resources when app moves to background
             FeatureModuleManager.unloadFeature("analytics")
-            FeatureModuleManager.unloadFeature("social")
         }
     }
     

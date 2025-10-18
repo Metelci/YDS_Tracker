@@ -15,7 +15,6 @@ data class UserSettings(
     val offlineModeEnabled: Boolean = false,
     val autoSyncEnabled: Boolean = true,
     val gamificationEnabled: Boolean = true,
-    val socialSharingEnabled: Boolean = false,
     val hapticFeedbackEnabled: Boolean = true,
     val weekendModeEnabled: Boolean = false,
     val autoDifficultyEnabled: Boolean = true,
@@ -45,7 +44,6 @@ enum class SettingsKey {
     OFFLINE_MODE,
     AUTO_SYNC,
     GAMIFICATION_ENABLED,
-    SOCIAL_SHARING,
     HAPTIC_FEEDBACK,
     WEEKEND_MODE,
     AUTO_DIFFICULTY

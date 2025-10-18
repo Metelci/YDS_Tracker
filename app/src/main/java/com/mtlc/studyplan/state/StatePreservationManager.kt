@@ -218,13 +218,6 @@ data class ProgressScreenState(
     val expandedSections: Set<String> = emptySet()
 )
 
-data class SocialScreenState(
-    val selectedTab: String = "FEED",
-    val feedScrollPosition: Int = 0,
-    val searchQuery: String = "",
-    val selectedFilters: Set<String> = emptySet()
-)
-
 data class SettingsScreenState(
     val expandedSections: Set<String> = emptySet(),
     val scrollPosition: Int = 0,

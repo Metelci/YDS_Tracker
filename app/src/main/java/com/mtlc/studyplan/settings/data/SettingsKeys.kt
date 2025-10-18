@@ -16,13 +16,9 @@ object SettingsKeys {
      * Privacy-related settings
      */
     object Privacy {
-        const val PROFILE_VISIBILITY_ENABLED = "privacy_profile_visibility_enabled"
-        const val PROFILE_VISIBILITY_LEVEL = "privacy_profile_visibility_level"
-        const val PROGRESS_SHARING = "privacy_progress_sharing"
         const val DATA_COLLECTION_CONSENT = "privacy_data_collection_consent"
+        const val PROFILE_VISIBILITY_ENABLED = "privacy_profile_visibility_enabled"
         const val CRASH_REPORTING = "privacy_crash_reporting"
-        const val LOCATION_SHARING = "privacy_location_sharing"
-        const val CONTACT_SYNC = "privacy_contact_sync"
     }
 
     /**
@@ -38,7 +34,6 @@ object SettingsKeys {
         const val WEEKLY_REPORTS = "notifications_weekly_reports"
         const val STREAK_WARNINGS = "notifications_streak_warnings"
         const val GOAL_REMINDERS = "notifications_goal_reminders"
-        const val SOCIAL_NOTIFICATIONS = "notifications_social_enabled"
         const val QUIET_HOURS_ENABLED = "notifications_quiet_hours_enabled"
         const val QUIET_HOURS_START = "notifications_quiet_hours_start"
         const val QUIET_HOURS_END = "notifications_quiet_hours_end"
@@ -57,7 +52,6 @@ object SettingsKeys {
         const val ACHIEVEMENT_BADGES = "gamification_achievement_badges"
         const val LEVEL_PROGRESSION = "gamification_level_progression"
         const val DAILY_CHALLENGES = "gamification_daily_challenges"
-        const val LEADERBOARD_ENABLED = "gamification_leaderboard_enabled"
         const val XP_MULTIPLIERS = "gamification_xp_multipliers"
         const val REWARD_ANIMATIONS = "gamification_reward_animations"
     }
@@ -83,28 +77,12 @@ object SettingsKeys {
      * Navigation and UI settings
      */
     object Navigation {
-        const val BOTTOM_NAVIGATION = "navigation_bottom_navigation"
         const val HAPTIC_FEEDBACK = "navigation_haptic_feedback"
         const val GESTURE_NAVIGATION = "navigation_gesture_enabled"
         const val SWIPE_ACTIONS = "navigation_swipe_actions"
         const val QUICK_ACCESS_TOOLBAR = "navigation_quick_access_toolbar"
         const val TAB_PERSISTENCE = "navigation_tab_persistence"
         const val DOUBLE_TAP_EXIT = "navigation_double_tap_exit"
-    }
-
-    /**
-     * Social and community features
-     */
-    object Social {
-        const val STUDY_BUDDY_MATCHING = "social_study_buddy_matching"
-        const val SHARE_ACTIVITY = "social_share_activity"
-        const val GROUP_NOTIFICATIONS = "social_group_notifications"
-        const val LEADERBOARD_PARTICIPATION = "social_leaderboard_participation"
-        const val FRIEND_REQUESTS = "social_friend_requests"
-        const val ACHIEVEMENT_SHARING = "social_achievement_sharing"
-        const val PROGRESS_COMPARISON = "social_progress_comparison"
-        const val COLLABORATIVE_LEARNING = "social_collaborative_learning"
-        const val PEER_CHALLENGES = "social_peer_challenges"
     }
 
     /**
@@ -205,7 +183,6 @@ object SettingsKeys {
             "Gamification" to Gamification.getAllKeys(),
             "Tasks" to Tasks.getAllKeys(),
             "Navigation" to Navigation.getAllKeys(),
-            "Social" to Social.getAllKeys(),
             "Accessibility" to Accessibility.getAllKeys(),
             "Data" to Data.getAllKeys(),
             "Study" to Study.getAllKeys(),
@@ -227,20 +204,19 @@ object SettingsKeys {
  * Extension functions to get all keys from each category
  */
 private fun SettingsKeys.Privacy.getAllKeys(): List<String> = listOf(
-    PROFILE_VISIBILITY_ENABLED, PROFILE_VISIBILITY_LEVEL, PROGRESS_SHARING, DATA_COLLECTION_CONSENT,
-    CRASH_REPORTING, LOCATION_SHARING, CONTACT_SYNC
+    DATA_COLLECTION_CONSENT, CRASH_REPORTING
 )
 
 private fun SettingsKeys.Notifications.getAllKeys(): List<String> = listOf(
     PUSH_NOTIFICATIONS, STUDY_REMINDERS, STUDY_REMINDER_TIME, ACHIEVEMENT_ALERTS, EMAIL_SUMMARIES, EMAIL_SUMMARY_FREQUENCY,
-    WEEKLY_REPORTS, STREAK_WARNINGS, GOAL_REMINDERS, SOCIAL_NOTIFICATIONS,
+    WEEKLY_REPORTS, STREAK_WARNINGS, GOAL_REMINDERS,
     QUIET_HOURS_ENABLED, QUIET_HOURS_START, QUIET_HOURS_END, NOTIFICATION_SOUND,
     VIBRATION_ENABLED
 )
 
 private fun SettingsKeys.Gamification.getAllKeys(): List<String> = listOf(
     STREAK_TRACKING, POINTS_REWARDS, CELEBRATION_EFFECTS, STREAK_RISK_WARNINGS,
-    ACHIEVEMENT_BADGES, LEVEL_PROGRESSION, DAILY_CHALLENGES, LEADERBOARD_ENABLED,
+    ACHIEVEMENT_BADGES, LEVEL_PROGRESSION, DAILY_CHALLENGES,
     XP_MULTIPLIERS, REWARD_ANIMATIONS
 )
 
@@ -251,14 +227,8 @@ private fun SettingsKeys.Tasks.getAllKeys(): List<String> = listOf(
 )
 
 private fun SettingsKeys.Navigation.getAllKeys(): List<String> = listOf(
-    BOTTOM_NAVIGATION, HAPTIC_FEEDBACK, GESTURE_NAVIGATION, SWIPE_ACTIONS,
+    HAPTIC_FEEDBACK, GESTURE_NAVIGATION, SWIPE_ACTIONS,
     QUICK_ACCESS_TOOLBAR, TAB_PERSISTENCE, DOUBLE_TAP_EXIT
-)
-
-private fun SettingsKeys.Social.getAllKeys(): List<String> = listOf(
-    STUDY_BUDDY_MATCHING, SHARE_ACTIVITY, GROUP_NOTIFICATIONS, LEADERBOARD_PARTICIPATION,
-    FRIEND_REQUESTS, ACHIEVEMENT_SHARING, PROGRESS_COMPARISON,
-    COLLABORATIVE_LEARNING, PEER_CHALLENGES
 )
 
 private fun SettingsKeys.Accessibility.getAllKeys(): List<String> = listOf(
@@ -290,3 +260,6 @@ private fun SettingsKeys.Developer.getAllKeys(): List<String> = listOf(
     DEBUG_MODE, SHOW_PERFORMANCE_OVERLAY, MOCK_DATA, CRASH_SIMULATION,
     NETWORK_SIMULATION, LOG_LEVEL, FEATURE_FLAGS
 )
+
+
+

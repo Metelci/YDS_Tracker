@@ -42,13 +42,6 @@ class BadgeDataProvider @Inject constructor(
             }
         }
 
-        // Observe unread social notifications for Social badge
-        scope.launch {
-            appIntegrationManager.getUnreadSocialCount().collect { count ->
-                updateBadge(BadgeType.SOCIAL, count)
-            }
-        }
-
         // Observe streak risk for Home badge
         scope.launch {
             appIntegrationManager.getStreakRiskStatus().collect { atRisk ->
@@ -105,11 +98,6 @@ class BadgeDataProvider @Inject constructor(
 
     fun markAsViewed(type: BadgeType) {
         when (type) {
-            BadgeType.SOCIAL -> {
-                scope.launch {
-                    appIntegrationManager.markSocialNotificationsAsRead()
-                }
-            }
             BadgeType.PROGRESS -> {
                 scope.launch {
                     appIntegrationManager.markAchievementsAsViewed()
@@ -138,7 +126,6 @@ enum class BadgeType {
     HOME,
     TASKS,
     PROGRESS,
-    SOCIAL,
     SETTINGS
 }
 

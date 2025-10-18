@@ -21,6 +21,12 @@ object EmptyTaskRepository : TaskRepository {
     override suspend fun getUpcomingTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
     override suspend fun getTasksByCategory(category: String): List<com.mtlc.studyplan.data.Task> = emptyList()
     override suspend fun getEarlyMorningCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
+    override suspend fun getLateNightCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
+    override suspend fun getWeekendCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
+    override suspend fun getWeekdayCompletedTasks(): List<com.mtlc.studyplan.data.Task> = emptyList()
+    override suspend fun getTasksByPriority(priority: com.mtlc.studyplan.data.TaskPriority): List<com.mtlc.studyplan.data.Task> = emptyList()
+    override suspend fun getTotalPointsEarned(): Int = 0
+    override suspend fun getMaxTasksCompletedInOneDay(): Int = 0
 
     override suspend fun getAllTasksPaginated(page: Int, pageSize: Int): TaskRepository.PaginatedTasks =
         TaskRepository.PaginatedTasks(emptyList(), 0, 0, 0, hasNextPage = false, hasPreviousPage = false)

@@ -120,7 +120,6 @@ fun SettingsScreen(
                     CategoryPill(label = "Navigation", icon = Icons.AutoMirrored.Outlined.Send, selected = selected=="Navigation") { selected = it; onNavigateToCategory(it) }
                     CategoryPill(label = "Notifications", icon = Icons.Outlined.Notifications, selected = selected=="Notifications") { selected = it; onNavigateToCategory(it) }
                     CategoryPill(label = "Gamification", icon = Icons.Outlined.Celebration, selected = selected=="Gamification") { selected = it; onNavigateToCategory(it) }
-                    CategoryPill(label = "Social", icon = Icons.Outlined.Image, selected = selected=="Social") { selected = it; onNavigateToCategory(it) }
                     CategoryPill(label = "Privacy", icon = Icons.Outlined.Lock, selected = selected=="Privacy") { selected = it; onNavigateToCategory(it) }
                     CategoryPill(label = "Tasks", icon = Icons.Outlined.TaskAlt, selected = selected=="Tasks") { selected = it; onNavigateToCategory(it) }
                 }
@@ -144,15 +143,6 @@ fun SettingsScreen(
                         Text("Navigation", fontWeight = FontWeight.SemiBold, color = DesignTokens.Foreground)
                     }
 
-                    SettingToggleRow(
-                        icon = Icons.Outlined.Settings,
-                        title = "Bottom Navigation",
-                        description = "Show navigation at bottom of screen",
-                        checked = navSettings.bottomNavigation,
-                        onCheckedChange = { checked ->
-                            prefs.updateNavigationSettings(navSettings.copy(bottomNavigation = checked))
-                        }
-                    )
                     SettingToggleRow(
                         icon = Icons.Outlined.Image,
                         title = "Haptic Feedback",

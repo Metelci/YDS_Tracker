@@ -29,14 +29,11 @@ class SettingsPreferencesManager(context: Context) {
     private val _gamificationSettings = MutableStateFlow(getGamificationSettings())
     val gamificationSettings: Flow<GamificationSettings> = _gamificationSettings.asStateFlow()
 
-    private val _socialSettings = MutableStateFlow(getSocialSettings())
-    val socialSettings: Flow<SocialSettings> = _socialSettings.asStateFlow()
 
     // Privacy Settings
     fun updatePrivacySettings(settings: PrivacySettings) {
         with(prefs.edit()) {
-            putString(KEY_PROFILE_VISIBILITY, settings.profileVisibility.name)
-            putBoolean(KEY_PROGRESS_SHARING, settings.progressSharing)
+            putBoolean(KEY_CRASH_REPORTING, settings.crashReporting)
             apply()
         }
         _privacySettings.value = settings
@@ -44,10 +41,7 @@ class SettingsPreferencesManager(context: Context) {
 
     private fun getPrivacySettings(): PrivacySettings {
         return PrivacySettings(
-            profileVisibility = ProfileVisibility.valueOf(
-                prefs.getString(KEY_PROFILE_VISIBILITY, ProfileVisibility.FRIENDS_ONLY.name) ?: ProfileVisibility.FRIENDS_ONLY.name
-            ),
-            progressSharing = prefs.getBoolean(KEY_PROGRESS_SHARING, true)
+            crashReporting = prefs.getBoolean(KEY_CRASH_REPORTING, true)
         )
     }
 
@@ -94,7 +88,6 @@ class SettingsPreferencesManager(context: Context) {
     // Navigation Settings
     fun updateNavigationSettings(settings: NavigationSettings) {
         with(prefs.edit()) {
-            putBoolean(KEY_BOTTOM_NAVIGATION, settings.bottomNavigation)
             putBoolean(KEY_HAPTIC_FEEDBACK, settings.hapticFeedback)
             apply()
         }
@@ -103,7 +96,6 @@ class SettingsPreferencesManager(context: Context) {
 
     private fun getNavigationSettings(): NavigationSettings {
         return NavigationSettings(
-            bottomNavigation = prefs.getBoolean(KEY_BOTTOM_NAVIGATION, true),
             hapticFeedback = prefs.getBoolean(KEY_HAPTIC_FEEDBACK, true)
         )
     }
@@ -129,29 +121,11 @@ class SettingsPreferencesManager(context: Context) {
         )
     }
 
-    // Social Settings
-    fun updateSocialSettings(settings: SocialSettings) {
-        with(prefs.edit()) {
-            putBoolean(KEY_SOCIAL_FEATURES, settings.socialFeatures)
-            putBoolean(KEY_LEADERBOARDS, settings.leaderboards)
-            apply()
-        }
-        _socialSettings.value = settings
-    }
-
-    private fun getSocialSettings(): SocialSettings {
-        return SocialSettings(
-            socialFeatures = prefs.getBoolean(KEY_SOCIAL_FEATURES, true),
-            leaderboards = prefs.getBoolean(KEY_LEADERBOARDS, true)
-        )
-    }
-
     companion object {
         private const val PREFS_NAME = "study_plan_settings"
 
         // Privacy keys
-        private const val KEY_PROFILE_VISIBILITY = "profile_visibility"
-        private const val KEY_PROGRESS_SHARING = "progress_sharing"
+        private const val KEY_CRASH_REPORTING = "crash_reporting"
 
         // Notification keys
         private const val KEY_PUSH_NOTIFICATIONS = "push_notifications"
@@ -166,7 +140,6 @@ class SettingsPreferencesManager(context: Context) {
         private const val KEY_WEEKEND_MODE = "weekend_mode"
 
         // Navigation keys
-        private const val KEY_BOTTOM_NAVIGATION = "bottom_navigation"
         private const val KEY_HAPTIC_FEEDBACK = "haptic_feedback"
         // Dark mode removed
 
@@ -176,16 +149,12 @@ class SettingsPreferencesManager(context: Context) {
         private const val KEY_CELEBRATION_EFFECTS = "celebration_effects"
         private const val KEY_STREAK_RISK_WARNINGS = "streak_risk_warnings"
 
-        // Social keys
-        private const val KEY_SOCIAL_FEATURES = "social_features"
-        private const val KEY_LEADERBOARDS = "leaderboards"
     }
 }
 
 // Data classes for settings
 data class PrivacySettings(
-    val profileVisibility: ProfileVisibility = ProfileVisibility.FRIENDS_ONLY,
-    val progressSharing: Boolean = true
+    val crashReporting: Boolean = true
 )
 
 data class NotificationSettings(
@@ -202,7 +171,6 @@ data class TaskSettings(
 )
 
 data class NavigationSettings(
-    val bottomNavigation: Boolean = true,
     val hapticFeedback: Boolean = true
 )
 
@@ -212,12 +180,3 @@ data class GamificationSettings(
     val celebrationEffects: Boolean = true,
     val streakRiskWarnings: Boolean = true
 )
-
-data class SocialSettings(
-    val socialFeatures: Boolean = true,
-    val leaderboards: Boolean = true
-)
-
-enum class ProfileVisibility {
-    PUBLIC, FRIENDS_ONLY, PRIVATE
-}

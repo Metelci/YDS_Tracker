@@ -445,14 +445,6 @@ object CommonUiStates {
         icon = R.drawable.ic_star
     )
 
-    fun noFriends(addFriendsAction: () -> Unit) = UiState.Empty(
-        message = "No friends yet",
-        description = "Add friends to share your study progress and compete together",
-        actionText = "Add Friends",
-        action = addFriendsAction,
-        icon = R.drawable.ic_people
-    )
-
     val loadingTasks = UiState.Loading("Loading your tasks...")
     val loadingProgress = UiState.Loading("Loading progress data...")
     val syncingOfflineActions = UiState.Syncing(hasData = true, pendingActions = 5)

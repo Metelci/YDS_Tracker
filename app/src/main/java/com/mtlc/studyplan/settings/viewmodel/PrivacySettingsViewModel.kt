@@ -1,17 +1,28 @@
 package com.mtlc.studyplan.settings.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorType
-import com.mtlc.studyplan.settings.data.*
+import com.mtlc.studyplan.settings.data.PrivacyData
+import com.mtlc.studyplan.settings.data.SettingAction
+import com.mtlc.studyplan.settings.data.SettingItem
+import com.mtlc.studyplan.settings.data.SettingsKeys
+import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel for managing privacy settings
+ * ViewModel for managing privacy settings.
  */
 class PrivacySettingsViewModel(
     private val repository: SettingsRepository,
@@ -23,16 +34,12 @@ class PrivacySettingsViewModel(
         override val isError: Boolean = false,
         override val isSuccess: Boolean = false,
         val settings: List<SettingItem> = emptyList(),
-        override val error: AppError? = null,
-        val profileVisibilityEnabled: Boolean = true,
-        val profileVisibilityLevel: ProfileVisibilityLevel = ProfileVisibilityLevel.FRIENDS_ONLY,
-        val progressSharing: Boolean = true
+        override val error: AppError? = null
     ) : BaseSettingsUiState
 
     private val _uiState = MutableStateFlow(PrivacyUiState())
     val uiState: StateFlow<PrivacyUiState> = _uiState.asStateFlow()
 
-    // Live data for action completion
     private val _dataExportComplete = MutableLiveData<Boolean>()
     val dataExportComplete: LiveData<Boolean> = _dataExportComplete
 
@@ -47,171 +54,52 @@ class PrivacySettingsViewModel(
         loadPrivacySettings()
     }
 
-    /**
-     * Load privacy settings
-     */
     private fun loadPrivacySettings() {
-        _uiState.value = _uiState.value.copy(
-            isLoading = true,
-            isError = false
-        )
+        _uiState.value = _uiState.value.copy(isLoading = true, isError = false)
 
         viewModelScope.launch(exceptionHandler) {
-            try {
-                repository.getPrivacySettings()
-                    .catch { exception ->
-                        handleError(exception)
-                    }
-                    .collectLatest { privacyData ->
-                        val settings = buildPrivacySettingsList(privacyData)
-
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            isError = false,
-                            isSuccess = true,
-                            settings = settings,
-                            profileVisibilityEnabled = privacyData.profileVisibilityEnabled,
-                            profileVisibilityLevel = privacyData.profileVisibilityLevel,
-                            progressSharing = privacyData.progressSharing,
-                            error = null
-                        )
-                    }
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
+            repository.getPrivacySettings()
+                .catch { error -> handleError(error) }
+                .collectLatest { privacyData ->
+                    val items = buildPrivacySettingsList(privacyData)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isError = false,
+                        isSuccess = true,
+                        settings = items,
+                        error = null
+                    )
+                }
         }
     }
 
-    /**
-     * Build privacy settings list
-     */
     private fun buildPrivacySettingsList(privacyData: PrivacyData): List<SettingItem> {
         return listOf(
-            // Profile Visibility Toggle
-            ToggleSetting(
-                id = "profile_visibility_enabled",
-                title = "Profile Visibility",
-                description = "Allow others to see your study profile",
-                value = privacyData.profileVisibilityEnabled,
-                key = SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
-                defaultValue = true,
+            SettingItem.ActionSetting(
+                id = "data_export",
+                title = "Export Personal Data",
+                description = "Download a copy of the personal data stored on this device",
+                action = SettingAction.ExportPersonalData,
+                buttonText = "Export",
+                actionType = SettingItem.ActionSetting.ActionType.SECONDARY,
                 isEnabled = true,
                 category = "privacy",
                 sortOrder = 1
             ),
-
-            // Profile Visibility Level Selection
-            SelectionSetting(
-                id = "profile_visibility_level",
-                title = "Visibility Level",
-                description = "Choose who can see your profile information",
-                options = listOf(
-                    SelectionOption(
-                        value = ProfileVisibilityLevel.PUBLIC,
-                        display = "Public",
-                        description = "Anyone can see your profile"
-                    ),
-                    SelectionOption(
-                        value = ProfileVisibilityLevel.FRIENDS_ONLY,
-                        display = "Friends Only",
-                        description = "Only your study buddies can see your profile"
-                    ),
-                    SelectionOption(
-                        value = ProfileVisibilityLevel.PRIVATE,
-                        display = "Private",
-                        description = "Your profile is completely private"
-                    )
-                ),
-                currentValue = privacyData.profileVisibilityLevel,
-                key = SettingsKeys.Privacy.PROFILE_VISIBILITY_LEVEL,
-                isEnabled = privacyData.profileVisibilityEnabled,
-                category = "privacy",
-                sortOrder = 2
-            ),
-
-            // Progress Sharing Toggle
-            ToggleSetting(
-                id = "progress_sharing",
-                title = "Progress Sharing",
-                description = "Allow sharing of your study progress and achievements",
-                value = privacyData.progressSharing,
-                key = SettingsKeys.Privacy.PROGRESS_SHARING,
-                defaultValue = true,
-                isEnabled = true,
-                category = "privacy",
-                sortOrder = 4
-            ),
-
-            // Data Export Action
-            ActionSetting(
-                id = "data_export",
-                title = "Export Personal Data",
-                description = "Download a copy of all your personal data",
-                action = com.mtlc.studyplan.settings.data.SettingAction.ExportPersonalData,
-                buttonText = "Export",
-                actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.SECONDARY,
-                isEnabled = true,
-                category = "privacy",
-                sortOrder = 5
-            ),
-
-            // Clear Data Action
-            ActionSetting(
+            SettingItem.ActionSetting(
                 id = "clear_personal_data",
                 title = "Clear Personal Data",
-                description = "Permanently delete all your personal data",
-                action = com.mtlc.studyplan.settings.data.SettingAction.ClearPersonalData,
+                description = "Permanently delete all personal data saved on this device",
+                action = SettingAction.ClearPersonalData,
                 buttonText = "Clear",
-                actionType = com.mtlc.studyplan.settings.data.SettingItem.ActionSetting.ActionType.DESTRUCTIVE,
+                actionType = SettingItem.ActionSetting.ActionType.DESTRUCTIVE,
                 isEnabled = true,
                 category = "privacy",
-                sortOrder = 6
+                sortOrder = 2
             )
         )
     }
 
-    /**
-     * Update profile visibility enabled state
-     */
-    fun updateProfileVisibilityEnabled(enabled: Boolean) {
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                repository.updatePrivacySetting("profile_visibility_enabled", enabled)
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
-        }
-    }
-
-    /**
-     * Update profile visibility level
-     */
-    fun updateProfileVisibilityLevel(level: ProfileVisibilityLevel) {
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                repository.updatePrivacySetting("profile_visibility_level", level)
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
-        }
-    }
-
-    /**
-     * Update progress sharing setting
-     */
-    fun updateProgressSharing(enabled: Boolean) {
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                repository.updatePrivacySetting("progress_sharing", enabled)
-            } catch (exception: Exception) {
-                handleError(exception)
-            }
-        }
-    }
-
-    /**
-     * Export personal data
-     */
     fun exportPersonalData() {
         viewModelScope.launch(exceptionHandler) {
             try {
@@ -224,9 +112,6 @@ class PrivacySettingsViewModel(
         }
     }
 
-    /**
-     * Clear all personal data
-     */
     fun clearAllPersonalData() {
         viewModelScope.launch(exceptionHandler) {
             try {
@@ -239,22 +124,16 @@ class PrivacySettingsViewModel(
         }
     }
 
-    /**
-     * Refresh settings
-     */
     fun refresh() {
         loadPrivacySettings()
     }
 
-    /**
-     * Retry loading after error
-     */
     fun retry() {
         loadPrivacySettings()
     }
 
     private fun handleError(exception: Throwable) {
-        val appError = when (exception) {
+        val resolvedError = when (exception) {
             is AppError -> exception
             is IllegalArgumentException -> AppError(
                 type = ErrorType.VALIDATION,
@@ -263,7 +142,7 @@ class PrivacySettingsViewModel(
             )
             is SecurityException -> AppError(
                 type = ErrorType.PERMISSION,
-                message = "Permission denied for privacy operation",
+                message = "Permission denied while updating privacy settings",
                 cause = exception
             )
             else -> AppError(
@@ -277,18 +156,12 @@ class PrivacySettingsViewModel(
             isLoading = false,
             isError = true,
             isSuccess = false,
-            error = appError
+            error = resolvedError
         )
     }
 
     override fun onCleared() {
         super.onCleared()
-        // Cleanup is handled by repository dispose
+        // No additional cleanup required.
     }
 }
-
-/**
- * Data classes for privacy settings
- */
-
-

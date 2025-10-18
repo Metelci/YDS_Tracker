@@ -32,8 +32,6 @@ interface UserSettingsDao {
     @Query("SELECT achievementNotificationsEnabled FROM user_settings WHERE userId = :userId")
     suspend fun getAchievementNotificationsEnabled(userId: String = "default_user"): Boolean?
 
-    @Query("SELECT socialNotificationsEnabled FROM user_settings WHERE userId = :userId")
-    suspend fun getSocialNotificationsEnabled(userId: String = "default_user"): Boolean?
 
     @Query("SELECT weeklyReportEnabled FROM user_settings WHERE userId = :userId")
     suspend fun getWeeklyReportEnabled(userId: String = "default_user"): Boolean?
@@ -95,24 +93,14 @@ interface UserSettingsDao {
     @Query("SELECT goalDifficulty FROM user_settings WHERE userId = :userId")
     suspend fun getGoalDifficulty(userId: String = "default_user"): String?
 
-    // Privacy and Social Settings Queries
-    @Query("SELECT socialSharingEnabled FROM user_settings WHERE userId = :userId")
-    suspend fun getSocialSharingEnabled(userId: String = "default_user"): Boolean?
+    // Privacy Settings Queries
 
     @Query("SELECT profilePublic FROM user_settings WHERE userId = :userId")
     suspend fun getProfilePublic(userId: String = "default_user"): Boolean?
 
-    @Query("SELECT shareAchievements FROM user_settings WHERE userId = :userId")
-    suspend fun getShareAchievements(userId: String = "default_user"): Boolean?
 
-    @Query("SELECT shareStreak FROM user_settings WHERE userId = :userId")
-    suspend fun getShareStreak(userId: String = "default_user"): Boolean?
 
-    @Query("SELECT allowFriendRequests FROM user_settings WHERE userId = :userId")
-    suspend fun getAllowFriendRequests(userId: String = "default_user"): Boolean?
 
-    @Query("SELECT showOnLeaderboards FROM user_settings WHERE userId = :userId")
-    suspend fun getShowOnLeaderboards(userId: String = "default_user"): Boolean?
 
     // Data and Sync Settings Queries
     @Query("SELECT autoSyncEnabled FROM user_settings WHERE userId = :userId")
@@ -196,8 +184,6 @@ interface UserSettingsDao {
     @Query("UPDATE user_settings SET dailyTaskGoal = :goal, updatedAt = :updatedAt WHERE userId = :userId")
     suspend fun updateDailyTaskGoal(goal: Int, updatedAt: Long, userId: String = "default_user")
 
-    @Query("UPDATE user_settings SET socialSharingEnabled = :enabled, updatedAt = :updatedAt WHERE userId = :userId")
-    suspend fun updateSocialSharingEnabled(enabled: Boolean, updatedAt: Long, userId: String = "default_user")
 
     @Query("UPDATE user_settings SET profilePublic = :isPublic, updatedAt = :updatedAt WHERE userId = :userId")
     suspend fun updateProfilePublic(isPublic: Boolean, updatedAt: Long, userId: String = "default_user")

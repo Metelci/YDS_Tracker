@@ -27,7 +27,6 @@ class GamificationIntegration(
         val achievementBadgesEnabled: Boolean = true,
         val levelProgressionEnabled: Boolean = true,
         val dailyChallengesEnabled: Boolean = true,
-        val leaderboardEnabled: Boolean = true,
         val xpMultipliersEnabled: Boolean = true,
         val rewardAnimationsEnabled: Boolean = true
     )
@@ -50,7 +49,6 @@ class GamificationIntegration(
                     achievementBadgesEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.ACHIEVEMENT_BADGES, true),
                     levelProgressionEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.LEVEL_PROGRESSION, true),
                     dailyChallengesEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.DAILY_CHALLENGES, true),
-                    leaderboardEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.LEADERBOARD_ENABLED, true),
                     xpMultipliersEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.XP_MULTIPLIERS, true),
                     rewardAnimationsEnabled = settingsRepository.getBoolean(SettingsKeys.Gamification.REWARD_ANIMATIONS, true)
                 )
@@ -71,7 +69,6 @@ class GamificationIntegration(
             GamificationFeature.ACHIEVEMENT_BADGES -> _gamificationState.value.achievementBadgesEnabled
             GamificationFeature.LEVEL_PROGRESSION -> _gamificationState.value.levelProgressionEnabled
             GamificationFeature.DAILY_CHALLENGES -> _gamificationState.value.dailyChallengesEnabled
-            GamificationFeature.LEADERBOARD -> _gamificationState.value.leaderboardEnabled
             GamificationFeature.XP_MULTIPLIERS -> _gamificationState.value.xpMultipliersEnabled
             GamificationFeature.REWARD_ANIMATIONS -> _gamificationState.value.rewardAnimationsEnabled
         }
@@ -165,11 +162,6 @@ class GamificationIntegration(
         settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.DAILY_CHALLENGES, !current))
     }
 
-    suspend fun toggleLeaderboard() {
-        val current = _gamificationState.value.leaderboardEnabled
-        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.LEADERBOARD_ENABLED, !current))
-    }
-
     suspend fun toggleXpMultipliers() {
         val current = _gamificationState.value.xpMultipliersEnabled
         settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Gamification.XP_MULTIPLIERS, !current))
@@ -189,7 +181,6 @@ enum class GamificationFeature {
     ACHIEVEMENT_BADGES,
     LEVEL_PROGRESSION,
     DAILY_CHALLENGES,
-    LEADERBOARD,
     XP_MULTIPLIERS,
     REWARD_ANIMATIONS
 }
@@ -242,12 +233,6 @@ class GamificationViewModel(
     fun toggleDailyChallenges() {
         viewModelScope.launch {
             gamificationIntegration.toggleDailyChallenges()
-        }
-    }
-
-    fun toggleLeaderboard() {
-        viewModelScope.launch {
-            gamificationIntegration.toggleLeaderboard()
         }
     }
 

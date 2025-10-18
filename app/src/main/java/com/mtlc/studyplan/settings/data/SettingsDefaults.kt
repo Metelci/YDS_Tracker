@@ -59,22 +59,13 @@ object SettingsDefaults {
             sortOrder = 5
         ),
         SettingsCategory(
-            id = SettingsCategory.SOCIAL_ID,
-            title = "Social Features",
-            description = "Community and sharing options",
-            icon = Icons.Default.Group,
-            route = "social",
-            isActive = true,
-            sortOrder = 6
-        ),
-        SettingsCategory(
             id = SettingsCategory.ACCESSIBILITY_ID,
             title = "Accessibility",
             description = "Make the app more accessible",
             icon = Icons.Default.Accessibility,
             route = "accessibility",
             isActive = true,
-            sortOrder = 7
+            sortOrder = 6
         ),
         SettingsCategory(
             id = SettingsCategory.DATA_ID,
@@ -83,7 +74,7 @@ object SettingsDefaults {
             icon = Icons.Default.Storage,
             route = "data",
             isActive = true,
-            sortOrder = 8
+            sortOrder = 7
         )
     )
 
@@ -96,38 +87,11 @@ object SettingsDefaults {
         SettingsCategory.GAMIFICATION_ID to getGamificationSections(),
         SettingsCategory.TASKS_ID to getTaskSections(),
         SettingsCategory.NAVIGATION_ID to getNavigationSections(),
-        SettingsCategory.SOCIAL_ID to getSocialSections(),
         SettingsCategory.ACCESSIBILITY_ID to getAccessibilitySections(),
         SettingsCategory.DATA_ID to getDataSections()
     )
 
     private fun getPrivacySections(): List<SettingsSection> = listOf(
-        SettingsSection(
-            id = "privacy_general",
-            title = "Privacy Controls",
-            description = "Control what information is shared",
-            items = listOf(
-                ToggleSetting(
-                    id = "profile_visibility_enabled",
-                    title = "Profile Visibility",
-                    description = "Make your profile visible to other users",
-                    category = SettingsCategory.PRIVACY_ID,
-                    key = SettingsKeys.Privacy.PROFILE_VISIBILITY_ENABLED,
-                    defaultValue = true,
-                    sortOrder = 1
-                ),
-                ToggleSetting(
-                    id = "progress_sharing",
-                    title = "Progress Sharing",
-                    description = "Allow sharing of study progress",
-                    category = SettingsCategory.PRIVACY_ID,
-                    key = SettingsKeys.Privacy.PROGRESS_SHARING,
-                    defaultValue = true,
-                    sortOrder = 2
-                )
-            ),
-            sortOrder = 1
-        ),
         SettingsSection(
             id = "privacy_data",
             title = "Data Collection",
@@ -141,10 +105,9 @@ object SettingsDefaults {
                     key = SettingsKeys.Privacy.CRASH_REPORTING,
                     defaultValue = true,
                     sortOrder = 1
-                ),
-
+                )
             ),
-            sortOrder = 2
+            sortOrder = 1
         )
     )
 
@@ -372,22 +335,13 @@ object SettingsDefaults {
             title = "Interface",
             items = listOf(
                 ToggleSetting(
-                    id = "bottom_navigation",
-                    title = "Bottom Navigation",
-                    description = "Show navigation bar at the bottom",
-                    category = SettingsCategory.NAVIGATION_ID,
-                    key = SettingsKeys.Navigation.BOTTOM_NAVIGATION,
-                    defaultValue = true,
-                    sortOrder = 1
-                ),
-                ToggleSetting(
                     id = "haptic_feedback",
                     title = "Haptic Feedback",
                     description = "Vibrate when interacting with the app",
                     category = SettingsCategory.NAVIGATION_ID,
                     key = SettingsKeys.Navigation.HAPTIC_FEEDBACK,
                     defaultValue = true,
-                    sortOrder = 2
+                    sortOrder = 1
                 ),
                 ToggleSetting(
                     id = "swipe_actions",
@@ -396,72 +350,10 @@ object SettingsDefaults {
                     category = SettingsCategory.NAVIGATION_ID,
                     key = SettingsKeys.Navigation.SWIPE_ACTIONS,
                     defaultValue = true,
-                    sortOrder = 3
-                )
-            ),
-            sortOrder = 1
-        )
-    )
-
-    private fun getSocialSections(): List<SettingsSection> = listOf(
-        SettingsSection(
-            id = "social_community",
-            title = "Community",
-            items = listOf(
-                ToggleSetting(
-                    id = "study_buddy_matching",
-                    title = "Study Buddy Matching",
-                    description = "Find study partners with similar goals",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.STUDY_BUDDY_MATCHING,
-                    defaultValue = false,
-                    sortOrder = 1
-                ),
-                ToggleSetting(
-                    id = "leaderboard_participation",
-                    title = "Leaderboard Participation",
-                    description = "Participate in community leaderboards",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.LEADERBOARD_PARTICIPATION,
-                    defaultValue = false,
                     sortOrder = 2
                 )
             ),
             sortOrder = 1
-        ),
-        SettingsSection(
-            id = "social_sharing",
-            title = "Sharing",
-            items = listOf(
-                ToggleSetting(
-                    id = "share_activity",
-                    title = "Share Activity",
-                    description = "Share your study activity with friends",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.SHARE_ACTIVITY,
-                    defaultValue = false,
-                    sortOrder = 1
-                ),
-                ToggleSetting(
-                    id = "achievement_sharing",
-                    title = "Achievement Sharing",
-                    description = "Automatically share achievements",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.ACHIEVEMENT_SHARING,
-                    defaultValue = true,
-                    sortOrder = 2
-                ),
-                ToggleSetting(
-                    id = "group_notifications",
-                    title = "Group Notifications",
-                    description = "Receive notifications from study groups",
-                    category = SettingsCategory.SOCIAL_ID,
-                    key = SettingsKeys.Social.GROUP_NOTIFICATIONS,
-                    defaultValue = true,
-                    sortOrder = 3
-                )
-            ),
-            sortOrder = 2
         )
     )
 
@@ -569,3 +461,4 @@ object SettingsDefaults {
         )
     )
 }
+

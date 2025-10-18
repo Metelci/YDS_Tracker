@@ -37,7 +37,11 @@
       "Bash(adb shell pm clear:*)",
       "Bash(where adb)",
       "Bash(git checkout:*)",
-      "Bash(timeout 120 ./gradlew:*)"
+      "Bash(timeout 120 ./gradlew:*)",
+      "Bash(Select-Object -Last 50)",
+      "Read(//h/**)",
+      "Bash(timeout 120 H:\\StudioProjects\\StudyPlan\\gradlew.bat compileDebugKotlin:*)",
+      "Bash(timeout 120 H:StudioProjectsStudyPlangradlew.bat compileDebugKotlin)"
     ],
     "deny": [],
     "ask": []

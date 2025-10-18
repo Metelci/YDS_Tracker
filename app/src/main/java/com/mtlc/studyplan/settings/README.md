@@ -24,7 +24,6 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
   - **Tasks**: Smart scheduling, auto-difficulty, daily goals, weekend mode
   - **Navigation**: Bottom navigation, haptic feedback
   - **Gamification**: Streak tracking, points/rewards, celebrations, risk warnings
-  - **Social**: Social features, leaderboards, study groups
 
 ### 3. **ViewModels** (`viewmodel/SettingsViewModel.kt`)
 - Separate ViewModels for each settings category
@@ -46,7 +45,7 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
 ## 🎨 UI Features
 
 ### Main Settings Screen
-- Grid layout with 6 categories
+- Grid layout highlighting core categories
 - Material Design 3 styling
 - Reset actions section
 - Version information with branding
@@ -78,11 +77,6 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
   - Celebration Effects (toggle)
   - Streak Risk Warnings (toggle)
 
-- **Social Settings**:
-  - Social Features (toggle)
-  - Leaderboards (toggle)
-  - Study Groups (toggle)
-
 ## 🔄 Navigation Integration
 
 ### Routes
@@ -93,7 +87,6 @@ Comprehensive Android settings architecture implementing Material Design 3 with 
   - `tasks`
   - `navigation`
   - `gamification`
-  - `social`
 
 ### AppNavHost.kt Integration
 ```kotlin

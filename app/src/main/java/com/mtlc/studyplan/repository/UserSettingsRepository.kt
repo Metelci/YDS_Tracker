@@ -37,7 +37,6 @@ class UserSettingsRepository @Inject constructor(
                 dailyReminderTime = it.dailyReminderTime,
                 streakReminderEnabled = it.streakReminderEnabled,
                 achievementNotificationsEnabled = it.achievementNotificationsEnabled,
-                socialNotificationsEnabled = it.socialNotificationsEnabled,
                 weeklyReportEnabled = it.weeklyReportEnabled,
                 weeklyReportDay = it.weeklyReportDay
             )
@@ -88,13 +87,7 @@ class UserSettingsRepository @Inject constructor(
     val privacySettings: Flow<PrivacySettings> = getUserSettings().map { settings ->
         settings?.let {
             PrivacySettings(
-                socialSharingEnabled = it.socialSharingEnabled,
-                profilePublic = it.profilePublic,
-                shareAchievements = it.shareAchievements,
-                shareStreak = it.shareStreak,
-                shareProgress = it.shareProgress,
-                allowFriendRequests = it.allowFriendRequests,
-                showOnLeaderboards = it.showOnLeaderboards
+                profilePublic = it.profilePublic
             )
         } ?: PrivacySettings.default()
     }
@@ -220,12 +213,6 @@ class UserSettingsRepository @Inject constructor(
         triggerRefresh()
     }
 
-    suspend fun updateSocialSharingEnabled(enabled: Boolean, userId: String = "default_user") {
-        userSettingsDao.updateSocialSharingEnabled(enabled, System.currentTimeMillis(), userId)
-        emitSettingsChange("socialSharing", enabled)
-        triggerRefresh()
-    }
-
     suspend fun updateProfilePublic(isPublic: Boolean, userId: String = "default_user") {
         userSettingsDao.updateProfilePublic(isPublic, System.currentTimeMillis(), userId)
         emitSettingsChange("profilePublic", isPublic)
@@ -266,9 +253,6 @@ class UserSettingsRepository @Inject constructor(
     suspend fun getDailyTaskGoal(userId: String = "default_user"): Int =
         userSettingsDao.getDailyTaskGoal(userId) ?: 5
 
-    suspend fun getSocialSharingEnabled(userId: String = "default_user"): Boolean =
-        userSettingsDao.getSocialSharingEnabled(userId) ?: false
-
     suspend fun getAutoSyncEnabled(userId: String = "default_user"): Boolean =
         userSettingsDao.getAutoSyncEnabled(userId) ?: true
 
@@ -302,7 +286,6 @@ class UserSettingsRepository @Inject constructor(
                 dailyReminderTime = settings.dailyReminderTime,
                 streakReminderEnabled = settings.streakReminderEnabled,
                 achievementNotificationsEnabled = settings.achievementNotificationsEnabled,
-                socialNotificationsEnabled = settings.socialNotificationsEnabled,
                 weeklyReportEnabled = settings.weeklyReportEnabled,
                 weeklyReportDay = settings.weeklyReportDay
             )
@@ -383,13 +366,12 @@ class UserSettingsRepository @Inject constructor(
         val dailyReminderTime: String,
         val streakReminderEnabled: Boolean,
         val achievementNotificationsEnabled: Boolean,
-        val socialNotificationsEnabled: Boolean,
         val weeklyReportEnabled: Boolean,
         val weeklyReportDay: String
     ) {
         companion object {
             fun default() = NotificationSettings(
-                true, true, "09:00", true, true, true, true, "Sunday"
+                true, true, "09:00", true, true, true, "Sunday"
             )
         }
     }
@@ -442,18 +424,10 @@ class UserSettingsRepository @Inject constructor(
     }
 
     data class PrivacySettings(
-        val socialSharingEnabled: Boolean,
-        val profilePublic: Boolean,
-        val shareAchievements: Boolean,
-        val shareStreak: Boolean,
-        val shareProgress: Boolean,
-        val allowFriendRequests: Boolean,
-        val showOnLeaderboards: Boolean
+        val profilePublic: Boolean
     ) {
         companion object {
-            fun default() = PrivacySettings(
-                false, false, true, true, false, true, false
-            )
+            fun default() = PrivacySettings(false)
         }
     }
 

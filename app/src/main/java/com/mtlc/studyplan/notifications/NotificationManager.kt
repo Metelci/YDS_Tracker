@@ -217,8 +217,8 @@ class NotificationManager @Inject constructor(
             .setContentIntent(createOpenAppPendingIntent())
             .addAction(
                 R.drawable.ic_notifications,
-                "View",
-                createOpenSocialPendingIntent()
+                "View Achievements",
+                createOpenAchievementsPendingIntent()
             )
             .build()
 
@@ -316,7 +316,7 @@ class NotificationManager @Inject constructor(
             .addAction(
                 R.drawable.ic_notifications,
                 "View Achievements",
-                createOpenSocialPendingIntent()
+                createOpenAchievementsPendingIntent()
             )
             .build()
 
@@ -504,9 +504,9 @@ class NotificationManager @Inject constructor(
         )
     }
 
-    private fun createOpenSocialPendingIntent(): PendingIntent {
+    private fun createOpenAchievementsPendingIntent(): PendingIntent {
         val intent = Intent(context, MinimalMainActivity::class.java).apply {
-            putExtra("navigate_to", "social")
+            putExtra("navigate_to", "achievements")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
@@ -517,6 +517,7 @@ class NotificationManager @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
+
 }
 
 class NotificationReceiver : BroadcastReceiver() {

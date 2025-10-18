@@ -150,6 +150,5 @@ object LazyListKeys {
     fun taskItem(taskId: String) = "task_$taskId"
     fun categoryHeader(categoryId: String) = "category_$categoryId"
     fun progressItem(progressId: String) = "progress_$progressId"
-    fun socialPost(postId: String) = "social_$postId"
     fun settingsItem(settingKey: String) = "setting_$settingKey"
 }

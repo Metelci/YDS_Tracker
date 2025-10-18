@@ -1,17 +1,38 @@
 package com.mtlc.studyplan.auth
-import androidx.compose.ui.graphics.Brush
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -22,7 +43,7 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val authRepo = remember { AuthRepository(context) }
+    val authRepository = remember { AuthRepository(context) }
     val scope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
@@ -39,7 +60,7 @@ fun LoginScreen(
                     .border(2.dp, Color(0xFF0066FF))
             ) {
                 TopAppBar(
-                    title = { Text("Social Login") },
+                    title = { Text("Account Login") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     )
@@ -56,7 +77,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Welcome to Social Hub",
+                text = "Welcome Back",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -65,7 +86,7 @@ fun LoginScreen(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "Connect with friends and share your progress",
+                text = "Sign in to sync your study progress across devices",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -80,7 +101,7 @@ fun LoginScreen(
                 },
                 label = { Text("Email") },
                 isError = emailError != null,
-                supportingText = emailError?.let { { Text(it) } },
+                supportingText = emailError?.let { error -> { Text(error) } },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -95,7 +116,7 @@ fun LoginScreen(
                 },
                 label = { Text("Username") },
                 isError = usernameError != null,
-                supportingText = usernameError?.let { { Text(it) } } ?: {
+                supportingText = usernameError?.let { error -> { Text(error) } } ?: {
                     Text("3+ characters, letters, numbers, and underscore only")
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -106,7 +127,6 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    // Validate
                     var hasError = false
 
                     if (!AuthRepository.isValidEmail(email)) {
@@ -122,7 +142,7 @@ fun LoginScreen(
                     if (!hasError) {
                         isLoading = true
                         scope.launch {
-                            val result = authRepo.login(email, username)
+                            val result = authRepository.login(email, username)
                             isLoading = false
                             if (result.isSuccess) {
                                 onLoginSuccess()
@@ -164,9 +184,9 @@ fun LoginScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "• Only your username and stats are visible to friends\n" +
-                        "• Your email is never shared with other users\n" +
-                        "• No messaging - only rankings and stats sharing",
+                        "- Only your username is stored locally\n" +
+                        "- Email stays on this device for login purposes\n" +
+                        "- Data is used solely for personal progress tracking",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -175,4 +195,3 @@ fun LoginScreen(
         }
     }
 }
-

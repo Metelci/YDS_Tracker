@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +52,8 @@ import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -70,6 +73,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -275,8 +279,9 @@ fun OnboardingRoute(onDone: () -> Unit) {
                     )
                 }
             } else {
-                val fabBottomPadding = safeAreaInsets.bottom + 24.dp
-                val contentBottomPadding = fabBottomPadding + 8.dp
+                val controlsVerticalPadding = 16.dp
+                val controlHeight = 56.dp
+                val contentBottomPadding = safeAreaInsets.bottom + controlHeight + (controlsVerticalPadding * 2)
                 // Animated content with slide transitions
                 AnimatedContent(
                     targetState = step,
@@ -337,70 +342,73 @@ fun OnboardingRoute(onDone: () -> Unit) {
                         else -> OnboardingStepSkills(vm)
                     }
                 }
-                // Floating action buttons for navigation
+                // Bottom navigation controls
                 val nextIcon = if (step < 2) Icons.AutoMirrored.Filled.ArrowForward else Icons.Filled.Check
+                val nextLabel = if (step < 2) {
+                    stringResource(R.string.next_onboarding)
+                } else {
+                    stringResource(R.string.generate_plan)
+                }
                 val nextEnabled = !isGeneratingPlan
 
-                Row(
+                Surface(
+                    tonalElevation = 3.dp,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = fabBottomPadding),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
                 ) {
-                    AnimatedVisibility(
-                        visible = step > 0,
-                        enter = slideInHorizontally(
-                            initialOffsetX = { -it },
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            )
-                        ) + fadeIn(),
-                        exit = slideOutHorizontally(
-                            targetOffsetX = { -it },
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            )
-                        ) + fadeOut()
+                    Row(
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .padding(horizontal = 24.dp, vertical = controlsVerticalPadding),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        FloatingActionButton(
+                        if (step > 0) {
+                            OutlinedButton(
+                                onClick = {
+                                    if (nextEnabled) {
+                                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        step -= 1
+                                    }
+                                },
+                                enabled = nextEnabled,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back_onboarding)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = stringResource(R.string.back_onboarding))
+                            }
+                        }
+
+                        Button(
                             onClick = {
-                                if (nextEnabled) {
+                                if (!nextEnabled) return@Button
+                                if (step < 2) {
                                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    step -= 1
+                                    step += 1
+                                } else {
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    vm.finish(onDone)
                                 }
                             },
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            enabled = nextEnabled,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                            modifier = if (step > 0) Modifier.weight(1f) else Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back_onboarding)
+                                imageVector = nextIcon,
+                                contentDescription = nextLabel
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = nextLabel)
                         }
-                    }
-
-                    FloatingActionButton(
-                        onClick = {
-                            if (!nextEnabled) return@FloatingActionButton
-                            if (step < 2) {
-                                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                step += 1
-                            } else {
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                vm.finish(onDone)
-                            }
-                        },
-                        modifier = Modifier.alpha(if (nextEnabled) 1f else 0.5f),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    ) {
-                        Icon(
-                            imageVector = nextIcon,
-                            contentDescription = if (step < 2) stringResource(R.string.next_onboarding) else stringResource(R.string.generate_plan)
-                        )
                     }
                 }
             }

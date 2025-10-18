@@ -213,53 +213,6 @@ sealed interface SettingsEvent : Event {
 }
 
 /**
- * Events related to social features
- */
-sealed interface SocialEvent : Event {
-    @Serializable
-    data class ActivityCreated(
-        val activityId: String,
-        val activityType: String,
-        val title: String,
-        val pointsEarned: Int,
-        val isPublic: Boolean
-    ) : SocialEvent
-
-    @Serializable
-    data class ActivityShared(
-        val activityId: String,
-        val shareCount: Int
-    ) : SocialEvent
-
-    @Serializable
-    data class ReactionAdded(
-        val activityId: String,
-        val emoji: String,
-        val totalReactions: Int
-    ) : SocialEvent
-
-    @Serializable
-    data class CommentAdded(
-        val activityId: String,
-        val comment: String,
-        val totalComments: Int
-    ) : SocialEvent
-
-    @Serializable
-    data class ChallengeStarted(
-        val challengeName: String,
-        val participants: Int
-    ) : SocialEvent
-
-    @Serializable
-    data class ChallengeCompleted(
-        val challengeName: String,
-        val rank: Int,
-        val totalParticipants: Int
-    ) : SocialEvent
-}
-
-/**
  * Events related to UI state and navigation
  */
 sealed interface UIEvent : Event {

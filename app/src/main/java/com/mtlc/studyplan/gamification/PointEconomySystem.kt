@@ -11,7 +11,6 @@ import com.mtlc.studyplan.data.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -143,25 +142,6 @@ enum class StreakMultiplierTier(
 }
 
 /**
- * Leaderboard System
- */
-@Serializable
-data class LeaderboardEntry(
-    val period: LeaderboardPeriod,
-    val points: Long,
-    val rank: Int,
-    val personalBest: Boolean = false,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-enum class LeaderboardPeriod(val displayName: String, val durationDays: Long) {
-    DAILY("Today", 1),
-    WEEKLY("This Week", 7),
-    MONTHLY("This Month", 30),
-    ALL_TIME("All Time", Long.MAX_VALUE)
-}
-
-/**
  * Cosmetic Rewards System
  */
 @Serializable
@@ -211,7 +191,6 @@ class PointEconomyManager(
     private object Keys {
         val POINT_WALLET = androidx.datastore.preferences.core.stringPreferencesKey("point_wallet")
         val POINT_TRANSACTIONS = androidx.datastore.preferences.core.stringSetPreferencesKey("point_transactions")
-        val LEADERBOARD_DATA = androidx.datastore.preferences.core.stringPreferencesKey("leaderboard_data")
         val OWNED_COSMETICS = androidx.datastore.preferences.core.stringSetPreferencesKey("owned_cosmetics")
         val EQUIPPED_COSMETICS = androidx.datastore.preferences.core.stringPreferencesKey("equipped_cosmetics")
     }
@@ -327,7 +306,6 @@ class PointEconomyManager(
             preferences[Keys.POINT_TRANSACTIONS] = updatedTransactions.toList().takeLast(1000).toSet()
         }
 
-        updateLeaderboards(amount)
     }
 
     /**
@@ -383,45 +361,6 @@ class PointEconomyManager(
         }
 
         return PurchaseResult.Success(cosmetic)
-    }
-
-    /**
-     * Update leaderboard rankings
-     */
-    private suspend fun updateLeaderboards(pointsEarned: Long) {
-        dataStore.edit { preferences ->
-            val currentData = preferences[Keys.LEADERBOARD_DATA]?.let {
-                json.decodeFromString<Map<String, LeaderboardEntry>>(it)
-            } ?: emptyMap()
-
-            val now = System.currentTimeMillis()
-            val updatedData = mutableMapOf<String, LeaderboardEntry>()
-
-            LeaderboardPeriod.entries.forEach { period ->
-                val key = "${period.name}_${getPeriodKey(now, period)}"
-                val existing = currentData[key]
-                val newPoints = (existing?.points ?: 0) + pointsEarned
-
-                updatedData[key] = LeaderboardEntry(
-                    period = period,
-                    points = newPoints,
-                    rank = 1, // Would calculate actual rank in multiplayer
-                    personalBest = newPoints > (existing?.points ?: 0)
-                )
-            }
-
-            preferences[Keys.LEADERBOARD_DATA] = json.encodeToString(MapSerializer(String.serializer(), LeaderboardEntry.serializer()), updatedData)
-        }
-    }
-
-    private fun getPeriodKey(timestamp: Long, period: LeaderboardPeriod): String {
-        val date = LocalDate.ofEpochDay(timestamp / (24 * 60 * 60 * 1000))
-        return when (period) {
-            LeaderboardPeriod.DAILY -> date.toString()
-            LeaderboardPeriod.WEEKLY -> "${date.year}-W${date.get(java.time.temporal.WeekFields.ISO.weekOfYear())}"
-            LeaderboardPeriod.MONTHLY -> "${date.year}-${date.monthValue}"
-            LeaderboardPeriod.ALL_TIME -> "all_time"
-        }
     }
 
     /**
@@ -552,3 +491,4 @@ sealed class PurchaseResult {
     data class AlreadyOwned(val cosmetic: CosmeticReward) : PurchaseResult()
     data class RequirementNotMet(val requirement: String) : PurchaseResult()
 }
+

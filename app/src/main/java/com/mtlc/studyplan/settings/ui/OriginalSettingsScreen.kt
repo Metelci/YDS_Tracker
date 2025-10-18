@@ -22,15 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.automirrored.outlined.Login
-import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Settings
@@ -83,7 +78,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.auth.AuthRepository
 import com.mtlc.studyplan.data.OnboardingRepository
 import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.database.StudyPlanDatabase
@@ -99,7 +93,6 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 // Avoid name clash with Composable named GamificationSettings in other modules
-import com.mtlc.studyplan.settings.data.ProfileVisibility
 import com.mtlc.studyplan.settings.data.PrivacySettings
 
 
@@ -141,7 +134,6 @@ fun OriginalSettingsScreen(
         SettingsTab("navigation", stringResource(R.string.navigation).capitalizeFirst(), Icons.Outlined.Navigation),
         SettingsTab("notifications", stringResource(R.string.notifications).capitalizeFirst(), Icons.Outlined.Notifications),
         SettingsTab("gamification", stringResource(R.string.gamification).capitalizeFirst(), Icons.Outlined.EmojiEvents),
-        SettingsTab("social", stringResource(R.string.nav_social).capitalizeFirst(), Icons.Outlined.People),
         SettingsTab("privacy", stringResource(R.string.privacy).capitalizeFirst(), Icons.Outlined.Lock),
         SettingsTab("tasks", stringResource(R.string.nav_tasks).capitalizeFirst(), Icons.Outlined.TaskAlt)
     )
@@ -247,7 +239,7 @@ fun OriginalSettingsScreen(
                             )
                         }
                     }
-                    // Second row: Social, Privacy, Tasks
+                    // Second row: Privacy, Tasks
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -312,7 +304,6 @@ fun OriginalSettingsScreen(
                     "navigation" -> NavigationSettingsContent(settingsManager)
                     "notifications" -> NotificationsSettingsContent(settingsManager)
                     "gamification" -> GamificationSettingsContent(settingsManager)
-                    "social" -> SocialSettingsContent(settingsManager)
                     "privacy" -> PrivacySettingsContent(settingsManager)
                 }
             }
@@ -472,10 +463,6 @@ private fun TabButton(
             Color(0xFFFFF4E6), // Soft peach background
             Color(0xFFEA580C)   // Orange content
         )
-        "social" -> Pair(
-            Color(0xFFEFF6FF), // Light sky blue background
-            Color(0xFF0284C7)   // Blue content
-        )
         "privacy" -> Pair(
             Color(0xFFFDF2F8), // Soft pink background
             Color(0xFFBE185D)   // Pink content
@@ -582,16 +569,6 @@ private fun NavigationSettingsContent(settingsManager: SettingsPreferencesManage
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
-                icon = Icons.Outlined.Navigation,
-                title = stringResource(R.string.bottom_navigation_title),
-                description = stringResource(R.string.bottom_navigation_desc),
-                checked = navSettings.bottomNavigation,
-                onCheckedChange = { checked ->
-                    settingsManager.updateNavigationSettings(navSettings.copy(bottomNavigation = checked))
-                }
-            )
-
-            SettingToggleItem(
                 icon = Icons.Outlined.Settings,
                 title = stringResource(R.string.haptic_feedback_title),
                 description = stringResource(R.string.haptic_feedback_desc),
@@ -684,256 +661,6 @@ private fun GamificationSettingsContent(settingsManager: SettingsPreferencesMana
 }
 
 @Composable
-private fun SocialSettingsContent(settingsManager: SettingsPreferencesManager) {
-    val context = LocalContext.current
-    val authRepository = remember { AuthRepository(context) }
-    val coroutineScope = rememberCoroutineScope()
-
-    val socialSettings by settingsManager.socialSettings.collectAsState(initial = com.mtlc.studyplan.settings.data.SocialSettings())
-    val currentUser by authRepository.currentUser.collectAsState(initial = null)
-
-    var showLoginDialog by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var usernameError by remember { mutableStateOf<String?>(null) }
-    var isLoggingIn by remember { mutableStateOf(false) }
-
-    SettingsCard(
-        title = stringResource(R.string.nav_social),
-        icon = Icons.Outlined.People
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // Login/Account Section
-            val user = currentUser
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (user != null) {
-                        MaterialTheme.colorScheme.primaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant
-                    }
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
-                            contentDescription = null,
-                            tint = if (user != null) {
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column {
-                            Text(
-                                text = user?.username ?: stringResource(R.string.not_logged_in),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (user != null) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                }
-                            )
-                            Text(
-                                text = user?.email ?: stringResource(R.string.log_in_to_invite_friends),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (user != null) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                }
-                            )
-                        }
-                    }
-
-                    if (user != null) {
-                        OutlinedButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    authRepository.logout()
-                                    Toast.makeText(context, context.getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Logout,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text(stringResource(R.string.logout))
-                        }
-                    } else {
-                        Button(
-                            onClick = { showLoginDialog = true }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Login,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text(stringResource(R.string.login))
-                        }
-                    }
-                }
-            }
-
-            SettingToggleItem(
-                icon = Icons.Outlined.People,
-                title = stringResource(R.string.social_features_title),
-                description = stringResource(R.string.social_features_desc),
-                checked = socialSettings.socialFeatures,
-                onCheckedChange = { checked ->
-                    settingsManager.updateSocialSettings(socialSettings.copy(socialFeatures = checked))
-                }
-            )
-
-            SettingToggleItem(
-                icon = Icons.Outlined.Star,
-                title = stringResource(R.string.leaderboards_title),
-                description = stringResource(R.string.leaderboards_desc),
-                checked = socialSettings.leaderboards,
-                onCheckedChange = { checked ->
-                    settingsManager.updateSocialSettings(socialSettings.copy(leaderboards = checked))
-                }
-            )
-
-        }
-    }
-
-    // Login Dialog
-    if (showLoginDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showLoginDialog = false
-                email = ""
-                username = ""
-                emailError = null
-                usernameError = null
-            },
-            title = { Text(stringResource(R.string.login_to_social_features)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        stringResource(R.string.login_prompt),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = {
-                            email = it
-                            emailError = null
-                        },
-                        label = { Text(stringResource(R.string.email)) },
-                        isError = emailError != null,
-                        supportingText = emailError?.let { { Text(it) } },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        enabled = !isLoggingIn
-                    )
-
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {
-                            username = it
-                            usernameError = null
-                        },
-                        label = { Text(stringResource(R.string.username)) },
-                        isError = usernameError != null,
-                        supportingText = usernameError?.let { { Text(it) } } ?: {
-                            Text(stringResource(R.string.username_hint))
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        enabled = !isLoggingIn
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        // Validate
-                        if (email.isBlank()) {
-                            emailError = context.getString(R.string.email_required)
-                            return@TextButton
-                        }
-                        if (!AuthRepository.isValidEmail(email)) {
-                            emailError = context.getString(R.string.valid_email_required)
-                            return@TextButton
-                        }
-                        if (username.isBlank()) {
-                            usernameError = context.getString(R.string.username_required)
-                            return@TextButton
-                        }
-                        if (!AuthRepository.isValidUsername(username)) {
-                            usernameError = context.getString(R.string.username_validation_error)
-                            return@TextButton
-                        }
-
-                        isLoggingIn = true
-                        coroutineScope.launch {
-                            val result = authRepository.login(email, username)
-                            if (result.isSuccess) {
-                                Toast.makeText(context, context.getString(R.string.logged_in_successfully), Toast.LENGTH_SHORT).show()
-                                showLoginDialog = false
-                                email = ""
-                                username = ""
-                            } else {
-                                Toast.makeText(context, context.getString(R.string.login_failed, result.exceptionOrNull()?.message ?: ""), Toast.LENGTH_LONG).show()
-                            }
-                            isLoggingIn = false
-                        }
-                    },
-                    enabled = !isLoggingIn
-                ) {
-                    if (isLoggingIn) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(stringResource(R.string.login))
-                    }
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showLoginDialog = false
-                        email = ""
-                        username = ""
-                        emailError = null
-                        usernameError = null
-                    },
-                    enabled = !isLoggingIn
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
-        )
-    }
-}
-
-@Composable
 private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) {
     val privacySettings by settingsManager.privacySettings.collectAsState(initial = PrivacySettings())
 
@@ -945,23 +672,12 @@ private fun PrivacySettingsContent(settingsManager: SettingsPreferencesManager) 
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingToggleItem(
-                icon = Icons.Outlined.Assessment,
-                title = stringResource(R.string.progress_sharing_title),
-                description = stringResource(R.string.progress_sharing_desc),
-                checked = privacySettings.progressSharing,
+                icon = Icons.Outlined.Security,
+                title = stringResource(R.string.crash_reporting_title),
+                description = stringResource(R.string.crash_reporting_desc),
+                checked = privacySettings.crashReporting,
                 onCheckedChange = { checked ->
-                    settingsManager.updatePrivacySettings(privacySettings.copy(progressSharing = checked))
-                }
-            )
-
-            SettingToggleItem(
-                icon = Icons.Outlined.People,
-                title = stringResource(R.string.profile_sharing_title),
-                description = stringResource(R.string.profile_sharing_desc),
-                checked = privacySettings.profileVisibility == ProfileVisibility.PUBLIC,
-                onCheckedChange = { checked ->
-                    val newVisibility = if (checked) ProfileVisibility.PUBLIC else ProfileVisibility.FRIENDS_ONLY
-                    settingsManager.updatePrivacySettings(privacySettings.copy(profileVisibility = newVisibility))
+                    settingsManager.updatePrivacySettings(privacySettings.copy(crashReporting = checked))
                 }
             )
         }

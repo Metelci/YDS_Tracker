@@ -17,9 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Celebration
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Palette
@@ -120,56 +118,6 @@ fun GamificationSettingsScreen(onBack: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SocialSettingsScreen(onBack: () -> Unit) {
-    SettingsCategoryScaffold(title = "Social", subtitle = "Friends, rankings, and stats", onBack = onBack) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CategoryCardHeader("Social", Icons.Filled.People)
-                SettingRowToggle(title = "Share Stats with Friends", description = "Allow friends to see your XP and streak", checked = true) { }
-                SettingRowToggle(title = "Show in Leaderboards", description = "Appear in friend leaderboards", checked = true) { }
-                SettingRowToggle(title = "Award Notifications", description = "Notify friends when you unlock awards", checked = true) { }
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Filled.Info,
-                        contentDescription = "Privacy information",
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        "Privacy",
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "• Friends connect via email only\n" +
-                    "• No messaging or chat features\n" +
-                    "• Only stats, rankings, and awards are shared\n" +
-                    "• Your email is never shared with others",
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun TaskSettingsScreen(onBack: () -> Unit) {
     SettingsCategoryScaffold(title = "Tasks", subtitle = "Study planning and scheduling", onBack = onBack) {
         Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
@@ -217,13 +165,6 @@ private fun NavigationCategoryCard() {
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "Navigation"))) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CategoryCardHeader("Navigation", Icons.AutoMirrored.Filled.Send)
-            SettingRowToggle(
-                title = "Bottom Navigation",
-                description = "Show navigation at bottom of screen",
-                checked = navSettings.bottomNavigation
-            ) {
-                settingsManager.updateNavigationSettings(navSettings.copy(bottomNavigation = it))
-            }
             SettingRowToggle(
                 title = "Haptic Feedback",
                 description = "Vibrate on button taps and interactions",

@@ -2,10 +2,17 @@ package com.mtlc.studyplan.core
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +48,8 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Card
@@ -69,6 +78,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 // removed luminance-based dark theme checks
@@ -92,6 +103,7 @@ import com.mtlc.studyplan.data.TaskRepository
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.WeekPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.integration.AchievementBadge
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
@@ -498,7 +510,7 @@ private fun rememberWorkingTasksScreenState(
     val currentWeek by studyProgressRepository.currentWeek.collectAsState(initial = 1)
     val plan = remember { PlanDataSource.planData }
 
-    val selectedTabState = remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan
+    val selectedTabState = remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan, 3: Awards
     val selectedDayState = remember { mutableStateOf<DayPlan?>(null) }
 
     // Get the week that corresponds to user's current progress
@@ -616,7 +628,8 @@ private fun WorkingTasksScreenContent(
                 segments = listOf(
                     stringResource(R.string.tasks_tab_daily),
                     stringResource(R.string.tasks_tab_weekly),
-                    stringResource(R.string.tasks_tab_plan)
+                    stringResource(R.string.tasks_tab_plan),
+                    stringResource(R.string.tasks_tab_awards)
                 ),
                 selectedIndex = screenState.selectedTab,
                 onSelect = screenState.onTabSelected
@@ -647,6 +660,9 @@ private fun WorkingTasksScreenContent(
                     dayStatuses = screenState.dayStatuses,
                     onDayClick = screenState.onDaySelected,
                     onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
+                )
+                3 -> AwardsTabContent(
+                    appIntegrationManager = appIntegrationManager
                 )
             }
         }
@@ -1406,6 +1422,279 @@ private fun PlanTab(
             }
         }
 
+    }
+}
+
+@Composable
+private fun AwardsTabContent(
+    appIntegrationManager: AppIntegrationManager
+) {
+    val achievements by appIntegrationManager.achievements.collectAsState()
+    val newAchievements by appIntegrationManager.getNewAchievementsCount().collectAsState(initial = 0)
+    val cardShape = RoundedCornerShape(16.dp)
+
+    if (newAchievements > 0) {
+        LaunchedEffect(newAchievements) {
+            delay(3200)
+            appIntegrationManager.markAchievementsAsViewed()
+        }
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 28.dp)
+        ) {
+            item {
+                Card(
+                    shape = cardShape,
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFFFF9A8B),
+                                        Color(0xFFFF6FD8),
+                                        Color(0xFF8BC6EC)
+                                    )
+                                ),
+                                shape = cardShape
+                            )
+                            .padding(20.dp)
+                    ) {
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.EmojiEvents,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                                Spacer(Modifier.width(10.dp))
+                                Text(
+                                    text = stringResource(R.string.tasks_tab_awards),
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 20.sp,
+                                    color = Color.White
+                                )
+                            }
+                            Spacer(Modifier.height(16.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.tasks_awards_total_label),
+                                        fontSize = 13.sp,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
+                                    Text(
+                                        text = "${achievements.size}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 28.sp,
+                                        color = Color.White
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = stringResource(R.string.tasks_awards_unlocked_label),
+                                        fontSize = 13.sp,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
+                                    Text(
+                                        text = "${achievements.count { it.isUnlocked }}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 28.sp,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            items(achievements.size) { index ->
+                val achievement = achievements[index]
+                AchievementCard(achievement, cardShape, index)
+            }
+        }
+
+        AnimatedVisibility(
+            visible = newAchievements > 0,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+        ) {
+            FireworksCelebration(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AchievementCard(
+    achievement: AchievementBadge,
+    shape: Shape,
+    index: Int
+) {
+    val palette = listOf(
+        listOf(Color(0xFF6EE7B7), Color(0xFF3B82F6)),
+        listOf(Color(0xFFFF9A9E), Color(0xFFFAD0C4)),
+        listOf(Color(0xFFFDEB71), Color(0xFFF76B1C)),
+        listOf(Color(0xFFB993D6), Color(0xFF8CA6DB))
+    )
+    val unlockedBrush = Brush.linearGradient(palette[index % palette.size])
+    val lockedBrush = Brush.linearGradient(
+        listOf(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+        )
+    )
+
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = if (achievement.isUnlocked) unlockedBrush else lockedBrush,
+                    shape = shape
+                )
+                .padding(horizontal = 16.dp, vertical = 18.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(Color.Black.copy(alpha = if (achievement.isUnlocked) 0.0f else 0.08f), shape = CircleShape)
+                        .padding(10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val iconTint = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                    Icon(
+                        imageVector = if (achievement.isUnlocked) Icons.Filled.EmojiEvents else Icons.Filled.Lock,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = achievement.title,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = achievement.description,
+                        fontSize = 13.sp,
+                        color = if (achievement.isUnlocked) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        maxLines = 2
+                    )
+                }
+
+                if (achievement.isUnlocked && achievement.unlockedAt != null) {
+                    Spacer(Modifier.width(12.dp))
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color.White.copy(alpha = 0.2f),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.tasks_awards_unlocked_label
+                            ),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FireworksCelebration(modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition(label = "fireworks")
+    val primaryBurst by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "fireworks-primary"
+    )
+    val secondaryBurst by transition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1600, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "fireworks-secondary"
+    )
+
+    Canvas(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xEE1B1D3C),
+                        Color(0x661B1D3C),
+                        Color.Transparent
+                    )
+                )
+            )
+    ) {
+        val centers = listOf(
+            Offset(size.width * 0.25f, size.height * 0.55f),
+            Offset(size.width * 0.55f, size.height * 0.2f),
+            Offset(size.width * 0.8f, size.height * 0.48f)
+        )
+        val palette = listOf(
+            Color(0xFFFFF275),
+            Color(0xFFFDAB9F),
+            Color(0xFF9ADCFF),
+            Color(0xFFD57EEB)
+        )
+        val baseRadius = size.minDimension * 0.32f
+
+        centers.forEachIndexed { index, center ->
+            val color = palette[index % palette.size]
+            drawCircle(
+                color = color.copy(alpha = (1f - primaryBurst).coerceIn(0f, 1f)),
+                radius = baseRadius * (0.25f + primaryBurst),
+                center = center
+            )
+            drawCircle(
+                color = palette[(index + 1) % palette.size].copy(alpha = (1f - secondaryBurst).coerceIn(0f, 1f)),
+                radius = baseRadius * (0.15f + secondaryBurst * 0.7f),
+                center = center
+            )
+        }
     }
 }
 

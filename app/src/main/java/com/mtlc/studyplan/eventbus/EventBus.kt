@@ -243,9 +243,6 @@ inline fun <reified T : StreakEvent> EventBus.subscribeToStreakEvents(): Flow<T>
 inline fun <reified T : SettingsEvent> EventBus.subscribeToSettingsEvents(): Flow<T> =
     subscribe(T::class)
 
-// Subscribe to social events
-inline fun <reified T : SocialEvent> EventBus.subscribeToSocialEvents(): Flow<T> =
-    subscribe(T::class)
 
 // Subscribe to UI events
 inline fun <reified T : UIEvent> EventBus.subscribeToUIEvents(): Flow<T> =
@@ -299,7 +296,6 @@ object EventTypeMatcher {
                 is AchievementEvent -> if (targetType.isInstance(event)) event as T else null
                 is StreakEvent -> if (targetType.isInstance(event)) event as T else null
                 is SettingsEvent -> if (targetType.isInstance(event)) event as T else null
-                is SocialEvent -> if (targetType.isInstance(event)) event as T else null
                 is UIEvent -> if (targetType.isInstance(event)) event as T else null
                 is SyncEvent -> if (targetType.isInstance(event)) event as T else null
                 is NotificationEvent -> if (targetType.isInstance(event)) event as T else null
@@ -318,7 +314,6 @@ object EventTypeMatcher {
             is AchievementEvent -> if (targetType.isInstance(event)) event as T else null
             is StreakEvent -> if (targetType.isInstance(event)) event as T else null
             is SettingsEvent -> if (targetType.isInstance(event)) event as T else null
-            is SocialEvent -> if (targetType.isInstance(event)) event as T else null
             is UIEvent -> if (targetType.isInstance(event)) event as T else null
             is SyncEvent -> if (targetType.isInstance(event)) event as T else null
             is NotificationEvent -> if (targetType.isInstance(event)) event as T else null

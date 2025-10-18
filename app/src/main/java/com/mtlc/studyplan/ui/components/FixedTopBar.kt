@@ -170,31 +170,6 @@ object FixedTopBarDefaults {
     }
 
     @Composable
-    fun socialTopBar(
-        onMenuClick: () -> Unit = {},
-        onSettingsClick: () -> Unit = {}
-    ): @Composable () -> Unit = {
-        FixedTopBar(
-            title = "Social Hub",
-            showMenu = true,
-            showLanguageSwitcher = false,
-            onMenuClick = onMenuClick,
-            style = StudyPlanTopBarStyle.Social,
-            actions = {
-                IconButton(
-                    onClick = onSettingsClick,
-                    modifier = Modifier.size(touchTargetSize())
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings"
-                    )
-                }
-            }
-        )
-    }
-
-    @Composable
     fun customTopBar(
         title: String,
         style: StudyPlanTopBarStyle = StudyPlanTopBarStyle.Default,

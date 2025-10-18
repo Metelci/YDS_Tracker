@@ -81,22 +81,21 @@ fun WorkingHomeScreen(
     // navigation -> bg F3E8FF (lavender)
     // notifications -> bg E8F5E8 (mint)
     // gamification -> bg FFF4E6 (peach)
-    // social -> bg EFF6FF (sky blue)
     // privacy -> bg FDF2F8 (pink)
     // tasks -> bg F0FDF4 (soft mint)
     val pastelTasks = Color(0xFFF0FDF4)
     val pastelNavigation = Color(0xFFF3E8FF)
     val pastelGamification = Color(0xFFFFF4E6)
-    val pastelSocial = Color(0xFFEFF6FF)
     val pastelPrivacy = Color(0xFFFDF2F8)
     val pastelNotifications = Color(0xFFE8F5E8)
+    val pastelWeekly = Color(0xFFFFF8E1)
 
     // Map home cards to settings tab colors
     val pastelPink = pastelTasks                 // Today Progress -> Tasks
     val pastelBlue = pastelNavigation            // Days to Exam -> Navigation
     val pastelMint = pastelGamification          // Points Today -> Gamification
     val pastelLavender = pastelNotifications     // Tasks Done -> Notifications
-    val pastelPeach = pastelSocial               // Weekly Plan -> Social
+    val pastelPeach = pastelWeekly               // Weekly Plan -> Light apricot
     val pastelYellow = pastelPrivacy             // Exam Card -> Privacy
 
     // Theme switcher and state removed; app uses light theme only
@@ -694,6 +693,5 @@ fun WorkingHomeScreen(
         }
     }
 }
-
 
 

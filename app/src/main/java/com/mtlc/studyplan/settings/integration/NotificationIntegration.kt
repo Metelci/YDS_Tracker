@@ -31,7 +31,6 @@ class NotificationIntegration(
         val weeklyReportsEnabled: Boolean = true,
         val streakWarningsEnabled: Boolean = true,
         val goalRemindersEnabled: Boolean = true,
-        val socialNotificationsEnabled: Boolean = true,
         val quietHoursEnabled: Boolean = false,
         val quietHoursStart: String = "22:00",
         val quietHoursEnd: String = "08:00",
@@ -59,7 +58,6 @@ class NotificationIntegration(
                     weeklyReportsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.WEEKLY_REPORTS, true),
                     streakWarningsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.STREAK_WARNINGS, true),
                     goalRemindersEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, true),
-                    socialNotificationsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, true),
                     quietHoursEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, false),
                     quietHoursStart = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_START, "22:00"),
                     quietHoursEnd = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_END, "08:00"),
@@ -190,11 +188,6 @@ class NotificationIntegration(
         settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, !current))
     }
 
-    suspend fun toggleSocialNotifications() {
-        val current = _notificationState.value.socialNotificationsEnabled
-        settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.SOCIAL_NOTIFICATIONS, !current))
-    }
-
     suspend fun toggleQuietHours() {
         val current = _notificationState.value.quietHoursEnabled
         settingsRepository.updateSetting(SettingsUpdateRequest.UpdateBoolean(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, !current))
@@ -281,11 +274,6 @@ class NotificationViewModel(
         }
     }
 
-    fun toggleSocialNotifications() {
-        viewModelScope.launch {
-            notificationIntegration.toggleSocialNotifications()
-        }
-    }
 
     fun toggleQuietHours() {
         viewModelScope.launch {

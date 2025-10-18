@@ -20,13 +20,6 @@ class SettingsIntegration(context: Context) {
     }
 
     /**
-     * Get bottom navigation setting for UI layout decisions
-     */
-    fun isBottomNavigationEnabled(): Flow<Boolean> {
-        return preferencesManager.navigationSettings.map { it.bottomNavigation }
-    }
-
-    /**
      * Get push notifications setting for notification scheduling
      */
     fun arePushNotificationsEnabled(): Flow<Boolean> {

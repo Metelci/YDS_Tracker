@@ -34,7 +34,6 @@ class GamificationManager(
         val dailyChallenge: DailyChallenge? = null,
         val weeklyChallenge: WeeklyChallenge? = null,
         val activeComebackBonus: ComebackBonus? = null,
-        val studyBuddyComparison: StudyBuddyComparison? = null,
         val levelSystem: LevelSystem = LevelSystem(1, 0, 1000, 0, "Newcomer", "Learner", emptyList()),
         val availableCosmetics: List<CosmeticReward> = emptyList(),
         val ownedCosmetics: List<CosmeticReward> = emptyList(),
@@ -54,7 +53,6 @@ class GamificationManager(
 
         val dailyChallenge = getCurrentDailyChallenge(transactions)
         val comebackBonus = checkActiveComebackBonus()
-        val studyBuddyComparison = null // Progress tracking removed
         val levelSystem = LevelSystemCalculator.calculateLevel(pointWallet.totalLifetimePoints)
         val availableCosmetics = pointEconomyManager.getAvailableCosmetics()
 
@@ -63,7 +61,6 @@ class GamificationManager(
             achievements = achievements,
             dailyChallenge = dailyChallenge,
             activeComebackBonus = comebackBonus,
-            studyBuddyComparison = studyBuddyComparison,
             levelSystem = levelSystem,
             availableCosmetics = availableCosmetics,
             transactionHistory = transactions.take(50) // Recent transactions

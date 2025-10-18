@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -78,7 +77,6 @@ fun AppNavHost(
     val haptics = LocalHapticFeedback.current
     val settingsIntegration = com.mtlc.studyplan.settings.rememberSettingsIntegration()
     val hapticsEnabled by settingsIntegration.isHapticFeedbackEnabled().collectAsState(initial = true)
-    val bottomBarEnabled by settingsIntegration.isBottomNavigationEnabled().collectAsState(initial = true)
 
     // Local context
     val context = LocalContext.current
@@ -106,11 +104,6 @@ fun AppNavHost(
                             launchSingleTop = true
                         }
                     }
-                    is com.mtlc.studyplan.shared.NavigationEvent.GoToSocial -> {
-                        navController.navigate("social") {
-                            launchSingleTop = true
-                        }
-                    }
                     is com.mtlc.studyplan.shared.NavigationEvent.GoToSettings -> {
                         navController.navigate("settings") {
                             launchSingleTop = true
@@ -131,14 +124,13 @@ fun AppNavHost(
     val tabs = listOf(
         Triple("home", Icons.Filled.Home, stringResource(R.string.nav_home)),
         Triple("tasks", Icons.Filled.CheckCircle, stringResource(R.string.nav_tasks)),
-        Triple("social", Icons.Filled.People, stringResource(R.string.nav_social)),
         Triple("settings", Icons.Filled.Settings, stringResource(R.string.nav_settings)),
     )
     Scaffold(
         bottomBar = {
             val currentBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = currentBackStackEntry?.destination?.route
-            if (navigationHelper.shouldShowBottomNav(currentRoute, bottomBarEnabled)) {
+            if (navigationHelper.shouldShowBottomNav(currentRoute)) {
                 val resolvedRoute = navigationHelper.getDefaultRouteIfInvalid(currentRoute)
                 com.mtlc.studyplan.ui.components.StudyBottomNav(
                     currentRoute = resolvedRoute,
@@ -315,32 +307,6 @@ fun AppNavHost(
         }
 
 
-        // Social features
-        composable(
-            "social",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ) + fadeOut(animationSpec = tween(300))
-            }
-        ) {
-            AnimatedContent(
-                targetState = "social",
-                transitionSpec = NavigationTransitions.slideTransition(),
-                label = "social_animation"
-            ) { _ ->
-                com.mtlc.studyplan.social.SocialScreen(
-                )
-            }
-        }
-
         // Settings main screen
         composable(
             "settings",
@@ -404,12 +370,6 @@ fun AppNavHost(
             )
         }
 
-        composable("settings/social") {
-            com.mtlc.studyplan.settings.ui.SocialSettingsScreen(
-                onBack = { navController.popBackStack() }
-            )
-        }
-        
 
         // Weekly Plan route
         composable("weekly-plan") {

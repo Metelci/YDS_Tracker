@@ -22,7 +22,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.RestoreFromTrash
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.ButtonDefaults
@@ -90,7 +89,6 @@ data class GamificationPreferences(
     val streakWarningsEnabled: Boolean = true,
 
     // Motivation settings
-    val studyBuddyComparisonsEnabled: Boolean = true,
     val comebackBonusesEnabled: Boolean = true,
     val motivationalMessagesEnabled: Boolean = true,
     val weeklyReportsEnabled: Boolean = true,
@@ -102,8 +100,6 @@ data class GamificationPreferences(
     val screenReaderOptimized: Boolean = false,
 
     // Privacy settings
-    val anonymousLeaderboards: Boolean = true,
-    val shareAchievementsEnabled: Boolean = true,
     val analyticsEnabled: Boolean = true
 )
 
@@ -127,7 +123,6 @@ class GamificationSettingsManager(
         val DAILY_CHALLENGE_NOTIFICATIONS = booleanPreferencesKey("gamification_daily_challenge_notifications")
         val STREAK_WARNINGS = booleanPreferencesKey("gamification_streak_warnings")
 
-        val STUDY_BUDDY_COMPARISONS = booleanPreferencesKey("gamification_study_buddy_comparisons")
         val COMEBACK_BONUSES = booleanPreferencesKey("gamification_comeback_bonuses")
         val MOTIVATIONAL_MESSAGES = booleanPreferencesKey("gamification_motivational_messages")
         val WEEKLY_REPORTS = booleanPreferencesKey("gamification_weekly_reports")
@@ -137,8 +132,6 @@ class GamificationSettingsManager(
         val ALTERNATIVE_TEXT = booleanPreferencesKey("gamification_alternative_text")
         val SCREEN_READER_OPTIMIZED = booleanPreferencesKey("gamification_screen_reader_optimized")
 
-        val ANONYMOUS_LEADERBOARDS = booleanPreferencesKey("gamification_anonymous_leaderboards")
-        val SHARE_ACHIEVEMENTS = booleanPreferencesKey("gamification_share_achievements")
         val ANALYTICS_ENABLED = booleanPreferencesKey("gamification_analytics_enabled")
     }
 
@@ -158,7 +151,6 @@ class GamificationSettingsManager(
             dailyChallengeNotificationsEnabled = preferences[Keys.DAILY_CHALLENGE_NOTIFICATIONS] ?: true,
             streakWarningsEnabled = preferences[Keys.STREAK_WARNINGS] ?: true,
 
-            studyBuddyComparisonsEnabled = preferences[Keys.STUDY_BUDDY_COMPARISONS] ?: true,
             comebackBonusesEnabled = preferences[Keys.COMEBACK_BONUSES] ?: true,
             motivationalMessagesEnabled = preferences[Keys.MOTIVATIONAL_MESSAGES] ?: true,
             weeklyReportsEnabled = preferences[Keys.WEEKLY_REPORTS] ?: true,
@@ -168,8 +160,6 @@ class GamificationSettingsManager(
             alternativeTextEnabled = preferences[Keys.ALTERNATIVE_TEXT] ?: true,
             screenReaderOptimized = preferences[Keys.SCREEN_READER_OPTIMIZED] ?: false,
 
-            anonymousLeaderboards = preferences[Keys.ANONYMOUS_LEADERBOARDS] ?: true,
-            shareAchievementsEnabled = preferences[Keys.SHARE_ACHIEVEMENTS] ?: true,
             analyticsEnabled = preferences[Keys.ANALYTICS_ENABLED] ?: true
         )
     }
@@ -207,13 +197,11 @@ class GamificationSettingsManager(
     }
 
     suspend fun updateMotivationSettings(
-        studyBuddyComparisons: Boolean? = null,
         comebackBonuses: Boolean? = null,
         motivationalMessages: Boolean? = null,
         weeklyReports: Boolean? = null
     ) {
         dataStore.edit { preferences ->
-            studyBuddyComparisons?.let { preferences[Keys.STUDY_BUDDY_COMPARISONS] = it }
             comebackBonuses?.let { preferences[Keys.COMEBACK_BONUSES] = it }
             motivationalMessages?.let { preferences[Keys.MOTIVATIONAL_MESSAGES] = it }
             weeklyReports?.let { preferences[Keys.WEEKLY_REPORTS] = it }
@@ -235,13 +223,9 @@ class GamificationSettingsManager(
     }
 
     suspend fun updatePrivacySettings(
-        anonymousLeaderboards: Boolean? = null,
-        shareAchievements: Boolean? = null,
         analytics: Boolean? = null
     ) {
         dataStore.edit { preferences ->
-            anonymousLeaderboards?.let { preferences[Keys.ANONYMOUS_LEADERBOARDS] = it }
-            shareAchievements?.let { preferences[Keys.SHARE_ACHIEVEMENTS] = it }
             analytics?.let { preferences[Keys.ANALYTICS_ENABLED] = it }
         }
     }
@@ -410,20 +394,9 @@ fun GamificationSettingsScreen(
 
             // Motivation Settings
             SettingsSection(
-                title = "💪 Motivation & Social",
-                icon = Icons.Default.Groups
+                title = "?? Motivation",
+                icon = Icons.Default.Celebration
             ) {
-                SwitchPreference(
-                    title = "Study Buddy Comparisons",
-                    subtitle = "Compare your progress with anonymous peers",
-                    checked = preferences.studyBuddyComparisonsEnabled,
-                    onCheckedChange = {
-                        scope.launch {
-                            settingsManager.updateMotivationSettings(studyBuddyComparisons = it)
-                        }
-                    }
-                )
-
                 SwitchPreference(
                     title = "Comeback Bonuses",
                     subtitle = "Get bonus points when returning after a break",
@@ -514,28 +487,6 @@ fun GamificationSettingsScreen(
                 icon = Icons.Default.Security
             ) {
                 SwitchPreference(
-                    title = "Anonymous Leaderboards",
-                    subtitle = "Keep your identity private in comparisons",
-                    checked = preferences.anonymousLeaderboards,
-                    onCheckedChange = {
-                        scope.launch {
-                            settingsManager.updatePrivacySettings(anonymousLeaderboards = it)
-                        }
-                    }
-                )
-
-                SwitchPreference(
-                    title = "Achievement Sharing",
-                    subtitle = "Allow sharing achievements to social media",
-                    checked = preferences.shareAchievementsEnabled,
-                    onCheckedChange = {
-                        scope.launch {
-                            settingsManager.updatePrivacySettings(shareAchievements = it)
-                        }
-                    }
-                )
-
-                SwitchPreference(
                     title = "Analytics & Insights",
                     subtitle = "Allow collection of anonymous usage data for insights",
                     checked = preferences.analyticsEnabled,
@@ -567,7 +518,6 @@ fun GamificationSettingsScreen(
                             streakWarnings = true
                         )
                         settingsManager.updateMotivationSettings(
-                            studyBuddyComparisons = true,
                             comebackBonuses = true,
                             motivationalMessages = true,
                             weeklyReports = true
@@ -579,8 +529,6 @@ fun GamificationSettingsScreen(
                             screenReaderOptimized = false
                         )
                         settingsManager.updatePrivacySettings(
-                            anonymousLeaderboards = true,
-                            shareAchievements = true,
                             analytics = true
                         )
                     }
@@ -862,3 +810,8 @@ private fun ResetSection(
         }
     }
 }
+
+
+
+
+
