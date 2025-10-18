@@ -41,7 +41,9 @@
       "Bash(Select-Object -Last 50)",
       "Read(//h/**)",
       "Bash(timeout 120 H:\\StudioProjects\\StudyPlan\\gradlew.bat compileDebugKotlin:*)",
-      "Bash(timeout 120 H:StudioProjectsStudyPlangradlew.bat compileDebugKotlin)"
+      "Bash(timeout 120 H:StudioProjectsStudyPlangradlew.bat compileDebugKotlin)",
+      "Bash(timeout 120 gradlew.bat compileDebugKotlin)",
+      "Bash(xargs cat)"
     ],
     "deny": [],
     "ask": []

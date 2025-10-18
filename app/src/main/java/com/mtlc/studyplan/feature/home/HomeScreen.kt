@@ -168,6 +168,23 @@ fun HomeScreen() {
                 if (nextExam != null) {
                     val daysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate)
                     val registrationStatus = YdsExamService.getRegistrationStatus()
+
+                    // Get localized status message
+                    val statusMessage = when {
+                        daysToExam == 0L -> stringResource(R.string.exam_status_exam_day)
+                        daysToExam < 0 -> stringResource(R.string.exam_status_completed)
+                        daysToExam <= 7 -> stringResource(R.string.exam_status_final_week)
+                        daysToExam <= 30 -> stringResource(R.string.exam_status_almost_there)
+                        daysToExam <= 90 -> when (registrationStatus) {
+                            YdsExamService.RegistrationStatus.NOT_OPEN_YET -> stringResource(R.string.exam_status_registration_opens_soon)
+                            YdsExamService.RegistrationStatus.OPEN -> stringResource(R.string.exam_status_registration_open)
+                            YdsExamService.RegistrationStatus.LATE_REGISTRATION -> stringResource(R.string.exam_status_late_registration)
+                            YdsExamService.RegistrationStatus.CLOSED -> stringResource(R.string.exam_status_registration_closed)
+                            YdsExamService.RegistrationStatus.NO_UPCOMING_EXAM -> stringResource(R.string.exam_status_preparation_time)
+                        }
+                        else -> stringResource(R.string.exam_status_long_term_planning)
+                    }
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = cardColors[1 % cardColors.size])
@@ -175,7 +192,7 @@ fun HomeScreen() {
                         Column(Modifier.padding(12.dp)) {
                             Text(stringResource(R.string.home_exam_card_title, nextExam.name), style = MaterialTheme.typography.titleSmall)
                             Text(stringResource(R.string.home_exam_card_date, nextExam.examDate), style = MaterialTheme.typography.bodySmall)
-                            Text(stringResource(R.string.home_exam_card_status, YdsExamService.getStatusMessage()), style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.home_exam_card_status, statusMessage), style = MaterialTheme.typography.bodySmall)
                             LinearProgressIndicator(
                                 progress = { if (daysToExam > 0) (100 - daysToExam.coerceAtMost(100)) / 100f else 1f },
                                 modifier = Modifier
@@ -211,23 +228,46 @@ fun HomeScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = cardColors[2 % cardColors.size])
                     ) {
-                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(stringResource(R.string.home_study_progress_title), style = MaterialTheme.typography.titleSmall)
+                        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                stringResource(R.string.home_study_progress_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
                             LinearProgressIndicator(
                                 progress = { progressRatio },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp)),
+                                    .height(4.dp)
+                                    .clip(RoundedCornerShape(2.dp)),
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                             )
-                            Text(stringResource(R.string.home_study_progress_overall, completedInPlan, totalTasks))
-                            if (progress.totalXp > 0) {
-                                Text(stringResource(R.string.home_study_progress_total_xp, progress.totalXp))
-                            }
-                            // Only show streak if it's greater than 0
-                            if (progress.streakCount > 0) {
-                                Text(stringResource(R.string.home_study_progress_current_streak, progress.streakCount))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.home_study_progress_overall, completedInPlan, totalTasks),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    if (progress.totalXp > 0) {
+                                        Text(
+                                            stringResource(R.string.home_study_progress_total_xp, progress.totalXp),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    // Only show streak if it's greater than 0
+                                    if (progress.streakCount > 0) {
+                                        Text(
+                                            stringResource(R.string.home_study_progress_current_streak, progress.streakCount),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

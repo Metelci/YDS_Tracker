@@ -5,83 +5,28 @@
         id="ObsoleteLintCustomCheck"
         message="Library lint checks reference invalid APIs; these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.compose.ui.lint.UiIssueRegistry`)&#xA;which contains some references to invalid API:&#xA;org.jetbrains.kotlin.analysis.api.resolution.KaCompoundAccessCall#getCompoundOperation(): org.jetbrains.kotlin.analysis.api.resolution.KaCompoundOperation&#xA;(Referenced from androidx/compose/ui/lint/SuspiciousModifierThenDetectorKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`UnnecessaryComposedModifier`&#xA;`LocalContextConfigurationRead`&#xA;`LocalContextResourcesRead`&#xA;`ConfigurationScreenWidthHeight`&#xA;`ModifierFactoryExtensionFunction`&#xA;`ModifierFactoryReturnType`&#xA;`ModifierFactoryUnreferencedReceiver`&#xA;`ModifierNodeInspectableProperties`&#xA;`ModifierParameter`&#xA;`MultipleAwaitPointerEventScopes`&#xA;`ReturnFromAwaitPointerEventScope`&#xA;`SuspiciousCompositionLocalModifierRead`&#xA;`SuspiciousModifierThen`&#xA;&#xA;To use this lint check, upgrade to a more recent version&#xA;of the library.">
         <location
-            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.compose.ui.lint.UiIssueRegistry-f9190702a83f7028..jar"/>
+            file="build/intermediates/lint-cache/lintReportDebug/migrated-jars/androidx.compose.ui.lint.UiIssueRegistry-f9190702a83f7028..jar"/>
     </issue>
 
     <issue
         id="ObsoleteLintCustomCheck"
         message="Library lint checks out of date;&#xA;these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.navigation.common.lint.NavigationCommonIssueRegistry`)&#xA;which was compiled against an older version of lint&#xA;than this one. This is usually fine, but not in this&#xA;case; some basic verification shows that the lint&#xA;check jar references (for example) the following API&#xA;which is no longer valid in this version of lint:&#xA;org.jetbrains.kotlin.analysis.api.lifetime.KaDefaultLifetimeTokenProvider#Companion&#xA;(Referenced from androidx/navigation/lint/UtilKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`EmptyNavDeepLink`,`WrongStartDestinationType`,`MissingSerializableAnnotation`,`MissingKeepAnnotation`&#xA;&#xA;Recompile the checks against the latest version, or if&#xA;this is a check bundled with a third-party library, see&#xA;if there is a more recent version available.&#xA;&#xA;Version of Lint API this lint check is using is 14.&#xA;The Lint API version currently running is 16 (8.7+).">
         <location
-            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.navigation.common.lint.NavigationCommonIssueRegistry-5daa12651be0734e..jar"/>
+            file="build/intermediates/lint-cache/lintReportDebug/migrated-jars/androidx.navigation.common.lint.NavigationCommonIssueRegistry-5daa12651be0734e..jar"/>
     </issue>
 
     <issue
         id="ObsoleteLintCustomCheck"
         message="Library lint checks out of date;&#xA;these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.navigation.compose.lint.NavigationComposeIssueRegistry`)&#xA;which was compiled against an older version of lint&#xA;than this one. This is usually fine, but not in this&#xA;case; some basic verification shows that the lint&#xA;check jar references (for example) the following API&#xA;which is no longer valid in this version of lint:&#xA;org.jetbrains.kotlin.analysis.api.lifetime.KaDefaultLifetimeTokenProvider#Companion&#xA;(Referenced from androidx/navigation/lint/UtilKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`ComposableDestinationInComposeScope`&#xA;`ComposableNavGraphInComposeScope`&#xA;`UnrememberedGetBackStackEntry`&#xA;`WrongStartDestinationType`&#xA;`MissingKeepAnnotation`&#xA;`MissingSerializableAnnotation`&#xA;&#xA;Recompile the checks against the latest version, or if&#xA;this is a check bundled with a third-party library, see&#xA;if there is a more recent version available.&#xA;&#xA;Version of Lint API this lint check is using is 14.&#xA;The Lint API version currently running is 16 (8.7+).">
         <location
-            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.navigation.compose.lint.NavigationComposeIssueRegistry-598b224f0ce2f9f2..jar"/>
+            file="build/intermediates/lint-cache/lintReportDebug/migrated-jars/androidx.navigation.compose.lint.NavigationComposeIssueRegistry-598b224f0ce2f9f2..jar"/>
     </issue>
 
     <issue
         id="ObsoleteLintCustomCheck"
         message="Library lint checks out of date;&#xA;these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.navigation.runtime.lint.NavigationRuntimeIssueRegistry`)&#xA;which was compiled against an older version of lint&#xA;than this one. This is usually fine, but not in this&#xA;case; some basic verification shows that the lint&#xA;check jar references (for example) the following API&#xA;which is no longer valid in this version of lint:&#xA;org.jetbrains.kotlin.analysis.api.lifetime.KaDefaultLifetimeTokenProvider#Companion&#xA;(Referenced from androidx/navigation/lint/UtilKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`DeepLinkInActivityDestination`,`WrongStartDestinationType`,`WrongNavigateRouteType`,`MissingKeepAnnotation`,`MissingSerializableAnnotation`&#xA;&#xA;Recompile the checks against the latest version, or if&#xA;this is a check bundled with a third-party library, see&#xA;if there is a more recent version available.&#xA;&#xA;Version of Lint API this lint check is using is 14.&#xA;The Lint API version currently running is 16 (8.7+).">
         <location
-            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.navigation.runtime.lint.NavigationRuntimeIssueRegistry-a8fea42aedb9bdb3..jar"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="                    value = String.format(&quot;%.1f&quot;, data.averageSessionsPerDay),"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/analytics/AnalyticsComponents.kt"
-            line="499"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            csv.appendLine(&quot;Error,$key,${count.get()},${String.format(&quot;%.2f&quot;, percentage)}%&quot;)"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/core/analytics/ErrorAnalytics.kt"
-            line="430"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            csv.appendLine(&quot;Action,$key,${count.get()},${String.format(&quot;%.2f&quot;, percentage)}%&quot;)"
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/core/analytics/ErrorAnalytics.kt"
-            line="436"
-            column="58"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="                text = String.format(&quot;%02d:%02d&quot;, minutes, seconds),"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/feature/focus/FocusModeScreen.kt"
-            line="325"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="        return String.format(&quot;%s%02d%02d&quot;, sign, kotlin.math.abs(hours), minutes)"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/calendar/IcsExporter.kt"
-            line="330"
-            column="16"/>
+            file="build/intermediates/lint-cache/lintReportDebug/migrated-jars/androidx.navigation.runtime.lint.NavigationRuntimeIssueRegistry-a8fea42aedb9bdb3..jar"/>
     </issue>
 
     <issue
@@ -151,83 +96,6 @@
     </issue>
 
     <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            details = &quot;Average navigation: ${String.format(&quot;%.1f&quot;, averageNavTime)}ms, Fast navigations: ${speedPercentage.toInt()}% under 300ms&quot;"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/PerformanceTestSuite.kt"
-            line="356"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            details = &quot;FPS consistency during background processing: ${String.format(&quot;%.1f&quot;, fpsConsistency * 100)}%&quot;"
-        errorLine2="                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/PerformanceTestSuite.kt"
-            line="395"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            details = &quot;Average save: ${String.format(&quot;%.1f&quot;, averageSaveTime)}ms, restore: ${String.format(&quot;%.1f&quot;, averageRestoreTime)}ms&quot;"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/PerformanceTestSuite.kt"
-            line="439"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            details = &quot;Average save: ${String.format(&quot;%.1f&quot;, averageSaveTime)}ms, restore: ${String.format(&quot;%.1f&quot;, averageRestoreTime)}ms&quot;"
-        errorLine2="                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/PerformanceTestSuite.kt"
-            line="439"
-            column="94"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            actualValue = &quot;${String.format(&quot;%.2f&quot;, metrics.averageFrameTime)} ms&quot;,"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/ProductionValidator.kt"
-            line="95"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
-        errorLine1="            actualValue = &quot;${String.format(&quot;%.1f&quot;, memoryUsagePercentage)}%&quot;,"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/validation/ProductionValidator.kt"
-            line="133"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The layout &quot;activity_settings&quot; in layout-sw600dp has no declaration in the base `layout` folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier"
-        errorLine1="&lt;androidx.coordinatorlayout.widget.CoordinatorLayout"
-        errorLine2=" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout-sw600dp/activity_settings.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
         id="OldTargetApi"
         message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
         errorLine1="        targetSdk = 35"
@@ -239,39 +107,6 @@
     </issue>
 
     <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="            if (chooserIntent.resolveActivity(context.packageManager) != null) {"
-        errorLine2="                              ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/calendar/IcsExporter.kt"
-            line="298"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="        return intent.resolveActivity(context.packageManager) != null"
-        errorLine2="                      ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/calendar/IcsExporter.kt"
-            line="407"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="        val resolveInfos = packageManager.queryIntentActivities(intent, 0)"
-        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mtlc/studyplan/calendar/IcsExporter.kt"
-            line="419"
-            column="43"/>
-    </issue>
-
-    <issue
         id="AndroidGradlePluginVersion"
         message="A newer version of com.android.application than 8.7.2 is available: 8.13.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 8.13.0 is difficult: 8.7.3)"
         errorLine1="agp = &quot;8.7.2&quot;"
@@ -302,28 +137,6 @@
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
             line="2"
             column="7"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.google.devtools.ksp than 2.0.21-1.0.25 is available: 2.1.0-1.0.29"
-        errorLine1="    id(&quot;com.google.devtools.ksp&quot;) version &quot;2.0.21-1.0.25&quot;"
-        errorLine2="                                          ~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="15"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.exifinterface:exifinterface than 1.3.7 is available: 1.4.1"
-        errorLine1="    implementation(&quot;androidx.exifinterface:exifinterface:1.3.7&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="163"
-            column="20"/>
     </issue>
 
     <issue
@@ -493,45 +306,12 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.9.4"
-        errorLine1="lifecycleRuntimeKtx = &quot;2.8.7&quot;"
-        errorLine2="                      ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="17"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.9.4"
-        errorLine1="lifecycleRuntimeKtx = &quot;2.8.7&quot;"
-        errorLine2="                      ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="17"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.9.4"
-        errorLine1="lifecycleRuntimeKtx = &quot;2.8.7&quot;"
-        errorLine2="                      ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="17"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
         message="A newer version of androidx.activity:activity-compose than 1.9.3 is available: 1.11.0"
         errorLine1="activityCompose = &quot;1.9.3&quot;"
         errorLine2="                  ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="18"
+            line="19"
             column="19"/>
     </issue>
 
@@ -542,7 +322,7 @@
         errorLine2="                  ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="18"
+            line="19"
             column="19"/>
     </issue>
 
@@ -553,40 +333,40 @@
         errorLine2="                  ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="18"
+            line="19"
             column="19"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2024.12.01 is available: 2025.09.01"
-        errorLine1="composeBom = &quot;2024.12.01&quot;"
+        message="A newer version of androidx.compose:compose-bom than 2025.01.01 is available: 2025.09.01"
+        errorLine1="composeBom = &quot;2025.01.01&quot;"
         errorLine2="             ~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="19"
+            line="20"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2024.12.01 is available: 2025.09.01"
-        errorLine1="composeBom = &quot;2024.12.01&quot;"
+        message="A newer version of androidx.compose:compose-bom than 2025.01.01 is available: 2025.09.01"
+        errorLine1="composeBom = &quot;2025.01.01&quot;"
         errorLine2="             ~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="19"
+            line="20"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2024.12.01 is available: 2025.09.01"
-        errorLine1="composeBom = &quot;2024.12.01&quot;"
+        message="A newer version of androidx.compose:compose-bom than 2025.01.01 is available: 2025.09.01"
+        errorLine1="composeBom = &quot;2025.01.01&quot;"
         errorLine2="             ~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="19"
+            line="20"
             column="14"/>
     </issue>
 
@@ -597,7 +377,7 @@
         errorLine2="                            ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="20"
+            line="21"
             column="29"/>
     </issue>
 
@@ -608,7 +388,7 @@
         errorLine2="                            ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="20"
+            line="21"
             column="29"/>
     </issue>
 
@@ -619,7 +399,7 @@
         errorLine2="                            ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="20"
+            line="21"
             column="29"/>
     </issue>
 
@@ -630,7 +410,7 @@
         errorLine2="               ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="22"
+            line="23"
             column="16"/>
     </issue>
 
@@ -641,7 +421,7 @@
         errorLine2="               ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="22"
+            line="23"
             column="16"/>
     </issue>
 
@@ -652,107 +432,8 @@
         errorLine2="               ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="22"
+            line="23"
             column="16"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-compiler than 2.8.0 is available: 2.8.1"
-        errorLine1="roomCompiler = &quot;2.8.0&quot;"
-        errorLine2="               ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="25"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-compiler than 2.8.0 is available: 2.8.1"
-        errorLine1="roomCompiler = &quot;2.8.0&quot;"
-        errorLine2="               ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="25"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-compiler than 2.8.0 is available: 2.8.1"
-        errorLine1="roomCompiler = &quot;2.8.0&quot;"
-        errorLine2="               ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="25"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-ktx than 2.8.0 is available: 2.8.1"
-        errorLine1="roomKtx = &quot;2.8.0&quot;"
-        errorLine2="          ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="26"
-            column="11"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-ktx than 2.8.0 is available: 2.8.1"
-        errorLine1="roomKtx = &quot;2.8.0&quot;"
-        errorLine2="          ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="26"
-            column="11"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-ktx than 2.8.0 is available: 2.8.1"
-        errorLine1="roomKtx = &quot;2.8.0&quot;"
-        errorLine2="          ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="26"
-            column="11"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-runtime than 2.8.0 is available: 2.8.1"
-        errorLine1="roomRuntime = &quot;2.8.0&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-runtime than 2.8.0 is available: 2.8.1"
-        errorLine1="roomRuntime = &quot;2.8.0&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-runtime than 2.8.0 is available: 2.8.1"
-        errorLine1="roomRuntime = &quot;2.8.0&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
     </issue>
 
     <issue
@@ -762,7 +443,7 @@
         errorLine2="                 ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="29"
+            line="30"
             column="18"/>
     </issue>
 
@@ -773,7 +454,7 @@
         errorLine2="                 ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="29"
+            line="30"
             column="18"/>
     </issue>
 
@@ -782,17 +463,6 @@
         message="A newer version of androidx.work:work-runtime-ktx than 2.10.2 is available: 2.10.5"
         errorLine1="workRuntimeKtx = &quot;2.10.2&quot;"
         errorLine2="                 ~~~~~~~~">
-        <location
-            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="29"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.android.tools:desugar_jdk_libs than 2.1.4 is available: 2.1.5"
-        errorLine1="desugarJdkLibs = &quot;2.1.4&quot;"
-        errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
             line="30"
@@ -806,7 +476,7 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="30"
+            line="31"
             column="18"/>
     </issue>
 
@@ -817,7 +487,18 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="30"
+            line="31"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.android.tools:desugar_jdk_libs than 2.1.4 is available: 2.1.5"
+        errorLine1="desugarJdkLibs = &quot;2.1.4&quot;"
+        errorLine2="                 ~~~~~~~">
+        <location
+            file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
+            line="31"
             column="18"/>
     </issue>
 
@@ -828,7 +509,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="31"
+            line="32"
             column="30"/>
     </issue>
 
@@ -839,7 +520,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="31"
+            line="32"
             column="30"/>
     </issue>
 
@@ -850,7 +531,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="31"
+            line="32"
             column="30"/>
     </issue>
 
@@ -861,7 +542,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="35"
+            line="36"
             column="18"/>
     </issue>
 
@@ -872,7 +553,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="35"
+            line="36"
             column="18"/>
     </issue>
 
@@ -883,40 +564,40 @@
         errorLine2="                 ~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="35"
+            line="36"
             column="18"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.8 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.8&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="79"
+            line="89"
             column="94"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.8 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.8&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="79"
+            line="89"
             column="94"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.7 is available: 2.9.5"
-        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.7&quot; }"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.8 is available: 2.9.5"
+        errorLine1="androidx-navigation-compose = { module = &quot;androidx.navigation:navigation-compose&quot;, version = &quot;2.8.8&quot; }"
         errorLine2="                                                                                             ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="79"
+            line="89"
             column="94"/>
     </issue>
 
@@ -1059,7 +740,7 @@
         errorLine2="              ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="23"
+            line="24"
             column="15"/>
     </issue>
 
@@ -1070,7 +751,7 @@
         errorLine2="              ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="23"
+            line="24"
             column="15"/>
     </issue>
 
@@ -1081,7 +762,7 @@
         errorLine2="              ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="23"
+            line="24"
             column="15"/>
     </issue>
 
@@ -1092,7 +773,7 @@
         errorLine2="                       ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="38"
+            line="39"
             column="24"/>
     </issue>
 
@@ -1103,7 +784,7 @@
         errorLine2="                       ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="38"
+            line="39"
             column="24"/>
     </issue>
 
@@ -1114,7 +795,7 @@
         errorLine2="                       ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="38"
+            line="39"
             column="24"/>
     </issue>
 
@@ -1125,7 +806,7 @@
         errorLine2="          ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="40"
+            line="42"
             column="11"/>
     </issue>
 
@@ -1136,7 +817,7 @@
         errorLine2="          ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="40"
+            line="42"
             column="11"/>
     </issue>
 
@@ -1147,7 +828,7 @@
         errorLine2="          ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="40"
+            line="42"
             column="11"/>
     </issue>
 
@@ -1158,7 +839,7 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="41"
+            line="43"
             column="18"/>
     </issue>
 
@@ -1169,7 +850,7 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="41"
+            line="43"
             column="18"/>
     </issue>
 
@@ -1180,7 +861,7 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="41"
+            line="43"
             column="18"/>
     </issue>
 
@@ -1191,7 +872,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="45"
+            line="48"
             column="10"/>
     </issue>
 
@@ -1202,7 +883,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="45"
+            line="48"
             column="10"/>
     </issue>
 
@@ -1213,7 +894,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="45"
+            line="48"
             column="10"/>
     </issue>
 
@@ -1224,7 +905,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="71"
+            line="79"
             column="26"/>
     </issue>
 
@@ -1235,7 +916,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="71"
+            line="79"
             column="26"/>
     </issue>
 
@@ -1246,7 +927,7 @@
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="71"
+            line="79"
             column="26"/>
     </issue>
 
@@ -1257,7 +938,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="87"
+            line="97"
             column="29"/>
     </issue>
 
@@ -1268,7 +949,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="87"
+            line="97"
             column="29"/>
     </issue>
 
@@ -1279,7 +960,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$HOME/StudioProjects/StudyPlan/gradle/libs.versions.toml"
-            line="87"
+            line="97"
             column="29"/>
     </issue>
 
@@ -1411,7 +1092,7 @@
         errorLine2="                ~">
         <location
             file="src/main/java/com/mtlc/studyplan/navigation/AppNavHost.kt"
-            line="230"
+            line="229"
             column="17"/>
     </issue>
 
@@ -1422,7 +1103,7 @@
         errorLine2="                ~">
         <location
             file="src/main/java/com/mtlc/studyplan/navigation/AppNavHost.kt"
-            line="274"
+            line="272"
             column="17"/>
     </issue>
 
@@ -1433,7 +1114,7 @@
         errorLine2="                ~">
         <location
             file="src/main/java/com/mtlc/studyplan/navigation/AppNavHost.kt"
-            line="342"
+            line="338"
             column="17"/>
     </issue>
 
@@ -1444,7 +1125,7 @@
         errorLine2="                ~">
         <location
             file="src/main/java/com/mtlc/studyplan/navigation/AppNavHost.kt"
-            line="368"
+            line="364"
             column="17"/>
     </issue>
 
@@ -1593,30 +1274,12 @@
 
     <issue
         id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="17"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="18"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
         message="&quot;advanced_options_title&quot; is not translated in &quot;en&quot; (English)"
         errorLine1="    &lt;string name=&quot;advanced_options_title&quot;>Advanced Options&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="19"
+            line="17"
             column="13"/>
     </issue>
 
@@ -1627,25 +1290,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="20"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="22"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="23"
+            line="18"
             column="13"/>
     </issue>
 
@@ -1656,7 +1301,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="24"
+            line="20"
             column="13"/>
     </issue>
 
@@ -1667,7 +1312,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="26"
+            line="22"
             column="13"/>
     </issue>
 
@@ -1678,25 +1323,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="27"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="28"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="29"
+            line="23"
             column="13"/>
     </issue>
 
@@ -1707,7 +1334,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="30"
+            line="24"
             column="13"/>
     </issue>
 
@@ -1718,43 +1345,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="31"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="33"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="34"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="35"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="36"
+            line="25"
             column="13"/>
     </issue>
 
@@ -1765,7 +1356,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="39"
+            line="28"
             column="13"/>
     </issue>
 
@@ -1776,7 +1367,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="40"
+            line="29"
             column="13"/>
     </issue>
 
@@ -1787,7 +1378,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="41"
+            line="30"
             column="13"/>
     </issue>
 
@@ -1798,7 +1389,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="42"
+            line="31"
             column="13"/>
     </issue>
 
@@ -1809,7 +1400,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="45"
+            line="34"
             column="13"/>
     </issue>
 
@@ -1820,16 +1411,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="46"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="47"
+            line="35"
             column="13"/>
     </issue>
 
@@ -1840,7 +1422,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="50"
+            line="38"
             column="13"/>
     </issue>
 
@@ -1851,7 +1433,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="51"
+            line="39"
             column="13"/>
     </issue>
 
@@ -1862,7 +1444,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="52"
+            line="40"
             column="13"/>
     </issue>
 
@@ -1873,43 +1455,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="53"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="56"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="57"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="58"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="59"
+            line="41"
             column="13"/>
     </issue>
 
@@ -1920,7 +1466,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="62"
+            line="45"
             column="13"/>
     </issue>
 
@@ -1931,7 +1477,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="63"
+            line="46"
             column="13"/>
     </issue>
 
@@ -1942,7 +1488,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="64"
+            line="47"
             column="13"/>
     </issue>
 
@@ -1953,7 +1499,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="67"
+            line="50"
             column="13"/>
     </issue>
 
@@ -1964,7 +1510,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="68"
+            line="51"
             column="13"/>
     </issue>
 
@@ -1975,7 +1521,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="69"
+            line="52"
             column="13"/>
     </issue>
 
@@ -1986,7 +1532,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="70"
+            line="53"
             column="13"/>
     </issue>
 
@@ -1997,7 +1543,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="73"
+            line="56"
             column="13"/>
     </issue>
 
@@ -2008,7 +1554,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="74"
+            line="57"
             column="13"/>
     </issue>
 
@@ -2019,7 +1565,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="75"
+            line="58"
             column="13"/>
     </issue>
 
@@ -2030,7 +1576,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="76"
+            line="59"
             column="13"/>
     </issue>
 
@@ -2041,7 +1587,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="77"
+            line="60"
             column="13"/>
     </issue>
 
@@ -2052,7 +1598,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="80"
+            line="63"
             column="13"/>
     </issue>
 
@@ -2063,7 +1609,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="81"
+            line="64"
             column="13"/>
     </issue>
 
@@ -2074,7 +1620,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="82"
+            line="65"
             column="13"/>
     </issue>
 
@@ -2085,7 +1631,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="83"
+            line="66"
             column="13"/>
     </issue>
 
@@ -2096,7 +1642,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="84"
+            line="67"
             column="13"/>
     </issue>
 
@@ -2107,7 +1653,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="85"
+            line="68"
             column="13"/>
     </issue>
 
@@ -2118,7 +1664,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="86"
+            line="69"
             column="13"/>
     </issue>
 
@@ -2129,7 +1675,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="89"
+            line="72"
             column="13"/>
     </issue>
 
@@ -2140,7 +1686,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="90"
+            line="73"
             column="13"/>
     </issue>
 
@@ -2151,7 +1697,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="91"
+            line="74"
             column="13"/>
     </issue>
 
@@ -2162,7 +1708,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="92"
+            line="75"
             column="13"/>
     </issue>
 
@@ -2173,7 +1719,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="93"
+            line="76"
             column="13"/>
     </issue>
 
@@ -2184,7 +1730,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="94"
+            line="77"
             column="13"/>
     </issue>
 
@@ -2195,7 +1741,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="95"
+            line="78"
             column="13"/>
     </issue>
 
@@ -2206,7 +1752,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="98"
+            line="81"
             column="13"/>
     </issue>
 
@@ -2217,7 +1763,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="99"
+            line="82"
             column="13"/>
     </issue>
 
@@ -2228,16 +1774,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="100"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="101"
+            line="83"
             column="13"/>
     </issue>
 
@@ -2248,7 +1785,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="102"
+            line="84"
             column="13"/>
     </issue>
 
@@ -2259,7 +1796,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="103"
+            line="85"
             column="13"/>
     </issue>
 
@@ -2270,7 +1807,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="104"
+            line="86"
             column="13"/>
     </issue>
 
@@ -2281,7 +1818,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="105"
+            line="87"
             column="13"/>
     </issue>
 
@@ -2292,7 +1829,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="106"
+            line="88"
             column="13"/>
     </issue>
 
@@ -2303,7 +1840,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="107"
+            line="89"
             column="13"/>
     </issue>
 
@@ -2314,7 +1851,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="110"
+            line="92"
             column="13"/>
     </issue>
 
@@ -2325,7 +1862,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="111"
+            line="93"
             column="13"/>
     </issue>
 
@@ -2336,18 +1873,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="112"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;success_sync_completed&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;success_sync_completed&quot;>Sync completed successfully&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="113"
+            line="94"
             column="13"/>
     </issue>
 
@@ -2358,7 +1884,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="116"
+            line="97"
             column="13"/>
     </issue>
 
@@ -2369,7 +1895,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="117"
+            line="98"
             column="13"/>
     </issue>
 
@@ -2380,18 +1906,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="118"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;loading_sync&quot; is not translated in &quot;en&quot; (English)"
-        errorLine1="    &lt;string name=&quot;loading_sync&quot;>Syncing settings…&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="119"
+            line="99"
             column="13"/>
     </issue>
 
@@ -2402,7 +1917,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="120"
+            line="100"
             column="13"/>
     </issue>
 
@@ -2413,7 +1928,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="123"
+            line="103"
             column="13"/>
     </issue>
 
@@ -2424,25 +1939,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="124"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="125"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="126"
+            line="104"
             column="13"/>
     </issue>
 
@@ -2453,7 +1950,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="127"
+            line="105"
             column="13"/>
     </issue>
 
@@ -2464,7 +1961,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="128"
+            line="106"
             column="13"/>
     </issue>
 
@@ -2475,7 +1972,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="131"
+            line="109"
             column="13"/>
     </issue>
 
@@ -2486,7 +1983,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="132"
+            line="110"
             column="13"/>
     </issue>
 
@@ -2497,7 +1994,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="135"
+            line="113"
             column="13"/>
     </issue>
 
@@ -2508,7 +2005,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="136"
+            line="114"
             column="13"/>
     </issue>
 
@@ -2519,7 +2016,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="137"
+            line="115"
             column="13"/>
     </issue>
 
@@ -2530,7 +2027,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="140"
+            line="118"
             column="13"/>
     </issue>
 
@@ -2541,7 +2038,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="141"
+            line="119"
             column="13"/>
     </issue>
 
@@ -2552,7 +2049,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="142"
+            line="120"
             column="13"/>
     </issue>
 
@@ -2563,7 +2060,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="143"
+            line="121"
             column="13"/>
     </issue>
 
@@ -2574,7 +2071,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="144"
+            line="122"
             column="13"/>
     </issue>
 
@@ -2585,7 +2082,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="147"
+            line="125"
             column="13"/>
     </issue>
 
@@ -2596,7 +2093,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="148"
+            line="126"
             column="13"/>
     </issue>
 
@@ -2607,7 +2104,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="149"
+            line="127"
             column="13"/>
     </issue>
 
@@ -2618,7 +2115,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="150"
+            line="128"
             column="13"/>
     </issue>
 
@@ -2629,7 +2126,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="151"
+            line="129"
             column="13"/>
     </issue>
 
@@ -2640,7 +2137,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="152"
+            line="130"
             column="13"/>
     </issue>
 
@@ -2651,7 +2148,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="155"
+            line="133"
             column="13"/>
     </issue>
 
@@ -2662,7 +2159,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="156"
+            line="134"
             column="13"/>
     </issue>
 
@@ -2673,7 +2170,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="157"
+            line="135"
             column="13"/>
     </issue>
 
@@ -2684,7 +2181,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="158"
+            line="136"
             column="13"/>
     </issue>
 
@@ -2695,16 +2192,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="159"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="160"
+            line="137"
             column="13"/>
     </issue>
 
@@ -2715,7 +2203,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="161"
+            line="138"
             column="13"/>
     </issue>
 
@@ -2726,7 +2214,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="162"
+            line="139"
             column="13"/>
     </issue>
 
@@ -2737,7 +2225,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="163"
+            line="140"
             column="13"/>
     </issue>
 
@@ -2748,7 +2236,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="164"
+            line="141"
             column="13"/>
     </issue>
 
@@ -2759,7 +2247,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="167"
+            line="144"
             column="13"/>
     </issue>
 
@@ -2770,7 +2258,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="168"
+            line="145"
             column="13"/>
     </issue>
 
@@ -2781,7 +2269,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="169"
+            line="146"
             column="13"/>
     </issue>
 
@@ -2792,25 +2280,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="170"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="171"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="172"
+            line="147"
             column="13"/>
     </issue>
 
@@ -2821,7 +2291,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="175"
+            line="150"
             column="13"/>
     </issue>
 
@@ -2832,7 +2302,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="178"
+            line="153"
             column="13"/>
     </issue>
 
@@ -2843,7 +2313,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="179"
+            line="154"
             column="13"/>
     </issue>
 
@@ -2854,7 +2324,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="180"
+            line="155"
             column="13"/>
     </issue>
 
@@ -2865,7 +2335,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="182"
+            line="157"
             column="13"/>
     </issue>
 
@@ -2876,7 +2346,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="183"
+            line="158"
             column="13"/>
     </issue>
 
@@ -2887,7 +2357,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="184"
+            line="159"
             column="13"/>
     </issue>
 
@@ -2898,7 +2368,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="185"
+            line="160"
             column="13"/>
     </issue>
 
@@ -2909,7 +2379,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="186"
+            line="161"
             column="13"/>
     </issue>
 
@@ -2920,7 +2390,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="187"
+            line="162"
             column="13"/>
     </issue>
 
@@ -2931,7 +2401,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="189"
+            line="164"
             column="13"/>
     </issue>
 
@@ -2942,7 +2412,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="190"
+            line="165"
             column="13"/>
     </issue>
 
@@ -2953,7 +2423,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="191"
+            line="166"
             column="13"/>
     </issue>
 
@@ -2964,7 +2434,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="192"
+            line="167"
             column="13"/>
     </issue>
 
@@ -2975,7 +2445,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="193"
+            line="168"
             column="13"/>
     </issue>
 
@@ -2986,7 +2456,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="195"
+            line="170"
             column="13"/>
     </issue>
 
@@ -2997,7 +2467,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="196"
+            line="171"
             column="13"/>
     </issue>
 
@@ -3008,7 +2478,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="197"
+            line="172"
             column="13"/>
     </issue>
 
@@ -3019,7 +2489,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="199"
+            line="174"
             column="13"/>
     </issue>
 
@@ -3030,7 +2500,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="200"
+            line="175"
             column="13"/>
     </issue>
 
@@ -3283,7 +2753,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="51"
+            line="39"
             column="5"/>
     </issue>
 
@@ -3294,7 +2764,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="141"
+            line="119"
             column="5"/>
     </issue>
 
@@ -3305,7 +2775,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="142"
+            line="120"
             column="5"/>
     </issue>
 
@@ -3316,19 +2786,8 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="150"
+            line="128"
             column="5"/>
-    </issue>
-
-    <issue
-        id="HardwareIds"
-        message="Using `getString` to get device identifiers is not recommended"
-        errorLine1="        return android.provider.Settings.Secure.getString("
-        errorLine2="               ^">
-        <location
-            file="src/main/java/com/mtlc/studyplan/settings/backup/SettingsBackupManager.kt"
-            line="367"
-            column="16"/>
     </issue>
 
     <issue
@@ -3338,7 +2797,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mtlc/studyplan/accessibility/AccessibilityManager.kt"
-            line="53"
+            line="52"
             column="20"/>
     </issue>
 
@@ -3349,7 +2808,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mtlc/studyplan/accessibility/AccessibilityManager.kt"
-            line="83"
+            line="82"
             column="20"/>
     </issue>
 
@@ -3395,6 +2854,17 @@
             file="src/main/java/com/mtlc/studyplan/performance/PerformanceOptimizer.kt"
             line="200"
             column="31"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 30"
+        errorLine1="        val inDoze = Build.VERSION.SDK_INT >= 23 &amp;&amp; pm.isDeviceIdleMode"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mtlc/studyplan/power/PowerStateChecker.kt"
+            line="21"
+            column="22"/>
     </issue>
 
     <issue
@@ -3449,14 +2919,17 @@
     </issue>
 
     <issue
-        id="StaticFieldLeak"
-        message="This field leaks a context object"
-        errorLine1="    private val context: Context,"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v23`) is unnecessary; `minSdkVersion` is 30. Merge all the resources in this folder into `values-night`.">
         <location
-            file="src/main/java/com/mtlc/studyplan/settings/viewmodel/BackupSettingsViewModel.kt"
-            line="22"
-            column="5"/>
+            file="src/main/res/values-night-v23"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v23`) is unnecessary; `minSdkVersion` is 30. Merge all the resources in this folder into `values`.">
+        <location
+            file="src/main/res/values-v23"/>
     </issue>
 
     <issue
@@ -3488,7 +2961,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mtlc/studyplan/localization/LanguageManager.kt"
-            line="27"
+            line="30"
             column="9"/>
     </issue>
 
@@ -3543,7 +3016,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mtlc/studyplan/settings/di/SettingsDependencyInjection.kt"
-            line="114"
+            line="99"
             column="9"/>
     </issue>
 
@@ -3616,10 +3089,10 @@
     <issue
         id="UnusedResources"
         message="The resource `R.layout.activity_settings` appears to be unused"
-        errorLine1="&lt;androidx.coordinatorlayout.widget.CoordinatorLayout"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
         errorLine2="^">
         <location
-            file="src/main/res/layout-sw600dp/activity_settings.xml"
+            file="src/main/res/layout/activity_settings.xml"
             line="2"
             column="1"/>
     </issue>
@@ -8093,7 +7566,7 @@
     <issue
         id="UnusedResources"
         message="The resource `R.string.back_to_plan` appears to be unused"
-        errorLine1="    &lt;string name=&quot;back_to_plan&quot;>← Plan&lt;/string>"
+        errorLine1="    &lt;string name=&quot;back_to_plan&quot;>Back to Plan&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
@@ -8115,7 +7588,7 @@
     <issue
         id="UnusedResources"
         message="The resource `R.string.modify_plan` appears to be unused"
-        errorLine1="    &lt;string name=&quot;modify_plan&quot;>▶ Modify Plan&lt;/string>"
+        errorLine1="    &lt;string name=&quot;modify_plan&quot;>Modify Plan&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
@@ -8356,30 +7829,12 @@
 
     <issue
         id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="17"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="18"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.string.advanced_options_title` appears to be unused"
         errorLine1="    &lt;string name=&quot;advanced_options_title&quot;>Advanced Options&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="19"
+            line="17"
             column="13"/>
     </issue>
 
@@ -8390,25 +7845,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="20"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="22"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="23"
+            line="18"
             column="13"/>
     </issue>
 
@@ -8419,7 +7856,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="24"
+            line="20"
             column="13"/>
     </issue>
 
@@ -8430,7 +7867,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="26"
+            line="22"
             column="13"/>
     </issue>
 
@@ -8441,25 +7878,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="27"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="28"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="29"
+            line="23"
             column="13"/>
     </issue>
 
@@ -8470,7 +7889,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="30"
+            line="24"
             column="13"/>
     </issue>
 
@@ -8481,43 +7900,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="31"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="33"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="34"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="35"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="36"
+            line="25"
             column="13"/>
     </issue>
 
@@ -8528,7 +7911,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="39"
+            line="28"
             column="13"/>
     </issue>
 
@@ -8539,7 +7922,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="40"
+            line="29"
             column="13"/>
     </issue>
 
@@ -8550,7 +7933,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="41"
+            line="30"
             column="13"/>
     </issue>
 
@@ -8561,7 +7944,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="42"
+            line="31"
             column="13"/>
     </issue>
 
@@ -8572,7 +7955,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="45"
+            line="34"
             column="13"/>
     </issue>
 
@@ -8583,16 +7966,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="46"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="47"
+            line="35"
             column="13"/>
     </issue>
 
@@ -8603,7 +7977,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="50"
+            line="38"
             column="13"/>
     </issue>
 
@@ -8614,7 +7988,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="51"
+            line="39"
             column="13"/>
     </issue>
 
@@ -8625,7 +7999,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="52"
+            line="40"
             column="13"/>
     </issue>
 
@@ -8636,43 +8010,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="53"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="56"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="57"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="58"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="59"
+            line="41"
             column="13"/>
     </issue>
 
@@ -8683,7 +8021,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="62"
+            line="45"
             column="13"/>
     </issue>
 
@@ -8694,7 +8032,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="63"
+            line="46"
             column="13"/>
     </issue>
 
@@ -8705,7 +8043,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="64"
+            line="47"
             column="13"/>
     </issue>
 
@@ -8716,7 +8054,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="67"
+            line="50"
             column="13"/>
     </issue>
 
@@ -8727,7 +8065,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="68"
+            line="51"
             column="13"/>
     </issue>
 
@@ -8738,7 +8076,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="69"
+            line="52"
             column="13"/>
     </issue>
 
@@ -8749,7 +8087,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="70"
+            line="53"
             column="13"/>
     </issue>
 
@@ -8760,7 +8098,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="73"
+            line="56"
             column="13"/>
     </issue>
 
@@ -8771,7 +8109,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="74"
+            line="57"
             column="13"/>
     </issue>
 
@@ -8782,7 +8120,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="75"
+            line="58"
             column="13"/>
     </issue>
 
@@ -8793,7 +8131,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="76"
+            line="59"
             column="13"/>
     </issue>
 
@@ -8804,7 +8142,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="77"
+            line="60"
             column="13"/>
     </issue>
 
@@ -8815,7 +8153,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="80"
+            line="63"
             column="13"/>
     </issue>
 
@@ -8826,7 +8164,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="81"
+            line="64"
             column="13"/>
     </issue>
 
@@ -8837,7 +8175,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="82"
+            line="65"
             column="13"/>
     </issue>
 
@@ -8848,7 +8186,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="83"
+            line="66"
             column="13"/>
     </issue>
 
@@ -8859,7 +8197,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="84"
+            line="67"
             column="13"/>
     </issue>
 
@@ -8870,7 +8208,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="85"
+            line="68"
             column="13"/>
     </issue>
 
@@ -8881,7 +8219,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="86"
+            line="69"
             column="13"/>
     </issue>
 
@@ -8892,7 +8230,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="89"
+            line="72"
             column="13"/>
     </issue>
 
@@ -8903,7 +8241,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="90"
+            line="73"
             column="13"/>
     </issue>
 
@@ -8914,7 +8252,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="91"
+            line="74"
             column="13"/>
     </issue>
 
@@ -8925,7 +8263,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="92"
+            line="75"
             column="13"/>
     </issue>
 
@@ -8936,7 +8274,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="93"
+            line="76"
             column="13"/>
     </issue>
 
@@ -8947,7 +8285,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="94"
+            line="77"
             column="13"/>
     </issue>
 
@@ -8958,7 +8296,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="95"
+            line="78"
             column="13"/>
     </issue>
 
@@ -8969,7 +8307,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="98"
+            line="81"
             column="13"/>
     </issue>
 
@@ -8980,7 +8318,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="99"
+            line="82"
             column="13"/>
     </issue>
 
@@ -8991,16 +8329,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="100"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="101"
+            line="83"
             column="13"/>
     </issue>
 
@@ -9011,7 +8340,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="102"
+            line="84"
             column="13"/>
     </issue>
 
@@ -9022,7 +8351,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="103"
+            line="85"
             column="13"/>
     </issue>
 
@@ -9033,7 +8362,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="104"
+            line="86"
             column="13"/>
     </issue>
 
@@ -9044,7 +8373,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="105"
+            line="87"
             column="13"/>
     </issue>
 
@@ -9055,7 +8384,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="106"
+            line="88"
             column="13"/>
     </issue>
 
@@ -9066,7 +8395,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="107"
+            line="89"
             column="13"/>
     </issue>
 
@@ -9077,7 +8406,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="110"
+            line="92"
             column="13"/>
     </issue>
 
@@ -9088,7 +8417,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="111"
+            line="93"
             column="13"/>
     </issue>
 
@@ -9099,18 +8428,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="112"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.success_sync_completed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;success_sync_completed&quot;>Sync completed successfully&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="113"
+            line="94"
             column="13"/>
     </issue>
 
@@ -9121,7 +8439,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="116"
+            line="97"
             column="13"/>
     </issue>
 
@@ -9132,7 +8450,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="117"
+            line="98"
             column="13"/>
     </issue>
 
@@ -9143,18 +8461,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="118"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.loading_sync` appears to be unused"
-        errorLine1="    &lt;string name=&quot;loading_sync&quot;>Syncing settings…&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="119"
+            line="99"
             column="13"/>
     </issue>
 
@@ -9165,7 +8472,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="120"
+            line="100"
             column="13"/>
     </issue>
 
@@ -9176,7 +8483,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="123"
+            line="103"
             column="13"/>
     </issue>
 
@@ -9187,25 +8494,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="124"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="125"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="126"
+            line="104"
             column="13"/>
     </issue>
 
@@ -9216,7 +8505,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="127"
+            line="105"
             column="13"/>
     </issue>
 
@@ -9227,7 +8516,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="128"
+            line="106"
             column="13"/>
     </issue>
 
@@ -9238,7 +8527,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="131"
+            line="109"
             column="13"/>
     </issue>
 
@@ -9249,7 +8538,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="132"
+            line="110"
             column="13"/>
     </issue>
 
@@ -9260,7 +8549,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="135"
+            line="113"
             column="13"/>
     </issue>
 
@@ -9271,7 +8560,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="136"
+            line="114"
             column="13"/>
     </issue>
 
@@ -9282,7 +8571,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="137"
+            line="115"
             column="13"/>
     </issue>
 
@@ -9293,7 +8582,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="140"
+            line="118"
             column="13"/>
     </issue>
 
@@ -9304,7 +8593,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="141"
+            line="119"
             column="13"/>
     </issue>
 
@@ -9315,7 +8604,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="142"
+            line="120"
             column="13"/>
     </issue>
 
@@ -9326,7 +8615,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="143"
+            line="121"
             column="13"/>
     </issue>
 
@@ -9337,7 +8626,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="144"
+            line="122"
             column="13"/>
     </issue>
 
@@ -9348,7 +8637,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="147"
+            line="125"
             column="13"/>
     </issue>
 
@@ -9359,7 +8648,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="148"
+            line="126"
             column="13"/>
     </issue>
 
@@ -9370,7 +8659,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="149"
+            line="127"
             column="13"/>
     </issue>
 
@@ -9381,7 +8670,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="150"
+            line="128"
             column="13"/>
     </issue>
 
@@ -9392,7 +8681,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="151"
+            line="129"
             column="13"/>
     </issue>
 
@@ -9403,7 +8692,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="152"
+            line="130"
             column="13"/>
     </issue>
 
@@ -9414,7 +8703,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="155"
+            line="133"
             column="13"/>
     </issue>
 
@@ -9425,7 +8714,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="156"
+            line="134"
             column="13"/>
     </issue>
 
@@ -9436,7 +8725,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="157"
+            line="135"
             column="13"/>
     </issue>
 
@@ -9447,7 +8736,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="158"
+            line="136"
             column="13"/>
     </issue>
 
@@ -9458,16 +8747,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="159"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="160"
+            line="137"
             column="13"/>
     </issue>
 
@@ -9478,7 +8758,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="161"
+            line="138"
             column="13"/>
     </issue>
 
@@ -9489,7 +8769,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="162"
+            line="139"
             column="13"/>
     </issue>
 
@@ -9500,7 +8780,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="163"
+            line="140"
             column="13"/>
     </issue>
 
@@ -9511,7 +8791,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="164"
+            line="141"
             column="13"/>
     </issue>
 
@@ -9522,7 +8802,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="167"
+            line="144"
             column="13"/>
     </issue>
 
@@ -9533,7 +8813,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="168"
+            line="145"
             column="13"/>
     </issue>
 
@@ -9544,7 +8824,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="169"
+            line="146"
             column="13"/>
     </issue>
 
@@ -9555,25 +8835,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="170"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="171"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings_settings_advanced.xml"
-            line="172"
+            line="147"
             column="13"/>
     </issue>
 
@@ -9584,7 +8846,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="175"
+            line="150"
             column="13"/>
     </issue>
 
@@ -9595,7 +8857,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="178"
+            line="153"
             column="13"/>
     </issue>
 
@@ -9606,7 +8868,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="179"
+            line="154"
             column="13"/>
     </issue>
 
@@ -9617,7 +8879,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="180"
+            line="155"
             column="13"/>
     </issue>
 
@@ -9628,7 +8890,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="182"
+            line="157"
             column="13"/>
     </issue>
 
@@ -9639,7 +8901,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="183"
+            line="158"
             column="13"/>
     </issue>
 
@@ -9650,7 +8912,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="184"
+            line="159"
             column="13"/>
     </issue>
 
@@ -9661,7 +8923,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="185"
+            line="160"
             column="13"/>
     </issue>
 
@@ -9672,7 +8934,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="186"
+            line="161"
             column="13"/>
     </issue>
 
@@ -9683,7 +8945,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="187"
+            line="162"
             column="13"/>
     </issue>
 
@@ -9694,7 +8956,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="189"
+            line="164"
             column="13"/>
     </issue>
 
@@ -9705,7 +8967,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="190"
+            line="165"
             column="13"/>
     </issue>
 
@@ -9716,7 +8978,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="191"
+            line="166"
             column="13"/>
     </issue>
 
@@ -9727,7 +8989,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="192"
+            line="167"
             column="13"/>
     </issue>
 
@@ -9738,7 +9000,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="193"
+            line="168"
             column="13"/>
     </issue>
 
@@ -9749,7 +9011,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="195"
+            line="170"
             column="13"/>
     </issue>
 
@@ -9760,7 +9022,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="196"
+            line="171"
             column="13"/>
     </issue>
 
@@ -9771,7 +9033,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="197"
+            line="172"
             column="13"/>
     </issue>
 
@@ -9782,7 +9044,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="199"
+            line="174"
             column="13"/>
     </issue>
 
@@ -9793,7 +9055,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings_settings_advanced.xml"
-            line="200"
+            line="175"
             column="13"/>
     </issue>
 
@@ -9804,7 +9066,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/themes.xml"
-            line="30"
+            line="31"
             column="12"/>
     </issue>
 
@@ -9815,7 +9077,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/themes.xml"
-            line="45"
+            line="46"
             column="12"/>
     </issue>
 
@@ -9826,7 +9088,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/themes.xml"
-            line="67"
+            line="68"
             column="12"/>
     </issue>
 
@@ -9837,7 +9099,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/themes.xml"
-            line="72"
+            line="73"
             column="12"/>
     </issue>
 
@@ -9848,7 +9110,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/themes.xml"
-            line="77"
+            line="78"
             column="12"/>
     </issue>
 
@@ -9881,7 +9143,7 @@
         errorLine2="                     ~~~~~~">
         <location
             file="src/main/java/com/mtlc/studyplan/core/WorkingTasksScreen.kt"
-            line="201"
+            line="637"
             column="22"/>
     </issue>
 
@@ -10202,17 +9464,6 @@
             file="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
             line="2"
             column="1"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation(&quot;androidx.exifinterface:exifinterface:1.3.7&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="163"
-            column="20"/>
     </issue>
 
     <issue

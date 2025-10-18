@@ -421,7 +421,7 @@ object ResponsiveTestMatrix {
             val aspectRatio = maxOf(device.widthDp, device.heightDp).toFloat() /
                              minOf(device.widthDp, device.heightDp).toFloat()
             println("  ${device.name}: ${device.widthDp}x${device.heightDp}dp @ ${device.densityDpi}dpi " +
-                   "(${String.format("%.2f", aspectRatio)}:1) - ${device.expectedBehavior}")
+                   "(${String.format(java.util.Locale.US, "%.2f", aspectRatio)}:1) - ${device.expectedBehavior}")
         }
     }
 

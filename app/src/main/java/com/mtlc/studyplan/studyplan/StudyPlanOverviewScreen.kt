@@ -1,8 +1,6 @@
 package com.mtlc.studyplan.studyplan
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -176,10 +173,6 @@ fun StudyPlanOverviewScreen(
                     onBackToWeekly = { selectedTab = StudyPlanTab.WEEKLY },
                     modifier = Modifier.weight(1f)
                 )
-                StudyPlanTab.PROGRESS -> ProgressOverview(
-                    taskStats = taskStats,
-                    modifier = Modifier.weight(1f)
-                )
             }
         }
     }
@@ -193,7 +186,7 @@ private fun StudyPlanTabRow(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
         contentPadding = PaddingValues(horizontal = 4.dp)
     ) {
         items(StudyPlanTab.entries) { tab ->
@@ -299,51 +292,6 @@ private fun WeeklyScheduleView(
     }
 }
 
-@Composable
-private fun ProgressOverview(
-    taskStats: TaskStats,
-    modifier: Modifier = Modifier
-) {
-    val hasStarted = taskStats.totalTasks > 0 && taskStats.completedTasks > 0
-
-    LazyColumn(
-        modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
-    ) {
-        if (hasStarted) {
-            // Overall Progress Card
-            item {
-                OverallProgressCard(taskStats = taskStats)
-            }
-
-            // Subject Progress
-            item {
-                SubjectProgressCard(taskStats = taskStats)
-            }
-
-
-            // Achievement Summary
-            item {
-                AchievementSummaryCard(taskStats = taskStats)
-            }
-        } else {
-            // Empty state for first-time users
-            item {
-                WelcomeProgressCard()
-            }
-
-            item {
-                StudyPlanPreviewCard()
-            }
-
-            item {
-                GetStartedCard()
-            }
-        }
-    }
-}
-
 
 @Composable
 private fun CurrentWeekCard(
@@ -352,45 +300,54 @@ private fun CurrentWeekCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(12.dp)
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Current Week Progress",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    // Hide week/total display for initial use without data
-                }
-
-                CircularProgressIndicator(
-                    progress = {
-                        val realProgress = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
-                        realProgress / 100f
-                    },
-                    modifier = Modifier.size(60.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 6.dp,
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                Text(
+                    text = "Current Week Progress",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        progress = {
+                            val realProgress = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
+                            realProgress / 100f
+                        },
+                        modifier = Modifier.size(44.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                    )
+                    Text(
+                        text = if (taskStats.totalTasks > 0) "${taskStats.getProgressPercentage()}%" else "0%",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
 
             // Only show metrics when user has real task data
             if (taskStats.totalTasks > 0 && taskStats.completedTasks > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     val realProgress = taskStats.getProgressPercentage()
                     ProgressMetric("Completed", "${taskStats.completedTasks}")
@@ -488,8 +445,7 @@ private fun DailyScheduleCard(
 // Data classes and helper functions
 enum class StudyPlanTab(val title: String, val icon: ImageVector) {
     WEEKLY("Weekly", Icons.Filled.CalendarToday),
-    DAILY("Daily", Icons.Filled.DateRange),
-    PROGRESS("Progress", Icons.AutoMirrored.Filled.TrendingUp)
+    DAILY("Daily", Icons.Filled.DateRange)
 }
 
 data class StudyScheduleData(
@@ -712,247 +668,6 @@ private fun GoalItem(goal: StudyGoal) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-    }
-}
-
-// Placeholder composables for other views
-@Composable
-private fun OverallProgressCard(taskStats: TaskStats) {
-    // Use real progress from TaskStats; avoid placeholder fallbacks
-    val percentage = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
-    val progress = (percentage / 100f).coerceIn(0f, 1f)
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
-        label = "progress_animation"
-    )
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Overall Progress",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column {
-                    Text(
-                        text = "$percentage%",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "${taskStats.completedTasks}/${taskStats.totalTasks} tasks completed",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                    )
-                }
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    CircularProgressIndicator(
-                        progress = { animatedProgress },
-                        modifier = Modifier.size(56.dp),
-                        strokeWidth = 4.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                    )
-                    Text(
-                        text = "${(animatedProgress * 100).toInt()}%",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SubjectProgressCard(taskStats: TaskStats) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Subject Progress",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Initial implementation: reflect real overall progress uniformly per subject
-            val baseProgress = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
-            listOf(
-                "Grammar" to (MaterialTheme.colorScheme.primary to baseProgress),
-                "Reading" to (MaterialTheme.colorScheme.secondary to baseProgress),
-                "Vocabulary" to (MaterialTheme.colorScheme.tertiary to baseProgress),
-                "Listening" to (MaterialTheme.colorScheme.error to baseProgress)
-            )
-
-            // Subject-specific progress requires real per-subject data, not mock percentages
-            Text(
-                text = "Subject-specific progress tracking will be available once you start completing tasks in different subjects.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun AchievementSummaryCard(taskStats: TaskStats) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.EmojiEvents,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Achievements",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AchievementMetric(
-                    icon = Icons.Filled.Star,
-                    value = taskStats.completedTasks.toString(),
-                    label = "Tasks Done",
-                    color = MaterialTheme.colorScheme.primary
-                )
-                AchievementMetric(
-                    icon = Icons.Filled.Whatshot,
-                    value = if (taskStats.completedTasks > 0) "1" else "0",
-                    label = "Day Streak",
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                AchievementMetric(
-                    icon = Icons.AutoMirrored.Filled.TrendingUp,
-                    value = "${taskStats.getProgressPercentage()}%",
-                    label = "Progress",
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AchievementMetric(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    color: Color
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(4.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .background(color = color.copy(alpha = 0.2f), shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(16.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onTertiaryContainer
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
-        )
     }
 }
 
@@ -1545,164 +1260,4 @@ private fun NotesSection(notes: String) {
     }
 }
 
-// Empty state components for first-time users
-@Composable
-private fun WelcomeProgressCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(48.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Welcome to Your Study Journey",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Start tracking your YDS preparation progress and see your achievements grow!",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-private fun StudyPlanPreviewCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "What You'll Track",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val subjects = listOf(
-                "Grammar" to Icons.Default.Create,
-                "Reading" to Icons.AutoMirrored.Filled.MenuBook,
-                "Vocabulary" to Icons.AutoMirrored.Filled.StickyNote2,
-                "Listening" to Icons.AutoMirrored.Filled.VolumeUp
-            )
-
-            subjects.forEach { (subject, icon) ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = subject,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "Ready to start",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GetStartedCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Filled.PlayArrow,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(32.dp)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Ready to Begin?",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Switch to the Weekly tab to start your first study session and begin tracking your progress!",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
 

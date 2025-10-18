@@ -21,7 +21,7 @@ import java.util.*
  */
 object DataFormatters {
 
-    private val numberFormat = NumberFormat.getNumberInstance(Locale.getDefault())
+    private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
     private val decimalFormat = DecimalFormat("#.#")
 
     // Time formatting

@@ -1,3 +1,9 @@
+## [2.9.61] - 2025-10-18 (hotfix)
+
+### Hotfix
+- Incremented build to 89 and versionName to 2.9.61.
+
+
 ## [2.9.6] - 2025-10-17
 
 ### UI

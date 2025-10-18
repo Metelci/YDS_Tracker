@@ -216,9 +216,7 @@ fun AppNavHost(
                 targetState = "home",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "home_animation"
-            ) { target ->
-                // Reference target to satisfy lint; content does not vary here
-                @Suppress("UNUSED_VARIABLE") val ignoredTargetState = target
+            ) {
                 com.mtlc.studyplan.core.WorkingHomeScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
                     onNavigateToTasks = {
@@ -261,7 +259,7 @@ fun AppNavHost(
                 targetState = "tasks",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "tasks_animation"
-            ) { _ ->
+            ) {
                 com.mtlc.studyplan.core.WorkingTasksScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
                     studyProgressRepository = resolvedStudyProgressRepository,
@@ -327,7 +325,7 @@ fun AppNavHost(
                 targetState = "settings",
                 transitionSpec = NavigationTransitions.slideTransition(),
                 label = "settings_animation"
-            ) { _ ->
+            ) {
                 // Create a real settings repository instance
                 val context = LocalContext.current
                 val settingsRepository = remember {

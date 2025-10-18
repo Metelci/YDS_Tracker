@@ -1,45 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Search highlighting colors -->
-    <color name="search_highlight_background">#FFEB3B</color>
-    <color name="search_highlight_text">#1B5E20</color>
-    <color name="search_highlight_secondary">#E8F5E8</color>
-
-    <!-- Status colors -->
-    <color name="success_color">#4CAF50</color>
-    <color name="error_color">#F44336</color>
-    <color name="warning_color">#FF9800</color>
-    <color name="info_color">#2196F3</color>
-
-    <!-- Performance indicator colors -->
-    <color name="performance_good">#4CAF50</color>
-    <color name="performance_warning">#FF9800</color>
-    <color name="performance_critical">#F44336</color>
-
-    <!-- Accessibility colors -->
-    <color name="high_contrast_background">#FFFFFF</color>
-    <color name="high_contrast_text">#000000</color>
-    <color name="high_contrast_primary">#0000FF</color>
-    <color name="high_contrast_error">#FF0000</color>
-
-    <!-- Backup status colors -->
-    <color name="backup_success">#E8F5E8</color>
-    <color name="backup_error">#FFEBEE</color>
-    <color name="backup_warning">#FFF3E0</color>
-
-    <!-- Dependency colors -->
-    <color name="dependency_enabled">#E8F5E8</color>
-    <color name="dependency_disabled">#FFEBEE</color>
-    <color name="dependency_warning">#FFF3E0</color>
-
-    <!-- Conflict resolution colors -->
-    <color name="current_value_background">#E3F2FD</color>
-    <color name="backup_value_background">#FFF3E0</color>
-    <color name="recommended_border">#4CAF50</color>
-    <color name="button_normal">#F5F5F5</color>
-    <color name="button_selected">#4CAF50</color>
-
-    <!-- Focus indicator colors -->
+    <!-- Focus indicator colors (used by FocusIndicatorManager.kt) -->
     <color name="focus_indicator_default">#2196F3</color>
     <color name="focus_indicator_primary">#1976D2</color>
     <color name="focus_indicator_error">#F44336</color>

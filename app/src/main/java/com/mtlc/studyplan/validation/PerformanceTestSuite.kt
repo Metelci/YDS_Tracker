@@ -137,7 +137,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = metrics.maxOfOrNull { it.memoryMB } ?: 0.0,
             passed = averageFps >= 50.0 && timeToStableFps < 2000, // 50fps average, stable within 2s
-            details = "Time to stable 60fps: ${timeToStableFps}ms, Min FPS during startup: ${String.format("%.1f", minFps)}"
+            details = "Time to stable 60fps: ${timeToStableFps}ms, Min FPS during startup: ${String.format(java.util.Locale.US, "%.1f", minFps)}"
         )
     }
 
@@ -182,7 +182,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = metrics.maxOfOrNull { it.memoryMB } ?: 0.0,
             passed = averageFps >= 55.0 && frameDropPercentage < 15.0,
-            details = "Frame drops: ${frameDrops.size}/${metrics.size} samples (${String.format("%.1f", frameDropPercentage)}%)"
+            details = "Frame drops: ${frameDrops.size}/${metrics.size} samples (${String.format(java.util.Locale.US, "%.1f", frameDropPercentage)}%)"
         )
     }
 
@@ -224,7 +224,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = metrics.maxOfOrNull { it.memoryMB } ?: 0.0,
             passed = averageFps >= 50.0 && stabilityPercentage >= 80.0,
-            details = "Scroll stability: ${String.format("%.1f", stabilityPercentage)}% of frames above 55fps during aggressive scrolling"
+            details = "Scroll stability: ${String.format(java.util.Locale.US, "%.1f", stabilityPercentage)}% of frames above 55fps during aggressive scrolling"
         )
     }
 
@@ -272,7 +272,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = peakMemory,
             passed = averageFps >= 45.0 && memoryIncrease < 150.0 && fpsStability > 0.8,
-            details = "Memory increase: +${String.format("%.1f", memoryIncrease)}MB, FPS stability: ${String.format("%.1f", fpsStability * 100)}%"
+            details = "Memory increase: +${String.format(java.util.Locale.US, "%.1f", memoryIncrease)}MB, FPS stability: ${String.format(java.util.Locale.US, "%.1f", fpsStability * 100)}%"
         )
     }
 
@@ -313,7 +313,7 @@ class PerformanceTestSuite @Inject constructor(
             averageMemoryMB = metrics.map { it.memoryMB }.average(),
             peakMemoryMB = metrics.maxOfOrNull { it.memoryMB } ?: 0.0,
             passed = averageFps >= 55.0 && smoothnessPercentage >= 85.0,
-            details = "$animationCount concurrent animations, ${String.format("%.1f", smoothnessPercentage)}% smooth frames (55fps+)"
+            details = "$animationCount concurrent animations, ${String.format(java.util.Locale.US, "%.1f", smoothnessPercentage)}% smooth frames (55fps+)"
         )
     }
 

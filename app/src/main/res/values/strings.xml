@@ -502,6 +502,18 @@
     <string name="home_today_tasks_empty">No tasks scheduled for today.</string>
     <string name="home_new_placeholder">New home screen placeholder - implementation pending</string>
 
+    <!-- Exam status messages -->
+    <string name="exam_status_exam_day">Exam day!</string>
+    <string name="exam_status_completed">Exam completed</string>
+    <string name="exam_status_final_week">Final week!</string>
+    <string name="exam_status_almost_there">Almost there!</string>
+    <string name="exam_status_registration_opens_soon">Registration opens soon</string>
+    <string name="exam_status_registration_open">Registration open!</string>
+    <string name="exam_status_late_registration">Late registration period</string>
+    <string name="exam_status_registration_closed">Registration closed</string>
+    <string name="exam_status_preparation_time">Preparation time</string>
+    <string name="exam_status_long_term_planning">Long-term planning</string>
+
     <!-- Settings screen translations -->
     <string name="daily_goal_reminders_title">Daily Goal Reminders</string>
     <string name="daily_goal_reminders_desc">Remind me of my daily study goals</string>

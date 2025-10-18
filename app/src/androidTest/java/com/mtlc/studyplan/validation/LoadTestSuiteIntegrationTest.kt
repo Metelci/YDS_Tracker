@@ -43,6 +43,12 @@ class LoadTestSuiteIntegrationTest {
             override suspend fun getUpcomingTasks() = emptyList<com.mtlc.studyplan.data.Task>()
             override suspend fun getTasksByCategory(category: String) = emptyList<com.mtlc.studyplan.data.Task>()
             override suspend fun getEarlyMorningCompletedTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getLateNightCompletedTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getWeekendCompletedTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getWeekdayCompletedTasks() = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getTasksByPriority(priority: com.mtlc.studyplan.data.TaskPriority) = emptyList<com.mtlc.studyplan.data.Task>()
+            override suspend fun getTotalPointsEarned() = 0
+            override suspend fun getMaxTasksCompletedInOneDay() = 0
             override suspend fun getAllTasksPaginated(page: Int, pageSize: Int) = TaskRepository.PaginatedTasks(
                 tasks = emptyList(),
                 totalCount = 0,
