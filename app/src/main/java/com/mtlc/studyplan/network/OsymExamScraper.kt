@@ -184,7 +184,11 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
+            val dateResult = identifyExamDates(textBlock, dates.toList())
+            val examDate = dateResult.first
+            val regStart = dateResult.second
+            val regEnd = dateResult.third
+            val lateRegEnd = dateResult.fourth
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -305,7 +309,11 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
+            val dateResult = identifyExamDates(textBlock, dates.toList())
+            val examDate = dateResult.first
+            val regStart = dateResult.second
+            val regEnd = dateResult.third
+            val lateRegEnd = dateResult.fourth
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -364,7 +372,11 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
+            val dateResult = identifyExamDates(textBlock, dates.toList())
+            val examDate = dateResult.first
+            val regStart = dateResult.second
+            val regEnd = dateResult.third
+            val lateRegEnd = dateResult.fourth
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
