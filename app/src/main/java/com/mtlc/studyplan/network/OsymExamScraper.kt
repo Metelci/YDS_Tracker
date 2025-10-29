@@ -184,11 +184,7 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.component1()
-            val regStart = dateResult.component2()
-            val regEnd = dateResult.component3()
-            val lateRegEnd = dateResult.component4()
+            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -309,11 +305,7 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.component1()
-            val regStart = dateResult.component2()
-            val regEnd = dateResult.component3()
-            val lateRegEnd = dateResult.component4()
+            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -372,11 +364,7 @@ class OsymExamScraper @Inject constructor() {
             }.filterNotNull().sorted().take(10) // Take up to 10 closest dates and sort them
 
             // Try to identify the most likely dates for this exam based on context
-            val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.component1()
-            val regStart = dateResult.component2()
-            val regEnd = dateResult.component3()
-            val lateRegEnd = dateResult.component4()
+            val (examDate, regStart, regEnd, lateRegEnd) = identifyExamDates(textBlock, dates.toList())
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
