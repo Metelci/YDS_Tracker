@@ -39,10 +39,14 @@ class NotificationManager @Inject constructor(
         const val CHANNEL_STREAK_WARNINGS = "streak_warnings"
         const val CHANNEL_DAILY_GOALS = "daily_goals"
         const val CHANNEL_EXAM_APPLICATIONS = "exam_applications"
+        const val CHANNEL_COMEBACK = "comeback_reminders"
+        const val CHANNEL_EXAM_MILESTONES = "exam_milestones"
 
         const val REQUEST_CODE_STUDY_REMINDER = 1001
         const val REQUEST_CODE_STREAK_WARNING = 1002
         const val REQUEST_CODE_DAILY_GOAL = 1003
+        const val REQUEST_CODE_COMEBACK = 1004
+        const val REQUEST_CODE_EXAM_MILESTONE = 1005
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -104,6 +108,26 @@ class NotificationManager @Inject constructor(
                     NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     description = "Exam application start and deadline alerts"
+                    enableVibration(true)
+                    setShowBadge(true)
+                },
+
+                NotificationChannel(
+                    CHANNEL_COMEBACK,
+                    "Comeback Reminders",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "Gentle reminders when you've been away for a while"
+                    enableVibration(true)
+                    setShowBadge(true)
+                },
+
+                NotificationChannel(
+                    CHANNEL_EXAM_MILESTONES,
+                    context.getString(R.string.exam_milestone_notification_channel),
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = context.getString(R.string.exam_milestone_notification_channel_desc)
                     enableVibration(true)
                     setShowBadge(true)
                 }
@@ -353,9 +377,10 @@ class NotificationManager @Inject constructor(
         context: Context,
         title: String,
         message: String,
-        notificationId: Int
+        notificationId: Int,
+        calendarIntent: PendingIntent? = null
     ) {
-        val notification = NotificationCompat.Builder(context, CHANNEL_STUDY_REMINDERS)
+        val builder = NotificationCompat.Builder(context, CHANNEL_STUDY_REMINDERS)
             .setSmallIcon(R.drawable.ic_notifications)
             .setContentTitle(title)
             .setContentText(message)
@@ -368,7 +393,16 @@ class NotificationManager @Inject constructor(
                 "Start Studying",
                 createOpenTasksPendingIntent()
             )
-            .build()
+
+        calendarIntent?.let {
+            builder.addAction(
+                R.drawable.ic_notifications,
+                context.getString(R.string.add_to_calendar),
+                it
+            )
+        }
+
+        val notification = builder.build()
 
         notificationManager.notify(notificationId, notification)
 
@@ -379,13 +413,142 @@ class NotificationManager @Inject constructor(
     }
 
     /**
+     * Show a gentle, encouraging comeback reminder for users who haven't studied for 3+ days
+     * Uses warm, non-judgmental tone to motivate without guilt
+     */
+    fun showGentleComebackReminder(
+        title: String,
+        message: String,
+        notificationId: Int
+    ) {
+        val actionText = context.getString(R.string.comeback_reminder_action)
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_COMEBACK)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(message)
+                .setBigContentTitle(title))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(createOpenAppPendingIntent())
+            .addAction(
+                R.drawable.ic_notifications,
+                actionText,
+                createOpenTasksPendingIntent()
+            )
+            .build()
+
+        notificationManager.notify(notificationId, notification)
+
+        // Track delivery for analytics
+        scope.launch {
+            trackNotificationDelivery(notificationId, CHANNEL_COMEBACK, true)
+        }
+    }
+
+    /**
+     * Show exam milestone notification at key preparation points (90, 60, 30, 14, 7 days)
+     * Provides study phase guidance and actionable next steps
+     */
+    fun showExamMilestoneNotification(milestone: com.mtlc.studyplan.data.ExamMilestone) {
+        val title = context.getString(milestone.titleResId, milestone.examName)
+        val message = context.getString(milestone.messageResId)
+        val phase = context.getString(milestone.phaseResId)
+        val actionText = context.getString(milestone.actionResId)
+
+        val progressText = context.getString(
+            R.string.exam_milestone_progress_format,
+            milestone.daysUntil,
+            phase
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_EXAM_MILESTONES)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(message)
+                .setSummaryText(progressText))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(createOpenAppPendingIntent())
+            .addAction(
+                R.drawable.ic_notifications,
+                actionText,
+                createOpenTasksPendingIntent()
+            )
+            .build()
+
+        notificationManager.notify(milestone.daysUntil, notification)
+
+        // Track delivery for analytics
+        scope.launch {
+            trackNotificationDelivery(milestone.daysUntil, CHANNEL_EXAM_MILESTONES, true)
+        }
+    }
+
+    /**
+     * Show notification for new exam announcement from ÖSYM
+     * Alerts users when new exams are added to the system
+     */
+    fun showNewExamAnnouncementNotification(
+        examName: String,
+        examDate: String,
+        registrationPeriod: String?,
+    ) {
+        val title = context.getString(R.string.new_exam_announcement_title)
+        val message = if (registrationPeriod != null) {
+            context.getString(
+                R.string.new_exam_announcement_with_registration,
+                examName,
+                examDate,
+                registrationPeriod,
+            )
+        } else {
+            context.getString(
+                R.string.new_exam_announcement_basic,
+                examName,
+                examDate,
+            )
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_EXAM_APPLICATIONS)
+            .setSmallIcon(R.drawable.ic_notifications)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(message),
+            )
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(createOpenAppPendingIntent())
+            .addAction(
+                R.drawable.ic_notifications,
+                context.getString(R.string.view_exam_details),
+                createOpenAppPendingIntent(),
+            )
+            .build()
+
+        val notificationId = System.currentTimeMillis().toInt()
+        notificationManager.notify(notificationId, notification)
+
+        // Track delivery for analytics
+        scope.launch {
+            trackNotificationDelivery(notificationId, CHANNEL_EXAM_APPLICATIONS, true)
+        }
+    }
+
+    /**
      * Track notification delivery for analytics and reliability monitoring
      */
     private suspend fun trackNotificationDelivery(
         notificationId: Int,
         channelId: String,
         delivered: Boolean,
-        errorMessage: String? = null
+        errorMessage: String? = null,
     ) {
         // Store delivery tracking data
         val trackingData = mapOf(
@@ -394,7 +557,7 @@ class NotificationManager @Inject constructor(
             "delivered" to delivered,
             "timestamp" to System.currentTimeMillis(),
             "timezone" to java.time.ZoneId.systemDefault().id,
-            "error_message" to (errorMessage ?: "")
+            "error_message" to (errorMessage ?: ""),
         )
 
         // Store in shared preferences for analytics

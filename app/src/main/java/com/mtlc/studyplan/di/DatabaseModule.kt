@@ -3,6 +3,7 @@ package com.mtlc.studyplan.di
 import androidx.room.Room
 import com.mtlc.studyplan.database.StudyPlanDatabase
 import com.mtlc.studyplan.database.dao.AchievementDao
+import com.mtlc.studyplan.database.dao.ExamDao
 import com.mtlc.studyplan.database.dao.ProgressDao
 import com.mtlc.studyplan.database.dao.StreakDao
 import com.mtlc.studyplan.database.dao.TaskDao
@@ -17,7 +18,7 @@ val koinDatabaseModule = module {
             StudyPlanDatabase::class.java,
             "study_plan_database"
         )
-            .fallbackToDestructiveMigration(true)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -26,4 +27,5 @@ val koinDatabaseModule = module {
     single<AchievementDao> { get<StudyPlanDatabase>().achievementDao() }
     single<StreakDao> { get<StudyPlanDatabase>().streakDao() }
     single<UserSettingsDao> { get<StudyPlanDatabase>().settingsDao() }
+    single<ExamDao> { get<StudyPlanDatabase>().examDao() }
 }

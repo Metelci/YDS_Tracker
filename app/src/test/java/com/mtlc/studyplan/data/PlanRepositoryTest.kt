@@ -1,5 +1,7 @@
 package com.mtlc.studyplan.data
 
+import android.content.Context
+
 import app.cash.turbine.test
 import com.mtlc.studyplan.testutils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -7,13 +9,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Before
+import org.koin.core.context.stopKoin
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.*
 
+@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlanRepositoryTest {
 
@@ -27,6 +34,7 @@ class PlanRepositoryTest {
     private lateinit var planSettingsStore: PlanSettingsStore
 
     private lateinit var repository: PlanRepository
+    private lateinit var context: Context
 
     // Test data
     private val testWeekPlan = WeekPlan(
@@ -82,13 +90,15 @@ class PlanRepositoryTest {
 
     @Before
     fun setup() {
+        try { stopKoin() } catch (e: Exception) { }
         MockitoAnnotations.openMocks(this)
+        context = ApplicationProvider.getApplicationContext()
 
         // Setup default mock behaviors
         whenever(planOverridesStore.overridesFlow).thenReturn(flowOf(testOverrides))
         whenever(planSettingsStore.settingsFlow).thenReturn(flowOf(testSettings))
 
-        repository = PlanRepository(planOverridesStore, planSettingsStore)
+        repository = PlanRepository(context, planOverridesStore, planSettingsStore)
     }
 
     // Task Visibility Tests
@@ -445,7 +455,7 @@ class PlanRepositoryTest {
         whenever(planOverridesStore.overridesFlow).thenReturn(overridesFlow)
         whenever(planSettingsStore.settingsFlow).thenReturn(flowOf(testSettings))
 
-        val repository = PlanRepository(planOverridesStore, planSettingsStore)
+        val repository = PlanRepository(context, planOverridesStore, planSettingsStore)
 
         // Note: Full reactive testing would require PlanDataSource initialization
         // This test verifies the flow structure is properly combined

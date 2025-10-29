@@ -1,21 +1,59 @@
 package com.mtlc.studyplan.data
 
-import com.mtlc.studyplan.network.OsymExamCalendarClient
+import androidx.appcompat.app.AppCompatDelegate
+import com.mtlc.studyplan.database.entity.ExamEntity
+import com.mtlc.studyplan.repository.ExamRepository
+import com.mtlc.studyplan.utils.Constants
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
-import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import java.util.Locale
 
 /**
- * Service for managing YDS exam information.
+ * YDS Exam Service - Now powered by ÖSYM web scraping with fallback to static data
  *
- * The service keeps a cached copy of the official ÖSYM exam schedule.
- * When network retrieval fails, static fallback data is used so the UI
- * remains functional offline.
+ * Provides real-time exam data from ÖSYM when available, with automatic fallback
+ * to static exam sessions for offline resilience. This ensures the home screen
+ * stays responsive while displaying the most up-to-date exam information.
  */
-object YdsExamService {
+class YdsExamService(
+    private val examRepository: ExamRepository? = null,
+) {
+
+    companion object {
+        // Singleton instance for backward compatibility
+        private var instance: YdsExamService? = null
+
+        /**
+         * Initialize the service with ExamRepository
+         * Should be called during app startup
+         */
+        fun initialize(examRepository: ExamRepository) {
+            instance = YdsExamService(examRepository)
+        }
+
+        /**
+         * Get the singleton instance
+         * For backward compatibility with existing code
+         */
+        fun getInstance(): YdsExamService {
+            return instance ?: YdsExamService()
+        }
+
+        // Static methods for backward compatibility
+        fun getNextExam(): YdsExamSession? = getInstance().getNextExamSync()
+        fun getAllUpcomingExams(): List<YdsExamSession> = getInstance().getAllUpcomingExamsSync()
+        fun getApplicationUrl(): String = getInstance().getApplicationUrlSync()
+        fun getDaysToNextExam(): Int = getInstance().getDaysToNextExamSync()
+        fun getRegistrationStatus(): RegistrationStatus = getInstance().getRegistrationStatusSync()
+        fun getFormattedExamDate(): String = getInstance().getFormattedExamDateSync()
+        fun getStatusMessage(): String = getInstance().getStatusMessageSync()
+    }
 
     data class YdsExamSession(
         val name: String,
@@ -24,12 +62,12 @@ object YdsExamService {
         val registrationEnd: LocalDate,
         val lateRegistrationEnd: LocalDate,
         val resultDate: LocalDate,
-        val applicationUrl: String = "https://ais.osym.gov.tr"
+        val applicationUrl: String = Constants.OSYM_URL
     )
 
-    private val fallbackSessions = listOf(
+    private val staticSessions = listOf(
         YdsExamSession(
-            name = "YDS 2025/1 (İngilizce)",
+            name = "YDS 2025/1 (Ingilizce)",
             examDate = LocalDate.of(2025, 7, 5),
             registrationStart = LocalDate.of(2025, 5, 20),
             registrationEnd = LocalDate.of(2025, 5, 26),
@@ -46,97 +84,69 @@ object YdsExamService {
         )
     )
 
-    @Volatile
-    private var cachedSessions: List<YdsExamSession> = emptyList()
+    /**
+     * Convert ExamEntity to YdsExamSession
+     */
+    private fun ExamEntity.toYdsExamSession(): YdsExamSession? {
+        val examDate = getExamDate()
+        val regStart = getRegistrationStart() ?: examDate.minusDays(45)
+        val regEnd = getRegistrationEnd() ?: regStart.plusDays(7)
+        val lateRegEnd = getLateRegistrationEnd() ?: regEnd.plusDays(5)
+        val resultDate = getResultDate() ?: examDate.plusWeeks(3)
 
-    @Volatile
-    private var lastSuccessfulFetchMillis: Long = 0L
-
-    private val cacheMutex = Mutex()
-
-    private fun activeSessions(): List<YdsExamSession> {
-        return cachedSessions.takeIf { it.isNotEmpty() } ?: fallbackSessions
+        return YdsExamSession(
+            name = examName,
+            examDate = examDate,
+            registrationStart = regStart,
+            registrationEnd = regEnd,
+            lateRegistrationEnd = lateRegEnd,
+            resultDate = resultDate,
+            applicationUrl = applicationUrl,
+        )
     }
 
     /**
-     * Attempt to refresh sessions from ÖSYM.
-     *
-     * @return true if a fresh schedule was downloaded and applied.
+     * Get upcoming sessions from repository with fallback to static data
      */
-    suspend fun refreshFromNetwork(force: Boolean = false): Boolean {
-        val now = System.currentTimeMillis()
-        if (!force && cachedSessions.isNotEmpty()) {
-            val ageMs = now - lastSuccessfulFetchMillis
-            if (ageMs < TimeUnit.HOURS.toMillis(6)) {
-                return false
+    private fun upcomingSessions(): List<YdsExamSession> {
+        // Try to get from repository first
+        if (examRepository != null) {
+            try {
+                val repoExams = runBlocking {
+                    examRepository.getUpcomingExamsByType("YDS")
+                        .firstOrNull()
+                        ?.mapNotNull { it.toYdsExamSession() }
+                }
+                if (!repoExams.isNullOrEmpty()) {
+                    return repoExams
+                }
+            } catch (e: Exception) {
+                // Fall through to static data
             }
         }
 
-        return cacheMutex.withLock {
-            val stillNeedsFetch =
-                force || cachedSessions.isEmpty() ||
-                    now - lastSuccessfulFetchMillis >= TimeUnit.HOURS.toMillis(6)
-            if (!stillNeedsFetch) {
-                return@withLock false
-            }
-
-            val fetched = runCatching { OsymExamCalendarClient.fetchYdsExams() }
-                .getOrElse { emptyList() }
-            val today = LocalDate.now()
-            val hasUpcoming = fetched.any { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
-            if (hasUpcoming) {
-                cachedSessions = fetched
-                    .distinctBy { it.examDate }
-                    .sortedBy { it.examDate }
-                lastSuccessfulFetchMillis = System.currentTimeMillis()
-                true
-            } else {
-                false
-            }
-    }
-
-    /**
-     * Replace the cached sessions with a pre-fetched list.
-     */
-    suspend fun applySessions(sessions: List<YdsExamSession>) {
-        if (sessions.isEmpty()) return
+        // Fallback to static sessions
         val today = LocalDate.now()
-        if (!sessions.any { it.examDate.isAfter(today) || it.examDate.isEqual(today) }) return
-        cacheMutex.withLock {
-            cachedSessions = sessions
-                .distinctBy { it.examDate }
-                .sortedBy { it.examDate }
-            lastSuccessfulFetchMillis = System.currentTimeMillis()
-        }
-    }
-    }
-
-    fun getNextExam(): YdsExamSession? {
-        val today = LocalDate.now()
-        return activeSessions()
-            .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
-            .minByOrNull { it.examDate }
-    }
-
-    fun getAllUpcomingExams(): List<YdsExamSession> {
-        val today = LocalDate.now()
-        return activeSessions()
+        return staticSessions
             .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
             .sortedBy { it.examDate }
     }
 
-    fun getDaysToNextExam(): Int {
-        val nextExam = getNextExam()
-        return if (nextExam != null) {
-            val today = LocalDate.now()
-            ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
-        } else {
-            0
-        }
+    // Synchronous methods for backward compatibility
+    fun getNextExamSync(): YdsExamSession? = upcomingSessions().firstOrNull()
+
+    fun getAllUpcomingExamsSync(): List<YdsExamSession> = upcomingSessions()
+
+    fun getApplicationUrlSync(): String = getNextExamSync()?.applicationUrl ?: Constants.OSYM_URL
+
+    fun getDaysToNextExamSync(): Int {
+        val nextExam = getNextExamSync() ?: return 0
+        val today = LocalDate.now()
+        return ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
     }
 
-    fun getRegistrationStatus(): RegistrationStatus {
-        val nextExam = getNextExam() ?: return RegistrationStatus.NO_UPCOMING_EXAM
+    fun getRegistrationStatusSync(): RegistrationStatus {
+        val nextExam = getNextExamSync() ?: return RegistrationStatus.NO_UPCOMING_EXAM
         val today = LocalDate.now()
         return when {
             today.isBefore(nextExam.registrationStart) -> RegistrationStatus.NOT_OPEN_YET
@@ -146,19 +156,22 @@ object YdsExamService {
         }
     }
 
-    fun getFormattedExamDate(): String {
-        val nextExam = getNextExam()
-        return if (nextExam != null) {
-            val formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-            nextExam.examDate.format(formatter)
-        } else {
-            "No upcoming exam"
-        }
+    private fun resolveActiveLocale(): Locale {
+        val appLocales = AppCompatDelegate.getApplicationLocales()
+        return appLocales.get(0) ?: Locale.getDefault()
     }
 
-    fun getStatusMessage(): String {
-        val daysToExam = getDaysToNextExam()
-        val registrationStatus = getRegistrationStatus()
+    fun getFormattedExamDateSync(): String {
+        val nextExam = getNextExamSync() ?: return "No upcoming exam"
+        val formatter = DateTimeFormatter
+            .ofLocalizedDate(FormatStyle.LONG)
+            .withLocale(resolveActiveLocale())
+        return nextExam.examDate.format(formatter)
+    }
+
+    fun getStatusMessageSync(): String {
+        val daysToExam = getDaysToNextExamSync()
+        val registrationStatus = getRegistrationStatusSync()
 
         return when {
             daysToExam == 0 -> "Exam day!"
@@ -184,4 +197,3 @@ object YdsExamService {
         NO_UPCOMING_EXAM
     }
 }
-

@@ -145,7 +145,10 @@ object TestResultsAggregator {
             .map { (testName, failures) ->
                 TestFailure(
                     testName = testName,
-                    failure = failures.first().failure!!,
+                    failure = failures.firstOrNull()?.failure ?: org.junit.runner.notification.Failure(
+                        org.junit.runner.Description.createTestDescription("UnknownClass", testName),
+                        Throwable("Unknown failure")
+                    ),
                     frequency = failures.size
                 )
             }

@@ -66,6 +66,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -87,6 +88,8 @@ import com.mtlc.studyplan.settings.data.SettingsPreferencesManager
 import com.mtlc.studyplan.settings.data.TaskSettings
 import com.mtlc.studyplan.ui.components.LanguageSwitcher
 import com.mtlc.studyplan.ui.theme.DesignTokens
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -101,6 +104,9 @@ data class SettingsTab(
     val title: String,
     val icon: ImageVector
 )
+
+@Composable
+private fun settingsBorderStroke() = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -256,7 +262,7 @@ fun OriginalSettingsScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(24.dp)) }
+            item { Spacer(modifier = Modifier.height(10.dp)) }
 
             // Content based on selected tab
             item {
@@ -502,7 +508,8 @@ private fun TabButton(
         color = backgroundColor,
         shape = RoundedCornerShape(16.dp),
         tonalElevation = if (isSelected) 2.dp else 0.dp,
-        shadowElevation = if (isSelected) 1.dp else 0.dp
+        shadowElevation = if (isSelected) 1.dp else 0.dp,
+        border = settingsBorderStroke() // Prussian blue border for consistency
     ) {
         Column(
             modifier = Modifier
@@ -690,47 +697,59 @@ private fun ColorfulTasksCard(
     icon: ImageVector,
     content: @Composable () -> Unit
 ) {
+    val cardShape = RoundedCornerShape(16.dp)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = cardShape,
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.TertiaryContainer // Light yellow background
+            containerColor = Color.Transparent
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = settingsBorderStroke() // Prussian blue border for consistency
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = gradientForBaseColor(DesignTokens.TertiaryContainer),
+                    shape = cardShape
+                )
+                .fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = DesignTokens.SecondaryContainer, // Light green accent
-                    modifier = Modifier.padding(4.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        tint = DesignTokens.SecondaryContainerForeground,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .padding(2.dp)
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = DesignTokens.SecondaryContainer, // Light green accent
+                        modifier = Modifier.padding(4.dp),
+                        border = settingsBorderStroke() // Prussian blue border for consistency
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = title,
+                            tint = DesignTokens.SecondaryContainerForeground,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(2.dp)
+                        )
+                    }
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = DesignTokens.TertiaryContainerForeground
                     )
                 }
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.TertiaryContainerForeground
-                )
-            }
 
-            content()
+                content()
+            }
         }
     }
 }
@@ -741,39 +760,50 @@ private fun SettingsCard(
     icon: ImageVector,
     content: @Composable () -> Unit
 ) {
+    val cardShape = RoundedCornerShape(16.dp)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = cardShape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.Transparent
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        border = settingsBorderStroke() // Prussian blue border for consistency
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = settingsGradientBrush(title),
+                    shape = cardShape
+                )
+                .fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
 
-            content()
+                content()
+            }
         }
     }
 }
@@ -796,19 +826,24 @@ private fun WeeklyGoalCard(
             (WEEKLY_GOAL_MAX - WEEKLY_GOAL_MIN).toFloat()).coerceIn(0f, 1f)
     }
 
+    val cardShape = RoundedCornerShape(20.dp)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, WEEKLY_GOAL_BORDER_COLOR),
+        shape = cardShape,
+        border = weeklyGoalBorderStroke(),
         colors = CardDefaults.cardColors(
-            containerColor = WEEKLY_GOAL_CARD_COLOR
+            containerColor = Color.Transparent
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    brush = gradientForBaseColor(WEEKLY_GOAL_CARD_COLOR),
+                    shape = cardShape
+                )
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
@@ -1000,7 +1035,8 @@ private const val WEEKLY_GOAL_MAX = 35
 private const val WEEKLY_GOAL_LOG_TAG = "WeeklyGoalCard"
 
 private val WEEKLY_GOAL_CARD_COLOR = Color(0xFFFFF3EF)
-private val WEEKLY_GOAL_BORDER_COLOR = Color(0xFFFFE1D5) // Warm peach border framing the card
+@Composable
+private fun weeklyGoalBorderStroke() = settingsBorderStroke()
 private val WEEKLY_GOAL_TITLE_COLOR = Color(0xFF45465A)
 private val WEEKLY_GOAL_VALUE_COLOR = Color(0xFFFF8864)
 private val WEEKLY_GOAL_SUPPORT_COLOR = Color(0xFF75768C)
@@ -1023,7 +1059,7 @@ private fun SettingToggleItem(
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+        border = settingsBorderStroke()
     ) {
         Row(
             modifier = Modifier
@@ -1080,4 +1116,15 @@ private fun String.capitalizeFirst(): String =
     replaceFirstChar { char ->
         if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
     }
+
+@Composable
+private fun settingsGradientBrush(key: String): Brush {
+    val base = featurePastelContainer(FeatureKey.SETTINGS, key)
+    return gradientForBaseColor(base)
+}
+
+private fun gradientForBaseColor(base: Color): Brush {
+    val light = lerp(Color.White, base, 0.75f)
+    return Brush.linearGradient(listOf(light, base))
+}
 

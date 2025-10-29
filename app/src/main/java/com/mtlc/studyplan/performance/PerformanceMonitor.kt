@@ -1,13 +1,16 @@
 package com.mtlc.studyplan.performance
 
-import android.util.Log
+import androidx.annotation.VisibleForTesting
+import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +32,7 @@ class PerformanceMonitor @Inject constructor() {
 
     fun startFrameTracking() {
         scope.launch {
-            while (true) {
+            while (isActive) {
                 val frameStart = System.nanoTime()
                 delay(16) // Target 60fps
                 val frameTime = System.nanoTime() - frameStart
@@ -50,7 +53,7 @@ class PerformanceMonitor @Inject constructor() {
 
     fun trackMemoryUsage() {
         scope.launch {
-            while (true) {
+            while (isActive) {
                 val memoryInfo = Runtime.getRuntime().let { runtime ->
                     runtime.totalMemory() - runtime.freeMemory()
                 }
@@ -79,18 +82,38 @@ class PerformanceMonitor @Inject constructor() {
             if (memoryMetrics.isNotEmpty()) memoryMetrics.average() else 0.0
         }
 
-        val fps = if (avgFrameTime > 0) 1_000_000_000.0 / avgFrameTime else 0.0
+        val currentMetrics = _performanceMetrics.value
+        val hasFrameData = avgFrameTime > 0.0
+        val hasMemoryData = avgMemoryUsage > 0.0
 
-        _performanceMetrics.value = PerformanceMetrics(
-            averageFrameTime = avgFrameTime,
+        val fps = if (hasFrameData) {
+            1_000_000_000.0 / avgFrameTime
+        } else {
+            currentMetrics.currentFps
+        }
+
+        val memoryUsageMb = if (hasMemoryData) {
+            avgMemoryUsage / (1024 * 1024)
+        } else {
+            currentMetrics.memoryUsageMB
+        }
+
+        val performanceGood = if (hasFrameData || hasMemoryData) {
+            fps >= 55 && avgMemoryUsage < 200 * 1024 * 1024 // 200MB threshold
+        } else {
+            currentMetrics.isPerformanceGood
+        }
+
+        _performanceMetrics.value = currentMetrics.copy(
+            averageFrameTime = if (hasFrameData) avgFrameTime else currentMetrics.averageFrameTime,
             currentFps = fps,
-            memoryUsageMB = avgMemoryUsage / (1024 * 1024),
-            isPerformanceGood = fps >= 55 && avgMemoryUsage < 200 * 1024 * 1024 // 200MB threshold
+            memoryUsageMB = memoryUsageMb,
+            isPerformanceGood = performanceGood
         )
     }
 
     fun logPerformanceIssue(context: String, issue: String) {
-        Log.w("Performance", "Performance issue in $context: $issue")
+        Timber.w("Performance issue in $context: $issue")
 
         // Record performance issue
         val currentMetrics = _performanceMetrics.value
@@ -187,6 +210,11 @@ class PerformanceMonitor @Inject constructor() {
             memoryMetrics.clear()
         }
         _performanceMetrics.value = PerformanceMetrics()
+    }
+
+    @VisibleForTesting
+    internal fun stop() {
+        scope.cancel()
     }
 }
 

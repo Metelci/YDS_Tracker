@@ -19,7 +19,14 @@ data class CalendarPrefs(
     val remindersMinBefore: Int = 10,
     val quietHours: IntRange? = null, // e.g., 22..7 (10 PM to 7 AM)
     val lastSyncTime: Long = 0L,
-    val syncedEventCount: Int = 0
+    val syncedEventCount: Int = 0,
+    val googleSyncEnabled: Boolean = false,
+    val outlookSyncEnabled: Boolean = false,
+    val includePastEvents: Boolean = false,
+    val includeReminders: Boolean = true,
+    val includedExamCategories: Set<String> = emptySet(),
+    val icsFeedToken: String? = null,
+    val lastIcsGeneratedAt: Long = 0L
 )
 
 /**
@@ -49,6 +56,13 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
         val LAST_SYNC_TIME = longPreferencesKey("last_sync_time")
         val SYNCED_EVENT_COUNT = intPreferencesKey("synced_event_count")
         val EVENT_MAPPINGS = stringSetPreferencesKey("event_mappings")
+        val GOOGLE_ENABLED = booleanPreferencesKey("calendar_google_enabled")
+        val OUTLOOK_ENABLED = booleanPreferencesKey("calendar_outlook_enabled")
+        val INCLUDE_PAST = booleanPreferencesKey("calendar_include_past")
+        val INCLUDE_REMINDERS = booleanPreferencesKey("calendar_include_reminders")
+        val INCLUDED_EXAM_TYPES = stringSetPreferencesKey("calendar_included_exam_types")
+        val ICS_TOKEN = stringPreferencesKey("calendar_ics_token")
+        val ICS_UPDATED_AT = longPreferencesKey("calendar_ics_updated_at")
     }
 
     val calendarPrefsFlow: Flow<CalendarPrefs> = dataStore.data.map { preferences ->
@@ -66,7 +80,14 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
             remindersMinBefore = preferences[PrefsKeys.REMINDERS_MIN_BEFORE] ?: 10,
             quietHours = quietHours,
             lastSyncTime = preferences[PrefsKeys.LAST_SYNC_TIME] ?: 0L,
-            syncedEventCount = preferences[PrefsKeys.SYNCED_EVENT_COUNT] ?: 0
+            syncedEventCount = preferences[PrefsKeys.SYNCED_EVENT_COUNT] ?: 0,
+            googleSyncEnabled = preferences[PrefsKeys.GOOGLE_ENABLED] ?: false,
+            outlookSyncEnabled = preferences[PrefsKeys.OUTLOOK_ENABLED] ?: false,
+            includePastEvents = preferences[PrefsKeys.INCLUDE_PAST] ?: false,
+            includeReminders = preferences[PrefsKeys.INCLUDE_REMINDERS] ?: true,
+            includedExamCategories = preferences[PrefsKeys.INCLUDED_EXAM_TYPES] ?: emptySet(),
+            icsFeedToken = preferences[PrefsKeys.ICS_TOKEN],
+            lastIcsGeneratedAt = preferences[PrefsKeys.ICS_UPDATED_AT] ?: 0L
         )
     }
 
@@ -83,6 +104,16 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
             }
             preferences[PrefsKeys.LAST_SYNC_TIME] = prefs.lastSyncTime
             preferences[PrefsKeys.SYNCED_EVENT_COUNT] = prefs.syncedEventCount
+            preferences[PrefsKeys.GOOGLE_ENABLED] = prefs.googleSyncEnabled
+            preferences[PrefsKeys.INCLUDE_PAST] = prefs.includePastEvents
+            preferences[PrefsKeys.INCLUDE_REMINDERS] = prefs.includeReminders
+            preferences[PrefsKeys.INCLUDED_EXAM_TYPES] = prefs.includedExamCategories
+            prefs.icsFeedToken?.let { token ->
+                preferences[PrefsKeys.ICS_TOKEN] = token
+            } ?: run {
+                preferences.remove(PrefsKeys.ICS_TOKEN)
+            }
+            preferences[PrefsKeys.ICS_UPDATED_AT] = prefs.lastIcsGeneratedAt
         }
     }
 
@@ -102,6 +133,51 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
         dataStore.edit { preferences ->
             preferences[PrefsKeys.LAST_SYNC_TIME] = syncTime
             preferences[PrefsKeys.SYNCED_EVENT_COUNT] = eventCount
+        }
+    }
+
+    suspend fun setGoogleSyncEnabled(enabled: Boolean) {
+
+    suspend fun setOutlookSyncEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.OUTLOOK_ENABLED] = enabled
+        }
+    }
+
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.GOOGLE_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setIncludePastEvents(include: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.INCLUDE_PAST] = include
+        }
+    }
+
+    suspend fun setIncludeReminders(include: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.INCLUDE_REMINDERS] = include
+        }
+    }
+
+    suspend fun setIncludedExamCategories(categories: Set<String>) {
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.INCLUDED_EXAM_TYPES] = categories
+        }
+    }
+
+    suspend fun updateIcsFeedMetadata(token: String, generatedAt: Long = System.currentTimeMillis()) {
+        dataStore.edit { preferences ->
+            preferences[PrefsKeys.ICS_TOKEN] = token
+            preferences[PrefsKeys.ICS_UPDATED_AT] = generatedAt
+        }
+    }
+
+    suspend fun clearIcsFeedMetadata() {
+        dataStore.edit { preferences ->
+            preferences.remove(PrefsKeys.ICS_TOKEN)
+            preferences[PrefsKeys.ICS_UPDATED_AT] = 0L
         }
     }
 

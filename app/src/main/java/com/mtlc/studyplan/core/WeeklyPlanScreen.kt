@@ -71,7 +71,7 @@ import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 import com.mtlc.studyplan.utils.settingsDataStore
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.Flow
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.get
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,13 +86,13 @@ fun WeeklyPlanScreen(
     val context = LocalContext.current
     val density = LocalDensity.current
 
-    val resolvedStudyProgressRepository = studyProgressRepository ?: org.koin.compose.koinInject()
+    val resolvedStudyProgressRepository = studyProgressRepository ?: get()
 
-    val resolvedTaskRepository = taskRepository ?: org.koin.compose.koinInject()
+    val resolvedTaskRepository = taskRepository ?: get()
 
     val settingsStore = remember { PlanSettingsStore(context.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(context.settingsDataStore) }
-    val planRepository = remember { PlanRepository(overridesStore, settingsStore) }
+    val planRepository = remember(context) { PlanRepository(context, overridesStore, settingsStore) }
     val planFlow: Flow<List<WeekPlan>> = sharedViewModel?.planFlow ?: planRepository.planFlow
 
     val weeks by planFlow.collectAsState(initial = emptyList())

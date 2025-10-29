@@ -1,13 +1,18 @@
 package com.mtlc.studyplan.di
 
 import com.mtlc.studyplan.database.dao.AchievementDao
+import com.mtlc.studyplan.database.dao.ExamDao
 import com.mtlc.studyplan.database.dao.StreakDao
 import com.mtlc.studyplan.database.dao.TaskDao
 import com.mtlc.studyplan.database.dao.UserSettingsDao
 import com.mtlc.studyplan.data.OnboardingRepository
+import com.mtlc.studyplan.data.PlanOverridesStore
+import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.data.StudyProgressRepository
+import com.mtlc.studyplan.network.OsymExamScraper
 import com.mtlc.studyplan.repository.AchievementRepository
+import com.mtlc.studyplan.repository.ExamRepository
 import com.mtlc.studyplan.repository.StreakRepository
 import com.mtlc.studyplan.repository.TaskRepository
 import com.mtlc.studyplan.repository.UserSettingsRepository
@@ -22,4 +27,8 @@ val koinRepositoryModule = module {
     single { StudyProgressRepository(androidContext()) }
     single { OnboardingRepository(get()) }
     single { PlanSettingsStore(get()) }
+    single { PlanOverridesStore(get()) }
+    single { PlanRepository(androidContext(), get<PlanOverridesStore>(), get()) }
+    single { OsymExamScraper() }
+    single { ExamRepository(get<ExamDao>(), get<OsymExamScraper>()) }
 }

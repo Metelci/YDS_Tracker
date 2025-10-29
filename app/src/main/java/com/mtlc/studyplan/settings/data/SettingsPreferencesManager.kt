@@ -1,17 +1,18 @@
 package com.mtlc.studyplan.settings.data
 
 import android.content.Context
-import android.content.SharedPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import android.content.SharedPreferences
+import com.mtlc.studyplan.utils.settingsDataStore
 
 /**
  * Manages all settings-related SharedPreferences with type-safe access
  */
 class SettingsPreferencesManager(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = DataStoreBackedPreferences(context.settingsDataStore)
 
     // State flows for reactive UI updates
     private val _privacySettings = MutableStateFlow(getPrivacySettings())

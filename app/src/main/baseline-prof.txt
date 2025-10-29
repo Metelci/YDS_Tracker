@@ -45,8 +45,6 @@ Lcom/mtlc/studyplan/social/SocialScreen;
 Lcom/mtlc/studyplan/social/SocialScreenKt;
 
 # Exam Details - Important feature
-Lcom/mtlc/studyplan/exam/ExamDetailsScreen;
-Lcom/mtlc/studyplan/exam/ExamDetailsScreenKt;
 
 # Repository Layer - Data access
 Lcom/mtlc/studyplan/settings/data/SettingsRepository;

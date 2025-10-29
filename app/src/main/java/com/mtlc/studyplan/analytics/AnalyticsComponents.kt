@@ -35,9 +35,8 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.*
 
 import com.mtlc.studyplan.R
-import com.mtlc.studyplan.analytics.StudyStreak
 
-// Data classes are now defined in AnalyticsEngine.kt
+// Data classes are defined in AnalyticsModels.kt
 
 @Composable
 fun TimeDistributionCard(

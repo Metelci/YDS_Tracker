@@ -5,7 +5,7 @@ import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.workers.DailyStudyReminderWorker
-// Plain Context; dependencies provided via Koin
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,18 +46,7 @@ class NotificationSchedulerService @Inject constructor(
     /**
      * Get delivery statistics for monitoring reliability
      */
-    fun getDeliveryStats(): DeliveryStats {
-        val prefs = context.getSharedPreferences("notification_tracking", Context.MODE_PRIVATE)
-
-        return DeliveryStats(
-            lastDeliveryAttempt = prefs.getLong("last_delivery_attempt", 0),
-            lastDeliverySuccess = prefs.getBoolean("last_delivery_success", false),
-            lastDeliveryReason = prefs.getString("last_delivery_reason", ""),
-            totalScheduled = prefs.getInt("total_scheduled", 0),
-            totalDelivered = prefs.getInt("total_delivered", 0),
-            totalFailed = prefs.getInt("total_failed", 0)
-        )
-    }
+    fun getDeliveryStats(): DeliveryStats = context.getNotificationDeliveryStats()
 
     /**
      * Test notification delivery (for debugging)
@@ -65,20 +54,21 @@ class NotificationSchedulerService @Inject constructor(
     fun testNotificationDelivery() {
         val notificationConfig = appIntegrationManager.getNotificationConfig()
         if (notificationConfig.areNotificationsEnabled && notificationConfig.allowStudyReminders) {
-            val studyStats = appIntegrationManager.getStudyStats()
+            val studyStats = runBlocking { appIntegrationManager.getStudyStats() }
             val motivationalMessage = generateTestMessage(studyStats)
 
             notificationManager.showDailyStudyReminder(
                 context = context,
-                title = "🧪 Test Notification",
+                title = "?? Test Notification",
                 message = motivationalMessage,
-                notificationId = System.currentTimeMillis().toInt()
+                notificationId = System.currentTimeMillis().toInt(),
+                calendarIntent = null
             )
         }
     }
 
     private fun generateTestMessage(studyStats: StudyStats): String {
-        return "Test notification! Your current streak: ${studyStats.currentStreak} days. Keep up the great work! 📚"
+        return "Test notification! Your current streak: ${studyStats.currentStreak} days. Keep up the great work! ??"
     }
 
     /**

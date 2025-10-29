@@ -9,6 +9,7 @@ import android.util.Base64
 import android.annotation.SuppressLint
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.mtlc.studyplan.security.EncryptionConfig
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -23,18 +24,22 @@ import javax.crypto.spec.SecretKeySpec
  */
 object SecurityUtils {
 
+    init {
+        EncryptionConfig.validate()
+    }
+
 
     private fun isDeviceSecure(context: Context): Boolean {
         val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
         return keyguardManager?.isDeviceSecure == true
     }
 
-    private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-    private const val AES_MODE = "AES/GCM/NoPadding"
-    private const val AES_KEY_ALIAS = "StudyPlanAESKey"
+    private val ANDROID_KEYSTORE = EncryptionConfig.getAndroidKeyStore()
+    private val AES_MODE = EncryptionConfig.getTransformation()
+    private val AES_KEY_ALIAS = EncryptionConfig.getKeyAlias()
     private const val ENCRYPTED_PREFS_NAME = "encrypted_prefs"
-    private const val GCM_TAG_LENGTH = 128
-    private const val IV_LENGTH = 12
+    private val GCM_TAG_LENGTH = EncryptionConfig.getGcmTagLength() * 8
+    private val IV_LENGTH = EncryptionConfig.getGcmIvLength()
 
     /**
      * Uygulama için Master Key oluşturur
@@ -142,7 +147,7 @@ object SecurityUtils {
             System.arraycopy(iv, 0, result, 0, iv.size)
             System.arraycopy(encryptedData, 0, result, iv.size, encryptedData.size)
 
-            return Base64.encodeToString(result, Base64.DEFAULT)
+            return Base64.encodeToString(result, Base64.NO_WRAP)
         } catch (e: Exception) {
             throw SecurityException("Encryption failed", e)
         }
@@ -156,7 +161,7 @@ object SecurityUtils {
             val cipher = Cipher.getInstance(AES_MODE)
             val secretKey = getAESKey()
 
-            val decodedData = Base64.decode(encryptedData, Base64.DEFAULT)
+            val decodedData = Base64.decode(encryptedData, Base64.NO_WRAP)
 
             // IV ve encrypted data'yı ayır
             val iv = decodedData.copyOfRange(0, IV_LENGTH)

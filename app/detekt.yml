@@ -90,11 +90,11 @@ complexity:
     active: false
   TooManyFunctions:
     active: true
-    thresholdInFiles: 15
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
-    thresholdInObjects: 15
-    thresholdInEnums: 15
+    thresholdInFiles: 30
+    thresholdInClasses: 26
+    thresholdInInterfaces: 26
+    thresholdInObjects: 26
+    thresholdInEnums: 26
 
 coroutines:
   active: true

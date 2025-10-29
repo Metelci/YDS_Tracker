@@ -10,6 +10,7 @@
     <string name="time_until_exam">Time Until Exam</string>
     <string name="osym_button">Go to Official Exam Board Website</string>
     <string name="time_expired">Time Expired</string>
+    <string name="add_to_calendar">Add to calendar</string>
     <string name="task_minutes">~%1$d min</string>
     <!-- Onboarding -->
     <string name="onboarding_title">Personalize Your Plan</string>
@@ -22,6 +23,8 @@
     <string name="skill_reading">Reading</string>
     <string name="skill_listening">Listening</string>
     <string name="skill_vocab">Vocabulary</string>
+    <string name="skill_weights_placeholder_title">We handle skill balance automatically</string>
+    <string name="skill_weights_placeholder_body">Adjust focus areas anytime from Plan Settings after onboarding completes.</string>
     <string name="weekly_plan_preview">Your weekly plan will have %1$d tasks/day (est.)</string>
     <string name="generate_plan">Generate Plan</string>
     <string name="next_onboarding">Next</string>
@@ -55,6 +58,97 @@
     <string name="application_started">applications started today!</string>
     <string name="application_deadline_today">today is the last day for applications!</string>
 
+    <!-- Gentle Comeback Reminders (3+ days without study) -->
+    <string name="comeback_reminder_title">We Miss You!</string>
+    <string name="comeback_reminder_1">Life gets busy, and that\'s totally okay. But we know you can do this. How about just 10 minutes today?</string>
+    <string name="comeback_reminder_2">You\'ve come so far already. Missing a few days doesn\'t erase your progress. Ready to jump back in?</string>
+    <string name="comeback_reminder_3">It\'s never too late to restart. Even small steps count. What\'s one task you could tackle today?</string>
+    <string name="comeback_reminder_4">Your future self will thank you for getting back on track. No pressure—just one task at a time.</string>
+    <string name="comeback_reminder_5">We believe in you, and we\'re here to help whenever you\'re ready. Let\'s make today count.</string>
+    <string name="comeback_reminder_action">Start Learning</string>
+
+    <!-- Exam Countdown Milestones (90, 60, 30, 14, 7 days) -->
+    <string name="exam_milestone_90_title">90 Days to %1$s</string>
+    <string name="exam_milestone_90_message">You have 3 months to prepare! This is the perfect time to build a strong foundation. Focus on grammar basics and vocabulary building.</string>
+    <string name="exam_milestone_90_phase">Foundation Phase</string>
+    <string name="exam_milestone_90_action">View Study Plan</string>
+
+    <string name="exam_milestone_60_title">60 Days to %1$s</string>
+    <string name="exam_milestone_60_message">Two months left! You\'re in the intermediate phase. Time to practice reading comprehension and strengthen your weak areas.</string>
+    <string name="exam_milestone_60_phase">Intermediate Phase</string>
+    <string name="exam_milestone_60_action">Check Progress</string>
+
+    <string name="exam_milestone_30_title">30 Days to %1$s</string>
+    <string name="exam_milestone_30_message">One month remaining! Enter the advanced phase. Focus on full practice tests and time management strategies.</string>
+    <string name="exam_milestone_30_phase">Advanced Preparation</string>
+    <string name="exam_milestone_30_action">Take Practice Test</string>
+
+    <string name="exam_milestone_14_title">14 Days to %1$s</string>
+    <string name="exam_milestone_14_message">Final two weeks! Review your mistakes, perfect your timing, and stay confident. You\'ve prepared well.</string>
+    <string name="exam_milestone_14_phase">Final Preparation</string>
+    <string name="exam_milestone_14_action">Review Mistakes</string>
+
+    <string name="exam_milestone_7_title">7 Days to %1$s</string>
+    <string name="exam_milestone_7_message">One week left! Focus on light review and rest. Trust your preparation. Stay calm and confident.</string>
+    <string name="exam_milestone_7_phase">Last Week - Stay Calm</string>
+    <string name="exam_milestone_7_action">Final Review</string>
+
+    <string name="exam_milestone_progress_format">%1$d days remaining • %2$s</string>
+    <string name="exam_milestone_notification_channel">Exam Milestones</string>
+    <string name="exam_milestone_notification_channel_desc">Important countdown reminders at key preparation milestones</string>
+
+    <!-- New Exam Announcements -->
+    <string name="new_exam_announcement_title">New Exam Announced!</string>
+    <string name="new_exam_announcement_basic">%1$s has been scheduled for %2$s</string>
+    <string name="new_exam_announcement_with_registration">%1$s scheduled for %2$s. Registration: %3$s</string>
+    <string name="view_exam_details">View Details</string>
+
+    <!-- YDS Exam Info -->
+    <string name="yds_exam_info_title">YDS Exam Information</string>
+    <string name="yds_exam_info_subtitle">Track your exam preparation</string>
+    <string name="upcoming_yds_exams">Upcoming YDS Exams</string>
+    <string name="no_exams_cd">No Exams</string>
+    <string name="no_upcoming_exams_title">No Upcoming YDS Exams</string>
+    <string name="no_upcoming_exams_message">Check back later for new exam announcements from ÖSYM</string>
+    <string name="days_remaining">Days Remaining</string>
+    <string name="days_remaining_chip">%1$d days remaining</string>
+    <string name="exam_information">Exam Information</string>
+    <string name="registration_information">Registration Information</string>
+    <string name="exam_name_label">Exam Name</string>
+    <string name="yds_exam_default">YDS Exam</string>
+    <string name="exam_date_label">Exam Date</string>
+    <string name="exam_time_label">Exam Time</string>
+    <string name="exam_time_value">10:15</string>
+    <string name="exam_duration_label">Duration</string>
+    <string name="exam_duration_value">3 hours</string>
+    <string name="exam_question_count_label">Question Count</string>
+    <string name="exam_question_count_value">80 questions</string>
+    <string name="registration_status_label">Registration Status</string>
+    <string name="registration_status_open">Open</string>
+    <string name="registration_status_closed">Closed</string>
+    <string name="registration_status_late">Late Registration</string>
+    <string name="registration_status_opens_soon">Opens Soon</string>
+    <string name="registration_status_none">No Upcoming Exam</string>
+    <string name="application_period_label">Application Period</string>
+    <string name="late_registration_label">Late Registration</string>
+    <string name="results_date_label">Results Date</string>
+    <string name="important_reminders">Important Reminders</string>
+    <string name="tip_bring_id">Bring your ID and exam document</string>
+    <string name="tip_arrive_early">Arrive 30 minutes before exam time</string>
+    <string name="tip_bring_tools">Bring HB pencil and eraser</string>
+    <string name="tip_turn_off_devices">Turn off all electronic devices</string>
+    <string name="tip_read_carefully">Read questions carefully</string>
+    <string name="apply">Apply</string>
+    <string name="days_short_suffix">d</string>
+
+    <!-- Study Overview -->
+    <string name="study_overview_title">Study Plan Overview</string>
+    <string name="study_overview_subtitle">Track your YDS preparation progress</string>
+    <string name="study_ready_to_plan">Ready to plan your study session</string>
+    <string name="study_tasks_summary">%1$d tasks planned - Estimated time: %2$s</string>
+    <string name="today_label">Today</string>
+    <string name="home_today_progress_achievements">%1$d achievements unlocked</string>
+
     <string name="red_book">Red Book - Essential Grammar in Use</string>
     <string name="blue_book">Blue Book - English Grammar in Use</string>
     <string name="green_book">Green Book - Advanced Grammar in Use</string>
@@ -72,6 +166,81 @@
     <string name="friday">Friday</string>
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
+
+    <!-- Achievement titles -->
+    <string name="award_task_starter_title">Getting Started</string>
+    <string name="award_task_starter_desc">Complete your first task</string>
+    <string name="award_committed_learner_title">Committed Learner</string>
+    <string name="award_committed_learner_desc">Complete 10 tasks</string>
+    <string name="award_task_crusher_title">Task Crusher</string>
+    <string name="award_task_crusher_desc">Complete 25 tasks</string>
+    <string name="award_task_master_title">Task Master</string>
+    <string name="award_task_master_desc">Complete 50 tasks</string>
+    <string name="award_century_maker_title">Century Maker</string>
+    <string name="award_century_maker_desc">Complete 100 tasks</string>
+    <string name="award_task_legend_title">Task Legend</string>
+    <string name="award_task_legend_desc">Complete 250 tasks</string>
+    <string name="award_unstoppable_title">Unstoppable</string>
+    <string name="award_unstoppable_desc">Complete 500 tasks</string>
+    <string name="award_streak_builder_title">Streak Builder</string>
+    <string name="award_streak_builder_desc">Maintain a 3-day study streak</string>
+    <string name="award_streak_master_title">Streak Master</string>
+    <string name="award_streak_master_desc">Maintain a 7-day study streak</string>
+    <string name="award_week_warrior_title">Week Warrior</string>
+    <string name="award_week_warrior_desc">Maintain a 14-day study streak</string>
+    <string name="award_monthly_champion_title">Monthly Champion</string>
+    <string name="award_monthly_champion_desc">Maintain a 30-day study streak</string>
+    <string name="award_consistency_king_title">Consistency King</string>
+    <string name="award_consistency_king_desc">Maintain a 60-day study streak</string>
+    <string name="award_legendary_streak_title">Legendary Streak</string>
+    <string name="award_legendary_streak_desc">Maintain a 100-day study streak</string>
+    <string name="award_early_bird_title">Early Bird</string>
+    <string name="award_early_bird_desc">Complete 5 tasks before 9 AM</string>
+    <string name="award_night_owl_title">Night Owl</string>
+    <string name="award_night_owl_desc">Complete 10 tasks after 9 PM</string>
+    <string name="award_weekday_warrior_title">Weekday Warrior</string>
+    <string name="award_weekday_warrior_desc">Complete 20 tasks on weekdays</string>
+    <string name="award_weekend_hustler_title">Weekend Hustler</string>
+    <string name="award_weekend_hustler_desc">Complete 10 tasks on weekends</string>
+    <string name="award_priority_master_title">Priority Master</string>
+    <string name="award_priority_master_desc">Complete 10 high-priority tasks</string>
+    <string name="award_crisis_manager_title">Crisis Manager</string>
+    <string name="award_crisis_manager_desc">Complete 5 critical-priority tasks</string>
+    <string name="award_vocabulary_wizard_title">Vocabulary Wizard</string>
+    <string name="award_vocabulary_wizard_desc">Complete 25 vocabulary tasks</string>
+    <string name="award_grammar_guru_title">Grammar Guru</string>
+    <string name="award_grammar_guru_desc">Complete 25 grammar tasks</string>
+    <string name="award_reading_expert_title">Reading Expert</string>
+    <string name="award_reading_expert_desc">Complete 25 reading tasks</string>
+    <string name="award_listening_master_title">Listening Master</string>
+    <string name="award_listening_master_desc">Complete 25 listening tasks</string>
+    <string name="award_yds_allstar_title">YDS All-Star</string>
+    <string name="award_yds_allstar_desc">Complete at least 10 tasks in each YDS category</string>
+    <string name="award_speed_demon_title">Speed Demon</string>
+    <string name="award_speed_demon_desc">Complete 5 tasks in one day</string>
+    <string name="award_marathon_runner_title">Marathon Runner</string>
+    <string name="award_marathon_runner_desc">Complete 10 tasks in one day</string>
+    <string name="award_point_collector_title">Point Collector</string>
+    <string name="award_point_collector_desc">Earn 500 total points</string>
+    <string name="award_point_master_title">Point Master</string>
+    <string name="award_point_master_desc">Earn 1000 total points</string>
+    <string name="award_point_legend_title">Point Legend</string>
+    <string name="award_point_legend_desc">Earn 2500 total points</string>
+    <string name="award_point_tycoon_title">Point Tycoon</string>
+    <string name="award_point_tycoon_desc">Earn 5000 total points</string>
+
+
+    <!-- Exam status chips -->
+    <string name="exam_status_exam_day">Exam Day</string>
+    <string name="exam_status_completed">Completed</string>
+    <string name="exam_status_final_week">Final Week</string>
+    <string name="exam_status_almost_there">Almost There</string>
+    <string name="exam_status_registration_opens_soon">Registration Opens Soon</string>
+    <string name="exam_status_registration_open">Registration Open</string>
+    <string name="exam_status_late_registration">Late Registration</string>
+    <string name="exam_status_registration_closed">Registration Closed</string>
+    <string name="exam_status_preparation_time">Preparation Time</string>
+    <string name="exam_status_long_term_planning">Long-term Planning</string>
 
     <string name="free_reading_listening">2. Lesson: Free Reading/Listening</string>
     <string name="full_exam">Full Practice Exam</string>
@@ -223,6 +392,18 @@
     <string name="cd_trophy">Trophy</string>
     <string name="cd_error">Error</string>
 
+    <!-- Exam Information Screen -->
+    <string name="exam_info_title">%s - Exam Information</string>
+    <string name="exam_info_date_label">Exam Date</string>
+    <string name="exam_info_days_remaining">%d days remaining</string>
+    <string name="exam_info_registration_title">Registration Period</string>
+    <string name="exam_info_reg_opens">Opens: %s</string>
+    <string name="exam_info_reg_closes">Closes: %s</string>
+    <string name="exam_info_late_reg_closes">Late Registration Ends: %s</string>
+    <string name="exam_info_results_title">Results</string>
+    <string name="exam_info_result_date">Announcement: %s</string>
+    <string name="exam_info_apply_button">Apply on ÖSYM</string>
+
     <!-- Book names -->
     <string name="blue_book_full">Blue Book - English Grammar in Use</string>
     <string name="green_book_full">Green Book - Advanced Grammar in Use</string>
@@ -295,6 +476,9 @@
     <string name="current_streak">Current Streak</string>
     <string name="average_accuracy">Average Accuracy</string>
     <string name="study_analytics">Study Analytics</string>
+    <string name="analytics">Analytics</string>
+    <string name="view_stats">View Stats</string>
+    <string name="track_your_progress">Track your progress, streaks, and achievements</string>
     <string name="time_by_skill">Time by Skill</string>
     <string name="weekly_study_minutes">Weekly Study Minutes</string>
     <string name="performance_insights">Performance Insights</string>

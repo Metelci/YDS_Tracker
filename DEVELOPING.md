@@ -40,6 +40,11 @@ To check the current dependency tree for conflicts or updates:
 3. Run the app to see Material 3 components in action
 4. Read this guide before making UI changes
 
+### Analytics & Data Layer Modules (October 2025)
+- AnalyticsEngine delegates to focused services (StudyPatternAnalyzer, AnalyticsMetricsCalculator, ProductivityInsightCalculator, RecommendationGenerator, AchievementTracker). Extend these helpers when adding new analytics instead of growing a monolith.
+- PlanRepository now receives an Android Context via Koin. Avoid reviving the old PlanDataSource.initialize path; rely on DI in production code and swap the module in tests when needed.
+- Register new analytics or data dependencies through the existing Koin modules (AppModule, RepositoryModule) to keep the graph consistent across app and tests.
+
 ### Key Files to Know
 ```
 app/src/main/java/com/mtlc/studyplan/ui/theme/

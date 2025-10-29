@@ -4,6 +4,9 @@ import com.mtlc.studyplan.data.StudyStreak
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.TaskRepository
 import com.mtlc.studyplan.data.TaskStats
+import com.mtlc.studyplan.repository.UserSettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsKeys
+import com.mtlc.studyplan.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -255,7 +258,9 @@ private fun initialAchievementBadges(): List<AchievementBadge> = achievementDefi
 }
 @Singleton
 class AppIntegrationManager @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val settingsRepository: SettingsRepository,
+    private val userSettingsRepository: UserSettingsRepository
 ) {
 
     private val _studyStreak = MutableStateFlow(StudyStreak())
@@ -496,33 +501,43 @@ class AppIntegrationManager @Inject constructor(
 
     // Notification configuration for workers
     fun getNotificationConfig(): NotificationConfig {
-        // This would integrate with actual settings system
-        // For now, return default enabled config
+        val notificationsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.PUSH_NOTIFICATIONS, true)
+        val studyRemindersEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.STUDY_REMINDERS, true)
+        val achievementAlertsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.ACHIEVEMENT_ALERTS, true)
+        val goalRemindersEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.GOAL_REMINDERS, true)
+        val streakWarningsEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.STREAK_WARNINGS, true)
+        val quietHoursEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.QUIET_HOURS_ENABLED, false)
+        val quietHoursStart = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_START, "22:00")
+        val quietHoursEnd = settingsRepository.getString(SettingsKeys.Notifications.QUIET_HOURS_END, "08:00")
+        val vibrationEnabled = settingsRepository.getBoolean(SettingsKeys.Notifications.VIBRATION_ENABLED, true)
+
         return NotificationConfig(
-            areNotificationsEnabled = true,
-            allowStudyReminders = true,
-            allowAchievementAlerts = true,
-            allowStreakWarnings = true,
-            allowGoalReminders = true,
-            useQuietHours = false,
-            quietHoursStart = "22:00",
-            quietHoursEnd = "08:00",
-            useVibration = true,
-            calendarIntegrationEnabled = true
+            areNotificationsEnabled = notificationsEnabled,
+            allowStudyReminders = studyRemindersEnabled,
+            allowAchievementAlerts = achievementAlertsEnabled,
+            allowStreakWarnings = streakWarningsEnabled,
+            allowGoalReminders = goalRemindersEnabled,
+            useQuietHours = quietHoursEnabled,
+            quietHoursStart = quietHoursStart,
+            quietHoursEnd = quietHoursEnd,
+            useVibration = vibrationEnabled,
+            calendarIntegrationEnabled = studyRemindersEnabled
         )
     }
 
     // Study statistics for personalized notifications
-    fun getStudyStats(): StudyStats {
-        // This would integrate with actual statistics
-        // For now, return mock data
+    suspend fun getStudyStats(): StudyStats {
+        val tasks = taskRepository.getAllTasksSync()
+        val totalCompleted = tasks.count { it.isCompleted }
+        val weeklyGoalMinutes = userSettingsRepository.getUserSettingsSync()?.weeklyStudyGoalMinutes ?: 0
+        val weeklyGoalHours = (weeklyGoalMinutes / 60).coerceAtLeast(0)
+
         return StudyStats(
-            totalTasksCompleted = 15,
-            currentStreak = 3,
-            weeklyGoalHours = 10
+            totalTasksCompleted = totalCompleted,
+            currentStreak = studyStreak.value.currentStreak,
+            weeklyGoalHours = weeklyGoalHours
         )
-    }
-}
+    }}
 
 /**
  * Notification configuration for workers
@@ -548,5 +563,14 @@ data class StudyStats(
     val currentStreak: Int,
     val weeklyGoalHours: Int
 )
+
+
+
+
+
+
+
+
+
 
 

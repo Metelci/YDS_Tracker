@@ -1,0 +1,381 @@
+package com.mtlc.studyplan.database.dao
+
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.mtlc.studyplan.database.AppDatabase
+import com.mtlc.studyplan.database.entities.TaskEntity
+import com.mtlc.studyplan.shared.TaskCategory
+import com.mtlc.studyplan.shared.TaskDifficulty
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+/**
+ * Unit tests for TaskDao - Database operations for Task entities
+ * Focus: CRUD operations, queries, transactions, cascades
+ */
+class TaskDaoTest {
+
+    private lateinit var database: AppDatabase
+    private lateinit var taskDao: TaskDao
+
+    @Before
+    fun setUp() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        taskDao = database.taskDao()
+    }
+
+    @After
+    fun tearDown() {
+        database.close()
+    }
+
+    // ========== HELPER FUNCTIONS ==========
+
+    private fun createTestTask(
+        id: String = "task-1",
+        title: String = "Test Task",
+        category: TaskCategory = TaskCategory.GRAMMAR,
+        difficulty: TaskDifficulty = TaskDifficulty.MEDIUM,
+        estimatedMinutes: Int = 60,
+        isCompleted: Boolean = false,
+        priority: Int = 3
+    ) = TaskEntity(
+        id = id,
+        title = title,
+        description = "Test description",
+        category = category,
+        difficulty = difficulty,
+        estimatedMinutes = estimatedMinutes,
+        isCompleted = isCompleted,
+        priority = priority,
+        createdAt = System.currentTimeMillis(),
+        updatedAt = System.currentTimeMillis()
+    )
+
+    // ========== INSERT TESTS ==========
+
+    @Test
+    fun `insertTask should store task in database`() = runTest {
+        // Arrange
+        val task = createTestTask(id = "1")
+
+        // Act
+        taskDao.insertTask(task)
+
+        // Assert
+        val retrieved = taskDao.getTaskById("1")
+        assertNotNull(retrieved)
+        assertEquals("Test Task", retrieved.title)
+    }
+
+    @Test
+    fun `insertTask should assign primary key`() = runTest {
+        val task = createTestTask()
+        taskDao.insertTask(task)
+
+        val retrieved = taskDao.getTaskById(task.id)
+        assertNotNull(retrieved)
+        assertEquals(task.id, retrieved.id)
+    }
+
+    @Test
+    fun `insertMultipleTasks should store all tasks`() = runTest {
+        val tasks = listOf(
+            createTestTask(id = "1", title = "Task 1"),
+            createTestTask(id = "2", title = "Task 2"),
+            createTestTask(id = "3", title = "Task 3")
+        )
+
+        taskDao.insertTasks(tasks)
+
+        val allTasks = taskDao.getAllTasks()
+        assertEquals(3, allTasks.size)
+    }
+
+    // ========== READ TESTS ==========
+
+    @Test
+    fun `getTaskById should return task when exists`() = runTest {
+        val task = createTestTask(id = "test-123")
+        taskDao.insertTask(task)
+
+        val retrieved = taskDao.getTaskById("test-123")
+
+        assertNotNull(retrieved)
+        assertEquals("test-123", retrieved.id)
+        assertEquals("Test Task", retrieved.title)
+    }
+
+    @Test
+    fun `getTaskById should return null when not exists`() = runTest {
+        val result = taskDao.getTaskById("non-existent")
+        assertNull(result)
+    }
+
+    @Test
+    fun `getAllTasks should return empty list initially`() = runTest {
+        val tasks = taskDao.getAllTasks()
+        assertTrue(tasks.isEmpty())
+    }
+
+    @Test
+    fun `getAllTasks should return all inserted tasks`() = runTest {
+        val task1 = createTestTask(id = "1")
+        val task2 = createTestTask(id = "2")
+        taskDao.insertTasks(listOf(task1, task2))
+
+        val allTasks = taskDao.getAllTasks()
+        assertEquals(2, allTasks.size)
+    }
+
+    // ========== UPDATE TESTS ==========
+
+    @Test
+    fun `updateTask should modify existing task`() = runTest {
+        val originalTask = createTestTask(id = "1", title = "Original")
+        taskDao.insertTask(originalTask)
+
+        val updatedTask = originalTask.copy(title = "Updated")
+        taskDao.updateTask(updatedTask)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertEquals("Updated", retrieved?.title)
+    }
+
+    @Test
+    fun `updateTask should update completion status`() = runTest {
+        val task = createTestTask(id = "1", isCompleted = false)
+        taskDao.insertTask(task)
+
+        val completed = task.copy(isCompleted = true)
+        taskDao.updateTask(completed)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertTrue(retrieved?.isCompleted == true)
+    }
+
+    @Test
+    fun `updateMultipleTasks should update all tasks`() = runTest {
+        val tasks = listOf(
+            createTestTask(id = "1", isCompleted = false),
+            createTestTask(id = "2", isCompleted = false)
+        )
+        taskDao.insertTasks(tasks)
+
+        val completed = tasks.map { it.copy(isCompleted = true) }
+        taskDao.updateTasks(completed)
+
+        val task1 = taskDao.getTaskById("1")
+        val task2 = taskDao.getTaskById("2")
+        assertTrue(task1?.isCompleted == true)
+        assertTrue(task2?.isCompleted == true)
+    }
+
+    // ========== DELETE TESTS ==========
+
+    @Test
+    fun `deleteTask should remove task from database`() = runTest {
+        val task = createTestTask(id = "1")
+        taskDao.insertTask(task)
+
+        taskDao.deleteTask(task)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertNull(retrieved)
+    }
+
+    @Test
+    fun `deleteAllTasks should remove all tasks`() = runTest {
+        val tasks = listOf(
+            createTestTask(id = "1"),
+            createTestTask(id = "2")
+        )
+        taskDao.insertTasks(tasks)
+
+        taskDao.deleteAllTasks()
+
+        val allTasks = taskDao.getAllTasks()
+        assertTrue(allTasks.isEmpty())
+    }
+
+    // ========== QUERY TESTS ==========
+
+    @Test
+    fun `getTasksByCategory should filter tasks by category`() = runTest {
+        val grammarTasks = listOf(
+            createTestTask(id = "1", category = TaskCategory.GRAMMAR),
+            createTestTask(id = "2", category = TaskCategory.GRAMMAR)
+        )
+        val readingTask = createTestTask(id = "3", category = TaskCategory.READING)
+        taskDao.insertTasks(grammarTasks + readingTask)
+
+        val filtered = taskDao.getTasksByCategory(TaskCategory.GRAMMAR)
+
+        assertEquals(2, filtered.size)
+        assertTrue(filtered.all { it.category == TaskCategory.GRAMMAR })
+    }
+
+    @Test
+    fun `getTasksByDifficulty should filter by difficulty level`() = runTest {
+        val easyTasks = listOf(
+            createTestTask(id = "1", difficulty = TaskDifficulty.EASY),
+            createTestTask(id = "2", difficulty = TaskDifficulty.EASY)
+        )
+        val hardTask = createTestTask(id = "3", difficulty = TaskDifficulty.HARD)
+        taskDao.insertTasks(easyTasks + hardTask)
+
+        val filtered = taskDao.getTasksByDifficulty(TaskDifficulty.EASY)
+
+        assertEquals(2, filtered.size)
+        assertTrue(filtered.all { it.difficulty == TaskDifficulty.EASY })
+    }
+
+    @Test
+    fun `getCompletedTasks should return only completed tasks`() = runTest {
+        val completedTasks = listOf(
+            createTestTask(id = "1", isCompleted = true),
+            createTestTask(id = "2", isCompleted = true)
+        )
+        val incompleteTasks = listOf(
+            createTestTask(id = "3", isCompleted = false),
+            createTestTask(id = "4", isCompleted = false)
+        )
+        taskDao.insertTasks(completedTasks + incompleteTasks)
+
+        val completed = taskDao.getCompletedTasks()
+
+        assertEquals(2, completed.size)
+        assertTrue(completed.all { it.isCompleted })
+    }
+
+    @Test
+    fun `getIncompleteTasks should return only incomplete tasks`() = runTest {
+        val completedTasks = listOf(
+            createTestTask(id = "1", isCompleted = true),
+            createTestTask(id = "2", isCompleted = true)
+        )
+        val incompleteTasks = listOf(
+            createTestTask(id = "3", isCompleted = false),
+            createTestTask(id = "4", isCompleted = false)
+        )
+        taskDao.insertTasks(completedTasks + incompleteTasks)
+
+        val incomplete = taskDao.getIncompleteTasks()
+
+        assertEquals(2, incomplete.size)
+        assertTrue(incomplete.all { !it.isCompleted })
+    }
+
+    @Test
+    fun `getTasksByPriority should filter by priority level`() = runTest {
+        val highPriorityTasks = listOf(
+            createTestTask(id = "1", priority = 5),
+            createTestTask(id = "2", priority = 5)
+        )
+        val lowPriorityTasks = listOf(
+            createTestTask(id = "3", priority = 1),
+            createTestTask(id = "4", priority = 1)
+        )
+        taskDao.insertTasks(highPriorityTasks + lowPriorityTasks)
+
+        val high = taskDao.getTasksByPriority(5)
+
+        assertEquals(2, high.size)
+        assertTrue(high.all { it.priority == 5 })
+    }
+
+    // ========== COUNT TESTS ==========
+
+    @Test
+    fun `getTaskCount should return total task count`() = runTest {
+        taskDao.insertTasks(listOf(
+            createTestTask(id = "1"),
+            createTestTask(id = "2"),
+            createTestTask(id = "3")
+        ))
+
+        val count = taskDao.getTaskCount()
+        assertEquals(3, count)
+    }
+
+    @Test
+    fun `getCompletedTaskCount should return count of completed tasks`() = runTest {
+        taskDao.insertTasks(listOf(
+            createTestTask(id = "1", isCompleted = true),
+            createTestTask(id = "2", isCompleted = true),
+            createTestTask(id = "3", isCompleted = false)
+        ))
+
+        val count = taskDao.getCompletedTaskCount()
+        assertEquals(2, count)
+    }
+
+    // ========== TRANSACTION TESTS ==========
+
+    @Test
+    fun `transaction should commit all changes on success`() = runTest {
+        val task1 = createTestTask(id = "1")
+        val task2 = createTestTask(id = "2")
+
+        taskDao.insertTasks(listOf(task1, task2))
+
+        val allTasks = taskDao.getAllTasks()
+        assertEquals(2, allTasks.size)
+    }
+
+    @Test
+    fun `searching tasks should be case-insensitive`() = runTest {
+        taskDao.insertTask(createTestTask(id = "1", title = "GRAMMAR PRACTICE"))
+
+        val found = taskDao.searchTasks("grammar")
+
+        assertTrue(found.isNotEmpty())
+        assertEquals(1, found.size)
+    }
+
+    // ========== EDGE CASES ==========
+
+    @Test
+    fun `task with very long title should be stored and retrieved`() = runTest {
+        val longTitle = "a".repeat(500)
+        val task = createTestTask(id = "1", title = longTitle)
+
+        taskDao.insertTask(task)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertEquals(longTitle, retrieved?.title)
+    }
+
+    @Test
+    fun `task with special characters should be stored correctly`() = runTest {
+        val specialTitle = "Test <>&\"'@#$%^&*()"
+        val task = createTestTask(id = "1", title = specialTitle)
+
+        taskDao.insertTask(task)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertEquals(specialTitle, retrieved?.title)
+    }
+
+    @Test
+    fun `task with unicode characters should be handled`() = runTest {
+        val unicodeTitle = "Test 日本語 العربية Ελληνικά"
+        val task = createTestTask(id = "1", title = unicodeTitle)
+
+        taskDao.insertTask(task)
+
+        val retrieved = taskDao.getTaskById("1")
+        assertEquals(unicodeTitle, retrieved?.title)
+    }
+}

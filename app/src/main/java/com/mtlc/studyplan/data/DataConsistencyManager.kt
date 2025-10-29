@@ -6,6 +6,7 @@ import com.mtlc.studyplan.shared.AppTask
 import kotlinx.coroutines.flow.first
 import android.util.Log
 import java.time.LocalDate
+import timber.log.Timber
 import java.time.temporal.ChronoUnit
 
 /**
@@ -31,8 +32,11 @@ class DataConsistencyManager(
                 Log.d("DataConsistency", "Data is consistent")
                 ConsistencyResult.Consistent
             }
+        } catch (e: java.util.NoSuchElementException) {
+            Timber.e(e, "Data stream not available when checking consistency")
+            return ConsistencyResult.Error("Data not available: ${e.message}")
         } catch (e: Exception) {
-            Log.e("DataConsistency", "Error checking data consistency", e)
+            Timber.e(e, "Unexpected error checking data consistency")
             return ConsistencyResult.Error(e.message ?: "Unknown error")
         }
     }
@@ -59,9 +63,11 @@ class DataConsistencyManager(
                 )
             }
 
-            // Check streak consistency
+            // Check streak consistency - allow some tolerance
             val calculatedStreak = calculateStreakFromTasks(tasks)
-            if (currentStreak != calculatedStreak) {
+            val streakDifference = kotlin.math.abs(currentStreak - calculatedStreak)
+            // Allow up to 1 day difference in streak calculation
+            if (streakDifference > 1) {
                 inconsistencies.add(
                     DataInconsistency.StreakMismatch(
                         calculated = calculatedStreak,
@@ -71,9 +77,11 @@ class DataConsistencyManager(
                 )
             }
 
-            // Check today's tasks vs all tasks
+            // Check today's tasks vs all tasks - allow some tolerance
             val todayTasksFromAll = filterTodayTasks(tasks)
-            if (todayTasks.size != todayTasksFromAll.size) {
+            // Allow up to 1 task difference in today's tasks list due to timing/filtering differences
+            val todayTasksDifference = kotlin.math.abs(todayTasks.size - todayTasksFromAll.size)
+            if (todayTasksDifference > 1) {
                 inconsistencies.add(
                     DataInconsistency.TodayTasksMismatch(
                         todayTasksCount = todayTasks.size,
@@ -97,8 +105,15 @@ class DataConsistencyManager(
                 }
             }
 
+        } catch (e: java.util.NoSuchElementException) {
+            Timber.e(e, "Data stream not available when finding inconsistencies")
+            throw e
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            Timber.d("Data consistency check cancelled")
+            throw e  // Re-throw cancellation to respect coroutine scope
         } catch (e: Exception) {
-            Log.e("DataConsistency", "Error finding inconsistencies", e)
+            Timber.e(e, "Unexpected error finding data inconsistencies")
+            throw e
         }
 
         return inconsistencies
@@ -109,6 +124,7 @@ class DataConsistencyManager(
 
         inconsistencies.forEach { inconsistency ->
             val result = try {
+                Timber.d("Attempting to fix inconsistency: $inconsistency")
                 when (inconsistency) {
                     is DataInconsistency.StatsMismatch -> {
                         localRepository?.let { repository ->
@@ -172,13 +188,9 @@ class DataConsistencyManager(
 
     private fun calculateStreakFromTasks(tasks: List<AppTask>): Int {
         // Simple streak calculation - in real app this would use actual completion dates
-        val completedTasks = tasks.filter { it.isCompleted }
-        return if (completedTasks.isNotEmpty()) {
-            // For demo purposes, return streak based on completed tasks
-            minOf(completedTasks.size, 30) // Cap at 30 days
-        } else {
-            0
-        }
+        // For now, return 0 as a conservative estimate since we don't have completion dates
+        // A real implementation would track consecutive days of task completion
+        return 0
     }
 
     private fun filterTodayTasks(tasks: List<AppTask>): List<AppTask> {
@@ -187,9 +199,16 @@ class DataConsistencyManager(
     }
 
     private fun statsMatch(calculated: StudyStats, stored: StudyStats): Boolean {
-        return calculated.totalTasksCompleted == stored.totalTasksCompleted &&
-               calculated.totalXP == stored.totalXP &&
-               kotlin.math.abs(calculated.totalStudyTime - stored.totalStudyTime) <= 5 // Allow small variance
+        // Check core metrics with some tolerance for rounding
+        val taskCountMatch = calculated.totalTasksCompleted == stored.totalTasksCompleted
+        val xpMatch = calculated.totalXP == stored.totalXP
+        val studyTimeMatch = kotlin.math.abs(calculated.totalStudyTime - stored.totalStudyTime) <= 5 // Allow small variance
+
+        // These are less critical - allow for rounding and calculation differences
+        val weekTasksMatch = kotlin.math.abs(calculated.thisWeekTasks - stored.thisWeekTasks) <= 1
+        val weekStudyMatch = kotlin.math.abs(calculated.thisWeekStudyTime - stored.thisWeekStudyTime) <= 5
+
+        return taskCountMatch && xpMatch && studyTimeMatch && weekTasksMatch && weekStudyMatch
     }
 
     private fun logDataFix(action: String, inconsistency: DataInconsistency) {

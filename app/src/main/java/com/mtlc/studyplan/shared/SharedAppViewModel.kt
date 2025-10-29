@@ -1,11 +1,7 @@
 package com.mtlc.studyplan.shared
 
 import android.app.Application
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.AndroidViewModel
-import com.mtlc.studyplan.utils.settingsDataStore
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.settings.data.SettingsRepository
@@ -20,18 +16,12 @@ import java.time.LocalDate
  * Centralized SharedViewModel for app-wide state management
  * Ensures all screens share data and updates propagate in real-time
  */
-class SharedAppViewModel(application: Application) : AndroidViewModel(application) {
-
-    // Core repositories - single source of truth
-
-    private val planRepository = PlanRepository(
-        PlanOverridesStore(application.settingsDataStore),
-        PlanSettingsStore(application.settingsDataStore)
-    )
-    private val settingsRepository = SettingsRepository(application)
-
-    // App Integration Manager
-    private lateinit var appIntegrationManager: AppIntegrationManager
+class SharedAppViewModel(
+    application: Application,
+    private val planRepository: PlanRepository,
+    private val settingsRepository: SettingsRepository,
+    private val appIntegrationManager: AppIntegrationManager
+) : AndroidViewModel(application) {
 
     // ============ SHARED STATE FLOWS ============
 
@@ -101,21 +91,14 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
                 cachedPlan = plan
             }
         }
-    }
-
-    // ============ INITIALIZATION ============
-
-    fun initializeIntegration(integrationManager: AppIntegrationManager) {
-        this.appIntegrationManager = integrationManager
-
-        // Setup reactive settings integration
         viewModelScope.launch {
             appSettings.collect { settings ->
                 applySettingsGlobally(settings)
             }
         }
-
     }
+
+    // ============ INITIALIZATION ============
 
     // ============ TASK OPERATIONS ============
 
@@ -127,14 +110,12 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
                 val taskDetails = findTaskDetails(taskId)
 
                 // Update integration manager if available
-                if (::appIntegrationManager.isInitialized) {
-                    appIntegrationManager.handleTaskCompletion(
-                        taskId = taskId,
-                        taskDescription = taskDetails?.description ?: "Task",
-                        taskDetails = taskDetails?.details,
-                        minutesSpent = taskDetails?.estimatedMinutes ?: 15
-                    )
-                }
+                appIntegrationManager.handleTaskCompletion(
+                    taskId = taskId,
+                    taskDescription = taskDetails?.description ?: "Task",
+                    taskDetails = taskDetails?.details,
+                    minutesSpent = taskDetails?.estimatedMinutes ?: 15
+                )
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -222,15 +203,8 @@ class SharedAppViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private suspend fun applySettingsGlobally(settings: AppSettings) {
-        if (::appIntegrationManager.isInitialized) {
-            // Theme mode removed; no changes applied
-
-            // Apply notifications
-            // Integration manager will handle notification settings
-
-            // Apply gamification
-            // Integration manager will handle gamification settings
-        }
+        // Theme mode handled via integrations; no direct action required here.
+        // Future: propagate settings for notifications/gamification through dedicated channels.
     }
 
     // ============ DATA CALCULATION HELPERS ============

@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorHandler
 import com.mtlc.studyplan.core.error.ErrorLogger
+import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
@@ -23,7 +24,7 @@ class SettingsRepository(
 ) {
 
     private val errorHandler = ErrorHandler(ErrorLogger(context))
-    private val preferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val preferences: SharedPreferences = DataStoreBackedPreferences(context.settingsDataStore)
 
     // Internal state flows for reactive updates
     private val _settingsState = MutableStateFlow(SettingsState(emptyList(), emptyMap()))
@@ -1028,7 +1029,7 @@ class SettingsRepository(
                 weekendModeEnabled = getBoolean(SettingsKeys.Tasks.WEEKEND_MODE, false),
                 autoDifficultyEnabled = getBoolean(SettingsKeys.Tasks.AUTO_DIFFICULTY, true),
                 studyReminderTime = getString(SettingsKeys.Notifications.STUDY_REMINDER_TIME, "09:00"),
-                dailyStudyGoalMinutes = getInt(SettingsKeys.Tasks.DAILY_GOAL_REMINDERS, 60)
+                dailyStudyGoalMinutes = 60 // Fixed: DAILY_GOAL_REMINDERS is a Boolean, not an Int
             )
         }
     }
@@ -1116,9 +1117,9 @@ private object defaultValues {
         // Appearance defaults
         // Theme mode removed; light theme only
         put(SettingsKeys.Appearance.ACCENT_COLOR, "blue")
-        put(SettingsKeys.Appearance.FONT_SIZE, 1.0f)
+        put(SettingsKeys.Appearance.FONT_SIZE, "normal")
         put(SettingsKeys.Appearance.FONT_FAMILY, "default")
-        put(SettingsKeys.Appearance.ANIMATION_SPEED, 1.0f)
+        put(SettingsKeys.Appearance.ANIMATION_SPEED, "normal")
         put(SettingsKeys.Appearance.CARD_STYLE, "rounded")
         put(SettingsKeys.Appearance.LAYOUT_DENSITY, "comfortable")
 

@@ -36,7 +36,9 @@ class AdvancedToggleViewModel(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             try {
-                // TODO: Implement actual toggle logic
+                // Implement actual toggle logic by updating the setting in the repository
+                val request = SettingsUpdateRequest.UpdateBoolean(settingKey, enabled)
+                settingsRepository.updateSetting(request)
                 _state.value = _state.value.copy(isLoading = false)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isLoading = false, error = e.message)

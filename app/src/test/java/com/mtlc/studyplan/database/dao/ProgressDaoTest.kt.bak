@@ -1,0 +1,374 @@
+package com.mtlc.studyplan.database.dao
+
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.mtlc.studyplan.database.AppDatabase
+import com.mtlc.studyplan.database.entities.ProgressEntity
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+/**
+ * Unit tests for ProgressDao - Database operations for Progress tracking
+ * Focus: Progress queries, time-based filtering, aggregations, statistics
+ */
+class ProgressDaoTest {
+
+    private lateinit var database: AppDatabase
+    private lateinit var progressDao: ProgressDao
+
+    @Before
+    fun setUp() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        progressDao = database.progressDao()
+    }
+
+    @After
+    fun tearDown() {
+        database.close()
+    }
+
+    // ========== HELPER FUNCTIONS ==========
+
+    private fun createTestProgress(
+        id: String = "prog-1",
+        date: Long = System.currentTimeMillis(),
+        totalTasksCompleted: Int = 5,
+        totalStudyMinutes: Int = 120,
+        totalXP: Int = 500
+    ) = ProgressEntity(
+        id = id,
+        date = date,
+        totalTasksCompleted = totalTasksCompleted,
+        totalStudyMinutes = totalStudyMinutes,
+        totalXP = totalXP,
+        createdAt = System.currentTimeMillis(),
+        updatedAt = System.currentTimeMillis()
+    )
+
+    // ========== INSERT TESTS ==========
+
+    @Test
+    fun `insertProgress should store progress record`() = runTest {
+        val progress = createTestProgress(id = "1")
+
+        progressDao.insertProgress(progress)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertNotNull(retrieved)
+    }
+
+    @Test
+    fun `insertMultipleProgress should store all records`() = runTest {
+        val progressRecords = listOf(
+            createTestProgress(id = "1"),
+            createTestProgress(id = "2"),
+            createTestProgress(id = "3")
+        )
+
+        progressDao.insertProgress(progressRecords)
+
+        val all = progressDao.getAllProgress()
+        assertEquals(3, all.size)
+    }
+
+    // ========== READ TESTS ==========
+
+    @Test
+    fun `getProgressById should return record when exists`() = runTest {
+        val progress = createTestProgress(id = "test-123")
+        progressDao.insertProgress(progress)
+
+        val retrieved = progressDao.getProgressById("test-123")
+
+        assertNotNull(retrieved)
+        assertEquals("test-123", retrieved.id)
+    }
+
+    @Test
+    fun `getProgressById should return null when not exists`() = runTest {
+        val result = progressDao.getProgressById("non-existent")
+        assertNull(result)
+    }
+
+    @Test
+    fun `getAllProgress should return empty list initially`() = runTest {
+        val records = progressDao.getAllProgress()
+        assertTrue(records.isEmpty())
+    }
+
+    @Test
+    fun `getAllProgress should return all records`() = runTest {
+        val records = listOf(
+            createTestProgress(id = "1"),
+            createTestProgress(id = "2")
+        )
+        progressDao.insertProgress(records)
+
+        val all = progressDao.getAllProgress()
+        assertEquals(2, all.size)
+    }
+
+    // ========== UPDATE TESTS ==========
+
+    @Test
+    fun `updateProgress should modify record`() = runTest {
+        val original = createTestProgress(id = "1", totalTasksCompleted = 5)
+        progressDao.insertProgress(original)
+
+        val updated = original.copy(totalTasksCompleted = 10)
+        progressDao.updateProgress(updated)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertEquals(10, retrieved?.totalTasksCompleted)
+    }
+
+    @Test
+    fun `updateProgress should update study minutes`() = runTest {
+        val original = createTestProgress(id = "1", totalStudyMinutes = 60)
+        progressDao.insertProgress(original)
+
+        val updated = original.copy(totalStudyMinutes = 120)
+        progressDao.updateProgress(updated)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertEquals(120, retrieved?.totalStudyMinutes)
+    }
+
+    // ========== DELETE TESTS ==========
+
+    @Test
+    fun `deleteProgress should remove record`() = runTest {
+        val progress = createTestProgress(id = "1")
+        progressDao.insertProgress(progress)
+
+        progressDao.deleteProgress(progress)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertNull(retrieved)
+    }
+
+    @Test
+    fun `deleteAllProgress should remove all records`() = runTest {
+        val records = listOf(
+            createTestProgress(id = "1"),
+            createTestProgress(id = "2")
+        )
+        progressDao.insertProgress(records)
+
+        progressDao.deleteAllProgress()
+
+        val all = progressDao.getAllProgress()
+        assertTrue(all.isEmpty())
+    }
+
+    // ========== TIME-BASED QUERIES ==========
+
+    @Test
+    fun `getProgressByDate should filter by specific date`() = runTest {
+        val now = System.currentTimeMillis()
+        val yesterday = now - (24 * 60 * 60 * 1000)
+
+        val todayRecord = createTestProgress(id = "1", date = now)
+        val yesterdayRecord = createTestProgress(id = "2", date = yesterday)
+        progressDao.insertProgress(listOf(todayRecord, yesterdayRecord))
+
+        val todayProgress = progressDao.getProgressByDate(now)
+
+        assertTrue(todayProgress.isNotEmpty())
+    }
+
+    @Test
+    fun `getProgressInDateRange should filter by date range`() = runTest {
+        val now = System.currentTimeMillis()
+        val dayAgo = now - (24 * 60 * 60 * 1000)
+        val twoDaysAgo = now - (2 * 24 * 60 * 60 * 1000)
+
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", date = now),
+            createTestProgress(id = "2", date = dayAgo),
+            createTestProgress(id = "3", date = twoDaysAgo)
+        ))
+
+        val inRange = progressDao.getProgressInDateRange(twoDaysAgo, now)
+
+        assertTrue(inRange.size >= 2)
+    }
+
+    @Test
+    fun `getWeeklyProgress should return last 7 days of progress`() = runTest {
+        val now = System.currentTimeMillis()
+        val oneDayAgo = now - (24 * 60 * 60 * 1000)
+        val sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000)
+
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", date = now),
+            createTestProgress(id = "2", date = oneDayAgo),
+            createTestProgress(id = "3", date = sevenDaysAgo)
+        ))
+
+        val weekly = progressDao.getWeeklyProgress()
+
+        assertTrue(weekly.size >= 2)
+    }
+
+    // ========== AGGREGATION TESTS ==========
+
+    @Test
+    fun `getTotalTasksCompleted should sum all completed tasks`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalTasksCompleted = 5),
+            createTestProgress(id = "2", totalTasksCompleted = 3),
+            createTestProgress(id = "3", totalTasksCompleted = 2)
+        ))
+
+        val total = progressDao.getTotalTasksCompleted()
+        assertEquals(10, total)
+    }
+
+    @Test
+    fun `getTotalStudyMinutes should sum all study minutes`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalStudyMinutes = 60),
+            createTestProgress(id = "2", totalStudyMinutes = 90),
+            createTestProgress(id = "3", totalStudyMinutes = 30)
+        ))
+
+        val total = progressDao.getTotalStudyMinutes()
+        assertEquals(180, total)
+    }
+
+    @Test
+    fun `getTotalXP should sum all XP earned`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalXP = 100),
+            createTestProgress(id = "2", totalXP = 200),
+            createTestProgress(id = "3", totalXP = 150)
+        ))
+
+        val total = progressDao.getTotalXP()
+        assertEquals(450, total)
+    }
+
+    @Test
+    fun `getAverageTasksPerDay should calculate daily average`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalTasksCompleted = 10),
+            createTestProgress(id = "2", totalTasksCompleted = 20),
+            createTestProgress(id = "3", totalTasksCompleted = 30)
+        ))
+
+        val average = progressDao.getAverageTasksPerDay()
+        assertEquals(20, average)
+    }
+
+    @Test
+    fun `getAverageStudyTimePerDay should calculate daily study average`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalStudyMinutes = 120),
+            createTestProgress(id = "2", totalStudyMinutes = 180),
+            createTestProgress(id = "3", totalStudyMinutes = 240)
+        ))
+
+        val average = progressDao.getAverageStudyTimePerDay()
+        assertEquals(180, average)
+    }
+
+    // ========== STATISTICS TESTS ==========
+
+    @Test
+    fun `getMaxTasksCompleted should return highest daily count`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalTasksCompleted = 5),
+            createTestProgress(id = "2", totalTasksCompleted = 15),
+            createTestProgress(id = "3", totalTasksCompleted = 10)
+        ))
+
+        val max = progressDao.getMaxTasksCompleted()
+        assertEquals(15, max)
+    }
+
+    @Test
+    fun `getMaxStudyTime should return highest study time day`() = runTest {
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", totalStudyMinutes = 60),
+            createTestProgress(id = "2", totalStudyMinutes = 180),
+            createTestProgress(id = "3", totalStudyMinutes = 120)
+        ))
+
+        val max = progressDao.getMaxStudyTime()
+        assertEquals(180, max)
+    }
+
+    @Test
+    fun `getConsecutiveActiveDays should count unbroken streak`() = runTest {
+        val now = System.currentTimeMillis()
+        val dayInMs = 24 * 60 * 60 * 1000L
+
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", date = now),
+            createTestProgress(id = "2", date = now - dayInMs),
+            createTestProgress(id = "3", date = now - (2 * dayInMs))
+        ))
+
+        val streak = progressDao.getConsecutiveActiveDays()
+        assertTrue(streak >= 1)
+    }
+
+    // ========== EDGE CASES ==========
+
+    @Test
+    fun `progress with zero values should be stored`() = runTest {
+        val progress = createTestProgress(
+            id = "1",
+            totalTasksCompleted = 0,
+            totalStudyMinutes = 0,
+            totalXP = 0
+        )
+
+        progressDao.insertProgress(progress)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertEquals(0, retrieved?.totalTasksCompleted)
+        assertEquals(0, retrieved?.totalStudyMinutes)
+        assertEquals(0, retrieved?.totalXP)
+    }
+
+    @Test
+    fun `progress with large values should be handled`() = runTest {
+        val progress = createTestProgress(
+            id = "1",
+            totalTasksCompleted = Int.MAX_VALUE,
+            totalStudyMinutes = Int.MAX_VALUE,
+            totalXP = Int.MAX_VALUE
+        )
+
+        progressDao.insertProgress(progress)
+
+        val retrieved = progressDao.getProgressById("1")
+        assertEquals(Int.MAX_VALUE, retrieved?.totalTasksCompleted)
+    }
+
+    @Test
+    fun `multiple progress records for same day should be aggregated`() = runTest {
+        val now = System.currentTimeMillis()
+
+        progressDao.insertProgress(listOf(
+            createTestProgress(id = "1", date = now, totalTasksCompleted = 5),
+            createTestProgress(id = "2", date = now, totalTasksCompleted = 5)
+        ))
+
+        val records = progressDao.getProgressByDate(now)
+        assertTrue(records.size >= 1)
+    }
+}

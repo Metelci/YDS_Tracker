@@ -3,6 +3,7 @@ package com.mtlc.studyplan.feature.today
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.mtlc.studyplan.data.TaskRepository
 
 const val TODAY_ROUTE = "today"
 const val PLAN_ROUTE = "plan"
@@ -11,9 +12,13 @@ const val FOCUS_ROUTE = "focus/{id}"
 fun lessonRoute(id: String) = "lesson/$id"
 fun focusRoute(id: String) = "focus/$id"
 
-fun NavGraphBuilder.todayGraph(navController: NavController) {
+fun NavGraphBuilder.todayGraph(
+    navController: NavController,
+    taskRepository: TaskRepository
+) {
     composable(TODAY_ROUTE) {
         TodayRoute(
+            taskRepository = taskRepository,
             onNavigateToFocus = { id ->
                 navController.navigate(focusRoute(id))
             }

@@ -55,7 +55,6 @@ import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.LocalSpacing
 import com.mtlc.studyplan.ui.theme.FeatureKey
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
-import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.pm.PackageInfoCompat
@@ -107,7 +106,7 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.settings", "settings_categories")),
+                colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "categories")),
                 border = BorderStroke(1.dp, PrussianBlue)
             ) {
                 FlowRow(
@@ -133,8 +132,9 @@ fun SettingsScreen(
 
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.settings", "settings_navigation")),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.SETTINGS, "navigation")),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                border = BorderStroke(1.dp, PrussianBlue)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

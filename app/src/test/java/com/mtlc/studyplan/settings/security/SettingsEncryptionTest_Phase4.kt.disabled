@@ -1,0 +1,444 @@
+package com.mtlc.studyplan.settings.security
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+
+/**
+ * Unit tests for SettingsEncryption - Security-critical component
+ * Focus: Encryption/decryption, key management, data integrity
+ *
+ * Note: Uses Robolectric for Android Keystore testing
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28]) // Android 9.0 for keystore support
+class SettingsEncryptionTest_Phase4 {
+
+    private lateinit var context: Context
+    private lateinit var encryption: SettingsEncryption
+
+    @Before
+    fun setUp() {
+        context = ApplicationProvider.getApplicationContext()
+        encryption = SettingsEncryption(context)
+    }
+
+    // ========== ENCRYPTION TESTS ==========
+
+    @Test
+    fun `encryptData should return non-null EncryptedData`() {
+        // Arrange
+        val plaintext = "sensitive settings data"
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertNotNull(encrypted.encryptedBytes)
+        assertNotNull(encrypted.iv)
+        assertTrue(encrypted.encryptedBytes.isNotEmpty())
+        assertTrue(encrypted.iv.isNotEmpty())
+    }
+
+    @Test
+    fun `encryptData should produce different ciphertext for same plaintext`() {
+        // Arrange
+        val plaintext = "same data"
+
+        // Act
+        val encrypted1 = encryption.encryptData(plaintext)
+        val encrypted2 = encryption.encryptData(plaintext)
+
+        // Assert
+        // Different IVs should produce different ciphertexts
+        assertFalse(encrypted1.encryptedBytes.contentEquals(encrypted2.encryptedBytes))
+        assertFalse(encrypted1.iv.contentEquals(encrypted2.iv))
+    }
+
+    @Test
+    fun `encryptData should include version information`() {
+        // Arrange
+        val plaintext = "data with version"
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext, includeMetadata = true)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertTrue(encrypted.version >= 1) // Version should be at least 1
+    }
+
+    @Test
+    fun `encryptData should handle empty strings`() {
+        // Arrange
+        val plaintext = ""
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertNotNull(encrypted.encryptedBytes)
+    }
+
+    @Test
+    fun `encryptData should handle large data`() {
+        // Arrange
+        val plaintext = "x".repeat(10000) // 10KB of data
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertTrue(encrypted.encryptedBytes.size > 0)
+    }
+
+    @Test
+    fun `encryptData should handle special characters`() {
+        // Arrange
+        val plaintext = "special: !@#$%^&*()_+-={}[]|;:',.<>?/~`\n\t\r"
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertTrue(encrypted.encryptedBytes.isNotEmpty())
+    }
+
+    @Test
+    fun `encryptData should handle unicode characters`() {
+        // Arrange
+        val plaintext = "Unicode: 你好世界 مرحبا العالم שלום עולם"
+
+        // Act
+        val encrypted = encryption.encryptData(plaintext)
+
+        // Assert
+        assertNotNull(encrypted)
+        val decrypted = encryption.decryptData(encrypted)
+        assertEquals(plaintext, decrypted)
+    }
+
+    // ========== DECRYPTION TESTS ==========
+
+    @Test
+    fun `decryptData should recover original plaintext`() {
+        // Arrange
+        val original = "secret message"
+        val encrypted = encryption.encryptData(original)
+
+        // Act
+        val decrypted = encryption.decryptData(encrypted)
+
+        // Assert
+        assertEquals(original, decrypted)
+    }
+
+    @Test
+    fun `decryptData with metadata should validate and extract data`() {
+        // Arrange
+        val original = "data with metadata"
+        val encrypted = encryption.encryptData(original, includeMetadata = true)
+
+        // Act
+        val decrypted = encryption.decryptData(encrypted, validateMetadata = true)
+
+        // Assert
+        assertEquals(original, decrypted)
+    }
+
+    @Test
+    fun `decryptData without metadata validation should work`() {
+        // Arrange
+        val original = "simple data"
+        val encrypted = encryption.encryptData(original, includeMetadata = false)
+
+        // Act
+        val decrypted = encryption.decryptData(encrypted, validateMetadata = false)
+
+        // Assert
+        assertEquals(original, decrypted)
+    }
+
+    @Test
+    fun `encrypt and decrypt round trip should preserve data`() {
+        // Arrange
+        val original = "round trip test data with lots of info: 123456789"
+
+        // Act
+        val encrypted = encryption.encryptData(original)
+        val decrypted = encryption.decryptData(encrypted)
+
+        // Assert
+        assertEquals(original, decrypted)
+    }
+
+    @Test
+    fun `multiple encrypt-decrypt cycles should work`() {
+        // Arrange
+        val original = "cycle test"
+
+        // Act & Assert
+        repeat(5) {
+            val encrypted = encryption.encryptData(original)
+            val decrypted = encryption.decryptData(encrypted)
+            assertEquals(original, decrypted)
+        }
+    }
+
+    // ========== SENSITIVE VALUE ENCRYPTION TESTS ==========
+
+    @Test
+    fun `encryptSensitiveValue should produce encrypted string`() {
+        // Arrange
+        val sensitiveValue = "api-key-12345"
+        val settingId = "api_key"
+
+        // Act
+        val encrypted = encryption.encryptSensitiveValue(sensitiveValue, settingId)
+
+        // Assert
+        assertNotNull(encrypted)
+        assertTrue(encrypted.isNotEmpty())
+        assertNotEquals(sensitiveValue, encrypted) // Should not be plaintext
+    }
+
+    @Test
+    fun `decryptSensitiveValue should recover original value`() {
+        // Arrange
+        val original = "password123"
+        val settingId = "user_password"
+        val encrypted = encryption.encryptSensitiveValue(original, settingId)
+
+        // Act
+        val decrypted = encryption.decryptSensitiveValue(encrypted, settingId)
+
+        // Assert
+        assertEquals(original, decrypted)
+    }
+
+    @Test
+    fun `sensitive value encryption should be deterministic per setting`() {
+        // Arrange
+        val value = "sensitive"
+        val settingId = "test_setting"
+
+        // Act
+        val encrypted1 = encryption.encryptSensitiveValue(value, settingId)
+        val encrypted2 = encryption.encryptSensitiveValue(value, settingId)
+
+        // Assert
+        // Should produce different ciphertexts due to random IV
+        assertNotEquals(encrypted1, encrypted2)
+    }
+
+    @Test
+    fun `different setting IDs should use different keys`() {
+        // Arrange
+        val value = "same value"
+
+        // Act
+        val encrypted1 = encryption.encryptSensitiveValue(value, "setting1")
+        val encrypted2 = encryption.encryptSensitiveValue(value, "setting2")
+
+        // Assert
+        // Different keys should produce different results
+        assertNotEquals(encrypted1, encrypted2)
+    }
+
+    // ========== INTEGRITY TESTS ==========
+
+    @Test
+    fun `generateIntegrityHash should produce consistent hash`() {
+        // Arrange
+        val data = "test data"
+
+        // Act
+        val hash1 = encryption.generateIntegrityHash(data)
+        val hash2 = encryption.generateIntegrityHash(data)
+
+        // Assert
+        assertEquals(hash1, hash2)
+        assertTrue(hash1.isNotEmpty())
+    }
+
+    @Test
+    fun `generateIntegrityHash should produce different hashes for different data`() {
+        // Arrange
+        val data1 = "test data 1"
+        val data2 = "test data 2"
+
+        // Act
+        val hash1 = encryption.generateIntegrityHash(data1)
+        val hash2 = encryption.generateIntegrityHash(data2)
+
+        // Assert
+        assertNotEquals(hash1, hash2)
+    }
+
+    @Test
+    fun `verifyIntegrity should return true for valid data`() {
+        // Arrange
+        val data = "integrity test"
+        val hash = encryption.generateIntegrityHash(data)
+
+        // Act
+        val isValid = encryption.verifyIntegrity(data, hash)
+
+        // Assert
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `verifyIntegrity should return false for tampered data`() {
+        // Arrange
+        val data = "original data"
+        val hash = encryption.generateIntegrityHash(data)
+        val tamperedData = "tampered data"
+
+        // Act
+        val isValid = encryption.verifyIntegrity(tamperedData, hash)
+
+        // Assert
+        assertFalse(isValid)
+    }
+
+    @Test
+    fun `verifyIntegrity should detect subtle changes`() {
+        // Arrange
+        val data = "test data"
+        val hash = encryption.generateIntegrityHash(data)
+        val modifiedData = "test Data" // Only case changed
+
+        // Act
+        val isValid = encryption.verifyIntegrity(modifiedData, hash)
+
+        // Assert
+        assertFalse(isValid)
+    }
+
+    // ========== AVAILABILITY TESTS ==========
+
+    @Test
+    fun `isEncryptionAvailable should return true on supported devices`() {
+        // Act
+        val available = encryption.isEncryptionAvailable()
+
+        // Assert
+        // On Robolectric with SDK 28+, encryption should be available
+        assertTrue(available)
+    }
+
+    // ========== KEY DELETION TESTS ==========
+
+    @Test
+    fun `deleteAllKeys should remove encryption keys`() {
+        // Arrange
+        val data = "test before delete"
+        encryption.encryptData(data) // Create a key
+
+        // Act
+        encryption.deleteAllKeys()
+
+        // Assert
+        // After deletion, encryption should still work (new key created)
+        val newEncrypted = encryption.encryptData(data)
+        assertNotNull(newEncrypted)
+    }
+
+    // ========== EDGE CASES ==========
+
+    @Test
+    fun `encryption should handle null bytes in data`() {
+        // Arrange
+        val data = "data\u0000with\u0000nulls"
+
+        // Act
+        val encrypted = encryption.encryptData(data)
+        val decrypted = encryption.decryptData(encrypted)
+
+        // Assert
+        assertEquals(data, decrypted)
+    }
+
+    @Test
+    fun `encryption should handle very long strings`() {
+        // Arrange
+        val longData = "a".repeat(100000) // 100KB
+
+        // Act
+        val encrypted = encryption.encryptData(longData)
+        val decrypted = encryption.decryptData(encrypted)
+
+        // Assert
+        assertEquals(longData, decrypted)
+    }
+
+    @Test
+    fun `encryption metadata should include timestamp`() {
+        // Arrange
+        val data = "timestamped data"
+        val beforeTime = System.currentTimeMillis()
+
+        // Act
+        val encrypted = encryption.encryptData(data, includeMetadata = true)
+
+        // Assert
+        val afterTime = System.currentTimeMillis()
+        assertTrue(encrypted.timestamp >= beforeTime)
+        assertTrue(encrypted.timestamp <= afterTime)
+    }
+
+    @Test
+    fun `encryption should include algorithm information`() {
+        // Arrange
+        val data = "algorithm test"
+
+        // Act
+        val encrypted = encryption.encryptData(data)
+
+        // Assert
+        assertNotNull(encrypted.algorithm)
+        assertTrue(encrypted.algorithm.contains("AES"))
+        assertTrue(encrypted.algorithm.contains("GCM"))
+    }
+
+    @Test
+    fun `encryption should include key alias`() {
+        // Arrange
+        val data = "key alias test"
+
+        // Act
+        val encrypted = encryption.encryptData(data)
+
+        // Assert
+        assertNotNull(encrypted.keyAlias)
+        assertTrue(encrypted.keyAlias.isNotEmpty())
+    }
+
+    @Test
+    fun `IV length should be appropriate for GCM mode`() {
+        // Arrange
+        val data = "IV test"
+
+        // Act
+        val encrypted = encryption.encryptData(data)
+
+        // Assert
+        // GCM typically uses 12-byte IV
+        assertEquals(12, encrypted.iv.size)
+    }
+}

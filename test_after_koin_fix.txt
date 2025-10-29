@@ -1,0 +1,862 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :app:processDebugUnitTestManifest UP-TO-DATE
+> Task :app:generateDebugUnitTestConfig UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+SimplePerformanceTest > performance issue logging works FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SimplePerformanceTest > performance monitor initializes correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SimplePerformanceTest > memory usage tracking is functional FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SimplePerformanceTest > operation measurement works FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SimplePerformanceTest > cache tracking works correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > removeCustomTask removes specified task FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > addCustomTask adds task with generated ID suffix FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > addCustomTask creates new DayOverrides if none exist FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > setTaskHidden adds new TaskOverride when task not previously overridden FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > updateTaskText adds custom description and details FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > planFlow emits plan based on settings and overrides FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > removeCustomTask preserves other tasks on same day FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > addCustomTask is called with correct parameters FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > addCustomTask increments ID suffix for subsequent tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > removeCustomTask is called with correct parameters FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > updateTaskText is called with correct parameters FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > addCustomTask handles non-numeric suffixes by starting at 1 FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > removeCustomTask keeps empty DayOverrides after removing last task FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > setTaskHidden updates existing TaskOverride FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > removeCustomTask does nothing if day not found FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > setTaskHidden preserves custom text when updating visibility FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > updateTaskText preserves hidden status when updating text FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > planFlow reacts to override changes FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > setTaskHidden is called with correct parameters FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PlanRepositoryTest > updateTaskText updates existing override FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > markAsViewed should mark achievement as viewed FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > checkAndUnlockAchievement should not unlock when progress below threshold FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getUnlockedCountInCategory should count unlocked in specific category FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > updateProgressAndCheckUnlock should update and unlock if threshold met FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAchievementsByCategory should filter by category FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > insertAchievement should store achievement in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAchievementsByDifficulty should filter by difficulty FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > unlockAchievement should mark achievement as unlocked FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getTotalCount should return total number of achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > incrementProgressAndCheckUnlock should add to current progress FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getUnlockedAchievements should return only unlocked achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAchievementById should return achievement when exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getUnlockedCount should return number of unlocked achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAchievementsByRarity should filter by rarity FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > checkAndUnlockAchievement should unlock when progress meets threshold FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getNearlyUnlockedAchievements should return achievements at 80 percent or more FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAchievementById should return null when not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getTotalPointsEarned should sum points from unlocked achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > getAvailableAchievements should return unlocked non-hidden achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > insertAchievements should store multiple achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > deleteAchievementById should remove achievement FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > updateProgress should update achievement progress FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+AchievementDaoTest > deleteAllAchievements should remove all achievements FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > deleteAllProgress should remove all entries for user FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > deleteOldProgress should remove entries before cutoff date FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > insertProgress should store progress in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getAverageTasksCompleted should calculate average for active days FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > insertProgressList should store multiple progress entries FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > insertOrUpdateProgress should update when entry exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getDaysMetTaskGoal should count days meeting task completion goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getProgressByDate should return null when date not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getBestStreak should return maximum streak value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getTotalTasksCompleted should sum all completed tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getActiveDaysCount should count days with study time FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getBestDay should return day with most study minutes FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getAllProgress should return all progress entries ordered by date DESC FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > insertProgress with REPLACE strategy should update existing entry FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getDaysMetGoal should count days meeting study minute goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > updateDailyStats should increment stats for existing entry FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getTotalPointsEarned should sum all points FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getProgressInDateRange should return entries within date range FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > insertOrUpdateProgress should insert when entry does not exist FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > updateDailyStats should create new entry when does not exist FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getProgressByDate should return progress for specific date FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > deleteProgress should remove specific entry FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > updateProgressData should update specific fields FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getTotalStudyMinutes should sum all study minutes FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > getAverageStudyMinutes should calculate average for days with study time FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ProgressDaoTest > updateProgress should modify existing progress FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionCountByType should count by question type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionById should return question when exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByExamAndDifficulty should filter by exam and difficulty FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > deleteQuestion should remove question FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getDownloadedQuestionCount should count downloaded questions FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > searchQuestions should find by explanation FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getAllQuestions should return all questions ordered by lastAccessed DESC FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getDownloadedQuestions should return only downloaded questions FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > insertQuestion should store question in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionCountByDifficulty should count by difficulty FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionById should return null when not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > updateQuestion should modify question FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > updateDownloadStatus should mark as downloaded FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByTag should filter by tag FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getAllTags should return all distinct tag lists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByType should filter by question type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByExamAndType should filter by both exam and type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByExamType should filter by exam type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > searchQuestions should find by question text FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionCountByExamType should count by exam type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > updateLastAccessed should update access timestamp FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > deleteNonDownloadedQuestions should remove only non-downloaded FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getQuestionsByDifficulty should filter by difficulty FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > getTotalQuestionCount should return total number of questions FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+QuestionDaoTest > insertQuestions should store multiple questions FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getBestStreakByType should return max for specific type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getDailyStreak should return daily streak FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getTotalActiveStreaks should sum current streaks for active FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getStreakById should return streak when exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getActiveStreakCount should count streaks with current greater than 0 FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > insertStreak should store streak in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > incrementPerfectDays should add one to perfect days FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > insertStreaks should store multiple streaks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > deleteStreakById should remove streak FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getTotalPerfectDays should sum all perfect days FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > updateCurrentStreak should modify current streak value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > deleteInactiveStreaks should remove only inactive streaks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getStreakById should return null when not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getStreakByType should return streak of specific type FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > extendStreak should increase current streak and update longest FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > extendStreak should update longest when current exceeds it FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getBestStreak should return maximum longest streak FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getActiveStreaks should return only active streaks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getTotalStudyDays should sum all totalDaysStudied FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getStreaksAboveThreshold should filter by minimum streak FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > useStreakFreeze should increment freeze count FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > updateLongestStreak should modify longest streak record FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > resetStreak should set current to 0 and mark inactive FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > updateStreakStatus should change active status FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > deleteAllStreaks should remove all streaks for user FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StreakDaoTest > getStreaksMetGoal should return streaks meeting their goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getTaskById should return null when not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getPendingTasks should return incomplete tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getCompletedTasksCount should return count FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getTasksByCategory should filter by category FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > updateTaskCompletion should mark task completed FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getTasksByPriority should filter by priority FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getAllCategories should return distinct categories FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > permanentlyDeleteTask should hard delete task FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > insertMultipleTasks should store all tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > updateTasks should update multiple tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getTaskById should return task when exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getSubTasks should return child tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > deleteTask should soft delete task FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getAllTasks should return all active tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getTotalActiveTasksCount should return count FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > updateTask should modify task FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getPendingTasksCount should return count FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > insertTask should assign primary key FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > deleteTasks should soft delete multiple tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > searchTasks should find matching tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > getCompletedTasks should return completed tasks FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+TaskDaoTest > insertTask should store task in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDailyStudyGoalMinutes should return goal value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > deleteAllUserSettings should remove all settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getSoundEnabled should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateUserSettings should modify all settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateDailyStudyGoalMinutes should modify goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateDailyReminderTime should modify reminder time FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getLanguage should return language setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getWeeklyStudyGoalMinutes should return weekly goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateSetting transaction should update all settings atomically FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getUseDynamicColors should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDefaultBreakLength should return break duration FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > resetToDefaults should restore default settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateDefaultStudySessionLength should modify duration FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > deleteUserSettingsByUserId should remove user settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDateFormat should return date format FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateFontSize should modify font size FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDailyReminderEnabled should return setting value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getUserSettingsSync should return null when not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateNotificationsEnabled should modify setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getWeeklyTaskGoal should return weekly task goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getAutoSyncEnabled should return sync setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getAccentColor should return color value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateDailyTaskGoal should modify task goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDefaultStudySessionLength should return session duration FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateAccentColor should modify color FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getSyncOnlyOnWifi should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateTheme should modify theme setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getReducedAnimations should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getAllUserSettings should return all settings ordered by updatedAt DESC FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getBackupEnabled should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateAutoSyncEnabled should modify sync setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateLanguage should modify language setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > insertUserSettings should store settings in database FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDailyTaskGoal should return task goal FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getProfilePublic should return privacy setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getAdaptiveGoals should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getFontSize should return font size setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getUserSettings should return Flow of settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getTheme should return theme preference FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getNotificationsEnabled should return setting value FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getOrCreateUserSettings should create if not exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getAutoStartBreaks should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getHighContrastMode should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getOrCreateUserSettings should return existing if exists FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > updateProfilePublic should modify privacy setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getBackupFrequency should return backup frequency FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getGoalDifficulty should return difficulty level FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getDailyReminderTime should return time in proper format FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getLongBreakLength should return long break duration FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getOfflineMode should return setting FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UserSettingsDaoTest > getTimeFormat should return time format FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :app:testDebugUnitTest
+
+ExamMilestoneNotificationTest > 7-day milestone uses last week messaging FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > exam milestones channel is created with high priority FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > showExamMilestoneNotification method exists FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > 60-day milestone uses intermediate messaging FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > 90-day milestone uses foundation messaging FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > notification has action button FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > exam milestone request code is defined FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > notification uses milestone days as notification ID FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > bilingual support for milestone strings verified FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > exam milestones channel constant is defined FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > notification includes progress text in summary FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > notification tracks delivery analytics FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > 30-day milestone uses advanced messaging FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > milestone IDs are unique per days remaining FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+ExamMilestoneNotificationTest > 14-day milestone uses final prep messaging FAILED
+    java.lang.ClassCastException at ExamMilestoneNotificationTest.kt:44
+
+PushNotificationManagerTest > manageTopicSubscription handles subscribe and unsubscribe operations correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes custom notification correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > arePushNotificationsEnabled returns true when enabled in settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes study reminder correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes motivational message correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes system notification correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > arePushNotificationsEnabled returns false when disabled in settings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > getStoredFCMToken returns stored token FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > deleteFCMToken clears stored token FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes exam update correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > getPushAnalytics returns analytics data FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+PushNotificationManagerTest > handleIncomingMessage processes achievement notification correctly FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :app:testDebugUnitTest
+
+SecurityManagerSimpleTest > manager should maintain security after initialization FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be compatible with android context FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should work with application context FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should maintain state after creation FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be ready for decryption operations FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > secure storage manager should be singleton FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should survive context lifecycle FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should provide encryption capabilities FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be ready for encryption operations FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should handle null context gracefully FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should support context access FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should handle repeated initialization FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > multiple manager instances should be independent FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should provide security layer for data FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should support secure storage operations FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be thread-safe for instantiation FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should support secure data handling FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be capable of secure operations FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be production-ready FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should be ready for use after initialization FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should provide secure storage capabilities FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > manager should follow security best practices FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SecurityManagerSimpleTest > secure storage manager should initialize without errors FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsRepositoryNotificationsTest > updateNotificationSettingUpdatesFlow FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsRepositoryNotificationsTest > updateNotificationSettingRejectsInvalidValues FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > notificationSettingsViewModelTogglesPushNotifications FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > privacySettingsViewModelExposesPrivacySettings FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > emailFrequencyEnumContainsExpectedValues FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > gamificationSettingsViewModelLoadsDefaults FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > settingsViewModelSearchUpdatesQuery FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+SettingsViewModelsTestSuite > notificationSettingsViewModelUpdatesReminderTime FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StatePreservationManagerTest > expiredScreenStateReturnsNull FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StatePreservationManagerTest > saveAndRestoreScreenStateWithinWindow FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StatePreservationManagerTest > searchQueryAndFilterRoundTrip FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+StatePreservationManagerTest > clearExpiredStateRemovesOldEntries FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UtilityManagersQuickWinTest > languageFlowDefaultsToEnglish FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UtilityManagersQuickWinTest > languageManagerReadsStoredPreference FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+UtilityManagersQuickWinTest > languageManagerReturnsSameInstance FAILED
+    java.lang.IllegalStateException at WorkManagerImpl.java:196
+
+ExamCountdownMilestoneWorkerTest > context is available to worker FAILED
+    java.lang.AssertionError at ExamCountdownMilestoneWorkerTest.kt:136
+
+PerformanceMonitorTest_Phase4 > measureSuspendOperation should return async function FAILED
+    kotlinx.coroutines.test.UncaughtExceptionsBeforeTest at PerformanceMonitorTest_Phase4.kt:228
+
+1180 tests completed, 265 failed
+
+> Task :app:testDebugUnitTest FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///H:/StudioProjects/StudyPlan/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 26s
+35 actionable tasks: 4 executed, 31 up-to-date

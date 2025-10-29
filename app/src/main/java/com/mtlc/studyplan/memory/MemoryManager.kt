@@ -8,10 +8,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import java.lang.ref.WeakReference
 
 /**
@@ -79,23 +82,21 @@ object MemoryManager {
         monitoringJob?.cancel()
         
         monitoringJob = memoryScope.launch {
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             try {
-                val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                
-                while (true) {
+                while (isActive) {
                     val memoryInfo = ActivityManager.MemoryInfo()
                     activityManager.getMemoryInfo(memoryInfo)
-                    
+
                     val pressure = when {
                         memoryInfo.lowMemory -> MemoryPressure.LOW
                         memoryInfo.availMem < (memoryInfo.totalMem * 0.15) -> MemoryPressure.MODERATE
                         else -> MemoryPressure.NORMAL
                     }
-                    
+
                     _memoryPressure.value = pressure
-                    
-                    // Check every 30 seconds
-                    kotlinx.coroutines.delay(30000)
+
+                    delay(30000)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error monitoring memory", e)
@@ -108,14 +109,17 @@ object MemoryManager {
      */
     fun stopMemoryMonitoring() {
         monitoringJob?.cancel()
+        memoryScope.coroutineContext.cancelChildren()
         monitoringJob = null
     }
     
     /**
      * Get memory cache with proper sizing
      */
-    fun <T : Any> getMemoryCache(maxSize: Int = 50): LruCache<String, T> {
-        return LruCache<String, T>(maxSize)
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> getMemoryCache(): LruCache<String, T> {
+        val cache = memoryCache ?: throw IllegalStateException("MemoryManager not initialized")
+        return cache as LruCache<String, T>
     }
     
     /**

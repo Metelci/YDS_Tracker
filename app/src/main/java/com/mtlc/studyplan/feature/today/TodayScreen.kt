@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mtlc.studyplan.data.PlanDurationSettings
 import com.mtlc.studyplan.data.PlanSettingsStore
+import com.mtlc.studyplan.data.TaskRepository
 import com.mtlc.studyplan.ui.a11y.largeTouchTarget
 import com.mtlc.studyplan.ui.components.EmptyState
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
@@ -44,7 +45,8 @@ private data class TodayScreenContentParams(
 
 @Composable
 fun TodayRoute(
-    vm: TodayViewModel = viewModel(),
+    taskRepository: TaskRepository,
+    vm: TodayViewModel = viewModel(factory = TodayViewModel.factory(taskRepository)),
     onNavigateToFocus: (String) -> Unit = {}
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -294,7 +296,25 @@ private fun SwipeableSession(
 @Preview(showBackground = true)
 @Composable
 private fun TodayScreenPreview() {
-    val previewState = TodayUiState(isLoading = false, sessions = FakeTodayData.sessions)
+    val previewState = TodayUiState(
+        isLoading = false,
+        sessions = listOf(
+            SessionUi(
+                id = "preview-1",
+                title = "Reading Sprint",
+                section = "Reading",
+                estMinutes = 25,
+                difficulty = 2
+            ),
+            SessionUi(
+                id = "preview-2",
+                title = "Grammar Pack",
+                section = "Grammar",
+                estMinutes = 20,
+                difficulty = 3
+            )
+        )
+    )
     TodayScreen(
         state = previewState,
         dailyBudgetMinutes = 60,
@@ -302,8 +322,5 @@ private fun TodayScreenPreview() {
         onNavigateToFocus = {}
     )
 }
-
-
-
 
 

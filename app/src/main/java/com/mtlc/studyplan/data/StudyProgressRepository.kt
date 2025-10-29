@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -26,10 +28,15 @@ private val Context.studyProgressDataStore: DataStore<Preferences> by preference
  * - Managing different curriculum phases (Red Book, Blue Book, Green Book, Exam Camp)
  */
 @Singleton
-class StudyProgressRepository @Inject constructor(
-    private val context: Context
+class StudyProgressRepository private constructor(
+    private val dataStore: DataStore<Preferences>
 ) {
-    private val dataStore = context.studyProgressDataStore
+
+    @Inject
+    constructor(context: Context) : this(context.studyProgressDataStore)
+
+    @VisibleForTesting
+    internal constructor(testDataStore: DataStore<Preferences>, @Suppress("UNUSED_PARAMETER") marker: Boolean = false) : this(testDataStore)
 
     private object Keys {
         val CURRENT_WEEK = intPreferencesKey("current_week")
@@ -121,7 +128,26 @@ class StudyProgressRepository @Inject constructor(
     suspend fun setToExamCampPhase(week: Int = 27) = setManualWeekOverride(week.coerceIn(27, 30))
 
     suspend fun getCurrentWeekSync(): Int {
-        // Simplified sync version for testing
-        return 1 // Default to week 1, should use Flow in real app
+        val preferences = dataStore.data.first()
+
+        val manualOverride = preferences[Keys.MANUAL_WEEK_OVERRIDE]
+        if (manualOverride != null && manualOverride > 0) {
+            return manualOverride.coerceIn(1, 30)
+        }
+
+        val storedWeek = preferences[Keys.CURRENT_WEEK]
+        if (storedWeek != null && storedWeek > 0) {
+            return storedWeek.coerceIn(1, 30)
+        }
+
+        val startDateEpochDay = preferences[Keys.STUDY_START_DATE]
+        if (startDateEpochDay != null) {
+            val startDate = LocalDate.ofEpochDay(startDateEpochDay)
+            val today = LocalDate.now()
+            val weeksSinceStart = ChronoUnit.WEEKS.between(startDate, today).toInt() + 1
+            return weeksSinceStart.coerceIn(1, 30)
+        }
+
+        return 1
     }
 }

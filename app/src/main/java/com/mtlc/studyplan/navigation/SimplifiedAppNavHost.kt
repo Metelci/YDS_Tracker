@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mtlc.studyplan.core.WorkingHomeScreen
 import com.mtlc.studyplan.core.WorkingTasksScreen
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.get
 
 @Composable
 fun SimplifiedAppNavHost(
@@ -28,13 +28,13 @@ fun SimplifiedAppNavHost(
     val context = LocalContext.current
 
     // Use provided dependencies or fallback to Koin with proper lifecycle management
-    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: org.koin.compose.koinInject()
+    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: get()
 
     val resolvedStudyProgressRepository = studyProgressRepository ?: com.mtlc.studyplan.data.StudyProgressRepository(context)
 
-    val resolvedTaskRepository = taskRepository ?: org.koin.compose.koinInject()
+    val resolvedTaskRepository = taskRepository ?: get()
 
-    val resolvedSharedViewModel = sharedViewModel ?: org.koin.compose.koinInject()
+    val resolvedSharedViewModel = sharedViewModel ?: get()
 
     NavHost(
         navController = navController,
@@ -44,13 +44,18 @@ fun SimplifiedAppNavHost(
             AnimatedContent(
                 targetState = "home",
                 label = "home_animation"
-            ) { _ ->
-                WorkingHomeScreen(
+            ) { target ->
+                if (target == "home") {
+                    WorkingHomeScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
                     onNavigateToTasks = {
                         navController.navigate("tasks")
+                    },
+                    onNavigateToAnalytics = {
+                        navController.navigate("analytics")
                     }
-                )
+                    )
+                }
             }
         }
 
@@ -58,18 +63,31 @@ fun SimplifiedAppNavHost(
             AnimatedContent(
                 targetState = "tasks",
                 label = "tasks_animation"
-            ) { _ ->
-                WorkingTasksScreen(
+            ) { target ->
+                if (target == "tasks") {
+                    WorkingTasksScreen(
                     appIntegrationManager = resolvedMainAppIntegrationManager,
                     studyProgressRepository = resolvedStudyProgressRepository,
                     taskRepository = resolvedTaskRepository,
                     sharedViewModel = resolvedSharedViewModel
-                )
+                    )
+                }
             }
         }
-        
+
+        composable("analytics") {
+            AnimatedContent(
+                targetState = "analytics",
+                label = "analytics_animation"
+            ) { target ->
+                if (target == "analytics") {
+                    com.mtlc.studyplan.analytics.AnalyticsScreen()
+                }
+            }
+        }
+
         // Add a simple placeholder for other routes
-        composable("{other}") { 
+        composable("{other}") {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Screen not implemented")
             }

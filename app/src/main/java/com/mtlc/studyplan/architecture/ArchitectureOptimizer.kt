@@ -3,7 +3,8 @@ package com.mtlc.studyplan.architecture
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.mtlc.studyplan.image.CoilImageOptimizer
 import com.mtlc.studyplan.memory.MemoryManager
@@ -11,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -20,6 +23,7 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
     
     private val optimizationScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var optimizationJob: Job? = null
+    private val lifecycleObserver = ApplicationLifecycleObserver()
     
     /**
      * Initialize all architectural optimizations
@@ -32,7 +36,7 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
         application.registerComponentCallbacks(this)
         
         // Register process lifecycle observer
-        ProcessLifecycleOwner.get().lifecycle.addObserver(ApplicationLifecycleObserver())
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
         
         // Start optimization processes
         startOptimizationProcesses()
@@ -42,16 +46,24 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
      * Start background optimization processes
      */
     private fun startOptimizationProcesses() {
+        if (optimizationJob?.isActive == true) return
         optimizationJob = optimizationScope.launch {
             // Perform initial optimizations
             performInitialOptimizations()
             
             // Set up periodic optimization checks
-            while (true) {
+            while (isActive) {
                 kotlinx.coroutines.delay(60000) // Check every minute
+                if (!isActive) break
                 performPeriodicOptimizations()
             }
         }
+    }
+
+    private fun stopOptimizationProcesses() {
+        optimizationJob?.cancel()
+        optimizationScope.coroutineContext.cancelChildren()
+        optimizationJob = null
     }
     
     /**
@@ -83,9 +95,10 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
      * Clean up resources when optimization is no longer needed
      */
     fun cleanup() {
-        optimizationJob?.cancel()
+        stopOptimizationProcesses()
         MemoryManager.stopMemoryMonitoring()
         application.unregisterComponentCallbacks(this)
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleObserver)
     }
     
     // ComponentCallbacks2 implementation for memory management
@@ -197,5 +210,13 @@ class ArchitectureOptimizer(private val application: Application) : ComponentCal
     /**
      * Application lifecycle observer for architecture management
      */
-    inner class ApplicationLifecycleObserver : LifecycleObserver
+    inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
+        override fun onStart(owner: LifecycleOwner) {
+            startOptimizationProcesses()
+        }
+
+        override fun onStop(owner: LifecycleOwner) {
+            stopOptimizationProcesses()
+        }
+    }
 }

@@ -30,30 +30,3 @@ sealed interface TodayIntent {
     data class Skip(val id: String) : TodayIntent
     data class Reschedule(val id: String, val at: java.time.LocalDateTime) : TodayIntent
 }
-
-
-object FakeTodayData {
-val sessions = listOf(
-SessionUi(
-id = "s1",
-title = "Reading Sprint (20Q)",
-section = "Reading",
-estMinutes = 25,
-difficulty = 3
-),
-SessionUi(
-id = "s2",
-title = "Grammar Pack (Tenses)",
-section = "Grammar",
-estMinutes = 20,
-difficulty = 2
-),
-SessionUi(
-id = "s3",
-title = "Vocabulary (10 words)",
-section = "Vocab",
-estMinutes = 15,
-difficulty = 2
-)
-)
-}
