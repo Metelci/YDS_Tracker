@@ -185,10 +185,10 @@ class OsymExamScraper @Inject constructor() {
 
             // Try to identify the most likely dates for this exam based on context
             val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.first
-            val regStart = dateResult.second
-            val regEnd = dateResult.third
-            val lateRegEnd = dateResult.fourth
+            val examDate = dateResult.component1()
+            val regStart = dateResult.component2()
+            val regEnd = dateResult.component3()
+            val lateRegEnd = dateResult.component4()
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -310,10 +310,10 @@ class OsymExamScraper @Inject constructor() {
 
             // Try to identify the most likely dates for this exam based on context
             val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.first
-            val regStart = dateResult.second
-            val regEnd = dateResult.third
-            val lateRegEnd = dateResult.fourth
+            val examDate = dateResult.component1()
+            val regStart = dateResult.component2()
+            val regEnd = dateResult.component3()
+            val lateRegEnd = dateResult.component4()
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
@@ -373,10 +373,10 @@ class OsymExamScraper @Inject constructor() {
 
             // Try to identify the most likely dates for this exam based on context
             val dateResult = identifyExamDates(textBlock, dates.toList())
-            val examDate = dateResult.first
-            val regStart = dateResult.second
-            val regEnd = dateResult.third
-            val lateRegEnd = dateResult.fourth
+            val examDate = dateResult.component1()
+            val regStart = dateResult.component2()
+            val regEnd = dateResult.component3()
+            val lateRegEnd = dateResult.component4()
 
             if (examDate != null && examDate.isAfter(LocalDate.now())) {
                 exams.add(
