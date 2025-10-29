@@ -759,6 +759,7 @@ private fun SegmentedControl(
         BoxWithConstraints(Modifier.padding(4.dp)) {
             val segmentCount = segments.size.coerceAtLeast(1)
             val segWidth: Dp = maxWidth / segmentCount
+            // BoxWithConstraints scope is used here
             val targetOffset = segWidth * selectedIndex
             val animatedOffset by animateDpAsState(
                 targetValue = targetOffset,
