@@ -240,35 +240,35 @@ class OsymExamScraper @Inject constructor() {
         if (possibleExamDates.size >= 4) {
             // If we have 4 or more dates, assume [regStart, regEnd, lateRegEnd, examDate] pattern
             return Triple(
-                possibleExamDates[0], // registration start
-                possibleExamDates[1], // registration end
-                possibleExamDates[2], // late registration end
-                possibleExamDates[3]  // exam date
+                possibleExamDates[0] as LocalDate, // registration start
+                possibleExamDates[1] as LocalDate, // registration end
+                possibleExamDates[2] as LocalDate, // late registration end
+                possibleExamDates[3] as LocalDate  // exam date
             )
         } else if (possibleExamDates.size == 3) {
             // If we have 3 dates, assume [regStart, regEnd, examDate] pattern
             return Triple(
-                possibleExamDates[0], // registration start
-                possibleExamDates[1], // registration end
-                null,                 // no late registration
-                possibleExamDates[2] // exam date
+                possibleExamDates[0] as LocalDate, // registration start
+                possibleExamDates[1] as LocalDate, // registration end
+                null,                              // no late registration
+                possibleExamDates[2] as LocalDate // exam date
             )
         } else if (possibleExamDates.size == 2) {
             // If we have 2 dates, assume [regStart, examDate] or [regEnd, examDate]
             // For now, assume first is registration start, second is exam
             return Triple(
-                possibleExamDates[0], // registration start
-                null,                 // no registration end specified
-                null,                 // no late registration
-                possibleExamDates[1] // exam date
+                possibleExamDates[0] as LocalDate, // registration start
+                null,                              // no registration end specified
+                null,                              // no late registration
+                possibleExamDates[1] as LocalDate // exam date
             )
         } else if (possibleExamDates.size == 1) {
             // If we have only 1 date, it's likely the exam date
             return Triple(
-                null,                 // no registration start
-                null,                 // no registration end
-                null,                 // no late registration
-                possibleExamDates[0] // exam date
+                null,                              // no registration start
+                null,                              // no registration end
+                null,                              // no late registration
+                possibleExamDates[0] as LocalDate // exam date
             )
         }
         
