@@ -2,6 +2,9 @@ package com.mtlc.studyplan.analytics
 
 import app.cash.turbine.test
 import com.mtlc.studyplan.testutils.CoroutineTestRule
+import com.mtlc.studyplan.data.StudyProgressRepository
+import kotlinx.coroutines.flow.flowOf
+import com.mtlc.studyplan.repository.TaskRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,6 +26,11 @@ class AnalyticsViewModelTest {
     @Mock
     private lateinit var analyticsEngine: AnalyticsEngine
 
+    @Mock
+    private lateinit var taskRepository: TaskRepository
+
+    @Mock
+    private lateinit var studyProgressRepository: StudyProgressRepository
     private lateinit var viewModel: AnalyticsViewModel
 
     // Test data
@@ -67,12 +75,15 @@ class AnalyticsViewModelTest {
             whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(testWeeklyData)
             whenever(analyticsEngine.getPerformanceData(any())).thenReturn(testPerformanceData)
         }
+        // Setup repository mocks
+        
+        whenever(studyProgressRepository.currentWeek).thenReturn(flowOf(1))
     }
 
     // Initial State Tests
     @Test
     fun `init loads analytics with LAST_30_DAYS timeframe`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         verify(analyticsEngine).generateAnalytics(30)
@@ -82,7 +93,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `initial state has correct defaults`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         assertEquals(AnalyticsTab.OVERVIEW, viewModel.selectedTab.value)
@@ -92,7 +103,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `initial load sets all data correctly`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         assertEquals(testAnalyticsData, viewModel.analyticsData.value)
@@ -103,7 +114,7 @@ class AnalyticsViewModelTest {
     // Load Analytics Tests
     @Test
     fun `loadAnalytics sets loading state correctly`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         // Initial state should be false after init completes
@@ -118,7 +129,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics with LAST_7_DAYS calls engine with correct days`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -133,7 +144,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics with LAST_90_DAYS calls engine with correct days`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -148,7 +159,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics with ALL_TIME calls engine with correct days`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -163,7 +174,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics updates all state flows`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         val newAnalyticsData = AnalyticsData(averageSessionMinutes = 60, totalStudyMinutes = 9000)
@@ -200,7 +211,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics handles exceptions gracefully`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         whenever(analyticsEngine.generateAnalytics(any(), any(), anyOrNull())).thenThrow(RuntimeException("Network error"))
@@ -214,7 +225,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `loadAnalytics sets loading to false even on exception`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         whenever(analyticsEngine.generateAnalytics(any(), any(), anyOrNull())).thenThrow(RuntimeException("Error"))
@@ -228,7 +239,7 @@ class AnalyticsViewModelTest {
     // Select Tab Tests
     @Test
     fun `selectTab updates selected tab`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         viewModel.selectTab(AnalyticsTab.PATTERNS)
@@ -238,7 +249,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `selectTab with PERFORMANCE tab works correctly`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         viewModel.selectTab(AnalyticsTab.PERFORMANCE)
@@ -248,7 +259,7 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `selectTab emits new values to StateFlow`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         viewModel.selectedTab.test {
@@ -269,7 +280,7 @@ class AnalyticsViewModelTest {
     fun `refreshAnalytics with 0 weeks calls LAST_7_DAYS`() = runTest {
         whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(emptyList())
 
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -293,7 +304,7 @@ class AnalyticsViewModelTest {
         )
         whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(oneWeekData)
 
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -317,7 +328,7 @@ class AnalyticsViewModelTest {
         }
         whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(threeWeeksData)
 
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -341,7 +352,7 @@ class AnalyticsViewModelTest {
         }
         whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(eightWeeksData)
 
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -365,7 +376,7 @@ class AnalyticsViewModelTest {
         }
         whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(fifteenWeeksData)
 
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         clearInvocations(analyticsEngine)
@@ -379,7 +390,7 @@ class AnalyticsViewModelTest {
     // Integration Tests
     @Test
     fun `complete workflow - load, select tab, refresh`() = runTest {
-        viewModel = AnalyticsViewModel(analyticsEngine)
+        viewModel = AnalyticsViewModel(analyticsEngine, taskRepository, studyProgressRepository)
         advanceUntilIdle()
 
         // Initial load with LAST_30_DAYS

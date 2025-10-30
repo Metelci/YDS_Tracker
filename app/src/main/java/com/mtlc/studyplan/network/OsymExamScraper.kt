@@ -51,6 +51,16 @@ class OsymExamScraper @Inject constructor() {
     )
 
     /**
+     * Data class to hold exam date information (4 date values)
+     */
+    private data class ExamDateInfo(
+        val examDate: LocalDate?,
+        val regStart: LocalDate?,
+        val regEnd: LocalDate?,
+        val lateRegEnd: LocalDate?
+    )
+
+    /**
      * Fetch all exam data from ÖSYM website
      * Returns list of scraped exam sessions
      */
@@ -225,9 +235,8 @@ class OsymExamScraper @Inject constructor() {
     /**
      * Identify the most likely dates for an exam based on context
      */
-    private fun identifyExamDates(context: String, dates: List<LocalDate>):
-            Triple<LocalDate?, LocalDate?, LocalDate?, LocalDate?> {
-        if (dates.isEmpty()) return Triple(null, null, null, null)
+    private fun identifyExamDates(context: String, dates: List<LocalDate>): ExamDateInfo {
+        if (dates.isEmpty()) return ExamDateInfo(null, null, null, null)
         
         // Look for registration and exam date patterns in the context
         val registrationKeywords = listOf("başvuru", "kayıt", "registration", "apply", "application")
@@ -239,41 +248,41 @@ class OsymExamScraper @Inject constructor() {
         
         if (possibleExamDates.size >= 4) {
             // If we have 4 or more dates, assume [regStart, regEnd, lateRegEnd, examDate] pattern
-            return Triple(
-                possibleExamDates[0] as LocalDate, // registration start
-                possibleExamDates[1] as LocalDate, // registration end
-                possibleExamDates[2] as LocalDate, // late registration end
-                possibleExamDates[3] as LocalDate  // exam date
+            return ExamDateInfo(
+                examDate = possibleExamDates[3],  // exam date
+                regStart = possibleExamDates[0],  // registration start
+                regEnd = possibleExamDates[1],    // registration end
+                lateRegEnd = possibleExamDates[2] // late registration end
             )
         } else if (possibleExamDates.size == 3) {
             // If we have 3 dates, assume [regStart, regEnd, examDate] pattern
-            return Triple(
-                possibleExamDates[0] as LocalDate, // registration start
-                possibleExamDates[1] as LocalDate, // registration end
-                null,                              // no late registration
-                possibleExamDates[2] as LocalDate // exam date
+            return ExamDateInfo(
+                examDate = possibleExamDates[2],  // exam date
+                regStart = possibleExamDates[0],  // registration start
+                regEnd = possibleExamDates[1],    // registration end
+                lateRegEnd = null                 // no late registration
             )
         } else if (possibleExamDates.size == 2) {
             // If we have 2 dates, assume [regStart, examDate] or [regEnd, examDate]
             // For now, assume first is registration start, second is exam
-            return Triple(
-                possibleExamDates[0] as LocalDate, // registration start
-                null,                              // no registration end specified
-                null,                              // no late registration
-                possibleExamDates[1] as LocalDate // exam date
+            return ExamDateInfo(
+                examDate = possibleExamDates[1],  // exam date
+                regStart = possibleExamDates[0],  // registration start
+                regEnd = null,                    // no registration end specified
+                lateRegEnd = null                 // no late registration
             )
         } else if (possibleExamDates.size == 1) {
             // If we have only 1 date, it's likely the exam date
-            return Triple(
-                null,                              // no registration start
-                null,                              // no registration end
-                null,                              // no late registration
-                possibleExamDates[0] as LocalDate // exam date
+            return ExamDateInfo(
+                examDate = possibleExamDates[0],  // exam date
+                regStart = null,                  // no registration start
+                regEnd = null,                    // no registration end
+                lateRegEnd = null                 // no late registration
             )
         }
         
         // If no dates are relevant, return all nulls
-        return Triple(null, null, null, null)
+        return ExamDateInfo(null, null, null, null)
     }
 
     /**

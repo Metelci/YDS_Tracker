@@ -1,13 +1,14 @@
 package com.mtlc.studyplan.core
 
+// removed luminance-based dark theme checks
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -45,18 +46,16 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import com.mtlc.studyplan.ui.theme.FeatureKey
-import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -73,23 +72,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
-// removed luminance-based dark theme checks
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.CompleteMurphyBookData
 import com.mtlc.studyplan.data.DayPlan
 import com.mtlc.studyplan.data.MurphyBook
@@ -101,20 +99,20 @@ import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.TaskPriority
 import com.mtlc.studyplan.data.TaskRepository
-import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.WeekPlan
-import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.AchievementBadge
+import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -756,6 +754,7 @@ private fun SegmentedControl(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
     ) {
         // Sliding indicator layout
+        @Suppress("UnusedBoxWithConstraintsScopeModifier")
         BoxWithConstraints(Modifier.padding(4.dp)) {
             val segmentCount = segments.size.coerceAtLeast(1)
             val segWidth: Dp = maxWidth / segmentCount
@@ -2035,7 +2034,7 @@ private fun DailyTab(
     LaunchedEffect(selectedDay) {
         if (selectedDay != null) {
             isLoading = true
-            kotlinx.coroutines.delay(800) // Simulate loading
+            delay(800) // Simulate loading
             isLoading = false
         }
     }

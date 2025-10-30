@@ -124,7 +124,9 @@
       "Bash(unzip:*)",
       "Bash(aapt dump:*)",
       "Bash(git stash:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(powershell -Command \"Get-Process java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(powershell -Command:*)"
     ],
     "deny": [],
     "ask": []
