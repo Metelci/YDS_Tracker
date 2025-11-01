@@ -9,8 +9,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -265,7 +263,6 @@ enum class AnalyticsTab(
     INSIGHTS("Insights", Icons.AutoMirrored.Filled.ShowChart)
 }
 
-private val AnalyticsCardBorder = BorderStroke(1.dp, Color(0xFF003153))
 private val AnalyticsCardShape = RoundedCornerShape(16.dp)
 private val AnalyticsSectionSpacing = 16.dp
 private val AnalyticsHorizontalPadding = 16.dp
@@ -440,8 +437,7 @@ fun MetricCard(
 ) {
     ElevatedCard(
         modifier = modifier
-            .width(140.dp)
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .width(140.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
         shape = AnalyticsCardShape
     ) {
@@ -505,8 +501,7 @@ fun StudyProgressChart(
 
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.analytics", "Study Progress")),
         shape = AnalyticsCardShape
     ) {
@@ -746,8 +741,7 @@ fun PerformanceSection(
             // Performance metrics skeleton
             ElevatedCard(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .border(AnalyticsCardBorder, AnalyticsCardShape),
+                    .fillMaxWidth(),
                 shape = AnalyticsCardShape
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -801,8 +795,7 @@ fun PerformanceMetricsCard(
 ) {
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .fillMaxWidth(),
         shape = AnalyticsCardShape
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -869,8 +862,7 @@ fun WeakAreasCard(
 ) {
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .fillMaxWidth(),
         shape = AnalyticsCardShape
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -982,8 +974,7 @@ fun InsightsSection(
 fun LoadingCard() {
     ElevatedCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .fillMaxWidth(),
         shape = AnalyticsCardShape
     ) {
         Box(
@@ -1005,8 +996,7 @@ fun EmptyStateCard(
 ) {
     ElevatedCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .fillMaxWidth(),
         shape = AnalyticsCardShape
     ) {
         Column(
@@ -1070,8 +1060,7 @@ private fun MetricCardSkeleton(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(96.dp)
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .height(96.dp),
         shape = AnalyticsCardShape
     ) {
         Column(
@@ -1092,8 +1081,7 @@ private fun ChartSkeleton(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(180.dp)
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .height(180.dp),
         shape = AnalyticsCardShape
     ) {
         ShimmerOverlay(modifier = Modifier.fillMaxSize())
@@ -1105,8 +1093,7 @@ private fun ShimmerCard(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(160.dp)
-            .border(AnalyticsCardBorder, AnalyticsCardShape),
+            .height(160.dp),
         shape = AnalyticsCardShape
     ) {
         ShimmerOverlay(modifier = Modifier.fillMaxSize())
