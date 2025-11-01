@@ -4,7 +4,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.64 (October 30, 2025)
+- **Latest release:** v2.9.65 (November 2, 2025)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30
@@ -40,8 +40,11 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Biometric authentication (fingerprint/face) and PIN fallback.
 - Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-## Recent Highlights (v2.9.52 – v2.9.63)
+## Recent Highlights (v2.9.52 – v2.9.65)
 
+- **v2.9.65:** Analytics Performance tab UI polish - fixed tab title truncation, scaled text to fit in one line, enhanced chart with legend and grid lines.
+- **v2.9.65:** Performance Trends chart now properly displays single data points for new users - no more empty space.
+- **v2.9.65:** Verified all analytics display real user data - production-ready with proper empty states for first-time users.
 - **v2.9.63:** Analytics navigation fully wired - Points Today and Streak cards now clickable and navigate to comprehensive analytics dashboard.
 - **v2.9.63:** Settings cards spacing optimized between tabs and content for consistent visual hierarchy.
 - **v2.9.63:** All settings cards now use gradient backgrounds instead of solid colors for enhanced visual appeal.

@@ -758,9 +758,9 @@ private fun SegmentedControl(
         BoxWithConstraints(Modifier.padding(4.dp)) {
             val segmentCount = segments.size.coerceAtLeast(1)
             val density = LocalDensity.current
-            val availableWidth = with(density) { constraints.maxWidth.toDp() }
+            val maxWidth = constraints.maxWidth
+            val availableWidth = with(density) { maxWidth.toDp() }
             val segWidth: Dp = availableWidth / segmentCount
-            // BoxWithConstraints scope is used here
             val targetOffset = segWidth * selectedIndex
             val animatedOffset by animateDpAsState(
                 targetValue = targetOffset,
@@ -2880,14 +2880,18 @@ fun PaginatedTaskList(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${if (showCompletedTasks) "Completed" else "Pending"} Tasks (${taskListState.totalCount})",
+                text = stringResource(
+                    R.string.tasks_list_title,
+                    stringResource(if (showCompletedTasks) R.string.tasks_list_completed else R.string.tasks_list_pending),
+                    taskListState.totalCount
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
 
             if (taskListState.totalCount > pageSize) {
                 Text(
-                    text = "Page ${taskListState.currentPage + 1}",
+                    text = stringResource(R.string.tasks_list_page, taskListState.currentPage + 1),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -2912,7 +2916,7 @@ fun PaginatedTaskList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No ${if (showCompletedTasks) "completed" else "pending"} tasks found",
+                    text = stringResource(if (showCompletedTasks) R.string.tasks_list_no_completed else R.string.tasks_list_no_pending),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -2965,7 +2969,11 @@ fun PaginatedTaskList(
                 }
 
                 Text(
-                    text = "${taskListState.currentPage + 1} / ${maxOf(1, (taskListState.totalCount + pageSize - 1) / pageSize)}",
+                    text = stringResource(
+                        R.string.tasks_list_page_info,
+                        taskListState.currentPage + 1,
+                        maxOf(1, (taskListState.totalCount + pageSize - 1) / pageSize)
+                    ),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -3062,7 +3070,7 @@ private fun TaskListItem(task: Task) {
                     if (task.estimatedMinutes > 0) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${task.estimatedMinutes}min",
+                            text = stringResource(R.string.tasks_list_minutes_format, task.estimatedMinutes),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -3071,7 +3079,7 @@ private fun TaskListItem(task: Task) {
                     if (task.pointsValue > 0) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${task.pointsValue}pts",
+                            text = stringResource(R.string.tasks_list_points_format, task.pointsValue),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )

@@ -81,13 +81,9 @@ class AnalyticsViewModel(
                 _weeklyData.value = weekly
 
                 // Get performance data
-                val performance = PerformanceData(
-                    averageAccuracy = data.taskCompletionRate,
-                    averageSpeed = data.averageSessionMinutes.toFloat(),
-                    consistencyScore = data.consistencyScore,
-                    weakAreas = emptyList(),
-                    totalMinutes = data.totalStudyMinutes,
-                    taskCount = data.completedTasks
+                val performance = analyticsEngine.getPerformanceData(
+                    days = timeframe.days,
+                    taskLogs = taskLogs
                 )
                 _performanceData.value = performance
             } catch (e: Exception) {

@@ -48,8 +48,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -171,7 +171,7 @@ private fun AnalyticsTabBar(
     selectedTab: AnalyticsTab,
     onTabSelected: (AnalyticsTab) -> Unit
 ) {
-    ScrollableTabRow(
+    TabRow(
         selectedTabIndex = selectedTab.ordinal,
         modifier = Modifier.fillMaxWidth(),
         contentColor = MaterialTheme.colorScheme.primary,
@@ -189,13 +189,17 @@ private fun AnalyticsTabBar(
                 text = {
                     Text(
                         text = tab.displayName,
-                        fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 icon = {
                     Icon(
                         imageVector = tab.icon,
-                        contentDescription = tab.displayName
+                        contentDescription = tab.displayName,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             )
@@ -329,12 +333,14 @@ fun OverviewSection(
             verticalArrangement = Arrangement.spacedBy(AnalyticsSectionSpacing)
         ) {
             // Metrics grid skeleton
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(AnalyticsSectionSpacing),
-                contentPadding = PaddingValues(horizontal = 4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items(4) {
-                    MetricCardSkeleton()
+                repeat(4) {
+                    MetricCardSkeleton(modifier = Modifier.weight(1f))
                 }
             }
 
@@ -376,57 +382,54 @@ fun MetricsGrid(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AnalyticsSectionSpacing),
-        contentPadding = PaddingValues(horizontal = AnalyticsHorizontalPadding / 2)
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        item {
-            MetricCard(
-                data = MetricCardData(
-                    title = "Study Streak",
-                    value = "${data.studyStreak.currentStreak}",
-                    subtitle = "days",
-                    icon = Icons.Filled.LocalFireDepartment,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-        item {
-            MetricCard(
-                data = MetricCardData(
-                    title = "Total Time",
-                    value = "${data.totalStudyMinutes / 60}h ${data.totalStudyMinutes % 60}m",
-                    subtitle = "studied",
-                    icon = Icons.Filled.AccessTime,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            )
-        }
-        item {
-            MetricCard(
-                data = MetricCardData(
-                    title = "Tasks Done",
-                    value = "${data.completedTasks}",
-                    subtitle = "completed",
-                    icon = Icons.Filled.CheckCircle,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-            )
-        }
-        item {
-            MetricCard(
-                data = MetricCardData(
-                    title = "Avg Score",
-                    value = "${(data.averagePerformance * 100).toInt()}%",
-                    subtitle = "accuracy",
-                    icon = Icons.AutoMirrored.Filled.TrendingUp,
-                    color = if (data.averagePerformance > 0.8)
-                        MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.error
-                )
-            )
-        }
+        MetricCard(
+            data = MetricCardData(
+                title = "Streak",
+                value = "${data.studyStreak.currentStreak}",
+                subtitle = "days",
+                icon = Icons.Filled.LocalFireDepartment,
+                color = MaterialTheme.colorScheme.primary
+            ),
+            modifier = Modifier.weight(1f)
+        )
+        MetricCard(
+            data = MetricCardData(
+                title = "Time",
+                value = "${data.totalStudyMinutes / 60}h",
+                subtitle = "studied",
+                icon = Icons.Filled.AccessTime,
+                color = MaterialTheme.colorScheme.secondary
+            ),
+            modifier = Modifier.weight(1f)
+        )
+        MetricCard(
+            data = MetricCardData(
+                title = "Tasks",
+                value = "${data.completedTasks}",
+                subtitle = "done",
+                icon = Icons.Filled.CheckCircle,
+                color = MaterialTheme.colorScheme.tertiary
+            ),
+            modifier = Modifier.weight(1f)
+        )
+        MetricCard(
+            data = MetricCardData(
+                title = "Score",
+                value = "${(data.averagePerformance * 100).toInt()}%",
+                subtitle = "avg",
+                icon = Icons.AutoMirrored.Filled.TrendingUp,
+                color = if (data.averagePerformance > 0.8)
+                    MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.error
+            ),
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
@@ -436,38 +439,39 @@ fun MetricCard(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-        modifier = modifier
-            .width(140.dp),
+        modifier = modifier,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
         shape = AnalyticsCardShape
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 8.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
                 imageVector = data.icon,
                 contentDescription = data.title,
                 tint = data.color,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = data.value,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = data.color
+                color = data.color,
+                maxLines = 1
             )
             Text(
                 text = data.subtitle,
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1
             )
             Text(
                 text = data.title,
-                fontSize = 11.sp,
+                fontSize = 9.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -843,14 +847,16 @@ fun PerformanceMetric(
     ) {
         Text(
             text = value,
-            fontSize = 24.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = color
         )
         Text(
             text = label,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -903,19 +909,25 @@ fun WeakAreaItem(
             Text(
                 text = weakArea.category,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = "${(weakArea.errorRate * 100).toInt()}% error rate",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Text(
             text = weakArea.recommendedFocus,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -1059,19 +1071,19 @@ private fun SearchLoadingState(query: String, modifier: Modifier = Modifier) {
 private fun MetricCardSkeleton(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
-            .height(96.dp),
+            .height(75.dp),
         shape = AnalyticsCardShape
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ShimmerText(width = 0.45f, height = 14f)
-            ShimmerText(width = 0.65f, height = 20f)
-            ShimmerText(width = 0.35f, height = 12f)
+            ShimmerText(width = 0.5f, height = 12f)
+            ShimmerText(width = 0.7f, height = 16f)
+            ShimmerText(width = 0.4f, height = 10f)
         }
     }
 }

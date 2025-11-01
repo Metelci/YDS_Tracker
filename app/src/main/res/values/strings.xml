@@ -667,6 +667,17 @@
     <string name="tasks_plan_day_placeholder">Detailed tasks will appear here once your plan is generated.</string>
     <string name="tasks_daily_estimated_time_default">to be estimated</string>
 
+    <!-- Task List Screen -->
+    <string name="tasks_list_completed">Completed</string>
+    <string name="tasks_list_pending">Pending</string>
+    <string name="tasks_list_title">%1$s Tasks (%2$d)</string>
+    <string name="tasks_list_page">Page %1$d</string>
+    <string name="tasks_list_page_info">%1$d / %2$d</string>
+    <string name="tasks_list_no_completed">No completed tasks found</string>
+    <string name="tasks_list_no_pending">No pending tasks found</string>
+    <string name="tasks_list_minutes_format">%1$dmin</string>
+    <string name="tasks_list_points_format">%1$dpts</string>
+
     <!-- Home screen -->
     <string name="home_title">Home</string>
     <string name="home_today_progress_title">Today\'s Progress</string>

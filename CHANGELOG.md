@@ -1,3 +1,25 @@
+## [2.9.65] - 2025-11-02 (hotfix)
+
+### UI Improvements
+- **Analytics Performance Tab**: Fixed "Performance" tab title truncation by reducing font size from 13.sp to 12.sp - now displays full text without ellipsis.
+- **Areas for Improvement Card**: Scaled all text elements (category, error rate, recommended focus) to fit in one line with graceful overflow handling.
+- **Performance Trends Chart Enhancement**:
+  - Added visual legend showing Accuracy (primary color) and Speed (secondary color) indicators.
+  - Fixed empty space issue when user has minimal data - chart now properly displays single data points.
+  - Added grid lines for better readability.
+  - Increased point radius from 4.dp to 5.dp for improved visibility.
+  - Smart line drawing only connects points when 2+ data points exist.
+
+### Data Wiring
+- **Real Statistics Integration**: Verified all analytics cards display real user data from repositories (TaskRepository, StudyProgressRepository) instead of mock data.
+- **Empty State Handling**: Confirmed proper empty states for new users with no task history.
+- **Production Ready**: Full codebase scan verified no mock data seeding on app startup - app ready for first-time users.
+
+### Build
+- ✅ All production builds passing successfully with zero compilation errors.
+- ✅ Release APK generated and verified.
+- Bumped Android versionCode to 93 / versionName 2.9.65.
+
 ## [2.9.64] - 2025-10-30 (hotfix)
 
 ### Bug Fixes

@@ -88,15 +88,39 @@ class AnalyticsEngine(
         }.sortedBy { it.weekNumber }
     }
 
-    suspend fun getPerformanceData(days: Int): PerformanceData = withContext(Dispatchers.Default) {
-        // Placeholder: legacy behaviour preserved until ViewModel is updated to pass logs.
+    suspend fun getPerformanceData(days: Int, taskLogs: List<TaskLog> = emptyList()): PerformanceData = withContext(Dispatchers.Default) {
+        if (taskLogs.isEmpty()) {
+            return@withContext PerformanceData(
+                averageAccuracy = 0f,
+                averageSpeed = 0f,
+                consistencyScore = 0f,
+                weakAreas = emptyList(),
+                totalMinutes = 0,
+                taskCount = 0
+            )
+        }
+
+        val recentLogs = filterLogsByDays(taskLogs, days)
+        if (recentLogs.isEmpty()) {
+            return@withContext PerformanceData(
+                averageAccuracy = 0f,
+                averageSpeed = 0f,
+                consistencyScore = 0f,
+                weakAreas = emptyList(),
+                totalMinutes = 0,
+                taskCount = 0
+            )
+        }
+
+        val weakAreas = studyPatternAnalyzer.identifyWeakAreas(recentLogs)
+
         PerformanceData(
-            averageAccuracy = 0.85f,
-            averageSpeed = 45f,
-            consistencyScore = 0.8f,
-            weakAreas = emptyList(),
-            totalMinutes = 630,
-            taskCount = 75
+            averageAccuracy = if (recentLogs.isEmpty()) 0f else recentLogs.count { it.correct }.toFloat() / recentLogs.size,
+            averageSpeed = metricsCalculator.averageSpeed(recentLogs),
+            consistencyScore = studyPatternAnalyzer.consistencyMetric(recentLogs),
+            weakAreas = weakAreas,
+            totalMinutes = recentLogs.sumOf { it.minutesSpent },
+            taskCount = recentLogs.size
         )
     }
 

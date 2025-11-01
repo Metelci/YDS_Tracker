@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -384,11 +385,50 @@ fun RecommendationsCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            recommendations.take(5).forEach { recommendation ->
-                RecommendationItem(
-                    recommendation = recommendation,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+            if (recommendations.isEmpty()) {
+                // Show default welcome message when no data
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Welcome to StudyPlan!",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.EmojiObjects,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Start completing study sessions to receive personalized AI recommendations based on your learning patterns, performance, and study habits.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            } else {
+                recommendations.take(5).forEach { recommendation ->
+                    RecommendationItem(
+                        recommendation = recommendation,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
             }
         }
     }
@@ -642,6 +682,40 @@ fun PerformanceTrendsChart(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Legend
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Accuracy",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(MaterialTheme.colorScheme.secondary, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Speed",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Multi-line chart for accuracy and speed
             MultiLineChart(
                 accuracyData = weeklyData.map { it.averageAccuracy },
@@ -664,12 +738,17 @@ fun MultiLineChart(
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(modifier = modifier) {
         if (accuracyData.isEmpty()) return@Canvas
 
         val padding = 40.dp.toPx()
-        val stepX = (size.width - 2 * padding) / (accuracyData.size - 1).coerceAtLeast(1)
+        val stepX = if (accuracyData.size > 1) {
+            (size.width - 2 * padding) / (accuracyData.size - 1)
+        } else {
+            size.width / 2
+        }
 
         // Normalize data
         val maxAccuracy = accuracyData.maxOrNull() ?: 1f
@@ -677,15 +756,28 @@ fun MultiLineChart(
         val maxSpeed = speedData.maxOrNull() ?: 1f
         val minSpeed = speedData.minOrNull() ?: 0f
 
-        // Draw accuracy line
-        if (accuracyData.size > 1) {
-            val accuracyPoints = accuracyData.mapIndexed { index, value ->
-                val x = padding + stepX * index
-                val normalizedValue = (value - minAccuracy) / (maxAccuracy - minAccuracy).coerceAtLeast(0.001f)
-                val y = size.height - padding - normalizedValue * (size.height - 2 * padding)
-                Offset(x, y)
-            }
+        // Draw grid lines
+        val gridLineColor = surfaceVariant.copy(alpha = 0.3f)
+        for (i in 0..4) {
+            val y = padding + (size.height - 2 * padding) * i / 4
+            drawLine(
+                color = gridLineColor,
+                start = Offset(padding, y),
+                end = Offset(size.width - padding, y),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
 
+        // Draw accuracy line/points
+        val accuracyPoints = accuracyData.mapIndexed { index, value ->
+            val x = if (accuracyData.size == 1) size.width / 2 else padding + stepX * index
+            val normalizedValue = (value - minAccuracy) / (maxAccuracy - minAccuracy).coerceAtLeast(0.001f)
+            val y = size.height - padding - normalizedValue * (size.height - 2 * padding)
+            Offset(x, y)
+        }
+
+        // Draw lines only if multiple points
+        if (accuracyPoints.size > 1) {
             for (i in 0 until accuracyPoints.size - 1) {
                 drawLine(
                     color = primaryColor,
@@ -694,38 +786,43 @@ fun MultiLineChart(
                     strokeWidth = 3.dp.toPx()
                 )
             }
-
-            accuracyPoints.forEach { point ->
-                drawCircle(
-                    color = primaryColor,
-                    radius = 4.dp.toPx(),
-                    center = point
-                )
-            }
         }
 
-        // Draw speed line (inverted since lower is better)
-        if (speedData.size > 1) {
+        // Always draw points
+        accuracyPoints.forEach { point ->
+            drawCircle(
+                color = primaryColor,
+                radius = 5.dp.toPx(),
+                center = point
+            )
+        }
+
+        // Draw speed line/points (inverted since lower is better)
+        if (speedData.isNotEmpty()) {
             val speedPoints = speedData.mapIndexed { index, value ->
-                val x = padding + stepX * index
+                val x = if (speedData.size == 1) size.width / 2 else padding + stepX * index
                 val normalizedValue = 1f - ((value - minSpeed) / (maxSpeed - minSpeed).coerceAtLeast(0.001f))
                 val y = size.height - padding - normalizedValue * (size.height - 2 * padding)
                 Offset(x, y)
             }
 
-            for (i in 0 until speedPoints.size - 1) {
-                drawLine(
-                    color = secondaryColor,
-                    start = speedPoints[i],
-                    end = speedPoints[i + 1],
-                    strokeWidth = 3.dp.toPx()
-                )
+            // Draw lines only if multiple points
+            if (speedPoints.size > 1) {
+                for (i in 0 until speedPoints.size - 1) {
+                    drawLine(
+                        color = secondaryColor,
+                        start = speedPoints[i],
+                        end = speedPoints[i + 1],
+                        strokeWidth = 3.dp.toPx()
+                    )
+                }
             }
 
+            // Always draw points
             speedPoints.forEach { point ->
                 drawCircle(
                     color = secondaryColor,
-                    radius = 4.dp.toPx(),
+                    radius = 5.dp.toPx(),
                     center = point
                 )
             }
