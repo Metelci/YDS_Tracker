@@ -80,6 +80,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -754,10 +755,11 @@ private fun SegmentedControl(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
     ) {
         // Sliding indicator layout
-        @Suppress("UnusedBoxWithConstraintsScopeModifier")
         BoxWithConstraints(Modifier.padding(4.dp)) {
             val segmentCount = segments.size.coerceAtLeast(1)
-            val segWidth: Dp = maxWidth / segmentCount
+            val density = LocalDensity.current
+            val availableWidth = with(density) { constraints.maxWidth.toDp() }
+            val segWidth: Dp = availableWidth / segmentCount
             // BoxWithConstraints scope is used here
             val targetOffset = segWidth * selectedIndex
             val animatedOffset by animateDpAsState(
@@ -3181,6 +3183,5 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
-
 
 
