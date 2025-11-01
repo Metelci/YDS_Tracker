@@ -168,8 +168,7 @@ fun NavGraphBuilder.appNavigationGraph(params: AppNavigationGraphParams) {
 
     composable(PLAN_ROUTE) {
         com.mtlc.studyplan.feature.today.TodayRoute(
-            taskRepository = params.taskRepository,
-            onNavigateToFocus = { taskId -> navController.navigate("focus/$taskId") }
+            taskRepository = params.taskRepository
         )
     }
 

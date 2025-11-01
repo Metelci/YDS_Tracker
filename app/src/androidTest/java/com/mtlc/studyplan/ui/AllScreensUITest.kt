@@ -92,8 +92,7 @@ class AllScreensUITest {
         composeTestRule.setContent {
             TodayRoute(
                 taskRepository = mockTaskRepository,
-                vm = mockTodayViewModel,
-                onNavigateToFocus = {}
+                vm = mockTodayViewModel
             )
         }
         
@@ -167,8 +166,7 @@ class AllScreensUITest {
             setContent {
                 TodayRoute(
                     taskRepository = mockTaskRepository,
-                    vm = mockTodayViewModel,
-                    onNavigateToFocus = {}
+                    vm = mockTodayViewModel
                 )
             }
             waitForIdle()

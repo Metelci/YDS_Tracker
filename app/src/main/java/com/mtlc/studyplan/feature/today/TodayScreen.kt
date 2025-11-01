@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
-import androidx.compose.material.icons.filled.CenterFocusWeak
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,7 +37,6 @@ private data class TodayScreenContentParams(
     val state: TodayUiState,
     val dailyBudgetMinutes: Int?,
     val onStart: (String) -> Unit,
-    val onNavigateToFocus: (String) -> Unit,
     val paddingValues: PaddingValues,
     val spacing: Spacing
 )
@@ -46,8 +44,7 @@ private data class TodayScreenContentParams(
 @Composable
 fun TodayRoute(
     taskRepository: TaskRepository,
-    vm: TodayViewModel = viewModel(factory = TodayViewModel.factory(taskRepository)),
-    onNavigateToFocus: (String) -> Unit = {}
+    vm: TodayViewModel = viewModel(factory = TodayViewModel.factory(taskRepository))
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -76,8 +73,7 @@ fun TodayRoute(
     TodayScreen(
         state = state,
         dailyBudgetMinutes = dailyBudgetMinutes,
-        onStart = { id -> vm.dispatch(TodayIntent.StartSession(id)) },
-        onNavigateToFocus = onNavigateToFocus
+        onStart = { id -> vm.dispatch(TodayIntent.StartSession(id)) }
     )
 }
 
@@ -85,8 +81,7 @@ fun TodayRoute(
 fun TodayScreen(
     state: TodayUiState,
     dailyBudgetMinutes: Int?,
-    onStart: (String) -> Unit,
-    onNavigateToFocus: (String) -> Unit = {}
+    onStart: (String) -> Unit
 ) {
     val spacing = LocalSpacing.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -100,7 +95,6 @@ fun TodayScreen(
             state = state,
             dailyBudgetMinutes = dailyBudgetMinutes,
             onStart = onStart,
-            onNavigateToFocus = onNavigateToFocus,
             paddingValues = paddingValues,
             spacing = spacing
         )
@@ -174,7 +168,6 @@ private fun TodayScreenSessionsContent(params: TodayScreenContentParams) {
         TodayScreenSessionsList(
             sessions = params.state.sessions,
             onStart = params.onStart,
-            onNavigateToFocus = params.onNavigateToFocus,
             spacing = params.spacing
         )
     }
@@ -216,7 +209,6 @@ private fun TodayScreenStatsRow(
 private fun TodayScreenSessionsList(
     sessions: List<SessionUi>,
     onStart: (String) -> Unit,
-    onNavigateToFocus: (String) -> Unit,
     spacing: Spacing
 ) {
     LazyColumn(
@@ -228,8 +220,7 @@ private fun TodayScreenSessionsList(
         items(sessions, key = { it.id }) { item ->
             SwipeableSession(
                 session = item,
-                onStart = onStart,
-                onNavigateToFocus = onNavigateToFocus
+                onStart = onStart
             )
         }
         item { Spacer(Modifier.height(80.dp)) }
@@ -240,8 +231,7 @@ private fun TodayScreenSessionsList(
 private fun SessionCard(
     s: SessionUi,
     onStart: (String) -> Unit,
-    onSkip: (String) -> Unit,
-    onNavigateToFocus: (String) -> Unit = {}
+    onSkip: (String) -> Unit
 ) {
     // Use MaterialTheme for dark/light derived colors if needed
     // Rotate through pastel palette for visual variety while keeping contrast
@@ -268,11 +258,6 @@ private fun SessionCard(
             Spacer(Modifier.height(LocalSpacing.current.sm))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { onStart(s.id) }) { Text("Start") }
-                OutlinedButton(onClick = { onNavigateToFocus(s.id) }) {
-                    Icon(imageVector = Icons.Default.CenterFocusWeak, contentDescription = "Focus Mode", modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Focus")
-                }
                 TextButton(onClick = { onSkip(s.id) }) { Text("Skip") }
             }
         }
@@ -282,14 +267,12 @@ private fun SessionCard(
 @Composable
 private fun SwipeableSession(
     session: SessionUi,
-    onStart: (String) -> Unit,
-    onNavigateToFocus: (String) -> Unit = {}
+    onStart: (String) -> Unit
 ) {
     SessionCard(
         s = session,
         onStart = onStart,
-        onSkip = { },
-        onNavigateToFocus = onNavigateToFocus
+        onSkip = { }
     )
 }
 
@@ -318,8 +301,7 @@ private fun TodayScreenPreview() {
     TodayScreen(
         state = previewState,
         dailyBudgetMinutes = 60,
-        onStart = {},
-        onNavigateToFocus = {}
+        onStart = {}
     )
 }
 

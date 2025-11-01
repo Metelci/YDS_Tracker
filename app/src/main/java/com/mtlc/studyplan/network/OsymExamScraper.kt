@@ -2,13 +2,11 @@ package com.mtlc.studyplan.network
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,7 +51,7 @@ class OsymExamScraper @Inject constructor() {
     /**
      * Data class to hold exam date information (4 date values)
      */
-    private data class ExamDateInfo(
+    data class ExamDateInfo(
         val examDate: LocalDate?,
         val regStart: LocalDate?,
         val regEnd: LocalDate?,
