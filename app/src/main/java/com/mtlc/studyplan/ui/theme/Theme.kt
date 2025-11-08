@@ -2,10 +2,14 @@
 
 package com.mtlc.studyplan.ui.theme
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.mtlc.studyplan.ui.a11y.LocalReducedMotion
 import com.mtlc.studyplan.ui.a11y.prefersReducedMotion
@@ -27,9 +31,9 @@ private val LightColorScheme = lightColorScheme(
     onError = md_theme_light_onError,
     errorContainer = md_theme_light_errorContainer,
     onErrorContainer = md_theme_light_onErrorContainer,
-    background = md_theme_light_background,
+    background = Color.White.copy(alpha = 0.7f), // Semi-transparent to show gradient
     onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
+    surface = Color.White.copy(alpha = 0.7f), // Semi-transparent to show gradient
     onSurface = md_theme_light_onSurface,
     surfaceVariant = md_theme_light_surfaceVariant,
     onSurfaceVariant = md_theme_light_onSurfaceVariant,
@@ -57,11 +61,15 @@ fun StudyPlanTheme(
         LocalReducedMotion provides reducedMotion,
         LocalSpacing provides Spacing()
     ) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = Typography,
-            shapes = Shapes,
-            content = content
-        )
+        GradientBlueBackgroundWithHighlights(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = Typography,
+                shapes = Shapes,
+                content = content
+            )
+        }
     }
 }

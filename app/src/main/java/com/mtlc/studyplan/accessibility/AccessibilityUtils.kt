@@ -88,12 +88,7 @@ object AccessibilityUtils {
      */
     fun enhanceSettingItemAccessibility(
         itemView: View,
-        title: String,
-        description: String,
-        currentValue: String,
-        position: Int,
-        totalItems: Int,
-        isClickable: Boolean = true
+        details: SettingItemAccessibility
     ) {
         ViewCompat.setAccessibilityDelegate(itemView, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(
@@ -103,17 +98,17 @@ object AccessibilityUtils {
                 super.onInitializeAccessibilityNodeInfo(host, info)
 
                 // Build comprehensive description
-                val positionInfo = "Item $position of $totalItems"
-                val valueInfo = "Current value: $currentValue"
-                val fullDescription = "$title, $description, $valueInfo, $positionInfo"
+                val positionInfo = "Item ${details.position} of ${details.totalItems}"
+                val valueInfo = "Current value: ${details.currentValue}"
+                val fullDescription = "${details.title}, ${details.description}, $valueInfo, $positionInfo"
 
                 info.contentDescription = fullDescription
 
-                if (isClickable) {
+                if (details.isClickable) {
                     info.addAction(
                         AccessibilityNodeInfoCompat.AccessibilityActionCompat(
                             AccessibilityNodeInfoCompat.ACTION_CLICK,
-                            "Double tap to modify $title"
+                            "Double tap to modify ${details.title}"
                         )
                     )
                 }
@@ -121,7 +116,7 @@ object AccessibilityUtils {
                 // Set collection item info for better navigation
                 info.setCollectionItemInfo(
                     AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                        position, 1, 0, 1, false
+                        details.position, 1, 0, 1, false
                     )
                 )
             }
@@ -321,7 +316,7 @@ object AccessibilityUtils {
 
     private fun applyHighContrastToChildren(
         viewGroup: ViewGroup,
-        colors: AccessibilityEnhancementManager.HighContrastColors
+        colors: HighContrastColors
     ) {
         for (i in 0 until viewGroup.childCount) {
             val child = viewGroup.getChildAt(i)
@@ -341,11 +336,7 @@ object AccessibilityUtils {
      */
     fun enhanceSearchResultAccessibility(
         itemView: View,
-        title: String,
-        description: String,
-        matchedText: String,
-        position: Int,
-        totalResults: Int
+        result: SearchResultAccessibility
     ) {
         ViewCompat.setAccessibilityDelegate(itemView, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(
@@ -354,25 +345,42 @@ object AccessibilityUtils {
             ) {
                 super.onInitializeAccessibilityNodeInfo(host, info)
 
-                val resultInfo = "Search result $position of $totalResults"
-                val matchInfo = "Matches: $matchedText"
-                val fullDescription = "$title, $description, $matchInfo, $resultInfo"
+                val resultInfo = "Search result ${result.position} of ${result.totalResults}"
+                val matchInfo = "Matches: ${result.matchedText}"
+                val fullDescription = "${result.title}, ${result.description}, $matchInfo, $resultInfo"
 
                 info.contentDescription = fullDescription
 
                 info.addAction(
                     AccessibilityNodeInfoCompat.AccessibilityActionCompat(
                         AccessibilityNodeInfoCompat.ACTION_CLICK,
-                        "Double tap to open $title"
+                        "Double tap to open ${result.title}"
                     )
                 )
 
                 info.setCollectionItemInfo(
                     AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                        position, 1, 0, 1, false
+                        result.position, 1, 0, 1, false
                     )
                 )
             }
         })
     }
+
+    data class SettingItemAccessibility(
+        val title: String,
+        val description: String,
+        val currentValue: String,
+        val position: Int,
+        val totalItems: Int,
+        val isClickable: Boolean = true
+    )
+
+    data class SearchResultAccessibility(
+        val title: String,
+        val description: String,
+        val matchedText: String,
+        val position: Int,
+        val totalResults: Int
+    )
 }

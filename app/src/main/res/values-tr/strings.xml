@@ -9,11 +9,58 @@
   <string name="time_until_exam">Sınava Kalan Süre</string>
   <string name="osym_button">Resmi Sınav Kurulu Web Sitesine Git</string>
   <string name="time_expired">Süre Doldu</string>
+  <string name="add_to_calendar">Takvime ekle</string>
   <string name="application_reminder_title">Sınav Başvuru Hatırlatıcısı</string>
   <string name="study_reminder_title">Çalışma Zamanı!</string>
   <string name="study_reminder_text">Bugünkü hedefleri tamamlamayı unutma.</string>
   <string name="application_started">bugün başvurular başladı!</string>
   <string name="application_deadline_today">bugün başvurular için son gün!</string>
+
+  <!-- Gentle Comeback Reminders (3+ days without study) -->
+  <string name="comeback_reminder_title">Seni Özledik!</string>
+  <string name="comeback_reminder_1">Hayat bazen yoğun olur, ve bu tamamen normal. Ama biliyoruz ki bunu başarabilirsin. Bugün sadece 10 dakika çalışır mısın?</string>
+  <string name="comeback_reminder_2">Çok uzağa geldin bile. Birkaç günü atlamak ilerlemeni silmez. Geri dönmeye hazır mısın?</string>
+  <string name="comeback_reminder_3">Başlamak için hiç geç değil. Küçük adımlar bile sayılır. Bugün hangi bir görevi yapabilirsin?</string>
+  <string name="comeback_reminder_4">Gelecek versiyon senin yine başlamaya başladığın için sana teşekkür edecek. Basılı olmayacak—bir seferde bir görev.</string>
+  <string name="comeback_reminder_5">Sana inanıyoruz ve her zaman yardımcı olmak için buradayız. Bugünü sayısala çevirelim.</string>
+  <string name="comeback_reminder_action">Öğrenmeye Başla</string>
+
+  <!-- Sınav Geri Sayım Kilometre Taşları (90, 60, 30, 14, 7 gün) -->
+  <string name="exam_milestone_90_title">%1$s\'e 90 Gün Kaldı</string>
+  <string name="exam_milestone_90_message">Hazırlanmak için 3 ayın var! Güçlü bir temel oluşturmak için mükemmel bir zaman. Dilbilgisi temelleri ve kelime dağarcığı geliştirmeye odaklan.</string>
+  <string name="exam_milestone_90_phase">Temel Aşaması</string>
+  <string name="exam_milestone_90_action">Çalışma Planını Gör</string>
+
+  <string name="exam_milestone_60_title">%1$s\'e 60 Gün Kaldı</string>
+  <string name="exam_milestone_60_message">İki ay kaldı! Ara aşamadasın. Okuduğunu anlama pratiği yapma ve zayıf alanlarını güçlendirme zamanı.</string>
+  <string name="exam_milestone_60_phase">Orta Aşama</string>
+  <string name="exam_milestone_60_action">İlerlemeyi Kontrol Et</string>
+
+  <string name="exam_milestone_30_title">%1$s\'e 30 Gün Kaldı</string>
+  <string name="exam_milestone_30_message">Bir ay kaldı! İleri aşamaya girdin. Tam deneme sınavlarına ve zaman yönetimi stratejilerine odaklan.</string>
+  <string name="exam_milestone_30_phase">İleri Hazırlık</string>
+  <string name="exam_milestone_30_action">Deneme Sınavı Çöz</string>
+
+  <string name="exam_milestone_14_title">%1$s\'e 14 Gün Kaldı</string>
+  <string name="exam_milestone_14_message">Son iki hafta! Hatalarını gözden geçir, zamanlamayı mükemmelleştir ve kendine güven. Çok iyi hazırlandın.</string>
+  <string name="exam_milestone_14_phase">Son Hazırlık</string>
+  <string name="exam_milestone_14_action">Hataları Gözden Geçir</string>
+
+  <string name="exam_milestone_7_title">%1$s\'e 7 Gün Kaldı</string>
+  <string name="exam_milestone_7_message">Bir hafta kaldı! Hafif tekrar ve dinlenmeye odaklan. Hazırlığına güven. Sakin ve kendinden emin ol.</string>
+  <string name="exam_milestone_7_phase">Son Hafta - Sakin Kal</string>
+  <string name="exam_milestone_7_action">Son Tekrar</string>
+
+  <string name="exam_milestone_progress_format">%1$d gün kaldı • %2$s</string>
+  <string name="exam_milestone_notification_channel">Sınav Kilometre Taşları</string>
+  <string name="exam_milestone_notification_channel_desc">Önemli hazırlık kilometre taşlarında geri sayım hatırlatıcıları</string>
+
+  <!-- New Exam Announcements -->
+  <string name="new_exam_announcement_title">Yeni Sınav Duyurusu!</string>
+  <string name="new_exam_announcement_basic">%1$s sınavı %2$s tarihine planlandı</string>
+  <string name="new_exam_announcement_with_registration">%1$s %2$s tarihinde. Başvuru: %3$s</string>
+  <string name="view_exam_details">Detayları Gör</string>
+
   <string name="red_book">Kırmızı Kitap - Temel İngilizce Dilbilgisi</string>
   <string name="blue_book">Mavi Kitap - İngilizce Dilbilgisi</string>
   <string name="green_book">Yeşil Kitap - İleri Düzey Dilbilgisi</string>
@@ -59,6 +106,8 @@
   <string name="skill_reading">Okuma</string>
   <string name="skill_listening">Dinleme</string>
   <string name="skill_vocab">Kelime</string>
+  <string name="skill_weights_placeholder_title">Beceri dengesi artık otomatik</string>
+  <string name="skill_weights_placeholder_body">Odak alanlarını daha sonra Plan Ayarları bölümünden istediğiniz zaman güncelleyebilirsiniz.</string>
   <string name="weekly_plan_preview">Haftalık planınız günde %1$d görev (tahmini)</string>
   <string name="generate_plan">Plan Oluştur</string>
   <string name="next_onboarding">İleri</string>
@@ -225,8 +274,8 @@
   <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
   <string name="reset_progress">İlerlemeyi Sıfırla</string>
   <string name="nav_home">Ana Sayfa</string>
-  <string name="nav_tasks">Görevler</string>
-  <string name="nav_progress">İlerleme</string>
+    <string name="nav_tasks">Görevler</string>
+    <string name="nav_progress">İlerleme</string>
   <string name="nav_settings">Ayarlar</string>
   <string name="settings">Ayarlar</string>
   <string name="navigate_up">Yukarı git</string>
@@ -256,6 +305,9 @@
   <string name="current_streak">Mevcut Seri</string>
   <string name="average_accuracy">Ortalama Doğruluk</string>
   <string name="study_analytics">Çalışma Analitiği</string>
+  <string name="analytics">Analitik</string>
+  <string name="view_stats">İstatistikleri Gör</string>
+  <string name="track_your_progress">İlerlemenizi, serilerinizi ve başarılarınızı takip edin</string>
   <string name="analytics_loading_results">\"%s\" için arama sonuçları yükleniyor...</string>
   <string name="analytics_recent_achievements_title">Son Basarilar</string>
   <!-- YDS Sınav Bilgileri (Turkish) -->
@@ -295,6 +347,18 @@
   <string name="tip_read_carefully">Soruları dikkatle okuyun</string>
   <string name="apply">Başvur</string>
   <string name="days_short_suffix">g</string>
+
+  <!-- Exam Information Screen (TR) -->
+  <string name="exam_info_title">%s - Sınav Bilgileri</string>
+  <string name="exam_info_date_label">Sınav Tarihi</string>
+  <string name="exam_info_days_remaining">%d gün kaldı</string>
+  <string name="exam_info_registration_title">Kayıt Dönemi</string>
+  <string name="exam_info_reg_opens">Açılış: %s</string>
+  <string name="exam_info_reg_closes">Kapanış: %s</string>
+  <string name="exam_info_late_reg_closes">Geç Kayıt Sonu: %s</string>
+  <string name="exam_info_results_title">Sonuçlar</string>
+  <string name="exam_info_result_date">Duyuru: %s</string>
+  <string name="exam_info_apply_button">ÖSYM\'de Başvur</string>
 
   <!-- Study Plan Overview (TR) -->
   <string name="study_overview_title">Çalışma Planı Özeti</string>
@@ -622,4 +686,18 @@
   <string name="cd_award">Ödül</string>
   <string name="cd_trophy">Kupa</string>
   <string name="cd_error">Hata</string>
+  <string name="email">E-posta</string>
+  <string name="email_required">E-posta gerekli</string>
+  <string name="valid_email_required">L�tfen ge�erli bir e-posta adresi girin</string>
+  <string name="username">Kullan�c� ad�</string>
+  <string name="username_hint">En az 3 karakter, harf, rakam ve alt �izgi</string>
+  <string name="username_validation_error">Kullan�c� ad� en az 3 karakter olmal� (harf, rakam, alt �izgi)</string>
+  <string name="login">Giri� yap</string>
+  <string name="logout">��k�� yap</string>
+  <string name="not_logged_in">Giri� yap�lmad�</string>
+  <string name="login_failed">Giri� ba�ar�s�z: %s</string>
+  <string name="logged_in_successfully">Ba�ar�yla giri� yap�ld�!</string>
+  <string name="logged_out_successfully">Ba�ar�yla ��k�� yap�ld�</string>
+  <string name="study_tasks_summary">%1$d g�rev planland� - Tahmini s�re: %2$s</string>
+  <string name="today_label">Bug�n</string>
 </resources>

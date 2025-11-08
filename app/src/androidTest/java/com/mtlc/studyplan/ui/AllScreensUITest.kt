@@ -40,7 +40,6 @@ class AllScreensUITest {
                 onNavigateToTasks = {},
                 onNavigateToWeeklyPlan = {},
                 onNavigateToStudyPlan = {},
-                onNavigateToExamDetails = {},
                 modifier = androidx.compose.ui.Modifier
             )
         }
@@ -88,11 +87,12 @@ class AllScreensUITest {
     @Test
     fun testTodayScreen() {
         val mockTodayViewModel = mock<TodayViewModel>()
+        val mockTaskRepository = mock<TaskRepository>()
         
         composeTestRule.setContent {
             TodayRoute(
-                vm = mockTodayViewModel,
-                onNavigateToFocus = {}
+                taskRepository = mockTaskRepository,
+                vm = mockTodayViewModel
             )
         }
         
@@ -133,8 +133,7 @@ class AllScreensUITest {
                     appIntegrationManager = mockAppIntegrationManager,
                     onNavigateToTasks = {},
                     onNavigateToWeeklyPlan = {},
-                onNavigateToStudyPlan = {},
-                    onNavigateToExamDetails = {},
+                    onNavigateToStudyPlan = {},
                     modifier = androidx.compose.ui.Modifier
                 )
             }
@@ -166,8 +165,8 @@ class AllScreensUITest {
             // Test TodayScreen
             setContent {
                 TodayRoute(
-                    vm = mockTodayViewModel,
-                    onNavigateToFocus = {}
+                    taskRepository = mockTaskRepository,
+                    vm = mockTodayViewModel
                 )
             }
             waitForIdle()
@@ -185,3 +184,4 @@ class AllScreensUITest {
         }
     }
 }
+

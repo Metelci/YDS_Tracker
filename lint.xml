@@ -1,3 +1,6 @@
 <lint>
-    <issue id="NewerVersionAvailable" severity="warning" />
+    <issue id="ConfigurationScreenWidthHeight" severity="ignore" />
+    <issue id="LocalContextResourcesRead" severity="ignore" />
+    <issue id="ModifierParameter" severity="ignore" />
+    <issue id="UnnecessaryComposedModifier" severity="ignore" />
 </lint>

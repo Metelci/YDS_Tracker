@@ -17,8 +17,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.LinkedHashMap
+
+/**
+ * LRU (Least Recently Used) Cache implementation
+ * Prevents unbounded memory growth by evicting least-used items
+ */
+private class LRUCache<K, V>(private val maxSize: Int) : LinkedHashMap<K, V>(maxSize, 0.75f, true) {
+    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<K, V>?): Boolean {
+        return size > maxSize
+    }
+}
 
 @Singleton
 class RenderOptimizer @Inject constructor() {
@@ -27,8 +39,8 @@ class RenderOptimizer @Inject constructor() {
     val frameMetrics: StateFlow<FrameMetrics> = _frameMetrics.asStateFlow()
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val colorCache = mutableMapOf<String, Color>()
-    private val textStyleCache = mutableMapOf<String, TextStyle>()
+    private val colorCache = LRUCache<String, Color>(256)
+    private val textStyleCache = LRUCache<String, TextStyle>(256)
 
     init {
         startFrameMonitoring()
@@ -41,7 +53,7 @@ class RenderOptimizer @Inject constructor() {
             var frameCount = 0
             var totalFrameTime = 0L
 
-            while (true) {
+            while (isActive) {
                 kotlinx.coroutines.delay(16) // Target 60fps
                 val currentTime = System.nanoTime()
                 val frameTime = currentTime - lastFrameTime
@@ -257,7 +269,7 @@ fun rememberMemoryPressureMonitor(): MemoryPressureMonitor {
     val monitor = remember { MemoryPressureMonitor() }
 
     LaunchedEffect(Unit) {
-        while (true) {
+        while (isActive) {
             monitor.checkMemoryPressure()
             kotlinx.coroutines.delay(5000) // Check every 5 seconds
         }

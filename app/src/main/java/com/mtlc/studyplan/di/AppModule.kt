@@ -1,9 +1,8 @@
 package com.mtlc.studyplan.di
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.work.WorkManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.mtlc.studyplan.analytics.AnalyticsEngine
@@ -32,6 +31,7 @@ val koinAppModule = module {
     single { AnalyticsEngine() }
     
     single<DataStore<Preferences>> { androidContext().settingsDataStore }
+    single { WorkManager.getInstance(androidContext()) }
 
     // ThemeManager removed; app uses light theme only
 }

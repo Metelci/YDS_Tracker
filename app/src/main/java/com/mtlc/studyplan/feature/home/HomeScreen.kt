@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import com.mtlc.studyplan.data.ExamCountdownManager
 import java.util.Locale
+import org.koin.androidx.compose.get
 
 
 @Composable
@@ -44,13 +45,12 @@ fun HomeScreen() {
     val appContext = context.applicationContext
     val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
-    val planRepo = remember { PlanRepository(overridesStore, settingsStore) }
+    val planRepo: PlanRepository = get()
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
     val examCountdownManager = remember { ExamCountdownManager.getInstance(appContext) }
     val examData by examCountdownManager.examData.collectAsState()
 
     LaunchedEffect(examCountdownManager) {
-        YdsExamService.refreshFromNetwork(force = true)
         examCountdownManager.refreshNow()
     }
 
@@ -349,7 +349,7 @@ fun HomeScreen() {
                     val isDone = progress.completedTasks.contains(t.id)
                     ListItem(
                         headlineContent = { Text(t.desc) },
-                        supportingContent = { if (t.details != null) Text(t.details!!) },
+                        supportingContent = { t.details?.let { Text(it) } },
                         leadingContent = {
                             Checkbox(
                                 checked = isDone,

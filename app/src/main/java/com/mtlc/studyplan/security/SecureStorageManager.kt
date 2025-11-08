@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.mtlc.studyplan.utils.SecurityUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 /**
@@ -32,15 +33,37 @@ class SecureStorageManager(private val context: Context) {
         val ENCRYPTED_BACKUP_DATA = stringPreferencesKey("encrypted_backup_data")
     }
 
+    sealed class SecureStorageKey(val preferencesKey: Preferences.Key<String>) {
+        data object UserToken : SecureStorageKey(Keys.USER_TOKEN)
+        data object ApiKey : SecureStorageKey(Keys.API_KEY)
+        data object EncryptedUserData : SecureStorageKey(Keys.ENCRYPTED_USER_DATA)
+        data object SessionData : SecureStorageKey(Keys.SESSION_DATA)
+        data object SensitiveSettings : SecureStorageKey(Keys.SENSITIVE_SETTINGS)
+        data object EncryptedBackupData : SecureStorageKey(Keys.ENCRYPTED_BACKUP_DATA)
+
+        val rawKey: String get() = preferencesKey.name
+
+        companion object {
+            private val allKeys = setOf(
+                UserToken,
+                ApiKey,
+                EncryptedUserData,
+                SessionData,
+                SensitiveSettings,
+                EncryptedBackupData
+            )
+
+            fun fromRawKey(rawKey: String): SecureStorageKey? =
+                allKeys.firstOrNull { it.rawKey == rawKey }
+        }
+    }
+
     /**
      * Stores encrypted data securely with comprehensive error handling
      */
-    suspend fun storeSecureData(key: String, value: String): Result<Unit> {
+    suspend fun storeSecureData(key: SecureStorageKey, value: String): Result<Unit> {
         return try {
             // Input validation
-            if (key.isBlank()) {
-                return Result.failure(IllegalArgumentException("Key cannot be blank"))
-            }
             if (value.isBlank()) {
                 return Result.failure(IllegalArgumentException("Value cannot be blank"))
             }
@@ -48,64 +71,117 @@ class SecureStorageManager(private val context: Context) {
             val encryptedValue = SecurityUtils.encryptString(value)
 
             context.secureDataStore.edit { preferences ->
-                preferences[stringPreferencesKey(key)] = encryptedValue
+                preferences[key.preferencesKey] = encryptedValue
             }
 
-            SecurityUtils.SecurityLogger.logSecurityEvent("Secure data stored for key: ${key.take(10)}...")
+            SecurityUtils.SecurityLogger.logSecurityEvent("Secure data stored for key: ${key.rawKey.take(10)}...")
             Result.success(Unit)
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
-                "Secure data storage failed for key: ${key.take(10)}...: ${e.message}",
+                "Secure data storage failed for key: ${key.rawKey.take(10)}...: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
             Result.failure(SecurityException("Failed to store secure data", e))
         }
     }
 
+    @Deprecated("Use type-safe SecureStorageKey overload")
+    suspend fun storeSecureData(key: String, value: String): Result<Unit> {
+        val resolvedKey = SecureStorageKey.fromRawKey(key)
+            ?: run {
+                SecurityUtils.SecurityLogger.logSecurityEvent(
+                    "Rejected attempt to store unregistered secure key: ${key.take(20)}",
+                    SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+                )
+                return Result.failure(IllegalArgumentException("Unrecognized secure storage key: $key"))
+            }
+        return storeSecureData(resolvedKey, value)
+    }
+
     /**
      * Reads encrypted data securely
      */
-    suspend fun getSecureData(key: String): String? {
+    suspend fun getSecureData(key: SecureStorageKey): String? {
         return try {
-            val preferencesKey = stringPreferencesKey(key)
             val encryptedValue = context.secureDataStore.data.map { preferences ->
-                preferences[preferencesKey]
+                preferences[key.preferencesKey]
             }
 
             encryptedValue.map { encrypted ->
                 encrypted?.let {
                     try {
                         SecurityUtils.decryptString(it)
+                    } catch (e: javax.crypto.BadPaddingException) {
+                        SecurityUtils.SecurityLogger.logSecurityEvent(
+                            "Decryption failed - invalid padding for key: ${key.rawKey.take(10)}...: ${e.message}",
+                            SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+                        )
+                        null
+                    } catch (e: java.security.InvalidKeyException) {
+                        SecurityUtils.SecurityLogger.logSecurityEvent(
+                            "Decryption failed - invalid key for key: ${key.rawKey.take(10)}...: ${e.message}",
+                            SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+                        )
+                        null
                     } catch (e: Exception) {
                         SecurityUtils.SecurityLogger.logSecurityEvent(
-                            "Decryption failed for key: ${key.take(10)}...",
+                            "Decryption failed - unexpected error for key: ${key.rawKey.take(10)}...: ${e.message}",
                             SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
                         )
                         null
                     }
                 }
             }.first()
+        } catch (e: java.io.IOException) {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Secure data retrieval failed - IO error: ${e.message}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+            )
+            null
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
-                "Secure data retrieval failed: ${e.message}",
+                "Secure data retrieval failed - unexpected error: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
             null
         }
     }
 
+    @Deprecated("Use type-safe SecureStorageKey overload")
+    suspend fun getSecureData(key: String): String? {
+        val resolvedKey = SecureStorageKey.fromRawKey(key) ?: run {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Access to unregistered secure key ignored: ${key.take(20)}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+            )
+            return null
+        }
+        return getSecureData(resolvedKey)
+    }
+
     /**
      * Provides secure data flow
      */
-    fun getSecureDataFlow(key: String): Flow<String?> {
-        val preferencesKey = stringPreferencesKey(key)
+    fun getSecureDataFlow(key: SecureStorageKey): Flow<String?> {
         return context.secureDataStore.data.map { preferences ->
-            preferences[preferencesKey]?.let {
+            preferences[key.preferencesKey]?.let {
                 try {
                     SecurityUtils.decryptString(it)
+                } catch (e: javax.crypto.BadPaddingException) {
+                    SecurityUtils.SecurityLogger.logSecurityEvent(
+                        "Decryption failed in flow - invalid padding for key: ${key.rawKey.take(10)}...: ${e.message}",
+                        SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+                    )
+                    null
+                } catch (e: java.security.InvalidKeyException) {
+                    SecurityUtils.SecurityLogger.logSecurityEvent(
+                        "Decryption failed in flow - invalid key for key: ${key.rawKey.take(10)}...: ${e.message}",
+                        SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
+                    )
+                    null
                 } catch (e: Exception) {
                     SecurityUtils.SecurityLogger.logSecurityEvent(
-                        "Decryption failed in flow for key: ${key.take(10)}...",
+                        "Decryption failed in flow - unexpected error for key: ${key.rawKey.take(10)}...: ${e.message}",
                         SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
                     )
                     null
@@ -114,22 +190,47 @@ class SecureStorageManager(private val context: Context) {
         }
     }
 
+    @Deprecated("Use type-safe SecureStorageKey overload")
+    fun getSecureDataFlow(key: String): Flow<String?> {
+        val resolvedKey = SecureStorageKey.fromRawKey(key) ?: run {
+            SecurityUtils.SecurityLogger.logSecurityEvent(
+                "Flow requested for unregistered secure key: ${key.take(20)}",
+                SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+            )
+            return flowOf(null)
+        }
+        return getSecureDataFlow(resolvedKey)
+    }
+
     /**
      * Deletes sensitive data
      */
-    suspend fun removeSecureData(key: String) {
+    suspend fun removeSecureData(key: SecureStorageKey) {
         try {
             context.secureDataStore.edit { preferences ->
-                preferences.remove(stringPreferencesKey(key))
+                preferences.remove(key.preferencesKey)
             }
 
-            SecurityUtils.SecurityLogger.logSecurityEvent("Secure data removed for key: ${key.take(10)}...")
+            SecurityUtils.SecurityLogger.logSecurityEvent("Secure data removed for key: ${key.rawKey.take(10)}...")
         } catch (e: Exception) {
             SecurityUtils.SecurityLogger.logSecurityEvent(
                 "Secure data removal failed: ${e.message}",
                 SecurityUtils.SecurityLogger.SecuritySeverity.ERROR
             )
         }
+    }
+
+    @Deprecated("Use type-safe SecureStorageKey overload")
+    suspend fun removeSecureData(key: String) {
+        val resolvedKey = SecureStorageKey.fromRawKey(key)
+            ?: run {
+                SecurityUtils.SecurityLogger.logSecurityEvent(
+                    "Ignore removal for unregistered secure key: ${key.take(20)}",
+                    SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+                )
+                return
+            }
+        removeSecureData(resolvedKey)
     }
 
     /**
@@ -154,70 +255,70 @@ class SecureStorageManager(private val context: Context) {
      * User token management
      */
     suspend fun storeUserToken(token: String) {
-        storeSecureData(Keys.USER_TOKEN.name, token)
+        storeSecureData(SecureStorageKey.UserToken, token)
     }
 
     suspend fun getUserToken(): String? {
-        return getSecureData(Keys.USER_TOKEN.name)
+        return getSecureData(SecureStorageKey.UserToken)
     }
 
     suspend fun removeUserToken() {
-        removeSecureData(Keys.USER_TOKEN.name)
+        removeSecureData(SecureStorageKey.UserToken)
     }
 
     /**
      * API key management
      */
     suspend fun storeApiKey(apiKey: String) {
-        storeSecureData(Keys.API_KEY.name, apiKey)
+        storeSecureData(SecureStorageKey.ApiKey, apiKey)
     }
 
     suspend fun getApiKey(): String? {
-        return getSecureData(Keys.API_KEY.name)
+        return getSecureData(SecureStorageKey.ApiKey)
     }
 
     /**
      * User data management
      */
     suspend fun storeUserData(userData: String) {
-        storeSecureData(Keys.ENCRYPTED_USER_DATA.name, userData)
+        storeSecureData(SecureStorageKey.EncryptedUserData, userData)
     }
 
     suspend fun getUserData(): String? {
-        return getSecureData(Keys.ENCRYPTED_USER_DATA.name)
+        return getSecureData(SecureStorageKey.EncryptedUserData)
     }
 
     /**
      * Session data management
      */
     suspend fun storeSessionData(sessionData: String) {
-        storeSecureData(Keys.SESSION_DATA.name, sessionData)
+        storeSecureData(SecureStorageKey.SessionData, sessionData)
     }
 
     suspend fun getSessionData(): String? {
-        return getSecureData(Keys.SESSION_DATA.name)
+        return getSecureData(SecureStorageKey.SessionData)
     }
 
     /**
      * Sensitive settings management
      */
     suspend fun storeSensitiveSettings(settings: String) {
-        storeSecureData(Keys.SENSITIVE_SETTINGS.name, settings)
+        storeSecureData(SecureStorageKey.SensitiveSettings, settings)
     }
 
     suspend fun getSensitiveSettings(): String? {
-        return getSecureData(Keys.SENSITIVE_SETTINGS.name)
+        return getSecureData(SecureStorageKey.SensitiveSettings)
     }
 
     /**
      * Backup data management
      */
     suspend fun storeBackupData(backupData: String) {
-        storeSecureData(Keys.ENCRYPTED_BACKUP_DATA.name, backupData)
+        storeSecureData(SecureStorageKey.EncryptedBackupData, backupData)
     }
 
     suspend fun getBackupData(): String? {
-        return getSecureData(Keys.ENCRYPTED_BACKUP_DATA.name)
+        return getSecureData(SecureStorageKey.EncryptedBackupData)
     }
 
     /**
@@ -230,8 +331,9 @@ class SecureStorageManager(private val context: Context) {
             // Collect all secure data
             context.secureDataStore.data.map { preferences ->
                 preferences.asMap().forEach { (key, value) ->
-                    if (value is String) {
-                        allData[key.name] = value
+                    val rawKey = key.name
+                    if (value is String && SecureStorageKey.fromRawKey(rawKey) != null) {
+                        allData[rawKey] = value
                     }
                 }
             }.first()
@@ -268,8 +370,16 @@ class SecureStorageManager(private val context: Context) {
             }
 
             context.secureDataStore.edit { preferences ->
-                dataMap.forEach { (key, value) ->
-                    preferences[stringPreferencesKey(key)] = value
+                dataMap.forEach { (rawKey, value) ->
+                    val secureKey = SecureStorageKey.fromRawKey(rawKey)
+                    if (secureKey != null) {
+                        preferences[secureKey.preferencesKey] = value
+                    } else {
+                        SecurityUtils.SecurityLogger.logSecurityEvent(
+                            "Ignored import for unregistered secure key: ${rawKey.take(20)}",
+                            SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
+                        )
+                    }
                 }
             }
 
@@ -302,22 +412,24 @@ class SecureStorageManager(private val context: Context) {
      */
     suspend fun initializeSecurely(): Result<Unit> {
         return try {
-            // Test basic DataStore functionality
-            val testKey = "init_test"
             val testValue = "test_value"
+            val originalProbeValue = getSessionData()
 
-            val storeResult = storeSecureData(testKey, testValue)
+            val storeResult = storeSecureData(SecureStorageKey.SessionData, testValue)
             if (storeResult.isFailure) {
                 return Result.failure(storeResult.exceptionOrNull() ?: SecurityException("Storage initialization failed"))
             }
 
-            val retrievedValue = getSecureData(testKey)
+            val retrievedValue = getSecureData(SecureStorageKey.SessionData)
             if (retrievedValue != testValue) {
                 return Result.failure(SecurityException("Data integrity check failed"))
             }
 
-            // Clean up test data
-            removeSecureData(testKey)
+            if (originalProbeValue != null) {
+                storeSecureData(SecureStorageKey.SessionData, originalProbeValue)
+            } else {
+                removeSecureData(SecureStorageKey.SessionData)
+            }
 
             SecurityUtils.SecurityLogger.logSecurityEvent("Secure storage initialization successful")
             Result.success(Unit)

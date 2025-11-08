@@ -507,21 +507,25 @@ class AnimationManager(private val context: Context) {
     }
 
     // Number counter animation
+    data class NumberChangeOptions(
+        val duration: Long = DURATION_MEDIUM,
+        val prefix: String = "",
+        val suffix: String = ""
+    )
+
     fun animateNumberChange(
         textView: TextView,
         fromValue: Int,
         toValue: Int,
-        duration: Long = DURATION_MEDIUM,
-        prefix: String = "",
-        suffix: String = ""
+        options: NumberChangeOptions = NumberChangeOptions()
     ) {
         val animator = ValueAnimator.ofInt(fromValue, toValue)
-        animator.duration = duration
+        animator.duration = options.duration
         animator.interpolator = DecelerateInterpolator()
 
         animator.addUpdateListener { animation ->
             val animatedValue = animation.animatedValue as Int
-            textView.text = "$prefix$animatedValue$suffix"
+            textView.text = "${options.prefix}$animatedValue${options.suffix}"
         }
 
         animator.start()

@@ -9,6 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlin.io.use
 import com.mtlc.studyplan.database.dao.AchievementDao
+import com.mtlc.studyplan.database.dao.ExamDao
 import com.mtlc.studyplan.database.dao.ProgressDao
 import com.mtlc.studyplan.database.dao.QuestionDao
 import com.mtlc.studyplan.database.dao.StreakDao
@@ -20,6 +21,7 @@ import com.mtlc.studyplan.database.entities.QuestionEntity
 import com.mtlc.studyplan.database.entities.StreakEntity
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.database.entities.UserSettingsEntity
+import com.mtlc.studyplan.database.entity.ExamEntity
 
 @Database(
     entities = [
@@ -28,9 +30,10 @@ import com.mtlc.studyplan.database.entities.UserSettingsEntity
         ProgressEntity::class,
         StreakEntity::class,
         UserSettingsEntity::class,
-        QuestionEntity::class
+        QuestionEntity::class,
+        ExamEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,6 +45,7 @@ abstract class StudyPlanDatabase : RoomDatabase() {
     abstract fun streakDao(): StreakDao
     abstract fun settingsDao(): UserSettingsDao
     abstract fun questionDao(): QuestionDao
+    abstract fun examDao(): ExamDao
     companion object {
         @Volatile
         private var INSTANCE: StudyPlanDatabase? = null
@@ -58,21 +62,10 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_5_6)
                     .addMigrations(MIGRATION_6_7)
                     .addMigrations(MIGRATION_7_8)
+                    .addMigrations(MIGRATION_8_9)
 
-                // Only use destructive migration in debug builds
-                // For production, proper migrations should be implemented
-                try {
-                    val debugClass = Class.forName("com.mtlc.studyplan.BuildConfig")
-                    val debugField = debugClass.getField("DEBUG")
-                    val isDebug = debugField.getBoolean(null)
-
-                    if (isDebug) {
-                        builder.fallbackToDestructiveMigration(dropAllTables = true)
-                    }
-                    // In release builds, migrations would be required
-                } catch (e: Exception) {
-                    // If BuildConfig is not available, assume debug and use fallback
-                    builder.fallbackToDestructiveMigration(dropAllTables = true)
+                if (shouldAllowDestructiveMigration()) {
+                    builder.fallbackToDestructiveMigration()
                 }
 
                 val instance = builder.build()
@@ -443,5 +436,44 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE `user_settings_new` RENAME TO `user_settings`")
             }
         }
+
+        /**
+         * Migration from version 8 to 9 - Add exams table for ÖSYM integration
+         */
+        val MIGRATION_8_9: Migration = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Create exams table for storing ÖSYM exam data
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `exams` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `examType` TEXT NOT NULL,
+                        `examName` TEXT NOT NULL,
+                        `examDateEpochDay` INTEGER NOT NULL,
+                        `registrationStartEpochDay` INTEGER,
+                        `registrationEndEpochDay` INTEGER,
+                        `lateRegistrationEndEpochDay` INTEGER,
+                        `resultDateEpochDay` INTEGER,
+                        `applicationUrl` TEXT NOT NULL,
+                        `scrapedAtMillis` INTEGER NOT NULL,
+                        `notified` INTEGER NOT NULL DEFAULT 0
+                    )
+                """.trimIndent())
+
+                // Create index for efficient queries
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_exams_type_date` ON `exams` (`examType`, `examDateEpochDay`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_exams_date` ON `exams` (`examDateEpochDay`)"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `idx_exams_notified` ON `exams` (`notified`, `examDateEpochDay`)"
+                )
+            }
+        }
+
+        private fun shouldAllowDestructiveMigration(): Boolean =
+            System.getProperty("studyplan.allowDestructiveMigration")
+                ?.toBooleanStrictOrNull() == true
     }
 }

@@ -1,3 +1,13 @@
+complexity:
+  TooManyFunctions:
+    active: true
+    thresholdInClasses: 20
+    thresholdInFiles: 25
+    thresholdInObjects: 20
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 12
+
 style:
   ForbiddenImport:
     active: true
@@ -5,3 +15,13 @@ style:
       - "androidx.compose.material"
       - "com.google.accompanist.swiperefresh"
     excludes: "**/test/**,**/androidTest/**"
+  LongMethod:
+    active: true
+    maximumFunctionLength: 80
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 6
+  MaxLineLength:
+    active: true
+    maxLineLength: 120

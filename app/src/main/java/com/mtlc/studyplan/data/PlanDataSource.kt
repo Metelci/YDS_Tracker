@@ -1,19 +1,7 @@
 package com.mtlc.studyplan.data
 
-import android.content.Context
-
 //region VERİ KAYNAKLARI
 object PlanDataSource {
-
-    private var appContext: Context? = null
-
-    fun initialize(context: Context) {
-        appContext = context.applicationContext
-    }
-
-    fun getAppContext(): Context {
-        return appContext ?: throw IllegalStateException("PlanDataSource not initialized")
-    }
 
     // Kırmızı Kitap'ın 8 haftalık "Sağlam Temel" programı için özel fonksiyon
     private fun createRedBookFoundationWeek(

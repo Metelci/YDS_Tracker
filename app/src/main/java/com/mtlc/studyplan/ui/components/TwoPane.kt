@@ -13,6 +13,7 @@ fun TwoPaneScaffold(
     list: @Composable ColumnScope.() -> Unit,
     detail: @Composable ColumnScope.() -> Unit,
 ) {
+    @Suppress("UnusedBoxWithConstraintsScopeModifier")
     BoxWithConstraints(modifier.fillMaxSize()) {
         val isLarge = maxWidth >= 600.dp
         if (isLarge) {

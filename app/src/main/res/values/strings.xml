@@ -37,8 +37,68 @@
     <string name="application_reminder_title">Exam Application Reminder</string>
     <string name="study_reminder_title">Study Time!</string>
     <string name="study_reminder_text">Don\'t forget to complete today\'s goals.</string>
+    <string name="add_to_calendar">Add to calendar</string>
     <string name="application_started">applications started today!</string>
     <string name="application_deadline_today">today is the last day for applications!</string>
+
+    <!-- Gentle Comeback Reminders (3+ days without study) -->
+    <string name="comeback_reminder_title">We Miss You!</string>
+    <string name="comeback_reminder_1">Life gets busy, and that\'s totally okay. But we know you can do this. How about just 10 minutes today?</string>
+    <string name="comeback_reminder_2">You\'ve come so far already. Missing a few days doesn\'t erase your progress. Ready to jump back in?</string>
+    <string name="comeback_reminder_3">It\'s never too late to restart. Even small steps count. What\'s one task you could tackle today?</string>
+    <string name="comeback_reminder_4">Your future self will thank you for getting back on track. No pressure—just one task at a time.</string>
+    <string name="comeback_reminder_5">We believe in you, and we\'re here to help whenever you\'re ready. Let\'s make today count.</string>
+    <string name="comeback_reminder_action">Start Learning</string>
+
+    <!-- Exam Countdown Milestones -->
+    <string name="exam_milestone_90_title">90 Days to %1$s</string>
+    <string name="exam_milestone_90_message">You have 3 months to prepare! This is the perfect time to build a strong foundation. Focus on grammar basics and vocabulary building.</string>
+    <string name="exam_milestone_90_phase">Foundation Phase</string>
+    <string name="exam_milestone_90_action">View Study Plan</string>
+
+    <string name="exam_milestone_60_title">60 Days to %1$s</string>
+    <string name="exam_milestone_60_message">Two months left! You\'re in the intermediate phase. Time to practice reading comprehension and strengthen your weak areas.</string>
+    <string name="exam_milestone_60_phase">Intermediate Phase</string>
+    <string name="exam_milestone_60_action">Check Progress</string>
+
+    <string name="exam_milestone_30_title">30 Days to %1$s</string>
+    <string name="exam_milestone_30_message">One month remaining! Enter the advanced phase. Focus on full practice tests and time management strategies.</string>
+    <string name="exam_milestone_30_phase">Advanced Preparation</string>
+    <string name="exam_milestone_30_action">Take Practice Test</string>
+
+    <string name="exam_milestone_14_title">14 Days to %1$s</string>
+    <string name="exam_milestone_14_message">Final two weeks! Review your mistakes, perfect your timing, and stay confident. You\'ve prepared well.</string>
+    <string name="exam_milestone_14_phase">Final Preparation</string>
+    <string name="exam_milestone_14_action">Review Mistakes</string>
+
+    <string name="exam_milestone_7_title">7 Days to %1$s</string>
+    <string name="exam_milestone_7_message">One week left! Focus on light review and rest. Trust your preparation. Stay calm and confident.</string>
+    <string name="exam_milestone_7_phase">Last Week - Stay Calm</string>
+    <string name="exam_milestone_7_action">Final Review</string>
+
+    <string name="exam_milestone_progress_format">%1$d days remaining • %2$s</string>
+    <string name="exam_milestone_notification_channel">Exam Milestones</string>
+    <string name="exam_milestone_notification_channel_desc">Important countdown reminders at key preparation milestones</string>
+
+    <!-- New Exam Announcements -->
+    <string name="new_exam_announcement_title">New Exam Announced!</string>
+    <string name="new_exam_announcement_basic">%1$s has been scheduled for %2$s</string>
+    <string name="new_exam_announcement_with_registration">%1$s scheduled for %2$s. Registration: %3$s</string>
+    <string name="view_exam_details">View Details</string>
+
+    <!-- Account & authentication -->
+    <string name="email">Email</string>
+    <string name="email_required">Email is required</string>
+    <string name="valid_email_required">Please enter a valid email address</string>
+    <string name="username">Username</string>
+    <string name="username_hint">3+ characters, letters, numbers, and underscore only</string>
+    <string name="username_validation_error">Username must be 3+ characters (letters, numbers, underscore)</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="login_failed">Login failed: %s</string>
+    <string name="logged_in_successfully">Logged in successfully!</string>
+    <string name="logged_out_successfully">Logged out successfully</string>
 
     <!-- YDS Exam Info (English) -->
     <string name="yds_exam_info_title">YDS Exam Information</string>
@@ -317,6 +377,8 @@
     <string name="skill_reading">Reading</string>
     <string name="skill_listening">Listening</string>
     <string name="skill_vocab">Vocabulary</string>
+    <string name="skill_weights_placeholder_title">We handle skill balance automatically</string>
+    <string name="skill_weights_placeholder_body">Adjust focus areas anytime from Plan Settings after onboarding completes.</string>
     <string name="weekly_plan_preview">Your weekly plan will have %1$d tasks/day (est.)</string>
     <string name="generate_plan">Generate Plan</string>
     <string name="next_onboarding">Next</string>
@@ -438,6 +500,9 @@
     <string name="current_streak">Current Streak</string>
     <string name="average_accuracy">Average Accuracy</string>
     <string name="study_analytics">Study Analytics</string>
+    <string name="analytics">Analytics</string>
+    <string name="view_stats">View Stats</string>
+    <string name="track_your_progress">Track your progress, streaks, and achievements</string>
     <string name="analytics_loading_results">Loading search results for "%s"…</string>
     <string name="analytics_recent_achievements_title">Recent Achievements</string>
     <string name="time_by_skill">Time by Skill</string>
@@ -602,6 +667,17 @@
     <string name="tasks_plan_day_placeholder">Detailed tasks will appear here once your plan is generated.</string>
     <string name="tasks_daily_estimated_time_default">to be estimated</string>
 
+    <!-- Task List Screen -->
+    <string name="tasks_list_completed">Completed</string>
+    <string name="tasks_list_pending">Pending</string>
+    <string name="tasks_list_title">%1$s Tasks (%2$d)</string>
+    <string name="tasks_list_page">Page %1$d</string>
+    <string name="tasks_list_page_info">%1$d / %2$d</string>
+    <string name="tasks_list_no_completed">No completed tasks found</string>
+    <string name="tasks_list_no_pending">No pending tasks found</string>
+    <string name="tasks_list_minutes_format">%1$dmin</string>
+    <string name="tasks_list_points_format">%1$dpts</string>
+
     <!-- Home screen -->
     <string name="home_title">Home</string>
     <string name="home_today_progress_title">Today\'s Progress</string>
@@ -706,6 +782,18 @@
     <string name="cd_award">Award</string>
     <string name="cd_trophy">Trophy</string>
     <string name="cd_error">Error</string>
+
+    <!-- Exam Information Screen -->
+    <string name="exam_info_title">%s - Exam Information</string>
+    <string name="exam_info_date_label">Exam Date</string>
+    <string name="exam_info_days_remaining">%d days remaining</string>
+    <string name="exam_info_registration_title">Registration Period</string>
+    <string name="exam_info_reg_opens">Opens: %s</string>
+    <string name="exam_info_reg_closes">Closes: %s</string>
+    <string name="exam_info_late_reg_closes">Late Registration Ends: %s</string>
+    <string name="exam_info_results_title">Results</string>
+    <string name="exam_info_result_date">Announcement: %s</string>
+    <string name="exam_info_apply_button">Apply on ÖSYM</string>
 </resources>
 
 

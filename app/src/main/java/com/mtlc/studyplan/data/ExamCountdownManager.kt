@@ -28,9 +28,7 @@ class ExamCountdownManager(private val context: Context) {
         scheduleDailyCountdownUpdate()
 
         // Initial update
-        scope.launch {
-            refreshNow(forceNetwork = true)
-        }
+        scope.launch { refreshNow() }
     }
 
     /**
@@ -63,7 +61,7 @@ class ExamCountdownManager(private val context: Context) {
      */
     fun updateExamData() {
         scope.launch {
-            refreshNow(forceNetwork = false)
+            refreshNow()
         }
     }
 
@@ -104,17 +102,11 @@ class ExamCountdownManager(private val context: Context) {
      */
     fun forceRefresh() {
         scope.launch {
-            refreshNow(forceNetwork = true)
+            refreshNow()
         }
     }
 
-    suspend fun refreshNow(forceNetwork: Boolean = false) {
-        val fetchForce = if (forceNetwork) true else false
-        if (fetchForce) {
-            YdsExamService.refreshFromNetwork(force = true)
-        } else {
-            YdsExamService.refreshFromNetwork()
-        }
+    suspend fun refreshNow() {
         _examData.value = createCurrentExamData()
     }
 

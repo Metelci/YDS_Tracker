@@ -3,8 +3,10 @@ package com.mtlc.studyplan.ui.theme
 // removed dark theme checks
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.TileMode
 
 /**
  * Helper to provide a stable pastel container color from a key (e.g., id or title).
@@ -107,3 +109,42 @@ fun featureFromPackage(pkg: String): FeatureKey {
 @Composable
 fun inferredFeaturePastelContainer(packageName: String, key: String): Color =
     featurePastelContainer(featureFromPackage(packageName), key)
+
+/**
+ * Creates a gradient brush from a base pastel color.
+ * The gradient goes from a lighter tint at the top to the base color at the bottom.
+ */
+@Composable
+fun pastelGradientBrush(baseColor: Color): Brush {
+    // Create a lighter version of the color for the top of the gradient
+    val lightColor = baseColor.copy(
+        red = baseColor.red + (1f - baseColor.red) * 0.3f,
+        green = baseColor.green + (1f - baseColor.green) * 0.3f,
+        blue = baseColor.blue + (1f - baseColor.blue) * 0.3f
+    )
+
+    return Brush.verticalGradient(
+        colors = listOf(lightColor, baseColor),
+        startY = 0f,
+        endY = Float.POSITIVE_INFINITY,
+        tileMode = TileMode.Clamp
+    )
+}
+
+/**
+ * Returns a gradient brush for a given key using the feature-aware pastel palette.
+ */
+@Composable
+fun featurePastelGradient(feature: FeatureKey, key: String): Brush {
+    val baseColor = featurePastelContainer(feature, key)
+    return pastelGradientBrush(baseColor)
+}
+
+/**
+ * Returns a gradient brush using inferred feature from package name.
+ */
+@Composable
+fun inferredFeaturePastelGradient(packageName: String, key: String): Brush {
+    val baseColor = inferredFeaturePastelContainer(packageName, key)
+    return pastelGradientBrush(baseColor)
+}

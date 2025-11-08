@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.mtlc.studyplan.accessibility.AccessibilityManager
+import com.mtlc.studyplan.accessibility.getAnimationDuration
+import com.mtlc.studyplan.accessibility.shouldUseReducedMotion
 import kotlinx.coroutines.flow.StateFlow
 
 class AnimationIntegrationManager(

@@ -1,15 +1,24 @@
 package com.mtlc.studyplan.workers
 
+import android.app.PendingIntent
 import android.content.Context
-import android.os.Build
-import android.os.PowerManager
-import com.mtlc.studyplan.power.PowerStateChecker
-import androidx.work.*
+import android.content.Intent
+import android.provider.CalendarContract
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.WorkerParameters
 import com.mtlc.studyplan.data.isMutedToday
 import com.mtlc.studyplan.data.isQuietNow
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.StudyStats
 import com.mtlc.studyplan.notifications.NotificationManager
+import com.mtlc.studyplan.power.PowerStateChecker
+import com.mtlc.studyplan.services.recordNotificationDeliveryAttempt
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -49,28 +58,28 @@ class DailyStudyReminderWorker(
 
             val reminderRequest = PeriodicWorkRequestBuilder<DailyStudyReminderWorker>(
                 repeatInterval = 1,
-                repeatIntervalTimeUnit = TimeUnit.DAYS
+                repeatIntervalTimeUnit = TimeUnit.DAYS,
             )
-            .setInitialDelay(initialDelay, TimeUnit.SECONDS)
-            .setConstraints(
-                Constraints.Builder()
-                    // Battery-aware: avoid firing when battery is low; let OS defer
-                    .setRequiresBatteryNotLow(true)
-                    .setRequiresDeviceIdle(false)
-                    .setRequiresStorageNotLow(false)
-                    .build()
-            )
-            .setBackoffCriteria(
-                BackoffPolicy.EXPONENTIAL,
-                WorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .build()
+                .setInitialDelay(initialDelay, TimeUnit.SECONDS)
+                .setConstraints(
+                    Constraints.Builder()
+                        // Battery-aware: avoid firing when battery is low; let OS defer
+                        .setRequiresBatteryNotLow(true)
+                        .setRequiresDeviceIdle(false)
+                        .setRequiresStorageNotLow(false)
+                        .build(),
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS,
+                )
+                .build()
 
             workManager.enqueueUniquePeriodicWork(
                 WORK_NAME,
                 ExistingPeriodicWorkPolicy.REPLACE,
-                reminderRequest
+                reminderRequest,
             )
         }
 
@@ -83,75 +92,50 @@ class DailyStudyReminderWorker(
     }
 
     override suspend fun doWork(): Result {
-        try {
-            // Check if notifications are enabled
+        return try {
             val notificationConfig = appIntegrationManager.getNotificationConfig()
             if (!notificationConfig.areNotificationsEnabled || !notificationConfig.allowStudyReminders) {
                 return Result.success()
             }
 
-            // Respect quiet hours and mute settings
             if (isMutedToday(applicationContext) || isQuietNow(applicationContext)) {
-                // Still track that we attempted delivery
                 trackDeliveryAttempt(success = false, reason = "muted_or_quiet_hours")
                 return Result.success()
             }
 
-            // Battery optimization: skip non-critical notifications in power saver/doze
             if (PowerStateChecker.isPowerConstrained(applicationContext)) {
                 trackDeliveryAttempt(success = false, reason = "power_saver_or_doze")
                 return Result.success()
             }
 
-            // Get personalized study data
             val studyStats = appIntegrationManager.getStudyStats()
             val motivationalMessage = generateMotivationalMessage(studyStats)
-
-            // Send personalized notification
             val notificationId = System.currentTimeMillis().toInt()
-            notificationManager.showDailyStudyReminder(
-                context = applicationContext,
-                title = "🌟 Study Time Reminder",
-                message = motivationalMessage,
-                notificationId = notificationId
-            )
 
-            // Track successful delivery
-            trackDeliveryAttempt(success = true)
-
-            // Add to calendar if enabled
-            if (notificationConfig.calendarIntegrationEnabled) {
-                addToCalendar(motivationalMessage)
+            val calendarIntent = if (notificationConfig.calendarIntegrationEnabled) {
+                createCalendarPendingIntent(motivationalMessage, notificationId)
+            } else {
+                null
             }
 
-            return Result.success()
+            notificationManager.showDailyStudyReminder(
+                context = applicationContext,
+                title = "?? Study Time Reminder",
+                message = motivationalMessage,
+                notificationId = notificationId,
+                calendarIntent = calendarIntent,
+            )
 
+            trackDeliveryAttempt(success = true)
+            Result.success()
         } catch (e: Exception) {
-            // Track failed delivery
             trackDeliveryAttempt(success = false, reason = e.message ?: "unknown_error")
-            return Result.retry()
+            Result.retry()
         }
     }
 
     private suspend fun trackDeliveryAttempt(success: Boolean, reason: String? = null) {
-        // Implementation for delivery tracking
-        // This would integrate with analytics system
-        val deliveryData = mapOf(
-            "timestamp" to System.currentTimeMillis(),
-            "success" to success,
-            "reason" to (reason ?: "success"),
-            "timezone" to ZoneId.systemDefault().id,
-            "scheduled_time" to "${REMINDER_HOUR}:${REMINDER_MINUTE}"
-        )
-
-        // Store in local database or send to analytics
-        // For now, we'll use a simple approach
-        val prefs = applicationContext.getSharedPreferences("notification_tracking", Context.MODE_PRIVATE)
-        prefs.edit()
-            .putLong("last_delivery_attempt", System.currentTimeMillis())
-            .putBoolean("last_delivery_success", success)
-            .putString("last_delivery_reason", reason)
-            .apply()
+        applicationContext.recordNotificationDeliveryAttempt(success, reason)
     }
 
     private fun generateMotivationalMessage(studyStats: StudyStats): String {
@@ -160,31 +144,35 @@ class DailyStudyReminderWorker(
         val weeklyGoal = studyStats.weeklyGoalHours
 
         return when {
-            currentStreak >= 7 -> "🔥 Amazing! You're on a ${currentStreak}-day streak! Keep the momentum going!"
-            currentStreak >= 3 -> "⚡ Great job! ${currentStreak} days strong. Your dedication is paying off!"
-            completedTasks > 10 -> "🎯 Impressive! You've completed ${completedTasks} tasks. You're unstoppable!"
-            weeklyGoal > 0 -> "💪 Time to crush your ${weeklyGoal}-hour weekly goal. You've got this!"
-            else -> "🌟 Every great journey begins with a single step. Let's make today count!"
+            currentStreak >= 7 -> "?? Amazing! You're on a $currentStreak-day streak! Keep the momentum going!"
+            currentStreak >= 3 -> "? Great job! $currentStreak days strong. Your dedication is paying off!"
+            completedTasks > 10 -> "?? Impressive! You've completed $completedTasks tasks. You're unstoppable!"
+            weeklyGoal > 0 -> "?? Time to crush your $weeklyGoal-hour weekly goal. You've got this!"
+            else -> "?? Every great journey begins with a single step. Let's make today count!"
         }
     }
 
-    private fun addToCalendar(message: String) {
-        // Calendar integration implementation
-        // This would create a calendar event for study reminder
-        try {
-            val calendarIntent = android.content.Intent(android.content.Intent.ACTION_INSERT)
-                .setData(android.net.Uri.parse("content://com.android.calendar/events"))
-                .putExtra("title", "StudyPlan Daily Reminder")
-                .putExtra("description", message)
-                .putExtra("beginTime", System.currentTimeMillis() + 3600000) // 1 hour from now
-                .putExtra("endTime", System.currentTimeMillis() + 7200000) // 2 hours from now
-                .putExtra("allDay", false)
+    private fun createCalendarPendingIntent(message: String, requestCode: Int): PendingIntent? {
+        val beginTime = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)
+        val endTime = beginTime + TimeUnit.HOURS.toMillis(1)
 
-            calendarIntent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-            applicationContext.startActivity(calendarIntent)
-        } catch (e: Exception) {
-            // Calendar app not available or other error
-            // Silently fail - calendar integration is optional
+        val intent = Intent(Intent.ACTION_INSERT)
+            .setData(CalendarContract.Events.CONTENT_URI)
+            .putExtra(CalendarContract.Events.TITLE, "StudyPlan Daily Reminder")
+            .putExtra(CalendarContract.Events.DESCRIPTION, message)
+            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime)
+            .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime)
+            .putExtra(CalendarContract.Events.ALL_DAY, false)
+
+        if (intent.resolveActivity(applicationContext.packageManager) == null) {
+            return null
         }
+
+        return PendingIntent.getActivity(
+            applicationContext,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
     }
 }

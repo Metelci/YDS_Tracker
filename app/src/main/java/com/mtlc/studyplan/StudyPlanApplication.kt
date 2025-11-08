@@ -5,6 +5,10 @@ import android.content.ComponentCallbacks2
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.mtlc.studyplan.architecture.ArchitectureOptimizer
+import com.mtlc.studyplan.data.YdsExamService
+import com.mtlc.studyplan.repository.ExamRepository
+import com.mtlc.studyplan.workers.ExamSyncWorker
+import org.koin.android.ext.android.inject
 import com.mtlc.studyplan.di.koinAppModule
 import com.mtlc.studyplan.di.koinDatabaseModule
 import com.mtlc.studyplan.di.koinEventBusModule
@@ -21,11 +25,14 @@ import org.koin.core.logger.Level
 
 class StudyPlanApplication : Application(), Configuration.Provider, ComponentCallbacks2 {
     private val architectureOptimizer by lazy { ArchitectureOptimizer(this) }
-    
+    private val examRepository: ExamRepository by inject()
+
     override fun onCreate() {
         super.onCreate()
-        
+
         // Initialize Koin with all modules to maintain compatibility
+        // Check if Koin is already started (for tests)
+        if (GlobalContext.getOrNull() == null) {
         startKoin {
             androidLogger(Level.INFO)
             androidContext(this@StudyPlanApplication)
@@ -39,11 +46,32 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
                 koinViewModelModule
             )
         }
-        
-        WorkManager.initialize(this, workManagerConfiguration)
+        }
+
+        try {
+            WorkManager.initialize(this, workManagerConfiguration)
+        } catch (e: Exception) {
+            // WorkManager already initialized or test environment
+        }
 
         // Initialize architecture optimizer
         architectureOptimizer.initialize()
+
+        // Initialize ÖSYM Integration
+        initializeOsymIntegration()
+    }
+
+    private fun initializeOsymIntegration() {
+        try {
+            // Initialize YdsExamService with ExamRepository
+            YdsExamService.initialize(examRepository)
+
+            // Schedule periodic exam sync worker (runs daily)
+            ExamSyncWorker.schedule(this)
+        } catch (e: Exception) {
+            // Log error but don't crash the app
+            e.printStackTrace()
+        }
     }
 
     override val workManagerConfiguration: Configuration

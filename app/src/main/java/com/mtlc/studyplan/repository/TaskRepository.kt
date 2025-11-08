@@ -11,6 +11,8 @@ import com.mtlc.studyplan.database.dao.TaskDao
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.shared.TaskCategory
 import com.mtlc.studyplan.shared.TaskPriority
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,14 +31,17 @@ class TaskRepository @Inject constructor(
     val completedTasks: Flow<List<TaskEntity>> = taskDao.getCompletedTasks()
     // Updated to use optimized query with parameters
     val todayTasks: Flow<List<TaskEntity>> = run {
-        val startOfDay = System.currentTimeMillis().let { now ->
-            now - (now % 86400000) // Start of current day
-        }
-        val endOfDay = startOfDay + 86400000 // End of current day
+        val (startOfDay, endOfDay) = todayBounds()
         taskDao.getTodayTasks(startOfDay, endOfDay)
     }
-    val tomorrowTasks: Flow<List<TaskEntity>> = taskDao.getTomorrowTasks()
-    val upcomingTasks: Flow<List<TaskEntity>> = taskDao.getUpcomingTasks()
+    val tomorrowTasks: Flow<List<TaskEntity>> = run {
+        val (startOfTomorrow, endOfTomorrow) = tomorrowBounds()
+        taskDao.getTomorrowTasks(startOfTomorrow, endOfTomorrow)
+    }
+    val upcomingTasks: Flow<List<TaskEntity>> = run {
+        val (start, end) = upcomingRangeBounds()
+        taskDao.getUpcomingTasks(start, end)
+    }
     val overdueTasks: Flow<List<TaskEntity>> = taskDao.getOverdueTasks()
 
     // Analytics flows
@@ -152,16 +157,29 @@ class TaskRepository @Inject constructor(
     suspend fun getCompletedTasksCount(): Int = taskDao.getCompletedTasksCount()
     suspend fun getCompletedTasksInCategory(category: TaskCategory): Int =
         taskDao.getCompletedTasksInCategory(category)
-    suspend fun getTodayCompletedCount(): Int = taskDao.getTodayCompletedCount()
+    suspend fun getTodayCompletedCount(): Int {
+        val (start, end) = todayBounds()
+        return taskDao.getTodayCompletedCount(start, end)
+    }
     suspend fun getPendingTasksCount(): Int = taskDao.getPendingTasksCount()
-    suspend fun getCompletedTasksForDate(date: String): Int =
-        taskDao.getCompletedTasksForDate(date)
-    suspend fun getTodayStudyMinutes(): Int = taskDao.getTodayStudyMinutes() ?: 0
-    suspend fun getTodayPointsEarned(): Int = taskDao.getTodayPointsEarned() ?: 0
+    suspend fun getCompletedTasksForDate(date: String): Int {
+        val (start, end) = dayBounds(LocalDate.parse(date))
+        return taskDao.getCompletedTasksForDate(start, end)
+    }
+    suspend fun getTodayStudyMinutes(): Int {
+        val (start, end) = todayBounds()
+        return taskDao.getTodayStudyMinutes(start, end) ?: 0
+    }
+    suspend fun getTodayPointsEarned(): Int {
+        val (start, end) = todayBounds()
+        return taskDao.getTodayPointsEarned(start, end) ?: 0
+    }
 
     // Streak operations
-    suspend fun getStreakTasksForDate(date: String): List<TaskEntity> =
-        taskDao.getStreakTasksForDate(date)
+    suspend fun getStreakTasksForDate(date: String): List<TaskEntity> {
+        val (start, end) = dayBounds(LocalDate.parse(date))
+        return taskDao.getStreakTasksForDate(start, end)
+    }
 
     // Sub-task operations
     fun getSubTasks(parentId: String): Flow<List<TaskEntity>> = taskDao.getSubTasks(parentId)
@@ -230,7 +248,7 @@ class TaskRepository @Inject constructor(
             (priority == null || task.priority == priority) &&
             (isCompleted == null || task.isCompleted == isCompleted) &&
             (hasReminder == null || (task.reminderTime != null) == hasReminder) &&
-            (isOverdue == null || (task.dueDate != null && task.dueDate!! < System.currentTimeMillis()) == isOverdue)
+            (isOverdue == null || (task.dueDate?.let { it < System.currentTimeMillis() } ?: false) == isOverdue)
         }
     }
 
@@ -266,6 +284,19 @@ class TaskRepository @Inject constructor(
         PRIORITY, DUE_DATE, CREATED_DATE, TITLE, CATEGORY
     }
 
+    private fun upcomingRangeBounds(daysAhead: Long = 7): Pair<Long, Long> {
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+        val start = today.atStartOfDay(zone).toInstant().toEpochMilli()
+        val end = today.plusDays(daysAhead + 1).atStartOfDay(zone).toInstant().toEpochMilli()
+        return start to end
+    }
+
+    private fun dayBounds(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): Pair<Long, Long> {
+        val start = date.atStartOfDay(zone).toInstant().toEpochMilli()
+        val end = date.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        return start to end
+    }
     // Simple LRU Cache for frequently accessed data
     private class LruCache<K, V>(private val maxSize: Int) {
         private val cache = LinkedHashMap<K, V>(16, 0.75f, true)
@@ -293,6 +324,11 @@ class TaskRepository @Inject constructor(
         return (System.currentTimeMillis() - lastCacheUpdate) < cacheValidityMs
     }
 
+    private fun todayBounds(): Pair<Long, Long> = dayBounds(LocalDate.now(ZoneId.systemDefault()))
+
+    private fun tomorrowBounds(): Pair<Long, Long> =
+        dayBounds(LocalDate.now(ZoneId.systemDefault()).plusDays(1))
+
     suspend fun getCachedTaskStats(key: String, provider: suspend () -> Any): Any {
         if (!isCacheValid()) {
             taskStatsCache.clear()
@@ -309,7 +345,8 @@ class TaskRepository @Inject constructor(
     // Optimized task statistics with caching
     suspend fun getCachedTodayCompletedCount(): Int {
         return getCachedTaskStats("today_completed") {
-            taskDao.getTodayCompletedCount()
+            val (start, end) = todayBounds()
+            taskDao.getTodayCompletedCount(start, end)
         } as Int
     }
 
@@ -394,3 +431,6 @@ class TaskRepository @Inject constructor(
         }
     }
 }
+
+
+

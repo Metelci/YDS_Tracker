@@ -46,11 +46,11 @@ abstract class StudyPlanDatabase : RoomDatabase() {
                     val isDebug = debugField.getBoolean(null)
 
                     if (isDebug) {
-                        builder.fallbackToDestructiveMigration(dropAllTables = true)
+                        builder.fallbackToDestructiveMigration()
                     }
                 } catch (e: Exception) {
                     // If BuildConfig is not available, assume debug
-                    builder.fallbackToDestructiveMigration(dropAllTables = true)
+                    builder.fallbackToDestructiveMigration()
                 }
 
                 builder.build().also { INSTANCE = it }

@@ -4650,17 +4650,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.osym_button` appears to be unused"
-        errorLine1="    &lt;string name=&quot;osym_button&quot;>Go to Official Exam Board Website&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="11"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.string.time_expired` appears to be unused"
         errorLine1="    &lt;string name=&quot;time_expired&quot;>Time Expired&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
@@ -9533,3 +9522,4 @@
     </issue>
 
 </issues>
+

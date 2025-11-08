@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtlc.studyplan.accessibility.AccessibilityManager
 import com.mtlc.studyplan.settings.data.SettingsRepository
+import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import com.mtlc.studyplan.ui.animations.SettingsAnimationCoordinator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,9 @@ class AdvancedToggleViewModel(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             try {
-                // TODO: Implement actual toggle logic
+                // Implement actual toggle logic by updating the setting in the repository
+                val request = SettingsUpdateRequest.UpdateBoolean(settingKey, enabled)
+                settingsRepository.updateSetting(request)
                 _state.value = _state.value.copy(isLoading = false)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isLoading = false, error = e.message)

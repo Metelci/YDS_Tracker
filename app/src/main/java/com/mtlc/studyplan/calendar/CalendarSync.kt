@@ -22,6 +22,8 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 
+import timber.log.Timber
+
 /**
  * Interface for calendar operations (for testing abstraction)
  */
@@ -127,7 +129,17 @@ class CalendarContractProvider(private val context: Context) : CalendarProvider 
             }
             
             eventId
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Timber.e(e, "Database error in calendar operation")
+            null
+        } catch (e: java.lang.SecurityException) {
+            Timber.e(e, "Permission denied in calendar operation")
+            null
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Invalid argument in calendar operation")
+            null
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error in calendar operation")
             null
         }
     }
@@ -158,7 +170,14 @@ class CalendarContractProvider(private val context: Context) : CalendarProvider 
             }
             
             rowsUpdated > 0
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Timber.e(e, "Database error updating calendar event")
+            false
+        } catch (e: java.lang.SecurityException) {
+            Timber.e(e, "Permission denied updating calendar event")
+            false
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error updating calendar event")
             false
         }
     }
@@ -176,7 +195,14 @@ class CalendarContractProvider(private val context: Context) : CalendarProvider 
             val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
             val rowsDeleted = context.contentResolver.delete(uri, null, null)
             rowsDeleted > 0
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Timber.e(e, "Database error deleting calendar event")
+            false
+        } catch (e: java.lang.SecurityException) {
+            Timber.e(e, "Permission denied deleting calendar event")
+            false
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error deleting calendar event")
             false
         }
     }
@@ -222,8 +248,10 @@ class CalendarContractProvider(private val context: Context) : CalendarProvider 
         
         try {
             context.contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, values)
+        } catch (e: java.lang.SecurityException) {
+            Timber.w(e, "Permission denied inserting calendar reminder")
         } catch (e: Exception) {
-            // Ignore reminder insertion failures
+            Timber.e(e, "Failed to insert calendar reminder")
         }
     }
 
@@ -234,8 +262,10 @@ class CalendarContractProvider(private val context: Context) : CalendarProvider 
                 "${CalendarContract.Reminders.EVENT_ID} = ?",
                 arrayOf(eventId.toString())
             )
+        } catch (e: java.lang.SecurityException) {
+            Timber.w(e, "Permission denied deleting calendar reminders")
         } catch (e: Exception) {
-            // Ignore reminder deletion failures
+            Timber.e(e, "Failed to delete calendar reminders")
         }
     }
 }
@@ -292,7 +322,14 @@ class CalendarSync(
                 else -> CalendarSyncResult.Error("Failed to sync any events")
             }
             
+        } catch (e: java.lang.SecurityException) {
+            Timber.e(e, "Permission denied during calendar sync")
+            CalendarSyncResult.Error("Calendar sync failed: Permission denied", e)
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Timber.e(e, "Database error during calendar sync")
+            CalendarSyncResult.Error("Calendar sync failed: Database error", e)
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error during calendar sync")
             CalendarSyncResult.Error("Sync failed: ${e.message}", e)
         }
     }
@@ -475,7 +512,17 @@ class CalendarSync(
                 }
                 else -> null
             }
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Timber.e(e, "Database error in calendar operation")
+            null
+        } catch (e: java.lang.SecurityException) {
+            Timber.e(e, "Permission denied in calendar operation")
+            null
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Invalid argument in calendar operation")
+            null
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error in calendar operation")
             null
         }
     }

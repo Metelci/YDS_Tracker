@@ -25,7 +25,10 @@ import kotlinx.coroutines.flow.map
  * 4. Optionally trims to user's specified end date
  * 5. Distributes tasks according to user's time availability
  */
+import android.content.Context
+
 class PlanRepository(
+    private val context: Context,
     private val store: PlanOverridesStore,
     private val settings: PlanSettingsStore,
 ) {
@@ -38,8 +41,8 @@ class PlanRepository(
      */
     val planFlow: Flow<List<WeekPlan>> = combine(settings.settingsFlow, store.overridesFlow) { cfg, ov ->
         val base = PlanDataSource.planData
-        val sized = adaptPlanDuration(base, cfg)
-        val merged = mergePlans(sized, ov)
+        val sized = adaptPlanDuration(base, cfg, context)
+        val merged = mergePlans(sized, ov, context)
         val startAligned = alignStartWeekday(merged, cfg)
         val endAligned = alignToEndDateIfProvided(startAligned, cfg)
         applyAvailability(endAligned, cfg)
@@ -73,8 +76,7 @@ class PlanRepository(
     }
 }
 
-internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekPlan> {
-    val ctx = PlanDataSource.getAppContext()
+internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides, context: Context): List<WeekPlan> {
     val overridesById = ov.taskOverrides.associateBy { it.taskId }
     return base.map { week ->
         val days = week.days.mapIndexed { dayIndex, day ->
@@ -89,7 +91,7 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
                             desc = o?.customDesc ?: t.desc,
                             details = o?.customDetails ?: t.details
                         ),
-                        ctx
+                        context
                     )
                 }
             }
@@ -105,7 +107,7 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
                             desc = ct.desc,
                             details = ct.details
                         ),
-                        ctx
+                        context
                     )
                 }
 
@@ -129,13 +131,15 @@ internal fun mergePlans(base: List<WeekPlan>, ov: UserPlanOverrides): List<WeekP
  * @param cfg User's duration settings (total weeks, etc.)
  * @return A new plan adapted to the specified duration while preserving curriculum progression
  */
-internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings): List<WeekPlan> {
+internal fun adaptPlanDuration(
+    base: List<WeekPlan>,
+    cfg: PlanDurationSettings,
+    context: Context
+): List<WeekPlan> {
     val total = cfg.totalWeeks.coerceAtLeast(1)
     if (base.isEmpty()) return emptyList()
 
     val lastIdx = base.size - 1
-    val ctx = PlanDataSource.getAppContext()
-
     /**
      * Determines the curriculum phase label based on week index in the original plan
      * 
@@ -147,10 +151,10 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
      */
     fun phaseLabelForIndex(i: Int): String {
         return when {
-            i < 8 -> ctx.getString(R.string.foundation_level)
-            i < 18 -> ctx.getString(R.string.development_level)
-            i < 26 -> ctx.getString(R.string.advanced_level)
-            else -> ctx.getString(R.string.exam_camp)
+            i < 8 -> context.getString(R.string.foundation_level)
+            i < 18 -> context.getString(R.string.development_level)
+            i < 26 -> context.getString(R.string.advanced_level)
+            else -> context.getString(R.string.exam_camp)
         }
     }
 
@@ -173,13 +177,13 @@ internal fun adaptPlanDuration(base: List<WeekPlan>, cfg: PlanDurationSettings):
         val baseWeek = base[mapped]
         val weekNum = i + 1
         val monthNum = (i / 4) + 1
-        val title = ctx.getString(R.string.month_week_format, monthNum, weekNum, phaseLabelForIndex(mapped))
+        val title = context.getString(R.string.month_week_format, monthNum, weekNum, phaseLabelForIndex(mapped))
 
         val days = baseWeek.days.mapIndexed { dayIdx, day ->
             DayPlan(day = day.day, tasks = day.tasks.map { t ->
                 PlanTaskLocalizer.localize(
                     PlanTask(id = remapId(t.id, weekNum), desc = t.desc, details = t.details),
-                    ctx
+                    context
                 )
             })
         }

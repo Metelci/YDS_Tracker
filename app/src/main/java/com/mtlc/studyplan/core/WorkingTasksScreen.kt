@@ -1,13 +1,14 @@
 package com.mtlc.studyplan.core
 
+// removed luminance-based dark theme checks
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,18 +46,16 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import com.mtlc.studyplan.ui.theme.FeatureKey
-import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -72,23 +72,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
-// removed luminance-based dark theme checks
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.CompleteMurphyBookData
 import com.mtlc.studyplan.data.DayPlan
 import com.mtlc.studyplan.data.MurphyBook
@@ -100,20 +100,20 @@ import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.data.TaskPriority
 import com.mtlc.studyplan.data.TaskRepository
-import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.WeekPlan
-import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.integration.AchievementBadge
+import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -475,6 +475,7 @@ class StudySessionCompressor {
     )
 }
 
+@Suppress("LongMethod", "LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkingTasksScreen(
@@ -485,24 +486,22 @@ fun WorkingTasksScreen(
     onNavigateToStudyPlan: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val screenState = rememberWorkingTasksScreenState(
-        studyProgressRepository = studyProgressRepository,
-        taskRepository = taskRepository,
-        onNavigateToStudyPlan = onNavigateToStudyPlan
-    )
-
-    WorkingTasksScreenContent(
-        screenState = screenState,
+    val tasksState = rememberTasksState(
         appIntegrationManager = appIntegrationManager,
         studyProgressRepository = studyProgressRepository,
         taskRepository = taskRepository,
         sharedViewModel = sharedViewModel,
+        onNavigateToStudyPlan = onNavigateToStudyPlan
+    )
+
+    WorkingTasksScreenContent(
+        tasksState = tasksState,
         modifier = modifier
     )
 }
 
 @Composable
-private fun rememberWorkingTasksScreenState(
+fun rememberWorkingTasksScreenState(
     studyProgressRepository: StudyProgressRepository,
     taskRepository: TaskRepository,
     onNavigateToStudyPlan: () -> Unit
@@ -513,29 +512,99 @@ private fun rememberWorkingTasksScreenState(
     val selectedTabState = remember { mutableStateOf(2) } // 0: Daily, 1: Weekly, 2: Plan, 3: Awards
     val selectedDayState = remember { mutableStateOf<DayPlan?>(null) }
 
-    // Get the week that corresponds to user's current progress
-    val thisWeek = remember(currentWeek) {
-        plan.getOrNull(currentWeek - 1) ?: plan.firstOrNull()
-    }
-    val weeklyIds = remember(thisWeek) {
-        thisWeek?.days?.flatMap { it.tasks }?.map { it.id }?.toSet() ?: emptySet()
-    }
-    // Count actual completed tasks instead of hardcoded 0
     val allTasks by taskRepository.getAllTasks().collectAsState(initial = emptyList())
-    val weeklyCompleted = remember(allTasks, weeklyIds) {
-        allTasks.count { task -> 
-            task.isCompleted && weeklyIds.contains(task.id) 
+    val weeklyMetrics = rememberWeeklyMetrics(
+        plan = plan,
+        currentWeek = currentWeek,
+        allTasks = allTasks
+    )
+
+    val weeklyTabState = remember(weeklyMetrics, currentWeek) {
+        WeeklyTabState(
+            weekPlan = weeklyMetrics.weekPlan,
+            currentWeek = currentWeek,
+            weeklyCompletedTasks = weeklyMetrics.completedCount,
+            weeklyTotalTasks = weeklyMetrics.totalCount,
+            dayStatuses = weeklyMetrics.dayStatuses
+        )
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    return WorkingTasksScreenState(
+        currentWeek = currentWeek,
+        selectedTab = selectedTabState.value,
+        selectedDay = selectedDayState.value,
+        thisWeek = weeklyMetrics.weekPlan,
+        weeklyCompletedTasks = weeklyMetrics.completedCount,
+        weeklyTotalTasks = weeklyMetrics.totalCount,
+        weeklyProgressPct = weeklyMetrics.progressPct,
+        dayStatuses = weeklyMetrics.dayStatuses,
+        weeklyTabState = weeklyTabState,
+        onTabSelected = { selectedTabState.value = it },
+        onDaySelected = { day ->
+            selectedDayState.value = day
+            selectedTabState.value = 0  // Switch to Daily tab
+        },
+        onNavigateToStudyPlan = onNavigateToStudyPlan,
+        onWeekSelected = { week ->
+            coroutineScope.launch {
+                studyProgressRepository.setManualWeekOverride(week)
+            }
         }
-    }
-    val weeklyTotal = remember(weeklyIds) { weeklyIds.size }
-    val weeklyProgressPct = remember(weeklyCompleted, weeklyTotal) {
-        if (weeklyTotal > 0) weeklyCompleted.toFloat() / weeklyTotal else 0f
-    }
-    val tasksById = remember(allTasks) {
-        allTasks.associateBy { it.id }
-    }
-    val dayStatuses = remember(thisWeek, tasksById) {
-        thisWeek?.days?.map { day ->
+    )
+}
+
+data class WorkingTasksScreenState(
+    val currentWeek: Int,
+    val selectedTab: Int,
+    val selectedDay: DayPlan?,
+    val thisWeek: WeekPlan?,
+    val weeklyCompletedTasks: Int,
+    val weeklyTotalTasks: Int,
+    val weeklyProgressPct: Float,
+    val dayStatuses: List<DayScheduleStatus>,
+    val weeklyTabState: WeeklyTabState,
+    val onTabSelected: (Int) -> Unit,
+    val onDaySelected: (DayPlan) -> Unit,
+    val onNavigateToStudyPlan: () -> Unit,
+    val onWeekSelected: (Int) -> Unit
+)
+
+data class WeeklyTabState(
+    val weekPlan: WeekPlan?,
+    val currentWeek: Int,
+    val weeklyCompletedTasks: Int,
+    val weeklyTotalTasks: Int,
+    val dayStatuses: List<DayScheduleStatus>
+)
+
+private data class WeeklyMetrics(
+    val weekPlan: WeekPlan?,
+    val completedCount: Int,
+    val totalCount: Int,
+    val progressPct: Float,
+    val dayStatuses: List<DayScheduleStatus>
+)
+
+@Composable
+private fun rememberWeeklyMetrics(
+    plan: List<WeekPlan>,
+    currentWeek: Int,
+    allTasks: List<Task>
+): WeeklyMetrics = remember(plan, currentWeek, allTasks) {
+    val weekPlan = plan.getOrNull(currentWeek - 1) ?: plan.firstOrNull()
+    val weeklyIds = weekPlan
+        ?.days
+        ?.flatMap { it.tasks }
+        ?.map { it.id }
+        ?.toSet()
+        ?: emptySet()
+
+    val tasksById = allTasks.associateBy { it.id }
+    val dayStatuses = weekPlan
+        ?.days
+        ?.map { day ->
             val total = day.tasks.size
             val completed = day.tasks.count { planTask ->
                 tasksById[planTask.id]?.isCompleted == true
@@ -552,40 +621,21 @@ private fun rememberWorkingTasksScreenState(
                 totalTasks = total,
                 state = state
             )
-        } ?: emptyList()
-    }
+        }
+        ?: emptyList()
 
-    return WorkingTasksScreenState(
-        currentWeek = currentWeek,
-        selectedTab = selectedTabState.value,
-        selectedDay = selectedDayState.value,
-        thisWeek = thisWeek,
-        weeklyCompletedTasks = weeklyCompleted,
-        weeklyTotalTasks = weeklyTotal,
-        weeklyProgressPct = weeklyProgressPct,
-        dayStatuses = dayStatuses,
-        onTabSelected = { selectedTabState.value = it },
-        onDaySelected = { day ->
-            selectedDayState.value = day
-            selectedTabState.value = 0  // Switch to Daily tab
-        },
-        onNavigateToStudyPlan = onNavigateToStudyPlan
+    val completedCount = allTasks.count { it.isCompleted && weeklyIds.contains(it.id) }
+    val totalCount = weeklyIds.size
+    val progressPct = if (totalCount > 0) completedCount.toFloat() / totalCount else 0f
+
+    WeeklyMetrics(
+        weekPlan = weekPlan,
+        completedCount = completedCount,
+        totalCount = totalCount,
+        progressPct = progressPct,
+        dayStatuses = dayStatuses
     )
 }
-
-data class WorkingTasksScreenState(
-    val currentWeek: Int,
-    val selectedTab: Int,
-    val selectedDay: DayPlan?,
-    val thisWeek: WeekPlan?,
-    val weeklyCompletedTasks: Int,
-    val weeklyTotalTasks: Int,
-    val weeklyProgressPct: Float,
-    val dayStatuses: List<DayScheduleStatus>,
-    val onTabSelected: (Int) -> Unit,
-    val onDaySelected: (DayPlan) -> Unit,
-    val onNavigateToStudyPlan: () -> Unit
-)
 
 data class DayScheduleStatus(
     val dayName: String,
@@ -602,14 +652,20 @@ enum class DayCompletionState {
 }
 
 @Composable
+private fun taskCardBorder(): BorderStroke {
+    val color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+    return remember(color) { BorderStroke(1.dp, color) }
+}
+
+@Composable
 private fun WorkingTasksScreenContent(
-    screenState: WorkingTasksScreenState,
-    appIntegrationManager: AppIntegrationManager,
-    studyProgressRepository: StudyProgressRepository,
-    taskRepository: TaskRepository,
-    sharedViewModel: SharedAppViewModel,
+    tasksState: TasksState,
     modifier: Modifier = Modifier
 ) {
+    val screenState = tasksState.uiState
+    val appIntegrationManager = tasksState.appIntegrationManager
+    val taskRepository = tasksState.taskRepository
+    val sharedViewModel = tasksState.sharedViewModel
     val isDarkTheme = false
     Box(
         modifier = modifier
@@ -645,14 +701,10 @@ private fun WorkingTasksScreenContent(
                     onBackToPlan = { screenState.onTabSelected(2) }
                 )
                 1 -> WeeklyTab(
-                    thisWeek = screenState.thisWeek,
-                    currentWeek = screenState.currentWeek,
-                    weeklyCompletedTasks = screenState.weeklyCompletedTasks,
-                    weeklyTotalTasks = screenState.weeklyTotalTasks,
-                    studyProgressRepository = studyProgressRepository,
-                    dayStatuses = screenState.dayStatuses,
+                    state = screenState.weeklyTabState,
                     onNavigateToPlan = { screenState.onTabSelected(2) },
-                    onNavigateToStudyPlan = screenState.onNavigateToStudyPlan
+                    onNavigateToStudyPlan = screenState.onNavigateToStudyPlan,
+                    onWeekSelected = screenState.onWeekSelected
                 )
                 2 -> PlanTab(
                     thisWeek = screenState.thisWeek,
@@ -705,7 +757,10 @@ private fun SegmentedControl(
         // Sliding indicator layout
         BoxWithConstraints(Modifier.padding(4.dp)) {
             val segmentCount = segments.size.coerceAtLeast(1)
-            val segWidth: Dp = maxWidth / segmentCount
+            val density = LocalDensity.current
+            val maxWidth = constraints.maxWidth
+            val availableWidth = with(density) { maxWidth.toDp() }
+            val segWidth: Dp = availableWidth / segmentCount
             val targetOffset = segWidth * selectedIndex
             val animatedOffset by animateDpAsState(
                 targetValue = targetOffset,
@@ -760,12 +815,38 @@ private fun SegmentedControl(
 private fun TasksGradientTopBar(
     appIntegrationManager: AppIntegrationManager? = null
 ) {
-    // Calculate real XP from completed tasks
-    val allTasks by (appIntegrationManager?.getAllTasks()?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) })
-    val completedTasks = allTasks.filter { it.isCompleted }
-    val totalXP = completedTasks.size * 10 // 10 XP per completed task
-    val isFirstTimeUser = allTasks.isEmpty()
+    val taskStats = rememberTaskStats(appIntegrationManager)
+    TasksTopBarSurface {
+        TasksTopBarRow(taskStats = taskStats)
+    }
+}
 
+private data class TaskStats(
+    val totalXp: Int,
+    val isFirstTimeUser: Boolean
+)
+
+@Composable
+private fun rememberTaskStats(
+    appIntegrationManager: AppIntegrationManager?
+): TaskStats {
+    val tasksFlowState = appIntegrationManager
+        ?.getAllTasks()
+        ?.collectAsState(initial = emptyList())
+    val allTasks = tasksFlowState?.value ?: emptyList()
+    val completedCount = remember(allTasks) { allTasks.count { it.isCompleted } }
+    val totalXp = remember(completedCount) { completedCount * 10 }
+    val isFirstTimeUser = remember(allTasks) { allTasks.isEmpty() }
+    return remember(totalXp, isFirstTimeUser) {
+        TaskStats(
+            totalXp = totalXp,
+            isFirstTimeUser = isFirstTimeUser
+        )
+    }
+}
+
+@Composable
+private fun TasksTopBarSurface(content: @Composable () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -786,110 +867,134 @@ private fun TasksGradientTopBar(
                 )
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Task,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                        modifier = Modifier.size(24.dp)
+            content()
+        }
+    }
+}
+
+@Composable
+private fun TasksTopBarRow(taskStats: TaskStats) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TasksTopBarHeader(
+            isFirstTimeUser = taskStats.isFirstTimeUser
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        TasksTopBarXpBadge(taskStats = taskStats)
+    }
+}
+
+@Composable
+private fun RowScope.TasksTopBarHeader(isFirstTimeUser: Boolean) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.weight(1f)
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Task,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            modifier = Modifier.size(24.dp)
+        )
+        Column {
+            Text(
+                text = stringResource(R.string.topbar_tasks_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = if (isFirstTimeUser) {
+                    stringResource(R.string.tasks_header_first_time_message)
+                } else {
+                    stringResource(R.string.tasks_header_returning_message)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun TasksTopBarXpBadge(taskStats: TaskStats) {
+    Box(
+        modifier = Modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
                     )
-                    Column {
-                        Text(
-                            text = stringResource(R.string.topbar_tasks_title),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = if (isFirstTimeUser) {
-                                stringResource(R.string.tasks_header_first_time_message)
-                            } else {
-                                stringResource(R.string.tasks_header_returning_message)
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // XP Badge with pastel gradient
-                Box(
-                    modifier = Modifier
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                                )
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            Icons.Outlined.Bolt,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.tasks_xp_value, if (isFirstTimeUser) 0 else totalXP),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                Icons.Outlined.Bolt,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(
+                    R.string.tasks_xp_value,
+                    if (taskStats.isFirstTimeUser) 0 else taskStats.totalXp
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
 @Composable
 private fun WeeklyTab(
-    thisWeek: WeekPlan?,
-    currentWeek: Int,
-    weeklyCompletedTasks: Int,
-    weeklyTotalTasks: Int,
-    studyProgressRepository: StudyProgressRepository,
-    dayStatuses: List<DayScheduleStatus>,
+    state: WeeklyTabState,
     onNavigateToPlan: () -> Unit = {},
-    onNavigateToStudyPlan: () -> Unit = {}
+    onNavigateToStudyPlan: () -> Unit = {},
+    onWeekSelected: (Int) -> Unit = {}
 ) {
     val cardShape = RoundedCornerShape(16.dp)
-    val scope = rememberCoroutineScope()
 
-    val totalTasks = remember(weeklyTotalTasks, thisWeek) {
-        if (weeklyTotalTasks > 0) weeklyTotalTasks else thisWeek?.days?.sumOf { it.tasks.size } ?: 0
+    val totalTasks = remember(state.weeklyTotalTasks, state.weekPlan) {
+        if (state.weeklyTotalTasks > 0) {
+            state.weeklyTotalTasks
+        } else {
+            state.weekPlan?.days?.sumOf { it.tasks.size } ?: 0
+        }
     }
 
-    val completedTasks = remember(weeklyCompletedTasks) { weeklyCompletedTasks.coerceAtMost(totalTasks) }
+    val completedTasks = remember(state.weeklyCompletedTasks, totalTasks) {
+        state.weeklyCompletedTasks.coerceAtMost(totalTasks)
+    }
 
     val weekProgress = remember(completedTasks, totalTasks) {
-        if (totalTasks > 0) (completedTasks.toFloat() / totalTasks).coerceIn(0f, 1f) else 0f
+        if (totalTasks > 0) {
+            (completedTasks.toFloat() / totalTasks).coerceIn(0f, 1f)
+        } else {
+            0f
+        }
     }
 
-    val daysCompleted = remember(dayStatuses) {
-        dayStatuses.count { it.state == DayCompletionState.COMPLETED }
+    val daysCompleted = remember(state.dayStatuses) {
+        state.dayStatuses.count { it.state == DayCompletionState.COMPLETED }
     }
-    val totalDays = remember(dayStatuses, thisWeek) {
-        dayStatuses.size.takeIf { it > 0 } ?: (thisWeek?.days?.size ?: 7)
+
+    val totalDays = remember(state.dayStatuses, state.weekPlan) {
+        state.dayStatuses.size.takeIf { it > 0 } ?: (state.weekPlan?.days?.size ?: 7)
     }
+
     val currentDayOfWeek = remember { LocalDate.now().dayOfWeek.value }
 
     LazyColumn(
@@ -897,153 +1002,29 @@ private fun WeeklyTab(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(bottom = 28.dp)
     ) {
-        // Week Header Card
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                stringResource(R.string.tasks_week_title, currentWeek, 30),
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                stringResource(R.string.tasks_week_day_progress, daysCompleted, totalDays),
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                            )
-                        }
-
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(64.dp)
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                Text(
-                                    "${(weekProgress * 100).toInt()}%",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // Progress bar
-                    Column {
-                        LinearProgressIndicator(
-                            progress = { weekProgress },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            stringResource(R.string.tasks_week_completed_summary, completedTasks, totalTasks),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                        )
-                    }
-                }
-            }
-        }
-
-        // Week Navigation
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = cardShape
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        onClick = {
-                            if (currentWeek > 1) {
-                                scope.launch {
-                                    studyProgressRepository.setManualWeekOverride(currentWeek - 1)
-                                }
-                            }
-                        },
-                        enabled = currentWeek > 1,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.tasks_week_nav_previous_cd),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.tasks_week_nav_previous))
-                    }
-
-                    Text(
-                        stringResource(R.string.tasks_week_nav_label, currentWeek),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    OutlinedButton(
-                        onClick = {
-                            if (currentWeek < 30) {
-                                scope.launch {
-                                    studyProgressRepository.setManualWeekOverride(currentWeek + 1)
-                                }
-                            }
-                        },
-                        enabled = currentWeek < 30,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(stringResource(R.string.tasks_week_nav_next))
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = stringResource(R.string.tasks_week_nav_next_cd),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        // Daily Summary
-        item {
-            Text(
-                stringResource(R.string.tasks_week_schedule_title),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 4.dp)
+            WeeklyOverviewCard(
+                cardShape = cardShape,
+                currentWeek = state.currentWeek,
+                weekProgress = weekProgress,
+                completedTasks = completedTasks,
+                totalTasks = totalTasks,
+                daysCompleted = daysCompleted,
+                totalDays = totalDays
             )
         }
 
-        // Days of the week
-        thisWeek?.days?.forEachIndexed { index, day ->
+        item {
+            WeeklyNavigationCard(
+                cardShape = cardShape,
+                currentWeek = state.currentWeek,
+                onWeekSelected = onWeekSelected
+            )
+        }
+
+        item { WeeklyScheduleHeader() }
+
+        state.weekPlan?.days?.forEachIndexed { index, day ->
             item {
                 WeeklyDayCard(
                     day = day,
@@ -1054,125 +1035,303 @@ private fun WeeklyTab(
             }
         }
 
-        // Quick Actions
+        item { WeeklyQuickActionsHeader() }
+
         item {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                stringResource(R.string.tasks_week_quick_actions_title),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 4.dp)
+            WeeklyQuickActionsRow(
+                cardShape = cardShape,
+                onNavigateToPlan = onNavigateToPlan,
+                onNavigateToStudyPlan = onNavigateToStudyPlan
             )
         }
 
         item {
+            WeeklyStatsCard(
+                cardShape = cardShape,
+                completedTasks = completedTasks,
+                totalTasks = totalTasks
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeeklyOverviewCard(
+    cardShape: RoundedCornerShape,
+    currentWeek: Int,
+    weekProgress: Float,
+    completedTasks: Int,
+    totalTasks: Int,
+    daysCompleted: Int,
+    totalDays: Int
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = cardShape,
+        border = taskCardBorder(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
-                    modifier = Modifier.weight(1f),
-                    shape = cardShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                Column {
+                    Text(
+                        stringResource(R.string.tasks_week_title, currentWeek, 30),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onNavigateToPlan() }
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Filled.CalendarToday,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            stringResource(R.string.tasks_week_quick_action_plan),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        stringResource(R.string.tasks_week_day_progress, daysCompleted, totalDays),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
                 }
 
-                Card(
-                    modifier = Modifier.weight(1f),
-                    shape = cardShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    )
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(64.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onNavigateToStudyPlan() }
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Icon(
-                            Icons.Filled.School,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
-                        Spacer(Modifier.height(8.dp))
                         Text(
-                            stringResource(R.string.tasks_week_quick_action_study),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                            "${(weekProgress * 100).toInt()}%",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            Column {
+                LinearProgressIndicator(
+                    progress = { weekProgress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.tasks_week_completed_summary, completedTasks, totalTasks),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeeklyNavigationCard(
+    cardShape: RoundedCornerShape,
+    currentWeek: Int,
+    onWeekSelected: (Int) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = cardShape,
+        border = taskCardBorder()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedButton(
+                onClick = { onWeekSelected((currentWeek - 1).coerceAtLeast(1)) },
+                enabled = currentWeek > 1,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.tasks_week_nav_previous_cd),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.tasks_week_nav_previous))
+            }
+
+            Text(
+                stringResource(R.string.tasks_week_nav_label, currentWeek),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            OutlinedButton(
+                onClick = { onWeekSelected((currentWeek + 1).coerceAtMost(30)) },
+                enabled = currentWeek < 30,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.tasks_week_nav_next))
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = stringResource(R.string.tasks_week_nav_next_cd),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeeklyScheduleHeader() {
+    Text(
+        stringResource(R.string.tasks_week_schedule_title),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+}
+
+@Composable
+private fun WeeklyQuickActionsHeader() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.tasks_week_quick_actions_title),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+    }
+}
+
+@Composable
+private fun WeeklyQuickActionsRow(
+    cardShape: RoundedCornerShape,
+    onNavigateToPlan: () -> Unit,
+    onNavigateToStudyPlan: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = cardShape,
+            border = taskCardBorder(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToPlan() }
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    Icons.Filled.CalendarToday,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.tasks_week_quick_action_plan),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
         }
 
-        // Week Stats Card
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = cardShape,
+            border = taskCardBorder(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToStudyPlan() }
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        stringResource(R.string.tasks_week_stats_title),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(12.dp))
+                Icon(
+                    Icons.Filled.School,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.tasks_week_quick_action_study),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
+        }
+    }
+}
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        WeekStatItem(
-                            icon = Icons.Filled.CheckCircle,
-                            label = stringResource(R.string.tasks_week_stat_completed),
-                            value = "$completedTasks",
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        WeekStatItem(
-                            icon = Icons.Filled.Circle,
-                            label = stringResource(R.string.tasks_week_stat_remaining),
-                            value = "${(totalTasks - completedTasks).coerceAtLeast(0)}",
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                        WeekStatItem(
-                            icon = Icons.AutoMirrored.Filled.MenuBook,
-                            label = stringResource(R.string.tasks_week_stat_total),
-                            value = "$totalTasks",
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                }
+@Composable
+private fun WeeklyStatsCard(
+    cardShape: RoundedCornerShape,
+    completedTasks: Int,
+    totalTasks: Int
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = cardShape,
+        border = taskCardBorder(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                stringResource(R.string.tasks_week_stats_title),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                WeekStatItem(
+                    icon = Icons.Filled.CheckCircle,
+                    label = stringResource(R.string.tasks_week_stat_completed),
+                    value = "$completedTasks",
+                    color = MaterialTheme.colorScheme.primary
+                )
+                WeekStatItem(
+                    icon = Icons.Filled.Circle,
+                    label = stringResource(R.string.tasks_week_stat_remaining),
+                    value = "${(totalTasks - completedTasks).coerceAtLeast(0)}",
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                WeekStatItem(
+                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                    label = stringResource(R.string.tasks_week_stat_total),
+                    value = "$totalTasks",
+                    color = MaterialTheme.colorScheme.tertiary
+                )
             }
         }
     }
@@ -1190,6 +1349,7 @@ private fun WeeklyDayCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder(),
         colors = if (isToday) {
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -1324,7 +1484,8 @@ private fun PlanTab(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onNavigateToStudyPlan() }
+                    .clickable { onNavigateToStudyPlan() },
+                border = taskCardBorder()
             ) {
                 Row(
                     modifier = Modifier
@@ -1370,7 +1531,11 @@ private fun PlanTab(
 
         // This Week's Study Plan
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_surface_block"))) {
+            Card(
+                shape = cardShape,
+                colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_surface_block")),
+                border = taskCardBorder()
+            ) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.CalendarToday, contentDescription = stringResource(R.string.cd_calendar), tint = MaterialTheme.colorScheme.primary)
@@ -1404,7 +1569,11 @@ private fun PlanTab(
 
         // Upcoming Days
         item {
-            Card(shape = cardShape, colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_secondary_block"))) {
+            Card(
+                shape = cardShape,
+                colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_secondary_block")),
+                border = taskCardBorder()
+            ) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.tasks_week_upcoming_title), fontWeight = FontWeight.SemiBold)
@@ -1450,6 +1619,7 @@ private fun AwardsTabContent(
                 Card(
                     shape = cardShape,
                     colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    border = taskCardBorder(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
@@ -1566,86 +1736,133 @@ private fun AchievementCard(
     Card(
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = taskCardBorder(),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = if (achievement.isUnlocked) unlockedBrush else lockedBrush,
-                    shape = shape
-                )
-                .padding(horizontal = 16.dp, vertical = 18.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .background(Color.Black.copy(alpha = if (achievement.isUnlocked) 0.0f else 0.08f), shape = CircleShape)
-                        .padding(10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    val iconTint = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
-                    Icon(
-                        imageVector = if (achievement.isUnlocked) Icons.Filled.EmojiEvents else Icons.Filled.Lock,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
+        AchievementCardBody(
+            achievement = achievement,
+            shape = shape,
+            unlockedBrush = unlockedBrush,
+            lockedBrush = lockedBrush
+        )
+    }
+}
 
-                Spacer(Modifier.width(16.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    val context = LocalContext.current
-                    // Resolve localized title/description via resource keys: award_<id>_title/desc
-                    val titleResId = context.resources.getIdentifier(
-                        "award_${achievement.id}_title",
-                        "string",
-                        context.packageName
-                    )
-                    val descResId = context.resources.getIdentifier(
-                        "award_${achievement.id}_desc",
-                        "string",
-                        context.packageName
-                    )
-                    val localizedTitle = if (titleResId != 0) stringResource(id = titleResId) else achievement.title
-                    val localizedDesc = if (descResId != 0) stringResource(id = descResId) else achievement.description
-                    Text(
-                        text = localizedTitle,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-                    )
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = localizedDesc,
-                        fontSize = 13.sp,
-                        color = if (achievement.isUnlocked) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                        maxLines = 2
-                    )
-                }
-
-                if (achievement.isUnlocked && achievement.unlockedAt != null) {
-                    Spacer(Modifier.width(12.dp))
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color.White.copy(alpha = 0.2f),
-                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.tasks_awards_unlocked_label
-                            ),
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
+@Composable
+private fun AchievementCardBody(
+    achievement: AchievementBadge,
+    shape: Shape,
+    unlockedBrush: Brush,
+    lockedBrush: Brush
+) {
+    val backgroundBrush = if (achievement.isUnlocked) unlockedBrush else lockedBrush
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(brush = backgroundBrush, shape = shape)
+            .padding(horizontal = 16.dp, vertical = 18.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AchievementIcon(achievement)
+            Spacer(Modifier.width(16.dp))
+            AchievementDetails(
+                achievement = achievement,
+                modifier = Modifier.weight(1f)
+            )
+            AchievementStatusBadge(achievement)
         }
+    }
+}
+
+@Composable
+private fun AchievementIcon(achievement: AchievementBadge) {
+    val iconTint = if (achievement.isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .background(
+                Color.Black.copy(alpha = if (achievement.isUnlocked) 0.0f else 0.08f),
+                shape = CircleShape
+            )
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = if (achievement.isUnlocked) Icons.Filled.EmojiEvents else Icons.Filled.Lock,
+            contentDescription = null,
+            tint = iconTint,
+            modifier = Modifier.size(26.dp)
+        )
+    }
+}
+
+@Composable
+private fun AchievementDetails(
+    achievement: AchievementBadge,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val titleResId = remember(achievement.id) {
+        context.resources.getIdentifier(
+            "award_${achievement.id}_title",
+            "string",
+            context.packageName
+        )
+    }
+    val descResId = remember(achievement.id) {
+        context.resources.getIdentifier(
+            "award_${achievement.id}_desc",
+            "string",
+            context.packageName
+        )
+    }
+    val localizedTitle = if (titleResId != 0) stringResource(id = titleResId) else achievement.title
+    val localizedDesc = if (descResId != 0) stringResource(id = descResId) else achievement.description
+
+    Column(modifier = modifier) {
+        Text(
+            text = localizedTitle,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+            color = if (achievement.isUnlocked) {
+                Color.White
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+            }
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = localizedDesc,
+            fontSize = 13.sp,
+            color = if (achievement.isUnlocked) {
+                Color.White.copy(alpha = 0.85f)
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+            },
+            maxLines = 2
+        )
+    }
+}
+
+@Composable
+private fun AchievementStatusBadge(achievement: AchievementBadge) {
+    if (!achievement.isUnlocked || achievement.unlockedAt == null) {
+        return
+    }
+
+    Spacer(Modifier.width(12.dp))
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = Color.White.copy(alpha = 0.2f),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+    ) {
+        Text(
+            text = stringResource(R.string.tasks_awards_unlocked_label),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.White
+        )
     }
 }
 
@@ -1819,110 +2036,26 @@ private fun DailyTab(
     LaunchedEffect(selectedDay) {
         if (selectedDay != null) {
             isLoading = true
-            kotlinx.coroutines.delay(800) // Simulate loading
+            delay(800) // Simulate loading
             isLoading = false
         }
     }
 
-    if (selectedDay == null) {
-        // No day selected - show placeholder
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.CalendarToday,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = stringResource(R.string.tasks_daily_placeholder_title),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = stringResource(R.string.tasks_daily_placeholder_body),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 32.dp)
-                )
-                OutlinedButton(
-                    onClick = onBackToPlan,
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text(stringResource(R.string.tasks_daily_placeholder_button))
-                }
-            }
+    when {
+        selectedDay == null -> {
+            DailyTabPlaceholder(onBackToPlan)
         }
-        return
-    }
-
-    if (isLoading) {
-        // Loading state
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CircularProgressIndicator()
-                Text(
-                    text = stringResource(R.string.tasks_daily_loading_message, selectedDay.day),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        isLoading -> {
+            DailyTabLoading(selectedDay)
         }
-        return
-    }
-
-    // Create study info based on selected day
-    val studyInfo = createDailyStudyInfo(selectedDay, currentWeek, context, completedTaskIds)
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 28.dp)
-    ) {
-        // Header
-        item {
-            DailyStudyHeader(studyInfo, onBackToPlan)
-        }
-
-        // Study Book
-        item {
-            StudyBookCard(
-                book = studyInfo.book,
-                units = studyInfo.units,
+        else -> {
+            val studyInfo = createDailyStudyInfo(selectedDay, currentWeek, context, completedTaskIds)
+            DailyTabContent(
+                studyInfo = studyInfo,
                 taskRepository = taskRepository,
-                sharedViewModel = sharedViewModel
+                sharedViewModel = sharedViewModel,
+                onBackToPlan = onBackToPlan
             )
-        }
-
-        // Daily Tasks
-        item {
-            DailyTasksSection(studyInfo.tasks)
-        }
-
-        // Study Materials
-        item {
-            StudyMaterialsSection(studyInfo.materials)
-        }
-
-        // Notes
-        if (studyInfo.notes.isNotEmpty()) {
-            item {
-                NotesSection(studyInfo.notes)
-            }
         }
     }
 }
@@ -1990,12 +2123,101 @@ enum class MaterialType {
 enum class Priority { HIGH, MEDIUM, LOW }
 
 @Composable
+private fun DailyTabPlaceholder(onBackToPlan: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.CalendarToday,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = stringResource(R.string.tasks_daily_placeholder_title),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = stringResource(R.string.tasks_daily_placeholder_body),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+            OutlinedButton(
+                onClick = onBackToPlan,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(stringResource(R.string.tasks_daily_placeholder_button))
+            }
+        }
+    }
+}
+
+@Composable
+private fun DailyTabLoading(selectedDay: DayPlan) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator()
+            Text(
+                text = stringResource(R.string.tasks_daily_loading_message, selectedDay.day),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun DailyTabContent(
+    studyInfo: DailyStudyInfo,
+    taskRepository: TaskRepository,
+    sharedViewModel: SharedAppViewModel,
+    onBackToPlan: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 28.dp)
+    ) {
+        item { DailyStudyHeader(studyInfo, onBackToPlan) }
+        item {
+            StudyBookCard(
+                book = studyInfo.book,
+                units = studyInfo.units,
+                taskRepository = taskRepository,
+                sharedViewModel = sharedViewModel
+            )
+        }
+        item { DailyTasksSection(studyInfo.tasks) }
+        item { StudyMaterialsSection(studyInfo.materials) }
+        if (studyInfo.notes.isNotEmpty()) {
+            item { NotesSection(studyInfo.notes) }
+        }
+    }
+}
+
+@Composable
 private fun DailyStudyHeader(studyInfo: DailyStudyInfo, onBackToPlan: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = studyInfo.book.color.copy(alpha = 0.1f)
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        border = taskCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -2074,7 +2296,8 @@ private fun StudyBookCard(
 
     Card(
         colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_1")),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -2231,7 +2454,8 @@ private fun StudyUnitItem(unit: StudyUnit, onClick: () -> Unit = {}) {
 private fun DailyTasksSection(tasks: List<DailyTask>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_2")),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -2324,7 +2548,8 @@ private fun DailyTaskItem(task: DailyTask) {
 private fun StudyMaterialsSection(materials: List<StudyMaterial>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_3")),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -2416,7 +2641,8 @@ private fun StudyMaterialItem(material: StudyMaterial) {
 private fun NotesSection(notes: String) {
     Card(
         colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_row_card_4")),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2654,14 +2880,18 @@ fun PaginatedTaskList(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${if (showCompletedTasks) "Completed" else "Pending"} Tasks (${taskListState.totalCount})",
+                text = stringResource(
+                    R.string.tasks_list_title,
+                    stringResource(if (showCompletedTasks) R.string.tasks_list_completed else R.string.tasks_list_pending),
+                    taskListState.totalCount
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
 
             if (taskListState.totalCount > pageSize) {
                 Text(
-                    text = "Page ${taskListState.currentPage + 1}",
+                    text = stringResource(R.string.tasks_list_page, taskListState.currentPage + 1),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -2686,7 +2916,7 @@ fun PaginatedTaskList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No ${if (showCompletedTasks) "completed" else "pending"} tasks found",
+                    text = stringResource(if (showCompletedTasks) R.string.tasks_list_no_completed else R.string.tasks_list_no_pending),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -2739,7 +2969,11 @@ fun PaginatedTaskList(
                 }
 
                 Text(
-                    text = "${taskListState.currentPage + 1} / ${maxOf(1, (taskListState.totalCount + pageSize - 1) / pageSize)}",
+                    text = stringResource(
+                        R.string.tasks_list_page_info,
+                        taskListState.currentPage + 1,
+                        maxOf(1, (taskListState.totalCount + pageSize - 1) / pageSize)
+                    ),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -2766,6 +3000,7 @@ private fun TaskListItem(task: Task) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder(),
         colors = CardDefaults.cardColors(
             containerColor = if (task.isCompleted) {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -2835,7 +3070,7 @@ private fun TaskListItem(task: Task) {
                     if (task.estimatedMinutes > 0) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${task.estimatedMinutes}min",
+                            text = stringResource(R.string.tasks_list_minutes_format, task.estimatedMinutes),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -2844,7 +3079,7 @@ private fun TaskListItem(task: Task) {
                     if (task.pointsValue > 0) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${task.pointsValue}pts",
+                            text = stringResource(R.string.tasks_list_points_format, task.pointsValue),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -2956,6 +3191,5 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
-
 
 

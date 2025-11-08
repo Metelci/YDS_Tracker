@@ -1,3 +1,68 @@
+## [2.9.65] - 2025-11-02 (hotfix)
+
+### UI Improvements
+- **Analytics Performance Tab**: Fixed "Performance" tab title truncation by reducing font size from 13.sp to 12.sp - now displays full text without ellipsis.
+- **Areas for Improvement Card**: Scaled all text elements (category, error rate, recommended focus) to fit in one line with graceful overflow handling.
+- **Performance Trends Chart Enhancement**:
+  - Added visual legend showing Accuracy (primary color) and Speed (secondary color) indicators.
+  - Fixed empty space issue when user has minimal data - chart now properly displays single data points.
+  - Added grid lines for better readability.
+  - Increased point radius from 4.dp to 5.dp for improved visibility.
+  - Smart line drawing only connects points when 2+ data points exist.
+
+### Data Wiring
+- **Real Statistics Integration**: Verified all analytics cards display real user data from repositories (TaskRepository, StudyProgressRepository) instead of mock data.
+- **Empty State Handling**: Confirmed proper empty states for new users with no task history.
+- **Production Ready**: Full codebase scan verified no mock data seeding on app startup - app ready for first-time users.
+
+### Build
+- ✅ All production builds passing successfully with zero compilation errors.
+- ✅ Release APK generated and verified.
+- Bumped Android versionCode to 93 / versionName 2.9.65.
+
+## [2.9.64] - 2025-10-30 (hotfix)
+
+### Bug Fixes
+- **Fixed exam date parsing logic in OsymExamScraper**: Corrected critical bug in date parsing that was associating dates with wrong exams. Implemented context-based approach that extracts dates relevant to each specific exam rather than using global date extraction.
+- **Implemented AdvancedToggleViewModel functionality**: Completed the TODO in `toggleAdvancedSetting` function to actually update settings in the repository instead of being a placeholder.
+
+### Technical Improvements
+- **Improved exam scraping reliability**: Enhanced OsymExamScraper with better error handling and more accurate date parsing for YDS, YÖKDİL, and e-YDS exams.
+- **Fixed settings toggle functionality**: AdvancedToggleViewModel now properly updates settings using SettingsUpdateRequest instead of being a no-op.
+
+### Build
+- ✅ All builds passing successfully with zero compilation errors.
+- ✅ Clean build verified from scratch.
+- Bumped Android versionCode to 92 / versionName 2.9.64.
+
+## [2.9.63] - 2025-10-29 (hotfix)
+
+### Navigation & Analytics
+- **Fixed non-functional home screen cards**: Points Today and Streak cards now fully functional and navigate to Analytics screen.
+- **Wired analytics navigation**: Added complete navigation flow from home screen to comprehensive analytics dashboard.
+- **Deep linking support**: Analytics screen now supports tab-specific deep linking for direct navigation to Overview, Performance, Patterns, or Insights tabs.
+- **Real usage stats**: Users can now track their study statistics from day one with clickable cards showing points, streaks, achievements, and detailed progress metrics.
+
+### UI & Settings
+- **Settings cards gradient backgrounds**: All settings cards now use beautiful gradient backgrounds instead of solid colors for enhanced visual appeal.
+- **Optimized settings spacing**: Reduced vertical gap between settings tabs and Weekly Goal card from 24dp to 10dp for consistent spacing across all cards.
+- **Enhanced visual hierarchy**: Settings page now has uniform 10dp spacing between all card elements.
+
+### Technical Improvements
+- Added `initialTab` parameter to `AnalyticsScreen` for deep linking support.
+- Implemented `onNavigateToAnalytics` callback in `WorkingHomeScreen`.
+- Registered analytics routes in both `AppNavigationGraph` and `SimplifiedAppNavHost`.
+- Created gradient brush helper functions (`pastelGradientBrush`, `inferredFeaturePastelGradient`) in Pastel.kt.
+- Updated EnhancedSettingsCard, LoadingIndicator, and FeedbackCard components to use gradient backgrounds.
+
+### Exam Info & Localization
+- Updated `YdsExamService` to respect the active in-app locale when formatting exam dates, fixing English month names appearing in Turkish builds.
+
+### Build
+- ✅ All builds passing successfully with zero compilation errors.
+- ✅ Clean build verified from scratch.
+- Bumped Android versionCode to 91 / versionName 2.9.63.
+
 ## [2.9.62] - 2025-10-19 (hotfix)
 
 ### UI

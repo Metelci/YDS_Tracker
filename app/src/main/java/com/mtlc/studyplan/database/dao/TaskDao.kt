@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.shared.TaskCategory
 import com.mtlc.studyplan.shared.TaskPriority
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Dao
 interface TaskDao {
@@ -45,19 +47,33 @@ interface TaskDao {
         SELECT * FROM tasks
         WHERE isActive = 1
         AND dueDate IS NOT NULL
-        AND DATE(dueDate/1000, 'unixepoch') = DATE('now', '+1 day')
+        AND dueDate >= :startOfTomorrow
+        AND dueDate < :endOfTomorrow
         ORDER BY priority DESC, createdAt ASC
     """)
-    fun getTomorrowTasks(): Flow<List<TaskEntity>>
+    fun getTomorrowTasks(startOfTomorrow: Long, endOfTomorrow: Long): Flow<List<TaskEntity>>
 
     @Query("""
         SELECT * FROM tasks
         WHERE isActive = 1
         AND dueDate IS NOT NULL
-        AND DATE(dueDate/1000, 'unixepoch') BETWEEN DATE('now') AND DATE('now', '+7 days')
+        AND dueDate >= :startTime
+        AND dueDate < :endTime
         ORDER BY dueDate ASC, priority DESC
     """)
-    fun getUpcomingTasks(): Flow<List<TaskEntity>>
+    fun getUpcomingTasks(startTime: Long, endTime: Long): Flow<List<TaskEntity>>
+
+    fun getTomorrowTasks(): Flow<List<TaskEntity>> {
+        val (start, end) = dayBounds(LocalDate.now(ZoneId.systemDefault()).plusDays(1))
+        return getTomorrowTasks(start, end)
+    }
+
+    fun getUpcomingTasks(): Flow<List<TaskEntity>> {
+        val zone = ZoneId.systemDefault()
+        val start = LocalDate.now(zone).atStartOfDay(zone).toInstant().toEpochMilli()
+        val end = LocalDate.now(zone).plusDays(8).atStartOfDay(zone).toInstant().toEpochMilli()
+        return getUpcomingTasks(start, end)
+    }
 
     @Query("""
         SELECT * FROM tasks
@@ -91,8 +107,19 @@ interface TaskDao {
     @Query("SELECT COUNT(*) FROM tasks WHERE category = :category AND isCompleted = 1")
     suspend fun getCompletedTasksInCategory(category: TaskCategory): Int
 
-    @Query("SELECT COUNT(*) FROM tasks WHERE isCompleted = 1 AND DATE(completedAt/1000, 'unixepoch') = DATE('now')")
-    suspend fun getTodayCompletedCount(): Int
+    @Query("""
+        SELECT COUNT(*) FROM tasks
+        WHERE isCompleted = 1
+        AND completedAt IS NOT NULL
+        AND completedAt >= :startOfDay
+        AND completedAt < :endOfDay
+    """)
+    suspend fun getTodayCompletedCount(startOfDay: Long, endOfDay: Long): Int
+
+    suspend fun getTodayCompletedCount(): Int {
+        val (start, end) = dayBounds(LocalDate.now(ZoneId.systemDefault()))
+        return getTodayCompletedCount(start, end)
+    }
 
     @Query("SELECT COUNT(*) FROM tasks WHERE isActive = 1 AND isCompleted = 0")
     suspend fun getPendingTasksCount(): Int
@@ -100,31 +127,59 @@ interface TaskDao {
     @Query("""
         SELECT COUNT(*) FROM tasks
         WHERE isCompleted = 1
-        AND DATE(completedAt/1000, 'unixepoch') = :date
+        AND completedAt IS NOT NULL
+        AND completedAt >= :startOfDay
+        AND completedAt < :endOfDay
     """)
-    suspend fun getCompletedTasksForDate(date: String): Int
+    suspend fun getCompletedTasksForDate(startOfDay: Long, endOfDay: Long): Int
+
+    suspend fun getCompletedTasksForDate(date: String): Int {
+        val (start, end) = dayBounds(LocalDate.parse(date))
+        return getCompletedTasksForDate(start, end)
+    }
 
     @Query("""
         SELECT SUM(actualMinutes) FROM tasks
         WHERE isCompleted = 1
-        AND DATE(completedAt/1000, 'unixepoch') = DATE('now')
+        AND completedAt IS NOT NULL
+        AND completedAt >= :startOfDay
+        AND completedAt < :endOfDay
     """)
-    suspend fun getTodayStudyMinutes(): Int?
+    suspend fun getTodayStudyMinutes(startOfDay: Long, endOfDay: Long): Int?
+
+    suspend fun getTodayStudyMinutes(): Int? {
+        val (start, end) = dayBounds(LocalDate.now(ZoneId.systemDefault()))
+        return getTodayStudyMinutes(start, end)
+    }
 
     @Query("""
         SELECT SUM(pointsValue) FROM tasks
         WHERE isCompleted = 1
-        AND DATE(completedAt/1000, 'unixepoch') = DATE('now')
+        AND completedAt IS NOT NULL
+        AND completedAt >= :startOfDay
+        AND completedAt < :endOfDay
     """)
-    suspend fun getTodayPointsEarned(): Int?
+    suspend fun getTodayPointsEarned(startOfDay: Long, endOfDay: Long): Int?
+
+    suspend fun getTodayPointsEarned(): Int? {
+        val (start, end) = dayBounds(LocalDate.now(ZoneId.systemDefault()))
+        return getTodayPointsEarned(start, end)
+    }
 
     @Query("""
         SELECT * FROM tasks
         WHERE streakContribution = 1
         AND isCompleted = 1
-        AND DATE(completedAt/1000, 'unixepoch') = :date
+        AND completedAt IS NOT NULL
+        AND completedAt >= :startOfDay
+        AND completedAt < :endOfDay
     """)
-    suspend fun getStreakTasksForDate(date: String): List<TaskEntity>
+    suspend fun getStreakTasksForDate(startOfDay: Long, endOfDay: Long): List<TaskEntity>
+
+    suspend fun getStreakTasksForDate(date: String): List<TaskEntity> {
+        val (start, end) = dayBounds(LocalDate.parse(date))
+        return getStreakTasksForDate(start, end)
+    }
 
     @Query("SELECT * FROM tasks WHERE parentTaskId = :parentId AND isActive = 1 ORDER BY orderIndex ASC")
     fun getSubTasks(parentId: String): Flow<List<TaskEntity>>
@@ -205,5 +260,12 @@ interface TaskDao {
         updates.forEach { (taskId, priority) ->
             updateTaskPriority(taskId, priority, currentTime)
         }
+    }
+
+    private fun dayBounds(date: LocalDate): Pair<Long, Long> {
+        val zone = ZoneId.systemDefault()
+        val start = date.atStartOfDay(zone).toInstant().toEpochMilli()
+        val end = date.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        return start to end
     }
 }

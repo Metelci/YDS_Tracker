@@ -5,6 +5,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.mtlc.studyplan.security.EncryptionConfig
 import java.io.File
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -12,17 +13,18 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlin.random.Random
+import timber.log.Timber
 
 /**
  * Advanced settings encryption manager using Android Keystore
  */
 class SettingsEncryption(private val context: Context) {
 
-    private val keyAlias = "StudyPlanSettingsKey"
-    private val androidKeyStore = "AndroidKeyStore"
-    private val transformation = "AES/GCM/NoPadding"
-    private val gcmIvLength = 12 // GCM standard IV length
-    private val gcmTagLength = 16 // GCM standard tag length
+    private val keyAlias = EncryptionConfig.getKeyAlias()
+    private val androidKeyStore = EncryptionConfig.getAndroidKeyStore()
+    private val transformation = EncryptionConfig.getTransformation()
+    private val gcmIvLength = EncryptionConfig.getGcmIvLength()
+    private val gcmTagLength = EncryptionConfig.getGcmTagLength()
 
     private var masterKey: MasterKey? = null
 
@@ -39,11 +41,21 @@ class SettingsEncryption(private val context: Context) {
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .setRequestStrongBoxBacked(true) // Use hardware security if available
                 .build()
+        } catch (e: java.security.KeyStoreException) {
+            // Fallback without StrongBox - hardware security not available
+            Timber.w(e, "StrongBox not available, falling back to software keystore")
+            try {
+                masterKey = MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+            } catch (fallbackError: Exception) {
+                Timber.e(fallbackError, "Failed to initialize master key even with fallback")
+                throw EncryptionException("Failed to initialize encryption master key", fallbackError)
+            }
         } catch (e: Exception) {
-            // Fallback without StrongBox
-            masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
+            // Unexpected error during master key creation
+            Timber.e(e, "Unexpected error initializing master key")
+            throw EncryptionException("Unexpected error initializing encryption", e)
         }
     }
 
@@ -221,7 +233,17 @@ class SettingsEncryption(private val context: Context) {
             } else {
                 null
             }
+        } catch (e: java.security.KeyStoreException) {
+            Timber.e(e, "KeyStore error while retrieving key: $alias")
+            null
+        } catch (e: java.security.NoSuchAlgorithmException) {
+            Timber.e(e, "Algorithm not available while retrieving key: $alias")
+            null
+        } catch (e: java.security.UnrecoverableKeyException) {
+            Timber.e(e, "Key is unrecoverable (password protected?): $alias")
+            null
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error retrieving key: $alias")
             null
         }
     }

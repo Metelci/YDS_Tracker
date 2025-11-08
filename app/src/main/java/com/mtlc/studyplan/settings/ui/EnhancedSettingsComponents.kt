@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import com.mtlc.studyplan.ui.theme.FeatureKey
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
+import com.mtlc.studyplan.ui.theme.pastelGradientBrush
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.mtlc.studyplan.ui.theme.inferredFeaturePastelGradient
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -80,61 +82,68 @@ fun EnhancedSettingsCard(
             },
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
         colors = CardDefaults.cardColors(
-            containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.settings", title)
-        )
+            containerColor = Color.Transparent
+        ),
+        border = BorderStroke(1.dp, Color(0xFF003153)) // Prussian blue border for consistency
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .background(inferredFeaturePastelGradient("com.mtlc.studyplan.settings", title))
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .padding(end = 12.dp),
-                        tint = if (isEnabled)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (isEnabled)
-                            MaterialTheme.colorScheme.onSurface
-                        else
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    if (description != null) {
-                        Text(
-                            text = description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (isEnabled)
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (icon != null) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(end = 12.dp),
+                            tint = if (isEnabled)
+                                MaterialTheme.colorScheme.primary
                             else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            content()
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (isEnabled)
+                                MaterialTheme.colorScheme.onSurface
+                            else
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        if (description != null) {
+                            Text(
+                                text = description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (isEnabled)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                else
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                content()
+            }
         }
     }
 }
@@ -394,15 +403,23 @@ fun LoadingIndicator(
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
+                containerColor = Color.Transparent
+            ),
+            border = BorderStroke(1.dp, Color(0xFF003153)) // Prussian blue border for consistency
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(
+                        pastelGradientBrush(MaterialTheme.colorScheme.primaryContainer)
+                    )
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
@@ -411,11 +428,12 @@ fun LoadingIndicator(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
         }
     }
@@ -459,14 +477,20 @@ fun FeedbackCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onDismiss() },
-            colors = CardDefaults.cardColors(containerColor = backgroundColor)
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            border = BorderStroke(1.dp, Color(0xFF003153)) // Prussian blue border for consistency
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(pastelGradientBrush(backgroundColor))
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
@@ -483,13 +507,14 @@ fun FeedbackCard(
                     modifier = Modifier.weight(1f)
                 )
 
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Dismiss",
-                        tint = contentColor,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Dismiss",
+                            tint = contentColor,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
         }

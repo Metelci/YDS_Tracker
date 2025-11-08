@@ -1,258 +1,154 @@
- # 🎓 Road to YDS - English Exam Preparation App
+# Road to YDS – StudyPlan
 
-  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-  [![Version](https://img.shields.io/badge/version-2.9.6-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
-  [![Test Coverage](https://img.shields.io/badge/coverage-1%25-orange.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-  [![Tests](https://img.shields.io/badge/tests-156%20passing-brightgreen.svg)](https://github.com/Metelci/YDS_Tracker/actions)
-  [![Code Quality](https://img.shields.io/badge/detekt-0%20issues-brightgreen.svg)](https://detekt.dev/)
-  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-  [![API](https://img.shields.io/badge/API-30%2B-orange.svg)](https://android-arsenal.com/api?level=30)
-  [![Kotlin](https://img.shields.io/badge/Kotlin-2.0+-purple.svg)](https://kotlinlang.org/)
-  [![Material 3](https://img.shields.io/badge/Material%203-Ready-green.svg)](https://m3.material.io/)
+Road to YDS is a modern Android app that guides learners through a 30-week preparation journey for the YDS and YÖKDİL English exams. It combines a curated curriculum, live exam tracking, and progress analytics to keep students on schedule from day one until exam day.
 
-  > **A comprehensive Android application for YDS/YÖKDİL English exam preparation featuring a structured 30-week study program,      
-  gamification elements, and advanced security features.**
+## Overview
 
-  ## 🌟 Overview
+- **Latest release:** v2.9.65 (November 2, 2025)
+- **Target exams:** YDS, YÖKDİL (English)
+- **Supported locales:** English, Turkish
+- **Minimum Android version:** API 30
 
-  Road to YDS is a feature-rich Android application designed to help students prepare for English proficiency exams like YDS
-  (Yabancı Dil Sınavı) and YÖKDİL. The app provides a scientifically-structured 30-week study program that progressively builds      
-  English skills from foundation to advanced levels.
+The app ships with an offline-first plan repository, localized UI, and a unified settings experience. Recent work focused on polish: a floating navigation bar, refreshed settings cards with gradient backgrounds, localized exam countdowns, fully functional analytics navigation from home screen cards, and weekly plan screens that now render real Raymond Murphy curriculum data.
 
-  ### ✨ Key Highlights
+## Core Features
 
-  - 📚 **Comprehensive Curriculum**: 30-week structured program following Red/Blue/Green Book methodology
-  - 🎮 **Gamification**: Study streaks, achievements, and progress celebrations
-  - 🔒 **Security-First**: End-to-end encryption, biometric authentication, offline-first design
-  - 🎨 **Modern UI**: Material 3 design with dark mode and accessibility support
-  - 📱 **Offline-First**: Full functionality without internet connectivity
-  
-  ## 🚀 Features
+### Structured Study Program
+- 30-week curriculum organised into Foundation, B-level development, C1 mastery, and final exam camp.
+- Weekly and daily study plans sourced from real Raymond Murphy course material.
+- Custom task support for adding personal study items or editing existing sessions.
 
-  ### 📖 Study Program
-  - **Phase-based Learning**: Foundation → B1-B2 Development → C1 Mastery → Exam Camp
-  - **Daily Task Management**: Structured lessons with progress tracking
-  - **Customizable Plans**: Hide/edit tasks and add custom daily activities
-  - **Smart Reminders**: Exam countdowns and study notifications
+### Exam Readiness Tools
+- Live countdown cards for upcoming YDS sessions with localized dates and registration windows.
+- Calendar export (ICS) for weekly plans and exam reminders.
+- Weekly goal tracking with visualised progress and streak support.
 
-  ### 🎯 Progress Tracking
-  - **Visual Analytics**: Comprehensive progress dashboard
-  - **Achievement System**: Milestone badges and celebrations
-  - **Study Streaks**: Daily consistency tracking with motivation features
-  - **Performance Insights**: Weak area identification and improvement suggestions
+### Progress & Motivation
+- Achievement system with refreshed awards tab and celebratory animations.
+- Analytics dashboard accessible via home screen cards showing real-time stats, streaks, performance metrics, and productivity insights.
+- Interactive analytics with 4 tabs: Overview (streak & points), Performance (accuracy & consistency), Patterns (time distribution), and Insights (AI recommendations).
+- Gamified XP, points, and daily milestones to keep learners engaged.
+- Clickable Points Today and Streak cards on home screen for instant access to detailed progress tracking.
 
-  ### 🔐 Security & Privacy
-  - **AES-256-GCM Encryption**: All sensitive data encrypted at rest
-  - **Biometric Authentication**: Fingerprint and face unlock support
-  - **Local Storage**: No cloud dependency, complete data ownership
-  - **Network Security**: Certificate pinning and strict security policies
+### Personalisation & Settings
+- Redesigned settings hub with tabbed categories and gradient toggle cards.
+- Quiet hours, haptic control, celebratory effects, and privacy preferences in one place.
+- Full localisation for English and Turkish text, including accessibility content.
 
-  ### 🎨 User Experience
-  - **Material 3 Design**: Modern, accessible interface
-  - **Dark Mode Support**: Comfortable studying in any lighting
-  - **Accessibility Features**: Screen reader support, high contrast options
-  - **Smooth Animations**: Fluid transitions and micro-interactions
-  - **Polished Navigation**: Onboarding availability sliders made more compact for quicker setup
+### Privacy & Security
+- AES-256 encrypted storage for sensitive data via AndroidX Security.
+- Biometric authentication (fingerprint/face) and PIN fallback.
+- Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-  ## 🛠️ Tech Stack
+## Recent Highlights (v2.9.52 – v2.9.65)
 
-  | Category | Technologies |
-  |----------|-------------|
-  | **Language** | Kotlin 1.9+ |
-  | **UI Framework** | Jetpack Compose with Material 3 |
-  | **Architecture** | MVVM with Repository Pattern |
-  | **Dependency Injection** | Koin |
-  | **Local Storage** | Room Database, DataStore Preferences |
-  | **Security** | AndroidX Security Crypto, Biometric API |
-  | **Background Work** | WorkManager |
-  | **Testing** | JUnit, Espresso, Compose Testing |
+- **v2.9.65:** Analytics Performance tab UI polish - fixed tab title truncation, scaled text to fit in one line, enhanced chart with legend and grid lines.
+- **v2.9.65:** Performance Trends chart now properly displays single data points for new users - no more empty space.
+- **v2.9.65:** Verified all analytics display real user data - production-ready with proper empty states for first-time users.
+- **v2.9.63:** Analytics navigation fully wired - Points Today and Streak cards now clickable and navigate to comprehensive analytics dashboard.
+- **v2.9.63:** Settings cards spacing optimized between tabs and content for consistent visual hierarchy.
+- **v2.9.63:** All settings cards now use gradient backgrounds instead of solid colors for enhanced visual appeal.
+- Floating, frosted bottom navigation bar that respects system insets.
+- Weekly Study Plan and Study Plan Overview headers now share a consistent top bar.
+- Settings cards rebuilt with gradient backgrounds and solid toggle containers for clarity.
+- Achievement roster expanded with hidden milestones; awards tab styling refreshed.
+- Exam countdown stabilised with guarded ÖSYM refresh logic and locale-aware date output.
+- CI/CD hardening: Detekt clean, GitHub Actions artifact uploads fixed, Kotlin 2.0.21 support.
 
-  ## 📦 Installation
+## Screens at a Glance
 
-  ### Prerequisites
-  - **Android Studio** Giraffe (2022.3.1) or later
-  - **JDK 11** or higher
-  - **Android SDK** with API level 30+
-  - **Git** for version control
+- **Home:** Daily task ring, XP summary, exam countdown, weekly plan, clickable Points Today and Streak cards for quick analytics access.
+- **Analytics:** 4-tab dashboard (Overview, Performance, Patterns, Insights) with real-time progress tracking, streak visualization, and AI-powered study recommendations.
+- **Weekly Plan:** Actual Raymond Murphy units per day, completion tracking, goal slider.
+- **Tasks & Awards:** Priority queues, achievement badges, gradient award cards.
+- **Settings:** Category tabs (Navigation, Notifications, Gamification, Privacy, Tasks) with gradient backgrounds and per-feature toggles.
 
-  ### Quick Setup
-  ```bash
-  # Clone the repository
-  git clone https://github.com/Metelci/YDS_Tracker.git
-  cd YDS_Tracker
+## Tech Stack
 
-  # Build and install (Linux/Mac)
-  ./gradlew :app:installDebug
+| Layer              | Technology |
+|--------------------|------------|
+| Language           | Kotlin 2.0 |
+| UI                 | Jetpack Compose, Material 3 |
+| Architecture       | MVVM, Repository pattern |
+| DI                 | Koin |
+| Persistence        | Room Database, DataStore |
+| Background Work    | WorkManager |
+| Serialization      | Kotlinx Serialization |
+| Testing            | JUnit, Espresso, Compose UI tests |
 
-  # Build and install (Windows)
-  gradlew.bat :app:installDebug
+## Getting Started
 
-  # Launch the app
-  adb shell am start -n com.mtlc.studyplan/.MainActivity
+### Prerequisites
 
-  Development Setup
+- Android Studio Ladybug (2024.1.1) or newer  
+- JDK 17  
+- Android SDK 30+  
+- Git and Android Debug Bridge (ADB)
 
-  1. Clone and Open
-  git clone https://github.com/Metelci/YDS_Tracker.git
-  cd YDS_Tracker
-  2. Open in Android Studio
-    - Launch Android Studio
-    - Select "Open an Existing Project"
-    - Navigate to the cloned directory
-  3. Build and Run
-    - Wait for Gradle sync to complete
-    - Connect Android device or start emulator (API 30+)
-    - Click Run button or use Shift+F10
+### Setup
 
-  🎯 Usage Examples
+```bash
+git clone https://github.com/Metelci/YDS_Tracker.git
+cd YDS_Tracker
 
-  Basic Study Flow
+# Assemble debug build
+./gradlew :app:assembleDebug
 
-  // Track daily study session
-  Analytics.track("session_start", mapOf("id" to sessionId))
+# Install on a connected device (Linux/macOS)
+./gradlew :app:installDebug
 
-  // Complete a task
-  studyPlanRepository.markTaskComplete(taskId)
+# Install on Windows
+gradlew.bat :app:installDebug
 
-  // Update progress
-  progressRepository.updateWeeklyProgress(weekNumber, completedTasks)
+# Launch activity
+adb shell am start -n com.mtlc.studyplan/.MainActivity
+```
 
-  Security Integration
+Data is stored locally; deleting app data resets the study plan and achievements.
 
-  // Initialize secure storage
-  val secureStorage = SecureStorageManager(context)
+## Testing
 
-  // Store sensitive data
-  secureStorage.storeEncrypted("user_progress", progressData)
+```bash
+# Unit tests
+./gradlew testDebugUnitTest
 
-  // Authenticate user
-  authenticationManager.authenticateWithBiometrics(
-      onSuccess = { /* Handle success */ },
-      onError = { /* Handle error */ }
-  )
+# Instrumented Compose/UI tests
+./gradlew :app:connectedDebugAndroidTest
 
-  Custom Study Plans
+# Generate lint and Detekt reports
+./gradlew lintDebug detekt
+```
 
-  // Add custom task to daily plan
-  customizationRepository.addCustomTask(
-      date = LocalDate.now(),
-      task = CustomTask(
-          title = "Practice Vocabulary",
-          description = "Review 50 new words",
-          estimatedMinutes = 30
-      )
-  )
+Artifacts are exported to `app/build/reports`.
 
-  🧪 Testing
+## Contributing
 
-  Running Tests
+1. Fork the repository and create a feature branch.
+2. Follow Kotlin coding conventions and Material 3 guidelines.
+3. Keep security features intact; never weaken encryption or pinning.
+4. Add tests for new logic or UI flows.
+5. Submit a pull request with a summary of changes and screenshots where relevant.
 
-  # Unit tests
-  ./gradlew testDebugUnitTest
+Refer to `CONTRIBUTING.md` and `SECURITY_POLICY.md` for full details.
 
-  # Integration tests
-  ./gradlew :app:connectedDebugAndroidTest
+## Play Store Listing (Draft)
 
-  # UI tests with coverage
-  ./gradlew :app:connectedDebugAndroidTest -Pcoverage
+**Short Description**  
+Structured 30-week YDS study planner with live exam countdowns, achievements, and offline security.
 
-  Test Coverage
+**Full Description**  
+Road to YDS helps you prepare for the YDS and YÖKDİL English exams with confidence. Follow a guided 30-week plan built on Raymond Murphy methodology, stay motivated with streaks and achievements, and track the next exam without leaving the app.
 
-  - Unit Tests: 85%+ coverage for business logic
-  - UI Tests: Critical user flows covered
-  - Security Tests: Authentication and encryption validation
-  - Accessibility Tests: Screen reader and navigation testing
+Key features:
+- Weekly and daily study plans that adapt to your progress and let you add custom tasks.
+- Live countdown cards for upcoming YDS sessions, complete with registration window reminders.
+- Achievement system, XP tracking, and refreshed awards hub to celebrate milestones.
+- Unified settings with quick access to notifications, quiet hours, haptics, and privacy controls.
+- Offline-first design with AES-256 encrypted storage, biometric login, and strict network security.
 
-  📁 Project Structure
+Download Road to YDS and keep your preparation on track all the way to exam day.
 
-  app/src/main/java/com/mtlc/studyplan/
-  ├── 🎨 ui/                          # Compose UI components
-  │   ├── components/                 # Reusable UI components
-  │   ├── screens/                    # Screen composables
-  │   └── theme/                      # Material 3 theming
-  ├── 🔒 security/                    # Security and authentication
-  │   ├── SecureStorageManager.kt     # Encrypted storage
-  │   ├── AuthenticationManager.kt    # Biometric/PIN auth
-  │   └── NetworkSecurityManager.kt   # Network security
-  ├── 📊 data/                        # Data layer
-  │   ├── repositories/               # Data repositories
-  │   ├── database/                   # Room database
-  │   └── models/                     # Data models
-  ├── 🎯 features/                    # Feature modules
-  │   ├── studyplan/                  # Study plan management
-  │   ├── exam/                       # Exam preparation
-  │   └── settings/                   # App configuration
-  └── 🛠️ utils/                       # Utility classes
-      ├── Analytics.kt                # Event tracking
-      ├── NetworkHelper.kt            # Network utilities
-      └── DateFormatters.kt           # Date/time formatting
+## License
 
-  🤝 Contributing
-
-  We welcome contributions! Please follow these guidelines:
-
-  Development Guidelines
-
-  1. Code Style: Follow Kotlin coding conventions
-  2. Material 3 Only: Use Material 3 components exclusively
-  3. Security First: Follow security best practices
-  4. Test Coverage: Include tests for new features
-
-  Contribution Process
-
-  1. Fork the repository
-  2. Create feature branch: git checkout -b feature/amazing-feature
-  3. Follow code style: Use ktlint for formatting
-  4. Add tests: Ensure adequate test coverage
-  5. Commit changes: git commit -m 'Add amazing feature'
-  6. Push to branch: git push origin feature/amazing-feature
-  7. Open Pull Request: Provide detailed description
-
-  Code Review Requirements
-
-  - ✅ All tests pass
-  - ✅ Code coverage maintained
-  - ✅ Security review for sensitive changes
-  - ✅ Material 3 compliance
-  - ✅ Accessibility considerations
-
-  🔒 Security
-
-  Security is a top priority. Key security features:
-
-  - 🔐 Encryption: AES-256-GCM for data at rest
-  - 🔑 Authentication: Biometric and PIN/password options
-  - 🌐 Network Security: Certificate pinning, HTTPS only
-  - 📱 Device Security: Secure key storage, memory protection
-  - 🛡️ Input Validation: Comprehensive sanitization
-
-  For security issues, please follow our SECURITY_POLICY.md.
-
-  📄 License
-
-  This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
-
-  Copyright 2024 Road to YDS
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-
-  🙏 Acknowledgments
-
-  - Material Design Team for the excellent Material 3 design system
-  - Android Team for comprehensive security APIs
-  - Kotlin Team for the modern development experience
-  - Open Source Community for valuable libraries and tools
-
-
-
+This project is licensed under the Apache License 2.0. See `LICENSE` for details.
 
