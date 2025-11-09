@@ -56,18 +56,57 @@ fun TimeDistributionCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pie chart for time distribution
-            TimeDistributionChart(
-                distribution = patterns.timeDistribution,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
+            if (patterns.timeDistribution.isEmpty()) {
+                // Show empty state message for first-time users
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Track Your Study Times",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.AccessTime,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Complete study sessions throughout the day to see when you're most productive. This chart will show your study time distribution across morning, afternoon, and evening periods.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            } else {
+                // Pie chart for time distribution
+                TimeDistributionChart(
+                    distribution = patterns.timeDistribution,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Legend
-            TimeDistributionLegend(distribution = patterns.timeDistribution)
+                // Legend
+                TimeDistributionLegend(distribution = patterns.timeDistribution)
+            }
         }
     }
 }
@@ -176,36 +215,75 @@ fun ProductivityInsightsCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ProductivityMetric(
-                    title = "Best Hour",
-                    value = "${insights.mostProductiveHour}:00",
-                    icon = Icons.Filled.AccessTime
-                )
-                ProductivityMetric(
-                    title = "Peak Day",
-                    value = insights.mostProductiveDay,
-                    icon = Icons.Filled.CalendarToday
-                )
-                ProductivityMetric(
-                    title = "Focus Score",
-                    value = "${(insights.focusScore * 100).toInt()}%",
-                    icon = Icons.Filled.CenterFocusWeak
+            if (insights.hourlyProductivity.isEmpty()) {
+                // Show empty state message for first-time users
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Discover Your Peak Hours",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.CenterFocusWeak,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Build your study history to identify your most productive hours, peak performance days, and focus patterns. This insight helps you schedule important tasks when you're at your best.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ProductivityMetric(
+                        title = "Best Hour",
+                        value = "${insights.mostProductiveHour}:00",
+                        icon = Icons.Filled.AccessTime
+                    )
+                    ProductivityMetric(
+                        title = "Peak Day",
+                        value = insights.mostProductiveDay,
+                        icon = Icons.Filled.CalendarToday
+                    )
+                    ProductivityMetric(
+                        title = "Focus Score",
+                        value = "${(insights.focusScore * 100).toInt()}%",
+                        icon = Icons.Filled.CenterFocusWeak
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Productivity trend
+                ProductivityTrendChart(
+                    hourlyData = insights.hourlyProductivity,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
                 )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Productivity trend
-            ProductivityTrendChart(
-                hourlyData = insights.hourlyProductivity,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-            )
         }
     }
 }
@@ -286,22 +364,61 @@ fun BestStudyTimesCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                StudyTimeRecommendation(
-                    time = "Morning (8-10 AM)",
-                    score = patterns.morningProductivity,
-                    reason = "High focus and energy levels"
-                )
-                StudyTimeRecommendation(
-                    time = "Afternoon (2-4 PM)",
-                    score = patterns.afternoonProductivity,
-                    reason = "Post-lunch concentration boost"
-                )
-                StudyTimeRecommendation(
-                    time = "Evening (7-9 PM)",
-                    score = patterns.eveningProductivity,
-                    reason = "Quiet time for reflection"
-                )
+            if (patterns.hourlyProductivity.isEmpty()) {
+                // Show empty state message for first-time users
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Find Your Optimal Study Windows",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.Schedule,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Complete study sessions during different times of day to discover when you perform best. We'll analyze your morning, afternoon, and evening productivity to recommend ideal study times.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    StudyTimeRecommendation(
+                        time = "Morning (8-10 AM)",
+                        score = patterns.morningProductivity,
+                        reason = "High focus and energy levels"
+                    )
+                    StudyTimeRecommendation(
+                        time = "Afternoon (2-4 PM)",
+                        score = patterns.afternoonProductivity,
+                        reason = "Post-lunch concentration boost"
+                    )
+                    StudyTimeRecommendation(
+                        time = "Evening (7-9 PM)",
+                        score = patterns.eveningProductivity,
+                        reason = "Quiet time for reflection"
+                    )
+                }
             }
         }
     }

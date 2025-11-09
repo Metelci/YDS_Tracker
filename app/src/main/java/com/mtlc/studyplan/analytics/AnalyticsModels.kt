@@ -7,13 +7,13 @@ data class StudyPatternsUI(
     val timeDistribution: Map<String, Float> = emptyMap(),
     val categoryPerformance: Map<String, Float> = emptyMap(),
     val weeklyProgress: List<Float> = emptyList(),
-    val mostProductiveHour: Int = 9,
-    val mostProductiveDay: String = "Monday",
-    val focusScore: Float = 0.7f,
+    val mostProductiveHour: Int = 0,
+    val mostProductiveDay: String = "",
+    val focusScore: Float = 0f,
     val hourlyProductivity: Map<Int, Float> = emptyMap(),
-    val morningProductivity: Float = 0.8f,
-    val afternoonProductivity: Float = 0.6f,
-    val eveningProductivity: Float = 0.4f
+    val morningProductivity: Float = 0f,
+    val afternoonProductivity: Float = 0f,
+    val eveningProductivity: Float = 0f
 )
 
 data class Recommendation(
@@ -73,16 +73,16 @@ data class ProductivityInsights(
     val peakProductivityHours: List<Int> = emptyList(),
     val productivityTrends: List<ProductivityTrend> = emptyList(),
     val burnoutRisk: BurnoutRisk = BurnoutRisk(),
-    val efficiencyScore: Float = 0.75f,
-    val optimalBreakTiming: Int = 25,
+    val efficiencyScore: Float = 0f,
+    val optimalBreakTiming: Int = 0,
     val energyLevels: Map<DayOfWeek, Float> = emptyMap(),
-    val mostProductiveHour: Int = 9,
-    val mostProductiveDay: String = "Monday",
-    val focusScore: Float = 0.7f,
+    val mostProductiveHour: Int = 0,
+    val mostProductiveDay: String = "",
+    val focusScore: Float = 0f,
     val hourlyProductivity: Map<Int, Float> = emptyMap(),
-    val morningProductivity: Float = 0.8f,
-    val afternoonProductivity: Float = 0.6f,
-    val eveningProductivity: Float = 0.4f
+    val morningProductivity: Float = 0f,
+    val afternoonProductivity: Float = 0f,
+    val eveningProductivity: Float = 0f
 )
 
 data class ProductivityTrend(

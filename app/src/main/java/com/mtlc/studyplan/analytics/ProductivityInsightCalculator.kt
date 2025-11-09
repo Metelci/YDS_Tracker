@@ -114,7 +114,7 @@ class ProductivityInsightCalculator(
     }
 
     private fun calculateEfficiencyScore(logs: List<TaskLog>): Float {
-        if (logs.isEmpty()) return 0.75f
+        if (logs.isEmpty()) return 0f
         val totalHours = logs.sumOf { it.minutesSpent } / 60f
         val correctAnswers = logs.count { it.correct }
         val rawEfficiency = if (totalHours > 0) correctAnswers / totalHours else 0f
@@ -134,12 +134,12 @@ class ProductivityInsightCalculator(
     }
 
     private fun calculateOptimalBreakTiming(logs: List<TaskLog>): Int {
-        if (logs.isEmpty()) return 25
+        if (logs.isEmpty()) return 0
         val groupedByDuration = logs.groupBy { (it.minutesSpent / 15) * 15 }
         val sessionPerformance = groupedByDuration.mapValues { (_, sessionLogs) ->
             sessionLogs.count { it.correct }.toFloat() / sessionLogs.size
         }
-        val optimalLength = sessionPerformance.maxByOrNull { it.value }?.key ?: 30
-        return max(15, min(optimalLength, 90))
+        val optimalLength = sessionPerformance.maxByOrNull { it.value }?.key ?: 0
+        return if (optimalLength > 0) max(15, min(optimalLength, 90)) else 0
     }
 }

@@ -126,7 +126,8 @@
       "Bash(git stash:*)",
       "Bash(git rm:*)",
       "Bash(powershell -Command \"Get-Process java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(git check-ignore:*)"
     ],
     "deny": [],
     "ask": []

@@ -76,7 +76,7 @@ class AnalyticsViewModelTest {
             whenever(analyticsEngine.getPerformanceData(any())).thenReturn(testPerformanceData)
         }
         // Setup repository mocks
-        
+        whenever(taskRepository.completedTasks).thenReturn(flowOf(emptyList()))
         whenever(studyProgressRepository.currentWeek).thenReturn(flowOf(1))
     }
 

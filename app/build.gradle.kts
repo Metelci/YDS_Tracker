@@ -21,13 +21,13 @@ plugins {
 
 android {
     namespace = "com.mtlc.studyplan"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
-        targetSdk = 34
-        versionCode = 93
+        targetSdk = 35
+        versionCode = 94
         versionName = "2.9.65"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -259,7 +259,8 @@ dependencies {
     androidTestImplementation(libs.mockito)
     androidTestImplementation(libs.mockito.kotlin)
     // WorkManager testing utilities (instrumentation)
-    androidTestImplementation("androidx.work:work-testing:${libs.versions.workRuntimeKtx.get()}")
+    //noinspection UseTomlInstead
+    androidTestImplementation("androidx.work:work-testing:2.9.0")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 

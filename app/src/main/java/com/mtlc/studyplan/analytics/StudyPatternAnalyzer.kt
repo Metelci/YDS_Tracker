@@ -90,26 +90,28 @@ class StudyPatternAnalyzer {
     private fun analyzeTimeDistribution(logs: List<TaskLog>): Map<String, Float> {
         if (logs.isEmpty()) return emptyMap()
         val distribution = mutableMapOf(
-            "early_morning" to 0,
-            "morning" to 0,
-            "afternoon" to 0,
-            "evening" to 0,
-            "night" to 0
+            "Early Morning (4-7 AM)" to 0,
+            "Morning (8-11 AM)" to 0,
+            "Afternoon (12-4 PM)" to 0,
+            "Evening (5-9 PM)" to 0,
+            "Night (10 PM-3 AM)" to 0
         )
 
         logs.forEach { log ->
             val hour = LocalDateTime.ofEpochSecond(log.timestampMillis / 1000, 0, java.time.ZoneOffset.UTC).hour
             when (hour) {
-                in 4..7 -> distribution["early_morning"] = distribution.getValue("early_morning") + log.minutesSpent
-                in 8..11 -> distribution["morning"] = distribution.getValue("morning") + log.minutesSpent
-                in 12..16 -> distribution["afternoon"] = distribution.getValue("afternoon") + log.minutesSpent
-                in 17..21 -> distribution["evening"] = distribution.getValue("evening") + log.minutesSpent
-                else -> distribution["night"] = distribution.getValue("night") + log.minutesSpent
+                in 4..7 -> distribution["Early Morning (4-7 AM)"] = distribution.getValue("Early Morning (4-7 AM)") + log.minutesSpent
+                in 8..11 -> distribution["Morning (8-11 AM)"] = distribution.getValue("Morning (8-11 AM)") + log.minutesSpent
+                in 12..16 -> distribution["Afternoon (12-4 PM)"] = distribution.getValue("Afternoon (12-4 PM)") + log.minutesSpent
+                in 17..21 -> distribution["Evening (5-9 PM)"] = distribution.getValue("Evening (5-9 PM)") + log.minutesSpent
+                else -> distribution["Night (10 PM-3 AM)"] = distribution.getValue("Night (10 PM-3 AM)") + log.minutesSpent
             }
         }
 
         val total = distribution.values.sum().takeIf { it > 0 } ?: return emptyMap()
-        return distribution.mapValues { (_, value) -> value / total.toFloat() }
+        // Return actual minutes (as Float) instead of proportions, and filter out zero values
+        return distribution.mapValues { (_, value) -> value.toFloat() }
+            .filterValues { it > 0 }
     }
 
     private fun analyzeCategoryPerformance(logs: List<TaskLog>): Map<String, Float> {
