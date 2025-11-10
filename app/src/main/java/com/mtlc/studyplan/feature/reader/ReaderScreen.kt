@@ -27,6 +27,7 @@ import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,8 +35,10 @@ fun ReaderScreen(
     passage: PassageUi,
     onBack: () -> Unit = {},
     prefsRepo: ReaderPrefsRepository = ReaderPrefsRepository(LocalContext.current.readerPrefsDataStore),
-    glossaryRepo: GlossaryRepo = FakeGlossaryRepo(),
 ) {
+    val glossaryRepo: GlossaryRepo = remember {
+        KoinJavaComponent.getKoin().get<GlossaryRepo>()
+    }
     val scope = rememberCoroutineScope()
     val prefs by prefsRepo.prefsFlow.collectAsState(initial = ReaderPrefs())
     var showControls by remember { mutableStateOf(false) }

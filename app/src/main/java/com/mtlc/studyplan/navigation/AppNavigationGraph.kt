@@ -29,6 +29,7 @@ import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
 import com.mtlc.studyplan.feature.onboarding.OnboardingRoute
 import com.mtlc.studyplan.feature.reader.PassageUi
 import com.mtlc.studyplan.feature.reader.ReaderScreen
+import com.mtlc.studyplan.feature.home.ResourceLibraryScreen
 import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.navigation.AppNavigationGraphParams.HapticCallback
 import com.mtlc.studyplan.ui.animations.NavigationTransitions
@@ -139,6 +140,29 @@ fun NavGraphBuilder.appNavigationGraph(params: AppNavigationGraphParams) {
             onNavigateToAnalytics = {
                 haptic.trigger()
                 navController.navigate("analytics")
+            },
+            onNavigateToResources = {
+                haptic.trigger()
+                navController.navigate("resources")
+            }
+        )
+    }
+
+    composable(
+        "resources",
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300, easing = FastOutSlowInEasing)) +
+                fadeIn(animationSpec = tween(300))
+        },
+        exitTransition = {
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300, easing = FastOutSlowInEasing)) +
+                fadeOut(animationSpec = tween(300))
+        }
+    ) {
+        ResourceLibraryScreen(
+            onBack = {
+                haptic.trigger()
+                navController.popBackStack()
             }
         )
     }

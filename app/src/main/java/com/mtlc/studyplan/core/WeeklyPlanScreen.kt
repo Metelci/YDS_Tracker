@@ -233,18 +233,27 @@ private fun WeekPlanCard(
     onDayClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val weekCardGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE8D4F0),  // Soft purple-lavender
+            Color(0xFFFDF5FF)   // Very light purple white
+        )
+    )
+
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = inferredFeaturePastelContainer(
-                FeatureKey.TASKS.name,
-                summary.week.title
-            )
+            containerColor = Color.Transparent
         ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(weekCardGradient)
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -273,22 +282,6 @@ private fun WeekPlanCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                }
-                Surface(
-                    color = when {
-                        summary.progress >= 1f -> Color(0xFF4CAF50)
-                        summary.progress > 0f -> Color(0xFFFF9800)
-                        else -> Color(0xFF9E9E9E)
-                    },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "${(summary.progress * 100).roundToInt()}%",
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
                 }
             }
 
@@ -358,6 +351,7 @@ private fun WeekPlanCard(
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
             }
+            }
         }
     }
 }
@@ -397,27 +391,33 @@ private fun WeekDayCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val containerColor = when {
-        day.progress >= 1f -> Color(0xFF4CAF50)
-        day.progress > 0f -> Color(0xFFFFF176)
-        else -> MaterialTheme.colorScheme.surface
-    }
-    val contentColor = if (day.progress >= 1f) Color.White else MaterialTheme.colorScheme.onSurface
+    val dayCardGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFC8E6E8),  // Soft teal-cyan
+            Color(0xFFF0FCFD)   // Very light cyan white
+        )
+    )
+    val contentColor = MaterialTheme.colorScheme.onSurface
 
     Card(
         modifier = modifier
             .width(140.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = containerColor),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .background(dayCardGradient)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
             Text(
                 text = day.name,
                 fontSize = 13.sp,
@@ -438,20 +438,33 @@ private fun WeekDayCard(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+            }
         }
     }
 }
 
 @Composable
 private fun EmptyPlanCard() {
+    val emptyPlanGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFD8E8D0),  // Soft sage-green
+            Color(0xFFF5FFF0)   // Very light mint white
+        )
+    )
+
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(emptyPlanGradient)
         ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             Text(
                 text = "No weekly plan available",
                 fontSize = 18.sp,
@@ -463,6 +476,7 @@ private fun EmptyPlanCard() {
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            }
         }
     }
 }

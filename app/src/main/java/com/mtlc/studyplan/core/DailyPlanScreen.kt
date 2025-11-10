@@ -48,6 +48,7 @@ import com.mtlc.studyplan.data.PlanTaskLocalizer
 import com.mtlc.studyplan.data.TaskRepository
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.LocalDate
@@ -167,7 +168,7 @@ private fun DailySummaryCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
+        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.core", "DailySummary"))
     ) {
         Column(
             modifier = Modifier
@@ -213,8 +214,7 @@ private fun DailyTaskCard(
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-            else MaterialTheme.colorScheme.surface
+            containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.core", "DailyTask")
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -279,7 +279,7 @@ private fun EmptyDailyPlaceholder(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
+        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.core", "EmptyDaily"))
     ) {
         Column(
             modifier = Modifier
@@ -307,7 +307,7 @@ private fun EmptyDailyPlaceholder(modifier: Modifier = Modifier) {
 private fun EmptyDailyTasks() {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.core", "EmptyTasks"))
     ) {
         Column(
             modifier = Modifier

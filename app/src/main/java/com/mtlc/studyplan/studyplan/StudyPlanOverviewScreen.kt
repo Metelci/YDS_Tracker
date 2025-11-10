@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 import org.koin.androidx.compose.get
 import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.LocalDate
@@ -146,12 +147,17 @@ fun StudyPlanOverviewScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            // Settings-style topbar with pastel gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(appBackgroundBrush())
+    ) {
+        Scaffold(
+            topBar = {
+                // Settings-style topbar with pastel gradient
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(
@@ -205,28 +211,12 @@ fun StudyPlanOverviewScreen(
                 }
             }
         }
-    ) { padding ->
-        val isDarkTheme = false
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(
-                    brush = if (isDarkTheme) {
-                        // Seamless anthracite to light grey gradient for dark theme
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF2C2C2C), // Deep anthracite (top)
-                                Color(0xFF3A3A3A), // Medium anthracite
-                                Color(0xFF4A4A4A)  // Light anthracite (bottom)
-                            )
-                        )
-                    } else {
-                        // Keep original light theme gradient unchanged
-                        Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
-                    }
-                )
-        ) {
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
             // Tab Selector
             StudyPlanTabRow(
                 selectedTab = selectedTab,
@@ -253,6 +243,7 @@ fun StudyPlanOverviewScreen(
                 )
             }
         }
+    }
     }
 }
 
@@ -387,12 +378,9 @@ private fun CurrentWeekCard(
 
     val gradientBrush = Brush.linearGradient(
         colors = listOf(
-            primaryContainer,
-            primaryContainer.copy(alpha = 0.85f),
-            primaryContainer.copy(alpha = 0.7f)
-        ),
-        start = Offset(0f, 0f),
-        end = Offset(1000f, 800f)
+            Color(0xFFD4D8F0),  // Soft indigo-blue
+            Color(0xFFF5F2FF)   // Very light indigo white
+        )
     )
 
     val progressPercentage = if (taskStats.totalTasks > 0) taskStats.getProgressPercentage() else 0
@@ -439,21 +427,15 @@ private fun CurrentWeekCard(
 
                     // Larger, more prominent circular progress
                     Box(
-                        modifier = Modifier.size(64.dp),
+                        modifier = Modifier.size(48.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
                             progress = { progressPercentage / 100f },
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(48.dp),
                             color = primary,
-                            strokeWidth = 6.dp,
-                            trackColor = primary.copy(alpha = 0.2f)
-                        )
-                        Text(
-                            text = "$progressPercentage%",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = onPrimaryContainer,
-                            fontWeight = FontWeight.Bold
+                            strokeWidth = 5.dp,
+                            trackColor = primary.copy(alpha = 0.25f)
                         )
                     }
                 }
@@ -585,15 +567,16 @@ private fun DailyScheduleCard(
             ) {
                 if (dailySchedule.isToday) {
                     Surface(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = Color.Transparent,
                         shape = RoundedCornerShape(50),
                         tonalElevation = 0.dp,
-                        shadowElevation = 0.dp
+                        shadowElevation = 0.dp,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
                     ) {
                         Text(
                             text = stringResource(com.mtlc.studyplan.R.string.today_label),
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -626,30 +609,19 @@ private fun DailyScheduleCard(
             }
 
             if (dailySchedule.completionPercentage > 0) {
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        text = "${dailySchedule.completionPercentage}%",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    LinearProgressIndicator(
-                        progress = { dailySchedule.completionPercentage / 100f },
-                        modifier = Modifier
-                            .width(72.dp)
-                            .height(4.dp)
-                            .clip(RoundedCornerShape(50)),
-                        color = if (dailySchedule.completionPercentage >= 100) {
-                            MaterialTheme.colorScheme.tertiary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                    )
-                }
+                LinearProgressIndicator(
+                    progress = { dailySchedule.completionPercentage / 100f },
+                    modifier = Modifier
+                        .width(72.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(50)),
+                    color = if (dailySchedule.completionPercentage >= 100) {
+                        MaterialTheme.colorScheme.tertiary
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                )
             }
         }
     }

@@ -15,6 +15,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import javax.inject.Qualifier
+import com.mtlc.studyplan.feature.reader.GlossaryRepo
+import com.mtlc.studyplan.feature.reader.UserGlossaryRepo
 
 val koinAppModule = module {
     single<CoroutineDispatcher>(named("IoDispatcher")) { Dispatchers.IO }
@@ -34,6 +36,9 @@ val koinAppModule = module {
     single { WorkManager.getInstance(androidContext()) }
 
     // ThemeManager removed; app uses light theme only
+
+    // Reader glossary repository (no demo data)
+    single<GlossaryRepo> { UserGlossaryRepo() }
 }
 
 // Qualifier annotations for different dispatchers

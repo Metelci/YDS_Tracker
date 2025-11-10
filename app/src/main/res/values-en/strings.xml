@@ -744,4 +744,5 @@
     <string name="weekly_goal_intensive">%dh (Intensive)</string>
     <string name="weekly_study_plan">Weekly Study Plan</string>
     <string name="welcome_first_time">Welcome! 👋</string>
+    <string name="resource_library_title">Resource Library</string>
 </resources>

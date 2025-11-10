@@ -107,6 +107,7 @@ import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.responsive.responsiveHeights
 import com.mtlc.studyplan.ui.responsive.touchTargetSize
 import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -666,11 +667,10 @@ private fun WorkingTasksScreenContent(
     val appIntegrationManager = tasksState.appIntegrationManager
     val taskRepository = tasksState.taskRepository
     val sharedViewModel = tasksState.sharedViewModel
-    val isDarkTheme = false
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(createBackgroundBrush(isDarkTheme))
+            .background(appBackgroundBrush())
     ) {
         Column(
             modifier = Modifier
@@ -718,23 +718,6 @@ private fun WorkingTasksScreenContent(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun createBackgroundBrush(isDarkTheme: Boolean): Brush {
-    return if (isDarkTheme) {
-        // Seamless anthracite to light grey gradient for dark theme
-        Brush.verticalGradient(
-            colors = listOf(
-                Color(0xFF2C2C2C), // Deep anthracite (top)
-                Color(0xFF3A3A3A), // Medium anthracite
-                Color(0xFF4A4A4A)  // Light anthracite (bottom)
-            )
-        )
-    } else {
-        // Keep original light theme gradient unchanged
-        Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
     }
 }
 
@@ -1065,14 +1048,26 @@ private fun WeeklyOverviewCard(
     daysCompleted: Int,
     totalDays: Int
 ) {
+    val weeklyOverviewGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = cardShape,
         border = taskCardBorder(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = Color.Transparent
         )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(weeklyOverviewGradient)
+        ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1133,6 +1128,7 @@ private fun WeeklyOverviewCard(
                 )
             }
         }
+        }
     }
 }
 
@@ -1142,11 +1138,26 @@ private fun WeeklyNavigationCard(
     currentWeek: Int,
     onWeekSelected: (Int) -> Unit
 ) {
+    val weeklyNavGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = cardShape,
-        border = taskCardBorder()
+        border = taskCardBorder(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(weeklyNavGradient)
+        ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1188,6 +1199,7 @@ private fun WeeklyNavigationCard(
                 )
             }
         }
+        }
     }
 }
 
@@ -1220,6 +1232,19 @@ private fun WeeklyQuickActionsRow(
     onNavigateToPlan: () -> Unit,
     onNavigateToStudyPlan: () -> Unit
 ) {
+    val quickActionGradient1 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+    val quickActionGradient2 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -1229,9 +1254,14 @@ private fun WeeklyQuickActionsRow(
             shape = cardShape,
             border = taskCardBorder(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                containerColor = Color.Transparent
             )
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(quickActionGradient1)
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1253,6 +1283,7 @@ private fun WeeklyQuickActionsRow(
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
+            }
         }
 
         Card(
@@ -1260,9 +1291,14 @@ private fun WeeklyQuickActionsRow(
             shape = cardShape,
             border = taskCardBorder(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                containerColor = Color.Transparent
             )
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(quickActionGradient2)
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1284,6 +1320,7 @@ private fun WeeklyQuickActionsRow(
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
+            }
         }
     }
 }
@@ -1294,14 +1331,26 @@ private fun WeeklyStatsCard(
     completedTasks: Int,
     totalTasks: Int
 ) {
+    val statsGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = cardShape,
         border = taskCardBorder(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color.Transparent
         )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(statsGradient)
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 stringResource(R.string.tasks_week_stats_title),
@@ -1334,6 +1383,7 @@ private fun WeeklyStatsCard(
                 )
             }
         }
+        }
     }
 }
 
@@ -1344,61 +1394,74 @@ private fun WeeklyDayCard(
     isToday: Boolean,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val localizedDayName = PlanTaskLocalizer.localizeDayName(day.day, context)
+
+    val todayGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFFD4CC),  // Soft coral-peach
+            Color(0xFFFFF0E6)   // Very light peach white
+        )
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         border = taskCardBorder(),
-        colors = if (isToday) {
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        } else {
-            CardDefaults.cardColors()
-        }
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                shape = CircleShape,
-                color = if (isToday) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surfaceVariant
-                },
-                modifier = Modifier.size(48.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text(
-                        dayNumber.toString(),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isToday) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        }
-                    )
-                }
+        Box(
+            modifier = if (isToday) {
+                Modifier
+                    .fillMaxWidth()
+                    .background(todayGradient)
+            } else {
+                Modifier.fillMaxWidth()
             }
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = if (isToday) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            dayNumber.toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isToday) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
+                }
 
-            Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(16.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        day.day,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            localizedDayName,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     if (isToday) {
                         Spacer(Modifier.width(8.dp))
                         Surface(
@@ -1428,6 +1491,7 @@ private fun WeeklyDayCard(
                 contentDescription = stringResource(R.string.tasks_week_view_cd),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
         }
     }
 }
@@ -1479,52 +1543,65 @@ private fun PlanTab(
     ) {
         // Study Plan Overview Card
         item {
+            val viewPlanGradient = Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFFC8E6E8),  // Soft teal-cyan
+                    Color(0xFFF0FCFD)   // Very light cyan white
+                )
+            )
+
             Card(
                 shape = cardShape,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onNavigateToStudyPlan() },
                 border = taskCardBorder()
             ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .background(viewPlanGradient)
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.EditCalendar,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.tasks_plan_view_full),
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.EditCalendar,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(24.dp)
                             )
-                            Text(
-                                text = stringResource(R.string.tasks_plan_view_full_subtitle),
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.tasks_plan_view_full),
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = stringResource(R.string.tasks_plan_view_full_subtitle),
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                )
+                            }
                         }
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            contentDescription = stringResource(R.string.tasks_plan_nav_cd),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
-                    Icon(
-                        imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = stringResource(R.string.tasks_plan_nav_cd),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(20.dp)
-                    )
                 }
             }
         }
@@ -3191,5 +3268,3 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
-
-

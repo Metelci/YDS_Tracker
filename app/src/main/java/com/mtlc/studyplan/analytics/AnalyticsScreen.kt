@@ -9,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import com.mtlc.studyplan.ui.theme.FeatureKey
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
@@ -382,6 +384,8 @@ fun MetricsGrid(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
+    val hasData = data.completedTasks > 0 || data.totalStudyMinutes > 0
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -391,42 +395,42 @@ fun MetricsGrid(
         MetricCard(
             data = MetricCardData(
                 title = "Streak",
-                value = "${data.studyStreak.currentStreak}",
+                value = if (hasData) "${data.studyStreak.currentStreak}" else "-",
                 subtitle = "days",
                 icon = Icons.Filled.LocalFireDepartment,
-                color = MaterialTheme.colorScheme.primary
+                color = if (hasData) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
             ),
             modifier = Modifier.weight(1f)
         )
         MetricCard(
             data = MetricCardData(
                 title = "Time",
-                value = "${data.totalStudyMinutes / 60}h",
+                value = if (hasData) "${data.totalStudyMinutes / 60}h" else "-",
                 subtitle = "studied",
                 icon = Icons.Filled.AccessTime,
-                color = MaterialTheme.colorScheme.secondary
+                color = if (hasData) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outline
             ),
             modifier = Modifier.weight(1f)
         )
         MetricCard(
             data = MetricCardData(
                 title = "Tasks",
-                value = "${data.completedTasks}",
+                value = if (hasData) "${data.completedTasks}" else "-",
                 subtitle = "done",
                 icon = Icons.Filled.CheckCircle,
-                color = MaterialTheme.colorScheme.tertiary
+                color = if (hasData) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline
             ),
             modifier = Modifier.weight(1f)
         )
         MetricCard(
             data = MetricCardData(
                 title = "Score",
-                value = "${(data.averagePerformance * 100).toInt()}%",
+                value = if (hasData) "${(data.averagePerformance * 100).toInt()}%" else "-",
                 subtitle = "avg",
                 icon = Icons.AutoMirrored.Filled.TrendingUp,
-                color = if (data.averagePerformance > 0.8)
-                    MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.error
+                color = if (!hasData) MaterialTheme.colorScheme.outline
+                    else if (data.averagePerformance > 0.8) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error
             ),
             modifier = Modifier.weight(1f)
         )
@@ -438,11 +442,24 @@ fun MetricCard(
     data: MetricCardData,
     modifier: Modifier = Modifier
 ) {
+    val metricGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF0E8FF),  // Soft lavender
+            Color(0xFFFAF5FF)   // Very light purple-white
+        )
+    )
+
     ElevatedCard(
         modifier = modifier,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
-        shape = AnalyticsCardShape
+        shape = AnalyticsCardShape,
+        colors = CardDefaults.elevatedCardColors(containerColor = Color.Transparent)
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(metricGradient)
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -478,6 +495,7 @@ fun MetricCard(
                 overflow = TextOverflow.Ellipsis
             )
         }
+        }
     }
 }
 
@@ -495,35 +513,126 @@ fun StudyProgressChart(
     modifier: Modifier = Modifier
 ) {
     if (weeklyData.isEmpty()) {
-        EmptyStateCard(
-            title = "No Data Yet",
-            description = "Complete some study sessions to see your progress chart",
-            icon = Icons.AutoMirrored.Filled.ShowChart
-        )
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.analytics", "Study Progress")),
+            shape = AnalyticsCardShape
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = stringResource(R.string.study_progress),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // First-use informational content
+                val studyProgressEmptyGradient = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFD4E4F7),  // Soft sky-blue
+                        Color(0xFFF0F8FF)   // Very light alice blue
+                    )
+                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(studyProgressEmptyGradient)
+                    ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Track Your Learning Journey",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ShowChart,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Complete tasks and study sessions to visualize your weekly progress. This chart will show your study time trends, helping you maintain consistency and identify your most productive periods.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Complete your first task to start building your progress history",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    }
+                }
+            }
+        }
         return
     }
+
+    val studyProgressGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
 
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.analytics", "Study Progress")),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         shape = AnalyticsCardShape
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.study_progress),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(studyProgressGradient)
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.study_progress),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            LineChart(
-                data = weeklyData.map { it.totalMinutes.toFloat() },
-                labels = weeklyData.map { "W${it.weekNumber}" },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-            )
+                LineChart(
+                    data = weeklyData.map { it.totalMinutes.toFloat() },
+                    labels = weeklyData.map { "W${it.weekNumber}" },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                )
+            }
         }
     }
 }

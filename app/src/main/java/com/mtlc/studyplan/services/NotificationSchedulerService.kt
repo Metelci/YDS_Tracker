@@ -33,7 +33,12 @@ class NotificationSchedulerService @Inject constructor(
      * Schedule daily study reminders at 6:00 PM local time
      */
     private fun scheduleDailyStudyReminders() {
-        DailyStudyReminderWorker.schedule(context)
+        val notificationConfig = runBlocking { appIntegrationManager.getNotificationConfig() }
+        if (notificationConfig.areNotificationsEnabled && notificationConfig.allowStudyReminders) {
+            DailyStudyReminderWorker.schedule(context)
+        } else {
+            DailyStudyReminderWorker.cancel(context)
+        }
     }
 
     /**

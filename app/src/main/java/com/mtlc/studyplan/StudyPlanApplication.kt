@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import com.mtlc.studyplan.architecture.ArchitectureOptimizer
 import com.mtlc.studyplan.data.YdsExamService
 import com.mtlc.studyplan.repository.ExamRepository
+import com.mtlc.studyplan.services.NotificationSchedulerService
 import com.mtlc.studyplan.workers.ExamSyncWorker
 import org.koin.android.ext.android.inject
 import com.mtlc.studyplan.di.koinAppModule
@@ -26,6 +27,7 @@ import org.koin.core.logger.Level
 class StudyPlanApplication : Application(), Configuration.Provider, ComponentCallbacks2 {
     private val architectureOptimizer by lazy { ArchitectureOptimizer(this) }
     private val examRepository: ExamRepository by inject()
+    private val notificationSchedulerService: NotificationSchedulerService by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -59,6 +61,9 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
 
         // Initialize ÖSYM Integration
         initializeOsymIntegration()
+
+        // Ensure notification workers are scheduled
+        notificationSchedulerService.initializeNotificationScheduling()
     }
 
     private fun initializeOsymIntegration() {

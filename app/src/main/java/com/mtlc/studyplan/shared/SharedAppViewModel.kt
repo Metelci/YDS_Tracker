@@ -7,9 +7,13 @@ import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.settings.data.SettingsRepository
 import com.mtlc.studyplan.settings.data.SettingsUpdateRequest
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
+import com.mtlc.studyplan.repository.TaskRepository as RoomTaskRepository
+import com.mtlc.studyplan.database.entities.TaskEntity
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 
 /**
@@ -20,7 +24,8 @@ class SharedAppViewModel(
     application: Application,
     private val planRepository: PlanRepository,
     private val settingsRepository: SettingsRepository,
-    private val appIntegrationManager: AppIntegrationManager
+    private val appIntegrationManager: AppIntegrationManager,
+    private val taskRepository: RoomTaskRepository
 ) : AndroidViewModel(application) {
 
     // ============ SHARED STATE FLOWS ============
@@ -50,9 +55,20 @@ class SharedAppViewModel(
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Study statistics (simplified without progress tracking)
-    val studyStats = MutableStateFlow(StudyStats())
-    val currentStreak = MutableStateFlow(0)
+    // Study statistics (real-time from TaskRepository)
+    private val completedTasks: StateFlow<List<TaskEntity>> =
+        taskRepository.completedTasks
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val studyStats: StateFlow<StudyStats> =
+        completedTasks
+            .map { computeStudyStats(it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), StudyStats())
+
+    val currentStreak: StateFlow<Int> =
+        completedTasks
+            .map { calculateCurrentStreak(it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
     val achievements = MutableStateFlow(emptyList<String>())
 
     // Settings state
@@ -200,6 +216,54 @@ class SharedAppViewModel(
                 )
             }
         }
+    }
+
+    // ============ INTERNAL: STATS COMPUTATION FROM ROOM TASKS ============
+
+    private fun computeStudyStats(tasks: List<TaskEntity>): StudyStats {
+        if (tasks.isEmpty()) return StudyStats()
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+        val weekStart = today.with(java.time.DayOfWeek.MONDAY)
+
+        val completedToday = tasks.filter { it.completedAt != null }.count { te ->
+            val d = java.time.Instant.ofEpochMilli(te.completedAt!!).atZone(zone).toLocalDate()
+            d == today
+        }
+        val thisWeek = tasks.filter { it.completedAt != null }.filter { te ->
+            val d = java.time.Instant.ofEpochMilli(te.completedAt!!).atZone(zone).toLocalDate()
+            !d.isBefore(weekStart)
+        }
+        val totalStudyTime = tasks.sumOf { it.actualMinutes }
+        val thisWeekStudyTime = thisWeek.sumOf { it.actualMinutes }
+        val avgSession = if (tasks.isNotEmpty()) totalStudyTime / tasks.size else 0
+        val totalXp = tasks.sumOf { it.pointsValue }
+
+        return StudyStats(
+            totalTasksCompleted = tasks.size,
+            currentStreak = calculateCurrentStreak(tasks),
+            totalStudyTime = totalStudyTime,
+            thisWeekTasks = thisWeek.size,
+            thisWeekStudyTime = thisWeekStudyTime,
+            averageSessionTime = avgSession,
+            totalXP = totalXp
+        )
+    }
+
+    private fun calculateCurrentStreak(tasks: List<TaskEntity>): Int {
+        val zone = ZoneId.systemDefault()
+        val days: List<LocalDate> = tasks
+            .mapNotNull { it.completedAt }
+            .map { java.time.Instant.ofEpochMilli(it).atZone(zone).toLocalDate() }
+            .distinct()
+            .sorted()
+        if (days.isEmpty()) return 0
+        var streak = 1
+        for (i in days.lastIndex downTo 1) {
+            val gap = ChronoUnit.DAYS.between(days[i - 1], days[i])
+            if (gap == 1L) streak++ else if (gap > 1L) break
+        }
+        return streak
     }
 
     private suspend fun applySettingsGlobally(settings: AppSettings) {

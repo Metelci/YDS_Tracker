@@ -145,14 +145,29 @@ class NotificationManager @Inject constructor(
         dailyGoalReminders: Boolean,
         streakWarnings: Boolean
     ) {
-        if (enabled) {
-            if (studyReminders) enableStudyReminders()
-            if (achievementNotifications) enableAchievementNotifications()
-            if (dailyGoalReminders) enableDailyGoalReminders()
-            if (streakWarnings) enableStreakWarnings()
-        } else {
+        if (!enabled) {
             disableAllNotifications()
+            return
         }
+
+        if (studyReminders) {
+            enableStudyReminders()
+        } else {
+            disableStudyReminders()
+        }
+
+        if (dailyGoalReminders) {
+            enableDailyGoalReminders()
+        } else {
+            disableDailyGoalReminders()
+        }
+
+        if (streakWarnings) {
+            enableStreakWarnings()
+        }
+
+        // Achievement notifications are event-driven; no scheduler to manage,
+        // but we still respect the flag when events fire.
     }
 
     private fun observeSettingsChanges() {
@@ -212,6 +227,11 @@ class NotificationManager @Inject constructor(
             hour = 18,
             minute = 0
         )
+    }
+
+    private fun disableDailyGoalReminders() {
+        cancelScheduledNotification(REQUEST_CODE_DAILY_GOAL)
+        notificationManager.cancel(REQUEST_CODE_DAILY_GOAL + 100)
     }
 
     private fun enableStreakWarnings() {
@@ -615,6 +635,25 @@ class NotificationManager @Inject constructor(
         }
     }
 
+    private fun disableStudyReminders() {
+        cancelScheduledNotification(REQUEST_CODE_STUDY_REMINDER)
+    }
+
+    private fun cancelScheduledNotification(requestCode: Int) {
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        pendingIntent?.let {
+            alarmManager.cancel(it)
+            it.cancel()
+        }
+    }
+
     private fun disableAllNotifications() {
         val requestCodes = listOf(
             REQUEST_CODE_STUDY_REMINDER,
@@ -622,20 +661,7 @@ class NotificationManager @Inject constructor(
             REQUEST_CODE_DAILY_GOAL
         )
 
-        requestCodes.forEach { requestCode ->
-            val intent = Intent(context, NotificationReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                requestCode,
-                intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            pendingIntent?.let {
-                alarmManager.cancel(it)
-                it.cancel()
-            }
-        }
+        requestCodes.forEach { cancelScheduledNotification(it) }
 
         notificationManager.cancelAll()
     }

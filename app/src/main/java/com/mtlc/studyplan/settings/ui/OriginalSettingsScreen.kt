@@ -97,6 +97,7 @@ import kotlin.math.roundToInt
 
 // Avoid name clash with Composable named GamificationSettings in other modules
 import com.mtlc.studyplan.settings.data.PrivacySettings
+import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 
 
 data class SettingsTab(
@@ -134,7 +135,6 @@ fun OriginalSettingsScreen(
     var showResetDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val hasPendingGoalChanges = weeklyGoalSelection != savedWeeklyGoalHours
-    val isDarkTheme = false
 
     val tabs = listOf(
         SettingsTab("navigation", stringResource(R.string.navigation).capitalizeFirst(), Icons.Outlined.Navigation),
@@ -147,21 +147,7 @@ fun OriginalSettingsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = if (isDarkTheme) {
-                    // Seamless anthracite to light grey gradient for dark theme
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF2C2C2C), // Deep anthracite (top)
-                            Color(0xFF3A3A3A), // Medium anthracite
-                            Color(0xFF4A4A4A)  // Light anthracite (bottom)
-                        )
-                    )
-                } else {
-                    // Light theme unchanged
-                    Brush.verticalGradient(colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF)))
-                }
-            )
+            .background(appBackgroundBrush())
     ) {
         Column(
             modifier = Modifier.fillMaxSize()

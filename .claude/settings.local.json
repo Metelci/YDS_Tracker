@@ -127,7 +127,9 @@
       "Bash(git rm:*)",
       "Bash(powershell -Command \"Get-Process java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(powershell -Command:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(\"C:\\Users\\metel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" logcat -d)",
+      "Bash(dir \"H:\\StudioProjects\\StudyPlan\\*.md\" \"H:\\StudioProjects\\StudyPlan\\*.txt\")"
     ],
     "deny": [],
     "ask": []

@@ -30,7 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.feature.home.ResourceLibraryCard
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 
 @Suppress("LongMethod", "LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +44,7 @@ fun WorkingHomeScreen(
     onNavigateToStudyPlan: () -> Unit = {},
     onNavigateToExamDetails: (String) -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
+    onNavigateToResources: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val homeState = rememberWorkingHomeState(appIntegrationManager)
@@ -71,11 +74,7 @@ fun WorkingHomeScreen(
         modifier = modifier
             .fillMaxSize()
             .testTag("home_screen")
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFFEFF6FF), Color(0xFFF7FBFF))
-                )
-            )
+            .background(appBackgroundBrush())
     ) {
         Box(
             modifier = Modifier
@@ -233,6 +232,13 @@ fun WorkingHomeScreen(
             }
 
             item {
+                ResourceLibraryCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onNavigateToResources
+                )
+            }
+
+            item {
                 AnalyticsCard(
                     appearance = HomeCardAppearance(
                         containerColor = pastelBlue,
@@ -250,4 +256,3 @@ fun WorkingHomeScreen(
         }
     }
 }
-

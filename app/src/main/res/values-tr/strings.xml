@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
   <string name="app_name">Çalışma Planı</string>
+  <string name="close">Kapat</string>
   <string name="app_title">YDS Yolculuğu</string>
   <string name="email_subject">YDS Yolculuğu Uygulama Geri Bildirimi</string>
   <string name="email_chooser_title">E-posta gönder...</string>
@@ -700,4 +701,6 @@
   <string name="logged_out_successfully">Ba�ar�yla ��k�� yap�ld�</string>
   <string name="study_tasks_summary">%1$d g�rev planland� - Tahmini s�re: %2$s</string>
   <string name="today_label">Bug�n</string>
+    <!-- Resource Library -->
+    <string name="resource_library_title">YDS Kaynakları</string>
 </resources>

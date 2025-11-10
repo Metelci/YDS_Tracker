@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mtlc.studyplan.gamification.GamificationTaskResult
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.gamification.AdvancedAchievement
+import com.mtlc.studyplan.ui.animations.ParticlePool
 import kotlin.text.StringBuilder
 import kotlin.math.cos
 import kotlin.math.sin
@@ -30,7 +31,13 @@ class AnimationManager(private val context: Context) {
         const val DURATION_MEDIUM = 300L
         const val DURATION_LONG = 500L
         const val DURATION_EXTRA_LONG = 750L
+
+        // Max concurrent particle effects to prevent performance degradation
+        const val MAX_CONCURRENT_EFFECTS = 5
     }
+
+    private val particlePool = ParticlePool(initialSize = 10, maxSize = 30)
+    private var activeEffectCount = 0
 
     // Task completion animations
     fun animateTaskCompletion(
@@ -433,10 +440,17 @@ class AnimationManager(private val context: Context) {
     }
 
     private fun createFlameParticles(parent: View): ViewGroup {
+        // Rate limit: prevent too many concurrent effects
+        if (activeEffectCount >= MAX_CONCURRENT_EFFECTS) {
+            return FrameLayout(context)
+        }
+
+        activeEffectCount++
         val container = FrameLayout(context)
 
-        // Add flame emoji particles
-        repeat(5) { index ->
+        // Add flame emoji particles - reduced from 5 to 3 for performance
+        val particleCount = if (System.getProperty("com.mtlc.studyplan.lowend") == "true") 2 else 3
+        repeat(particleCount) { index ->
             val flame = TextView(context).apply {
                 text = "🔥"
                 textSize = 20f
@@ -458,9 +472,17 @@ class AnimationManager(private val context: Context) {
     }
 
     private fun animateFlameParticles(container: ViewGroup) {
-        for (i in 0 until container.childCount) {
+        val childCount = container.childCount
+        if (childCount == 0) {
+            activeEffectCount--
+            return
+        }
+
+        var completedAnimations = 0
+
+        for (i in 0 until childCount) {
             val flame = container.getChildAt(i)
-            val angle = (i * 72).toFloat() // 360/5 for 5 flames
+            val angle = (i * (360f / childCount)).toFloat()
             val distance = 100f
 
             flame.animate()
@@ -470,8 +492,12 @@ class AnimationManager(private val context: Context) {
                 .setDuration(DURATION_LONG)
                 .setStartDelay(i * 50L)
                 .withEndAction {
-                    if (container.parent is ViewGroup) {
-                        (container.parent as ViewGroup).removeView(container)
+                    completedAnimations++
+                    if (completedAnimations == childCount) {
+                        if (container.parent is ViewGroup) {
+                            (container.parent as ViewGroup).removeView(container)
+                        }
+                        activeEffectCount--
                     }
                 }
                 .start()
@@ -534,6 +560,15 @@ class AnimationManager(private val context: Context) {
     enum class TabSwitchDirection {
         LEFT_TO_RIGHT,
         RIGHT_TO_LEFT
+    }
+
+    /**
+     * Clean up animation resources when done
+     * Call this in onDestroy to prevent memory leaks
+     */
+    fun cleanup() {
+        particlePool.clear()
+        activeEffectCount = 0
     }
 }
 

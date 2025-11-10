@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Study Plan</string>
+    <string name="close">Close</string>
     <string name="app_title">Road to YDS</string>
     <string name="email_subject">Road to YDS App Feedback</string>
     <string name="email_chooser_title">Send email…</string>
@@ -794,6 +795,15 @@
     <string name="exam_info_results_title">Results</string>
     <string name="exam_info_result_date">Announcement: %s</string>
     <string name="exam_info_apply_button">Apply on ÖSYM</string>
+
+    <!-- Resource Library -->
+    <string name="resource_library_title">Resource Library</string>
+    <string name="resource_library_subtitle">Videos, Podcasts &amp; Study Materials</string>
+    <string name="resource_library_view_all">View resources</string>
+    <string name="resource_type_video">Video</string>
+    <string name="resource_type_podcast">Podcast</string>
+    <string name="resource_type_article">Article</string>
+    <string name="resource_type_official_guide">Official Guide</string>
 </resources>
 
 

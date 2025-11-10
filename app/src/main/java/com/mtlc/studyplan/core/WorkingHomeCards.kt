@@ -408,7 +408,8 @@ fun WeeklyPlanCard(
                     color = Color(0xFF2C2C2C)
                 )
                 Surface(
-                    color = prussianBlue,
+                    color = Color.Transparent,
+                    border = BorderStroke(1.dp, prussianBlue.copy(alpha = 0.35f)),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
@@ -416,7 +417,7 @@ fun WeeklyPlanCard(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = prussianBlue
                     )
                 }
             }
@@ -597,4 +598,3 @@ fun AnalyticsCard(
         }
     }
 }
-

@@ -43,6 +43,7 @@ data class AnalyticsData(
     val averageSessionMinutes: Int = 0,
     val averageSessionsPerDay: Float = 0f,
     val weeklyGoalProgress: Float = 0f,
+    val weeklyGoalMinutesTarget: Int = 0,
     val thisWeekMinutes: Int = 0,
     val taskCompletionRate: Float = 0f,
     val studyStreak: AnalyticsStreak = AnalyticsStreak(),

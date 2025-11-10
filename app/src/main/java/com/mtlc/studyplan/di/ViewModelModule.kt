@@ -5,6 +5,7 @@ import com.mtlc.studyplan.feature.onboarding.OnboardingViewModel
 import com.mtlc.studyplan.feature.today.TodayViewModel
 import com.mtlc.studyplan.settings.integration.AppIntegrationManager
 import com.mtlc.studyplan.shared.SharedAppViewModel
+import com.mtlc.studyplan.repository.TaskRepository
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -16,10 +17,11 @@ val koinViewModelModule = module {
             androidApplication(),
             get(),
             get(),
-            get<AppIntegrationManager>()
+            get<AppIntegrationManager>(),
+            get<TaskRepository>()
         )
     }
-    viewModel { AnalyticsViewModel(get(), get(), get()) }
+    viewModel { AnalyticsViewModel(get(), get(), get(), get()) }
     viewModel { OnboardingViewModel(get(), get()) }
     viewModel { TodayViewModel(get(), get(named("IoDispatcher"))) }
 }

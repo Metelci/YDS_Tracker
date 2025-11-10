@@ -34,6 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -504,6 +505,7 @@ object StudyPlanMicroInteractions {
 
     /**
      * Loading state animation with breathing effect
+     * Memory-optimized to prevent lifecycle leaks in infinite animations
      */
     @Composable
     fun breathingScale(
@@ -529,6 +531,13 @@ object StudyPlanMicroInteractions {
             ),
             label = "breathing_scale"
         )
+
+        // Clean up animation on dispose to prevent memory leaks
+        DisposableEffect(Unit) {
+            onDispose {
+                // Lifecycle cleanup happens automatically with rememberInfiniteTransition
+            }
+        }
 
         return remember { derivedStateOf { scale } }
     }

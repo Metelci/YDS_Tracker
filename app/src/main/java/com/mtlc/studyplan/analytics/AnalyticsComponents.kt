@@ -3,20 +3,39 @@ package com.mtlc.studyplan.analytics
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material3.*
-import com.mtlc.studyplan.ui.theme.FeatureKey
-import com.mtlc.studyplan.ui.theme.featurePastelContainer
-import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CenterFocusWeak
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.EmojiObjects
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,18 +43,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.*
-
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.ui.theme.FeatureKey
+import com.mtlc.studyplan.ui.theme.featurePastelContainer
+import com.mtlc.studyplan.ui.theme.inferredFeaturePastelContainer
 
 // Data classes are defined in AnalyticsModels.kt
 
@@ -44,10 +60,22 @@ fun TimeDistributionCard(
     patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
+    val timeDistributionGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFD0E8E8),  // Soft teal-cyan
+            Color(0xFFF0FFFE)   // Very light cyan white
+        )
+    )
+
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = inferredFeaturePastelContainer("com.mtlc.studyplan.analytics", "Study Time Distribution"))
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(timeDistributionGradient)
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Study Time Distribution",
@@ -58,12 +86,23 @@ fun TimeDistributionCard(
 
             if (patterns.timeDistribution.isEmpty()) {
                 // Show empty state message for first-time users
+                val timeDistributionEmptyGradient = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFFFDCD8),  // Soft coral-peach
+                        Color(0xFFFFF0ED)   // Very light salmon white
+                    )
+                )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = Color.Transparent
                     )
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(timeDistributionEmptyGradient)
+                    ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -92,6 +131,7 @@ fun TimeDistributionCard(
                             lineHeight = 18.sp
                         )
                     }
+                    }
                 }
             } else {
                 // Pie chart for time distribution
@@ -107,6 +147,7 @@ fun TimeDistributionCard(
                 // Legend
                 TimeDistributionLegend(distribution = patterns.timeDistribution)
             }
+        }
         }
     }
 }
@@ -206,7 +247,19 @@ fun ProductivityInsightsCard(
     insights: ProductivityInsights,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
+    val productivityGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF0D8E8),  // Soft pink-mauve
+            Color(0xFFFFF5FB)   // Very light rose white
+        )
+    )
+
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(productivityGradient)
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Productivity Insights",
@@ -217,12 +270,23 @@ fun ProductivityInsightsCard(
 
             if (insights.hourlyProductivity.isEmpty()) {
                 // Show empty state message for first-time users
+                val productivityEmptyGradient = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFE8D4F8),  // Soft purple-lavender
+                        Color(0xFFFDF5FF)   // Very light purple white
+                    )
+                )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = Color.Transparent
                     )
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(productivityEmptyGradient)
+                    ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -250,6 +314,7 @@ fun ProductivityInsightsCard(
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                             lineHeight = 18.sp
                         )
+                    }
                     }
                 }
             } else {
@@ -284,6 +349,7 @@ fun ProductivityInsightsCard(
                         .height(100.dp)
                 )
             }
+        }
         }
     }
 }
@@ -355,7 +421,19 @@ fun BestStudyTimesCard(
     patterns: StudyPatternsUI,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
+    val bestTimesGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFD8E8D0),  // Soft sage-green
+            Color(0xFFF5FFF0)   // Very light mint white
+        )
+    )
+
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(bestTimesGradient)
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Best Study Times",
@@ -366,12 +444,23 @@ fun BestStudyTimesCard(
 
             if (patterns.hourlyProductivity.isEmpty()) {
                 // Show empty state message for first-time users
+                val bestTimesEmptyGradient = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFD0F0D8),  // Soft mint-green
+                        Color(0xFFF0FFF5)   // Very light mint white
+                    )
+                )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = Color.Transparent
                     )
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(bestTimesEmptyGradient)
+                    ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -400,6 +489,7 @@ fun BestStudyTimesCard(
                             lineHeight = 18.sp
                         )
                     }
+                    }
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -420,6 +510,7 @@ fun BestStudyTimesCard(
                     )
                 }
             }
+        }
         }
     }
 }
@@ -504,12 +595,23 @@ fun RecommendationsCard(
 
             if (recommendations.isEmpty()) {
                 // Show default welcome message when no data
+                val recommendationsEmptyGradient = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFE0D4F8),  // Soft violet-lavender
+                        Color(0xFFF8F5FF)   // Very light violet white
+                    )
+                )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = Color.Transparent
                     )
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(recommendationsEmptyGradient)
+                    ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -537,6 +639,7 @@ fun RecommendationsCard(
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                             lineHeight = 18.sp
                         )
+                    }
                     }
                 }
             } else {
@@ -707,11 +810,17 @@ fun GoalProgressCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Weekly goal progress
+            // Weekly goal progress (real user goal)
+            val goalMinutes = data.weeklyGoalMinutesTarget
+            val goalHoursText = if (goalMinutes > 0) {
+                val h = goalMinutes / 60
+                val m = goalMinutes % 60
+                if (m > 0) "${h}h ${m}m" else "${h}h"
+            } else "—"
             GoalProgressItem(
                 title = "Weekly Study Goal",
                 progress = data.weeklyGoalProgress,
-                target = "7 hours",
+                target = goalHoursText,
                 current = "${data.thisWeekMinutes / 60}h ${data.thisWeekMinutes % 60}m"
             )
 
@@ -952,7 +1061,19 @@ fun RecentAchievementsCard(
     achievements: List<String>,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
+    val achievementsGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFFE8D0),  // Soft peach-orange
+            Color(0xFFFFF9F0)   // Very light cream
+        )
+    )
+
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(achievementsGradient)
+        ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -992,6 +1113,7 @@ fun RecentAchievementsCard(
                 }
             }
         }
+        }
     }
 }
 
@@ -1000,35 +1122,102 @@ fun QuickStatsCard(
     data: AnalyticsData,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.ANALYTICS, "AnalyticsCard"))) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Quick Stats",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+    val hasData = data.completedTasks > 0 || data.totalStudyMinutes > 0
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                QuickStat(
-                    label = "Today",
-                    value = "${data.todayMinutes}min"
+    val quickStatsGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE0BFE0),
+            Color(0xFFF5E6F5)
+        )
+    )
+
+    ElevatedCard(modifier = modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(quickStatsGradient)
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Quick Stats",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
-                QuickStat(
-                    label = "This Week",
-                    value = "${data.thisWeekMinutes}min"
-                )
-                QuickStat(
-                    label = "Best Streak",
-                    value = "${data.studyStreak.longestStreak}"
-                )
-                QuickStat(
-                    label = "Total Days",
-                    value = "${data.totalStudyDays}"
-                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (!hasData) {
+                    // First-use informational content
+                    val quickStatsEmptyGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFFDD5C8),  // Soft rose-orange
+                            Color(0xFFFFF2ED)   // Very light coral white
+                        )
+                    )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(quickStatsEmptyGradient)
+                        ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Start Your Journey",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.Dashboard,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Your daily stats, weekly progress, study streaks, and total study days will appear here as you complete tasks. Start by creating and completing your first task!",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                                lineHeight = 18.sp
+                            )
+                        }
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        QuickStat(
+                            label = "Today",
+                            value = "${data.todayMinutes}min"
+                        )
+                        QuickStat(
+                            label = "This Week",
+                            value = "${data.thisWeekMinutes}min"
+                        )
+                        QuickStat(
+                            label = "Best Streak",
+                            value = "${data.studyStreak.longestStreak}"
+                        )
+                        QuickStat(
+                            label = "Total Days",
+                            value = "${data.totalStudyDays}"
+                        )
+                    }
+                }
             }
         }
     }

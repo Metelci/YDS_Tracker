@@ -1,0 +1,228 @@
+=== EXACT CODE LOCATIONS ===
+
+FILE 1: H:\StudioProjects\StudyPlan\app\src\main\java\com\mtlc\studyplan\core\WorkingTasksScreen.kt
+
+SECTION 1: "This Week Schedule" Header
+Lines 1206-1214
+----------------------------------------
+@Composable
+private fun WeeklyScheduleHeader() {
+    Text(
+        stringResource(R.string.tasks_week_schedule_title),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+}
+
+SECTION 2: Current Day Detection
+Line 981
+----------------------------------------
+val currentDayOfWeek = remember { LocalDate.now().dayOfWeek.value }
+
+SECTION 3: Schedule Items Loop (Creates Weekly Day Cards)
+Lines 1010-1019
+----------------------------------------
+state.weekPlan?.days?.forEachIndexed { index, day ->
+    item {
+        WeeklyDayCard(
+            day = day,
+            dayNumber = index + 1,
+            isToday = index + 1 == currentDayOfWeek,  <-- Line 1015
+            onClick = onNavigateToPlan
+        )
+    }
+}
+
+SECTION 4: WeeklyDayCard Composable - Full Function
+Lines 1391-1483
+----------------------------------------
+@Composable
+private fun WeeklyDayCard(
+    day: DayPlan,
+    dayNumber: Int,
+    isToday: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        border = taskCardBorder(),
+        colors = if (isToday) {
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        } else {
+            CardDefaults.cardColors()
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = if (isToday) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        dayNumber.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isToday) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        day.day,  <-- LINE 1448: HARDCODED DAY NAME - NOT LOCALIZED
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    if (isToday) {
+                        Spacer(Modifier.width(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        ) {
+                            Text(
+                                stringResource(R.string.tasks_week_today_badge),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    stringResource(R.string.tasks_week_task_count, day.tasks.size),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Icon(
+                Icons.Filled.ChevronRight,
+                contentDescription = stringResource(R.string.tasks_week_view_cd),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+=====================================
+
+FILE 2: H:\StudioProjects\StudyPlan\app\src\main\java\com\mtlc\studyplan\data\PlanDataSource.kt
+
+EXAMPLES OF HARDCODED TURKISH DAY NAMES:
+
+Red Book Foundation Weeks (Lines 16-43)
+----------------------------------------
+DayPlan("Pazartesi", listOf(...))
+DayPlan("Salı", listOf(...))
+DayPlan("Çarşamba", listOf(...))
+DayPlan("Perşembe", listOf(...))
+DayPlan("Cuma", listOf(...))
+DayPlan("Cumartesi", listOf(...))
+DayPlan("Pazar", listOf(...))
+
+Advanced Preparation Weeks (Lines 73-115)
+----------------------------------------
+regularDays.add(DayPlan("Pazartesi", listOf(...)))
+regularDays.add(DayPlan("Salı", listOf(...)))
+regularDays.add(miniExamDayPlan.copy(day = "Çarşamba"))
+regularDays.add(DayPlan("Çarşamba", listOf(...)))
+regularDays.add(DayPlan("Perşembe", listOf(...)))
+regularDays.add(DayPlan("Cuma", listOf(...)))
+regularDays.add(DayPlan("Cumartesi", listOf(...)))
+regularDays.add(miniExamDayPlan.copy(day = "Pazar"))
+regularDays.add(DayPlan("Pazar", listOf(...)))
+
+Exam Camp Weeks (Lines 124-131)
+----------------------------------------
+DayPlan("Pazartesi", listOf(PlanTask(...)))
+DayPlan("Salı", listOf(PlanTask(...)))
+DayPlan("Çarşamba", listOf(PlanTask(...)))
+DayPlan("Perşembe", listOf(PlanTask(...)))
+DayPlan("Cuma", listOf(PlanTask(...)))
+DayPlan("Cumartesi", listOf(PlanTask(...)))
+DayPlan("Pazar", listOf(PlanTask(...)))
+
+=====================================
+
+FILE 3: H:\StudioProjects\StudyPlan\app\src\main\res\values-tr\strings.xml
+
+STRING RESOURCES FOR DAY NAMES (Lines 73-79)
+----------------------------------------
+<string name="monday">Pazartesi</string>
+<string name="tuesday">Salı</string>
+<string name="wednesday">Çarşamba</string>
+<string name="thursday">Perşembe</string>
+<string name="friday">Cuma</string>
+<string name="saturday">Cumartesi</string>
+<string name="sunday">Pazar</string>
+
+RELATED LOCALIZED STRINGS FOR WEEKLY SCHEDULE
+----------------------------------------
+Line 525: <string name="tasks_week_schedule_title">Bu Haftanın Programı</string>
+Line 533: <string name="tasks_week_today_badge">BUGÜN</string>
+Line 534: <string name="tasks_week_task_count">%1$d görev</string>
+
+=====================================
+
+DATA MODEL: H:\StudioProjects\StudyPlan\app\src\main\java\com\mtlc\studyplan\data\DataModels.kt
+
+Line 7
+----------------------------------------
+data class DayPlan(val day: String, val tasks: List<PlanTask>)
+
+=====================================
+
+SUMMARY OF ISSUES:
+
+1. WeeklyDayCard Line 1448
+   - Displays day.day directly without localization
+   - Should use stringResource to convert to localized string
+
+2. PlanDataSource.kt - All 7 days hardcoded
+   - 8 Red Book Foundation weeks
+   - 10 Advanced Preparation weeks  
+   - 4 Exam Camp weeks
+   - = 210+ hardcoded instances
+
+3. String Resources Exist But Unused
+   - monday, tuesday, wednesday, thursday, friday, saturday, sunday
+   - Need to create mapping layer
+
+4. Current Day Detection Working Correctly
+   - Line 981: Gets system date
+   - Line 1015: Compares with week index
+   - Visual styling applied correctly (primaryContainer background)
+   - Today badge displayed correctly using localized string
+
+5. Today Badge Properly Localized
+   - Uses R.string.tasks_week_today_badge
+   - Shows "BUGÜN" in Turkish
+   - Visual highlight applied with primaryContainer color

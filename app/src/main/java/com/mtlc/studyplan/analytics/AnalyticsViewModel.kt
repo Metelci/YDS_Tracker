@@ -9,6 +9,7 @@ import com.mtlc.studyplan.data.TaskLog
 import com.mtlc.studyplan.data.UserProgress
 import com.mtlc.studyplan.database.entities.TaskEntity
 import com.mtlc.studyplan.repository.TaskRepository
+import com.mtlc.studyplan.repository.UserSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,8 @@ import java.time.temporal.ChronoUnit
 class AnalyticsViewModel(
     private val analyticsEngine: AnalyticsEngine,
     private val taskRepository: TaskRepository,
-    private val studyProgressRepository: StudyProgressRepository
+    private val studyProgressRepository: StudyProgressRepository,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel() {
 
     private val _analyticsData = MutableStateFlow<AnalyticsData?>(null)
@@ -58,7 +60,13 @@ class AnalyticsViewModel(
                     taskLogs = taskLogs,
                     userProgress = userProgress
                 )
-                _analyticsData.value = data
+                // Adjust weekly goal progress using user's configured goal
+                val weeklyGoal = userSettingsRepository.goalSettings.first().weeklyStudyGoalMinutes
+                val adjusted = if (weeklyGoal > 0) {
+                    val progress = (data.thisWeekMinutes.toFloat() / weeklyGoal).coerceIn(0f, 1f)
+                    data.copy(weeklyGoalProgress = progress, weeklyGoalMinutesTarget = weeklyGoal)
+                } else data
+                _analyticsData.value = adjusted
 
                 // Get weekly data
                 val weekly = analyticsEngine.getWeeklyData(

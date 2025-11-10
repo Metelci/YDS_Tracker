@@ -167,13 +167,11 @@ class DataConsistencyManager(
         val totalStudyTime = completedTasks.sumOf { it.estimatedMinutes }
         val totalXP = completedTasks.sumOf { it.xpReward }
 
-        // Calculate this week's stats
-        val today = LocalDate.now()
-        val weekStart = today.minusDays(today.dayOfWeek.value - 1L)
-
-        // For now, use simple calculation - in real app this would use actual completion dates
-        val thisWeekTasks = completedTasks.size / 7 // Rough estimate
-        val thisWeekStudyTime = totalStudyTime / 7 // Rough estimate
+        // Calculate this week's stats conservatively (no estimates)
+        // Until proper completion timestamps are available at this layer,
+        // report zero for week-scoped fields to avoid fabricated stats.
+        val thisWeekTasks = 0
+        val thisWeekStudyTime = 0
 
         return StudyStats(
             totalTasksCompleted = completedTasks.size,
@@ -187,15 +185,13 @@ class DataConsistencyManager(
     }
 
     private fun calculateStreakFromTasks(tasks: List<AppTask>): Int {
-        // Simple streak calculation - in real app this would use actual completion dates
-        // For now, return 0 as a conservative estimate since we don't have completion dates
-        // A real implementation would track consecutive days of task completion
+        // Conservative default without dates: 0 rather than a fabricated value
         return 0
     }
 
     private fun filterTodayTasks(tasks: List<AppTask>): List<AppTask> {
-        // For demo purposes, return incomplete tasks as "today's tasks"
-        return tasks.filter { !it.isCompleted }.take(10) // Limit to 10 tasks per day
+        // Without reliable scheduling/timestamps here, do not fabricate "today" items
+        return emptyList()
     }
 
     private fun statsMatch(calculated: StudyStats, stored: StudyStats): Boolean {

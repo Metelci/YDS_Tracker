@@ -4,6 +4,8 @@ import com.mtlc.studyplan.gamification.GamificationManager
 import com.mtlc.studyplan.notifications.NotificationManager
 import com.mtlc.studyplan.notifications.PushNotificationConfig
 import com.mtlc.studyplan.notifications.PushNotificationManager
+import com.mtlc.studyplan.services.NotificationSchedulerService
+import com.mtlc.studyplan.settings.manager.SettingsManager
 import com.mtlc.studyplan.utils.settingsDataStore
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -30,7 +32,13 @@ val koinIntegrationModule = module {
     }
 
     // System notifications coordinator
-    single { NotificationManager(androidContext(), get(), get(), get()) }
+    single {
+        val settingsManager: SettingsManager = get()
+        val notificationManager = NotificationManager(androidContext(), settingsManager, get(), get())
+        settingsManager.setNotificationManager(notificationManager)
+        notificationManager
+    }
+    single { NotificationSchedulerService(androidContext(), get(), get()) }
 
     // Push notification manager for FCM
     single {

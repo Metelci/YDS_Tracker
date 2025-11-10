@@ -37,6 +37,7 @@ import kotlinx.coroutines.delay
 
 /**
  * Achievement unlock animation sequence with badge fly-in and spring effects
+ * Optimized for smooth frame rate performance on lower-end devices
  */
 @Composable
 fun AchievementUnlockAnimation(
@@ -49,20 +50,29 @@ fun AchievementUnlockAnimation(
     var showDialog by remember { mutableStateOf(true) }
     val haptics = LocalHapticFeedback.current
 
-    // Animation phase progression
+    // Throttle animation updates for lower-end devices
+    val isLowEndDevice = remember {
+        val runtime = Runtime.getRuntime()
+        val totalMemory = runtime.totalMemory() / (1024 * 1024) // MB
+        totalMemory < 3000 // Less than 3GB RAM
+    }
+
+    val delayMultiplier = if (isLowEndDevice) 1.2f else 1.0f
+
+    // Animation phase progression with frame rate optimization
     LaunchedEffect(Unit) {
-        delay(100)
+        delay((100 * delayMultiplier).toLong())
         animationPhase = AnimationPhase.FLY_IN
         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
 
-        delay(800)
+        delay((800 * delayMultiplier).toLong())
         animationPhase = AnimationPhase.SCALE_UP
         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
 
-        delay(600)
+        delay((600 * delayMultiplier).toLong())
         animationPhase = AnimationPhase.SHOW_DETAILS
 
-        delay(400)
+        delay((400 * delayMultiplier).toLong())
         animationPhase = AnimationPhase.SETTLE
     }
 
@@ -104,7 +114,14 @@ private fun AchievementUnlockContent(
 ) {
     val achievement = achievementUnlock.achievement
 
-    // Scale animation for badge
+    // Detect low-end device for animation optimization
+    val isLowEndDevice = remember {
+        val runtime = Runtime.getRuntime()
+        val totalMemory = runtime.totalMemory() / (1024 * 1024) // MB
+        totalMemory < 3000 // Less than 3GB RAM
+    }
+
+    // Scale animation for badge - optimized for frame rate
     val badgeScale by animateFloatAsState(
         targetValue = when (animationPhase) {
             AnimationPhase.INITIAL -> 0f
@@ -115,21 +132,21 @@ private fun AchievementUnlockContent(
         },
         animationSpec = when (animationPhase) {
             AnimationPhase.SCALE_UP -> spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
+                dampingRatio = if (isLowEndDevice) Spring.DampingRatioNoBouncy else Spring.DampingRatioMediumBouncy,
+                stiffness = if (isLowEndDevice) Spring.StiffnessMediumLow else Spring.StiffnessMedium
             )
-            else -> tween(400, easing = FastOutSlowInEasing)
+            else -> tween(if (isLowEndDevice) 500 else 400, easing = FastOutSlowInEasing)
         },
         label = "badgeScale"
     )
 
-    // Offset animation for fly-in effect
+    // Offset animation for fly-in effect - reduced on low-end devices
     val badgeOffsetY by animateIntAsState(
         targetValue = when (animationPhase) {
             AnimationPhase.INITIAL, AnimationPhase.FLY_IN -> -300
             else -> 0
         },
-        animationSpec = tween(800, easing = FastOutSlowInEasing),
+        animationSpec = tween(if (isLowEndDevice) 1000 else 800, easing = FastOutSlowInEasing),
         label = "badgeOffset"
     )
 
