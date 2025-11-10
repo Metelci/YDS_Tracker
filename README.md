@@ -4,7 +4,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.65 (November 2, 2025)
+- **Latest release:** v2.9.66 (November 10, 2025)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30
@@ -40,7 +40,10 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Biometric authentication (fingerprint/face) and PIN fallback.
 - Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-## Recent Highlights (v2.9.52 – v2.9.65)
+## Recent Highlights (v2.9.52 – v2.9.66)
+
+- **v2.9.66:** Resource Library screen now uses the shared StudyPlan top bar with matching gradient capsule, so it feels identical to the Home, Tasks, and Overview headers.
+- **v2.9.66:** Updated Resource Library WebView dialog to use auto-mirrored icons and Material 3’s `HorizontalDivider`, removing remaining warnings and improving RTL readability.
 
 - **v2.9.65:** Analytics Performance tab UI polish - fixed tab title truncation, scaled text to fit in one line, enhanced chart with legend and grid lines.
 - **v2.9.65:** Performance Trends chart now properly displays single data points for new users - no more empty space.
@@ -147,6 +150,12 @@ Key features:
 - Offline-first design with AES-256 encrypted storage, biometric login, and strict network security.
 
 Download Road to YDS and keep your preparation on track all the way to exam day.
+
+### Play Store What's New (v2.9.66)
+
+- Resource Library now shares the same gradient top bar as Home, keeping navigation consistent across the app.
+- Cleaned up the in-app WebView dialog with auto-mirrored icons plus Material 3 dividers to remove warnings and support RTL users.
+- General polish sweep on the Resource Library card and dialog to make resources easier to scan.
 
 ## License
 

@@ -1,3 +1,17 @@
+## [2.9.66] - 2025-11-10 (patch)
+
+### Resource Library
+- Replaced the standalone header with the shared `StudyPlanTopBar` so the Resource Library screen now matches the gradient capsule seen on Home, Tasks, and Overview.
+- Adjusted list padding and background handling to keep the content spacing consistent beneath the new scaffolded top bar.
+
+### UI Polish & QA
+- Swapped deprecated `Icons.Filled.*` assets for their auto-mirrored counterparts to ensure RTL layouts render the correct arrow/article icons.
+- Migrated the WebView dialog separator to `HorizontalDivider`, clearing the final Material 3 deprecation warning in this surface.
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- Bumped Android `versionCode` to 95 / `versionName` to 2.9.66.
+
 ## [2.9.65] - 2025-11-02 (hotfix)
 
 ### UI Improvements

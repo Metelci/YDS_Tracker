@@ -16,7 +16,7 @@ plugins {
     id("com.google.devtools.ksp") version libs.versions.ksp.get()
     
     // Dependency vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.9"
+    id("org.owasp.dependencycheck") version "12.1.8"
 }
 
 android {
@@ -27,8 +27,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 94
-        versionName = "2.9.65"
+        versionCode = 95
+        versionName = "2.9.66"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -89,18 +89,6 @@ android {
         }
     }
 
-    // Disable bundle splits for debug builds
-    bundle {
-        language {
-            enableSplit = false
-        }
-        density {
-            enableSplit = false
-        }
-        abi {
-            enableSplit = false
-        }
-    }
     kotlin {
         jvmToolchain(17)
         compilerOptions {
@@ -134,14 +122,12 @@ android {
     }
 
     // Ensure unit tests do not try to compile data binding generated sources
+    @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
         }
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     // Exclude data binding generated sources from unit test compilation via test task configuration
@@ -260,7 +246,7 @@ dependencies {
     androidTestImplementation(libs.mockito.kotlin)
     // WorkManager testing utilities (instrumentation)
     //noinspection UseTomlInstead
-    androidTestImplementation("androidx.work:work-testing:2.9.0")
+    androidTestImplementation("androidx.work:work-testing:2.11.0")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -310,8 +296,8 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         "**/Manifest*.*",
         "**/*Test*.*",
         "android/**/*.*",
-        "**/*\$Lambda\$*.*",
-        "**/*\$inlined\$*.*",
+        "**/*\$Lambda$*.*",
+        "**/*\$inlined$*.*",
         "**/*Hilt*.*",
         "**/*_Factory.*",
         "**/*_MembersInjector.*",
