@@ -1,3 +1,16 @@
+## [2.9.67] - 2025-11-11 (hotfix)
+
+### Navigation & UI
+- Analytics screen now uses the shared StudyPlan top bar with a back arrow and tighter header spacing, so users can return to the previous screen and the timeframe filters sit closer to the hero content.
+- Tasks → Plan tab drops the unused “Upcoming Days” card, localizes each day label through `PlanTaskLocalizer`, and refreshes the top bar gradient for stronger contrast.
+
+### Framework & Polish
+- Replaced deprecated `get()` usage across Compose entry points with `koinInject()` and cleaned up the exam info back icon plus Coil optimizer annotations to align with the latest API guidance.
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- Bumped Android `versionCode` to 96 / `versionName` to 2.9.67.
+
 ## [2.9.66] - 2025-11-10 (patch)
 
 ### Resource Library

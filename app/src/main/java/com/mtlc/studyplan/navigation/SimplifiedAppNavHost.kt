@@ -81,7 +81,9 @@ fun SimplifiedAppNavHost(
                 label = "analytics_animation"
             ) { target ->
                 if (target == "analytics") {
-                    com.mtlc.studyplan.analytics.AnalyticsScreen()
+                    com.mtlc.studyplan.analytics.AnalyticsScreen(
+                        onBack = { navController.popBackStack() }
+                    )
                 }
             }
         }

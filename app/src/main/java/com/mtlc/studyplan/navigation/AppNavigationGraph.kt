@@ -257,7 +257,9 @@ fun NavGraphBuilder.appNavigationGraph(params: AppNavigationGraphParams) {
 
     // Analytics screen - shows user stats, points, streak, achievements
     composable("analytics") {
-        com.mtlc.studyplan.analytics.AnalyticsScreen()
+        com.mtlc.studyplan.analytics.AnalyticsScreen(
+            onBack = { navController.popBackStack() }
+        )
     }
 
     composable("weekly-plan") {

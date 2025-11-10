@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -85,12 +86,15 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.LoadingType
 import com.mtlc.studyplan.ui.components.ShimmerOverlay
 import com.mtlc.studyplan.ui.components.StudyPlanLoadingState
+import com.mtlc.studyplan.ui.components.StudyPlanTopBar
+import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun AnalyticsScreen(
     initialTab: String? = null,
+    onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AnalyticsViewModel = org.koin.androidx.compose.koinViewModel()
@@ -132,6 +136,7 @@ fun AnalyticsScreen(
         state = contentState,
         onTimeframeChanged = { selectedTimeframe = it },
         onTabSelected = viewModel::selectTab,
+        onBack = onBack,
         modifier = modifier
     )
 }
@@ -141,12 +146,23 @@ private fun AnalyticsScreenContent(
     state: AnalyticsScreenContentState,
     onTimeframeChanged: (AnalyticsTimeframe) -> Unit,
     onTabSelected: (AnalyticsTab) -> Unit,
+    onBack: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
+        StudyPlanTopBar(
+            title = stringResource(R.string.study_analytics),
+            subtitle = stringResource(R.string.analytics),
+            navigationIcon = onBack?.let { Icons.AutoMirrored.Filled.ArrowBack },
+            onNavigationClick = onBack,
+            style = StudyPlanTopBarStyle.Progress
+        )
         AnalyticsHeader(
             selectedTimeframe = state.selectedTimeframe,
-            onTimeframeChanged = onTimeframeChanged
+            onTimeframeChanged = onTimeframeChanged,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
         )
         AnalyticsTabBar(
             selectedTab = state.selectedTab,
@@ -159,12 +175,13 @@ private fun AnalyticsScreenContent(
 @Composable
 private fun AnalyticsHeader(
     selectedTimeframe: AnalyticsTimeframe,
-    onTimeframeChanged: (AnalyticsTimeframe) -> Unit
+    onTimeframeChanged: (AnalyticsTimeframe) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     TimeframeSelector(
         selectedTimeframe = selectedTimeframe,
         onTimeframeChanged = onTimeframeChanged,
-        modifier = Modifier.padding(16.dp)
+        modifier = modifier
     )
 }
 
