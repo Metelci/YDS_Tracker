@@ -94,7 +94,7 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
         architectureOptimizer.onTrimMemory(level)
     }
     
-    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onLowMemory() {
         super.onLowMemory()
         // System is running critically low on memory

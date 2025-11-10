@@ -132,8 +132,6 @@ class ExamCountdownMilestoneWorkerTest {
     @Test
     fun `notification manager is injected`() {
         assertNotNull(notificationManager)
-        // Verify it's a mock
-        assertTrue(notificationManager is NotificationManager)
     }
 
     @Test

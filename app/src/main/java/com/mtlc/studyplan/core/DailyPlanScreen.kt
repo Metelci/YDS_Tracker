@@ -54,7 +54,7 @@ import com.mtlc.studyplan.utils.settingsDataStore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.Flow
-import org.koin.androidx.compose.get
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +70,7 @@ fun DailyPlanScreen(
     val settingsStore = remember { PlanSettingsStore(context.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(context.settingsDataStore) }
     val planRepository = remember(context) { PlanRepository(context, overridesStore, settingsStore) }
-    val resolvedTaskRepository = taskRepository ?: get()
+    val resolvedTaskRepository = taskRepository ?: koinInject()
 
     val planFlow: Flow<List<com.mtlc.studyplan.data.WeekPlan>> =
         sharedViewModel?.planFlow ?: planRepository.planFlow

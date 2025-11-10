@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mtlc.studyplan.core.WorkingHomeScreen
 import com.mtlc.studyplan.core.WorkingTasksScreen
 import com.mtlc.studyplan.integration.AppIntegrationManager
-import org.koin.androidx.compose.get
+import org.koin.compose.koinInject
 
 @Composable
 fun SimplifiedAppNavHost(
@@ -28,13 +28,13 @@ fun SimplifiedAppNavHost(
     val context = LocalContext.current
 
     // Use provided dependencies or fallback to Koin with proper lifecycle management
-    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: get()
+    val resolvedMainAppIntegrationManager = mainAppIntegrationManager ?: koinInject()
 
     val resolvedStudyProgressRepository = studyProgressRepository ?: com.mtlc.studyplan.data.StudyProgressRepository(context)
 
-    val resolvedTaskRepository = taskRepository ?: get()
+    val resolvedTaskRepository = taskRepository ?: koinInject()
 
-    val resolvedSharedViewModel = sharedViewModel ?: get()
+    val resolvedSharedViewModel = sharedViewModel ?: koinInject()
 
     NavHost(
         navController = navController,

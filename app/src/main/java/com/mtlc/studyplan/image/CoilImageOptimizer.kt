@@ -3,6 +3,7 @@ package com.mtlc.studyplan.image
 import android.content.Context
 import android.util.Log
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
@@ -13,6 +14,7 @@ import java.io.File
  * Coil-based Image Loading Optimization
  * Provides memory-efficient image loading with optimized caching strategies
  */
+@OptIn(ExperimentalCoilApi::class)
 object CoilImageOptimizer {
     
     private const val TAG = "CoilImageOptimizer"

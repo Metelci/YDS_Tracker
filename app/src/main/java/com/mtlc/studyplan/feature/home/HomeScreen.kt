@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import com.mtlc.studyplan.data.ExamCountdownManager
 import java.util.Locale
-import org.koin.androidx.compose.get
+import org.koin.compose.koinInject
 
 
 @Composable
@@ -45,7 +45,7 @@ fun HomeScreen() {
     val appContext = context.applicationContext
     val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
-    val planRepo: PlanRepository = get()
+    val planRepo: PlanRepository = koinInject()
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
     val examCountdownManager = remember { ExamCountdownManager.getInstance(appContext) }
     val examData by examCountdownManager.examData.collectAsState()
@@ -365,4 +365,3 @@ fun HomeScreen() {
         }
     }
 }
-

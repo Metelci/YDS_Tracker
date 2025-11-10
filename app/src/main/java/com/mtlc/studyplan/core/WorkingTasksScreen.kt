@@ -841,9 +841,9 @@ private fun TasksTopBarSurface(content: @Composable () -> Unit) {
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+                            Color(0xFFE3E8FF),
+                            Color(0xFFD9F3FF),
+                            Color(0xFFF7E9FF)
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
@@ -1644,30 +1644,6 @@ private fun PlanTab(
             }
         }
 
-        // Upcoming Days
-        item {
-            Card(
-                shape = cardShape,
-                colors = CardDefaults.cardColors(containerColor = featurePastelContainer(FeatureKey.TASKS, "tasks_secondary_block")),
-                border = taskCardBorder()
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.tasks_week_upcoming_title), fontWeight = FontWeight.SemiBold)
-                        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-                            Text(stringResource(R.string.tasks_week_upcoming_badge), modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp), fontSize = 11.sp)
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.tasks_week_upcoming_placeholder),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 13.sp
-                    )
-                }
-            }
-        }
-
     }
 }
 
@@ -2016,6 +1992,7 @@ private fun DayScheduleList(
         Text(stringResource(R.string.tasks_plan_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
     }
+    val context = LocalContext.current
     val fmt = DateTimeFormatter.ofPattern("EEE, MMM d").withLocale(Locale.getDefault())
     val monday = LocalDate.now().with(java.time.DayOfWeek.MONDAY)
     week.days.forEachIndexed { idx, day ->
@@ -2057,10 +2034,11 @@ private fun DayScheduleList(
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     val dateLabel = dayDate.format(fmt)
+                    val localizedDayName = PlanTaskLocalizer.localizeDayName(day.day, context)
                     val dayLabel = if (isToday) {
-                        stringResource(R.string.tasks_plan_day_label_today, day.day, dateLabel)
+                        stringResource(R.string.tasks_plan_day_label_today, localizedDayName, dateLabel)
                     } else {
-                        stringResource(R.string.tasks_plan_day_label, day.day, dateLabel)
+                        stringResource(R.string.tasks_plan_day_label, localizedDayName, dateLabel)
                     }
                     Text(dayLabel, fontWeight = FontWeight.SemiBold)
                     Surface(

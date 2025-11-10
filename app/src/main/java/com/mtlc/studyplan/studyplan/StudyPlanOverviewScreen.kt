@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.*
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.theme.appBackgroundBrush
-import org.koin.androidx.compose.get
 import com.mtlc.studyplan.utils.settingsDataStore
+import org.koin.compose.koinInject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -60,7 +60,7 @@ fun StudyPlanOverviewScreen(
     val appContext = context.applicationContext
     val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
-    val planRepository: PlanRepository = get()
+    val planRepository: PlanRepository = koinInject()
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
 
     val plan by planRepository.planFlow.collectAsState(initial = emptyList())

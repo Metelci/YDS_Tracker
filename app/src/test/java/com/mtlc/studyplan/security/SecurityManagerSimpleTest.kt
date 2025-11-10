@@ -73,8 +73,7 @@ class SecurityManagerSimpleTest {
 
     @Test
     fun `manager should be capable of secure operations`() {
-        // Manager instantiation indicates capability
-        assertTrue(secureStorageManager != null)
+        assertNotNull(secureStorageManager)
     }
 
     @Test
@@ -125,7 +124,7 @@ class SecurityManagerSimpleTest {
 
     @Test
     fun `manager should be compatible with android context`() {
-        assertTrue(context is Context)
+        assertNotNull(context)
         assertNotNull(secureStorageManager)
     }
 
@@ -140,7 +139,9 @@ class SecurityManagerSimpleTest {
     @Test
     fun `manager should support secure data handling`() {
         // Manager type indicates secure storage capability
-        assertTrue(secureStorageManager is SecureStorageManager)
+        val manager = secureStorageManager
+        assertNotNull(manager)
+        assertEquals(SecureStorageManager::class, manager::class)
     }
 
     // ========== OPERATIONAL TESTS ==========
@@ -157,7 +158,7 @@ class SecurityManagerSimpleTest {
 
     @Test
     fun `manager should support secure storage operations`() {
-        assertTrue(true) // Manager properly initialized
+        assertNotNull(secureStorageManager)
     }
 
     // ========== LIFECYCLE TESTS ==========
@@ -200,7 +201,9 @@ class SecurityManagerSimpleTest {
 
     @Test
     fun `manager should provide encryption capabilities`() {
-        assertTrue(secureStorageManager is SecureStorageManager)
+        val manager = secureStorageManager
+        assertNotNull(manager)
+        assertEquals(SecureStorageManager::class, manager::class)
     }
 
     @Test

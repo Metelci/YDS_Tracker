@@ -15,6 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 /**
@@ -417,7 +418,7 @@ class CalendarSyncTest_Phase4 {
         val result = CalendarSyncResult.Success
 
         // Assert
-        assertTrue(result is CalendarSyncResult.Success)
+        assertSame(CalendarSyncResult.Success, result)
     }
 
     @Test
@@ -426,7 +427,6 @@ class CalendarSyncTest_Phase4 {
         val result = CalendarSyncResult.PartialSuccess(syncedCount = 5, failedCount = 2)
 
         // Assert
-        assertTrue(result is CalendarSyncResult.PartialSuccess)
         assertEquals(5, result.syncedCount)
         assertEquals(2, result.failedCount)
     }
@@ -437,7 +437,6 @@ class CalendarSyncTest_Phase4 {
         val result = CalendarSyncResult.Error("Sync failed", RuntimeException("Test error"))
 
         // Assert
-        assertTrue(result is CalendarSyncResult.Error)
         assertEquals("Sync failed", result.message)
         assertNotNull(result.cause)
     }

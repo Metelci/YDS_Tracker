@@ -16,8 +16,8 @@ import com.mtlc.studyplan.navigation.AppNavHost
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import com.mtlc.studyplan.ui.base.LocaleAwareActivity
-import org.koin.androidx.compose.get
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 /**
  * Minimal MainActivity as the app's entry point.
@@ -30,10 +30,10 @@ class MinimalMainActivity : LocaleAwareActivity() {
 
         setContent {
             val sharedViewModel: SharedAppViewModel = koinViewModel()
-            val taskRepository: com.mtlc.studyplan.data.TaskRepository = get()
-            val studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository = get()
-            val mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager = get()
-            val settingsIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager = get()
+            val taskRepository: com.mtlc.studyplan.data.TaskRepository = koinInject()
+            val studyProgressRepository: com.mtlc.studyplan.data.StudyProgressRepository = koinInject()
+            val mainAppIntegrationManager: com.mtlc.studyplan.integration.AppIntegrationManager = koinInject()
+            val settingsIntegrationManager: com.mtlc.studyplan.settings.integration.AppIntegrationManager = koinInject()
 
             StudyPlanTheme {
                 // Apply robust system bar styling on supported devices
