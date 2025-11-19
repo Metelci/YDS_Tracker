@@ -24,6 +24,7 @@ import com.mtlc.studyplan.utils.ToastManager
 import com.mtlc.studyplan.workflows.StudyGoal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 class SuccessFeedbackManager(private val context: Context) {
 
     private var currentOverlay: View? = null
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun showTaskCompletion(
         task: AppTask,
@@ -102,7 +104,7 @@ class SuccessFeedbackManager(private val context: Context) {
     }
 
     private fun showSuccessAnimation(type: AnimationType, onComplete: () -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             // Remove any existing overlay
             removeCurrentOverlay()
 

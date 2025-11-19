@@ -11,7 +11,9 @@ enum class StudyPhase {
     INTERMEDIATE,    // 60 days - Intermediate preparation
     ADVANCED,        // 30 days - Advanced practice
     FINAL_PREP,      // 14 days - Final preparation
-    LAST_WEEK        // 7 days - Last week review
+    LAST_WEEK,       // 7 days - Last week review
+    EXAM_EVE,        // 1 day - Day before exam
+    EXAM_DAY         // 0 days - Exam day
 }
 
 /**

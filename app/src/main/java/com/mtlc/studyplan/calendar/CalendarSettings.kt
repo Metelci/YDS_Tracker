@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.mtlc.studyplan.utils.SecurityUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -72,6 +73,14 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
             quietStart..quietEnd
         } else null
 
+        val decryptedToken = preferences[PrefsKeys.ICS_TOKEN]?.let { encrypted ->
+            try {
+                SecurityUtils.decryptString(encrypted)
+            } catch (_: Exception) {
+                null
+            }
+        }
+
         CalendarPrefs(
             enabled = preferences[PrefsKeys.ENABLED] ?: false,
             targetCalendarId = preferences[PrefsKeys.TARGET_CALENDAR_ID],
@@ -86,7 +95,7 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
             includePastEvents = preferences[PrefsKeys.INCLUDE_PAST] ?: false,
             includeReminders = preferences[PrefsKeys.INCLUDE_REMINDERS] ?: true,
             includedExamCategories = preferences[PrefsKeys.INCLUDED_EXAM_TYPES] ?: emptySet(),
-            icsFeedToken = preferences[PrefsKeys.ICS_TOKEN],
+            icsFeedToken = decryptedToken,
             lastIcsGeneratedAt = preferences[PrefsKeys.ICS_UPDATED_AT] ?: 0L
         )
     }
@@ -109,7 +118,7 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
             preferences[PrefsKeys.INCLUDE_REMINDERS] = prefs.includeReminders
             preferences[PrefsKeys.INCLUDED_EXAM_TYPES] = prefs.includedExamCategories
             prefs.icsFeedToken?.let { token ->
-                preferences[PrefsKeys.ICS_TOKEN] = token
+                preferences[PrefsKeys.ICS_TOKEN] = SecurityUtils.encryptString(token)
             } ?: run {
                 preferences.remove(PrefsKeys.ICS_TOKEN)
             }
@@ -169,7 +178,7 @@ class CalendarSettingsRepository(private val dataStore: DataStore<Preferences>) 
 
     suspend fun updateIcsFeedMetadata(token: String, generatedAt: Long = System.currentTimeMillis()) {
         dataStore.edit { preferences ->
-            preferences[PrefsKeys.ICS_TOKEN] = token
+            preferences[PrefsKeys.ICS_TOKEN] = SecurityUtils.encryptString(token)
             preferences[PrefsKeys.ICS_UPDATED_AT] = generatedAt
         }
     }

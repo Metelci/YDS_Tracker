@@ -21,6 +21,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -176,7 +177,8 @@ class PushNotificationManagerTest {
             context = eq(context),
             title = eq("Time to Study!"),
             message = eq("Don't forget your daily study session"),
-            notificationId = eq("study_reminder_123".hashCode())
+            notificationId = eq("study_reminder_123".hashCode()),
+            calendarIntent = anyOrNull()
         )
     }
 

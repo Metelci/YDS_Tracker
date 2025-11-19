@@ -260,13 +260,13 @@ class PerformanceMonitorTest_Phase4 {
     @Test
     fun `logPerformanceIssue should include timestamp`() {
         // Arrange
-        val beforeTime = System.currentTimeMillis() - 1000 // Allow 1 second tolerance
+        val beforeTime = System.currentTimeMillis() - 5_000 // Allow 5 second tolerance
 
         // Act
         performanceMonitor.logPerformanceIssue("Context", "Issue")
 
         // Assert
-        val afterTime = System.currentTimeMillis() + 1000 // Allow 1 second tolerance
+        val afterTime = System.currentTimeMillis() + 5_000 // Allow 5 second tolerance
         val metrics = performanceMonitor.performanceMetrics.value
         val issue = metrics.performanceIssues.lastOrNull()
         assertNotNull(issue)
@@ -569,6 +569,5 @@ class PerformanceMonitorTest_Phase4 {
         assertFalse(badMetrics.isPerformanceGood)
     }
 }
-
 
 

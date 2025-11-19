@@ -759,6 +759,23 @@ The Analytics/Insights section is now a powerful AI coach that understands your 
 - Today screen FAB is now opt-in to avoid overlapping with global FAB
 - Plan is automatically trimmed to precise number of days until exam
 
+## [2.9.68] - 2025-11-20 (hotfix)
+
+### Security & Privacy
+- Encrypted FCM tokens and calendar ICS feed tokens with secure shared preferences, and excluded sensitive preference files from cloud/device transfer.
+- Hardened WebView usage in Resource Library with safe browsing, HTTPS-only navigation, and disabled JS/storage; limited network logs to headers and reverted to default hostname verification.
+
+### Notifications & Exam Countdown
+- Added exam-eve and exam-day milestone reminders (1 and 0 days) with Turkey-time gating to avoid pre-dawn pings.
+- Applied a daily notification cap to reduce spam and keep quick reminders, streak warnings, and goals respectful of user limits.
+- Injected countdown manager through DI to keep workers and UI in sync.
+
+### Content & UI
+- Updated OSYM links and vocabulary sources in YDS Resource Library and refreshed header treatments on analytics/resources screens.
+
+### Dependencies
+- Updated AndroidX Core KTX to 1.15.0, lifecycle-runtime-ktx to 2.8.7, desugar JDK libs to 2.1.5, and added WebKit 1.12.1 for WebView hardening.
+
 ## [1.8.1] - 2024-09-11
 
 ### Added

@@ -47,7 +47,7 @@ fun HomeScreen() {
     val overridesStore = remember { PlanOverridesStore(appContext.settingsDataStore) }
     val planRepo: PlanRepository = koinInject()
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
-    val examCountdownManager = remember { ExamCountdownManager.getInstance(appContext) }
+    val examCountdownManager: ExamCountdownManager = koinInject()
     val examData by examCountdownManager.examData.collectAsState()
 
     LaunchedEffect(examCountdownManager) {

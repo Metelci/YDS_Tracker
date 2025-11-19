@@ -9,6 +9,7 @@ import com.mtlc.studyplan.settings.ui.BaseSettingsUiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 /**
  * ViewModel for managing notification settings
@@ -52,7 +53,7 @@ class NotificationSettingsViewModel(
             isError = false
         )
 
-        viewModelScope.launch(exceptionHandler) {
+        viewModelScope.launch(exceptionHandler + Dispatchers.IO) {
             try {
                 repository.getNotificationSettings()
                     .catch { exception ->
@@ -159,6 +160,7 @@ class NotificationSettingsViewModel(
         viewModelScope.launch(exceptionHandler) {
             try {
                 repository.updateNotificationSetting("push_notifications", enabled)
+                _uiState.value = _uiState.value.copy(pushNotifications = enabled)
             } catch (exception: Exception) {
                 handleError(exception)
             }
@@ -185,6 +187,7 @@ class NotificationSettingsViewModel(
         viewModelScope.launch(exceptionHandler) {
             try {
                 repository.updateNotificationSetting("study_reminder_time", time)
+                _uiState.value = _uiState.value.copy(studyReminderTime = time)
             } catch (exception: Exception) {
                 handleError(exception)
             }

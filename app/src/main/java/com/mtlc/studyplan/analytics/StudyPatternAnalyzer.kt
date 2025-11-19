@@ -71,7 +71,7 @@ class StudyPatternAnalyzer {
         val variance = dailyCounts.map { (it - average).pow(2) }.average().toFloat()
         val normalizedVariance = min(variance / (average + 1f), 1f)
         val streakBonus = improvementTrend(logs)
-        return (1f - normalizedVariance) * 0.7f + streakBonus * 0.3f
+        return (1f - normalizedVariance) * 0.8f + streakBonus * 0.2f
     }
 
     fun improvementTrend(logs: List<TaskLog>): Float {
@@ -89,29 +89,29 @@ class StudyPatternAnalyzer {
 
     private fun analyzeTimeDistribution(logs: List<TaskLog>): Map<String, Float> {
         if (logs.isEmpty()) return emptyMap()
-        val distribution = mutableMapOf(
-            "Early Morning (4-7 AM)" to 0,
-            "Morning (8-11 AM)" to 0,
-            "Afternoon (12-4 PM)" to 0,
-            "Evening (5-9 PM)" to 0,
-            "Night (10 PM-3 AM)" to 0
+
+        val buckets = mutableMapOf(
+            "early_morning" to 0f,
+            "morning" to 0f,
+            "afternoon" to 0f,
+            "evening" to 0f,
+            "night" to 0f
         )
 
         logs.forEach { log ->
             val hour = LocalDateTime.ofEpochSecond(log.timestampMillis / 1000, 0, java.time.ZoneOffset.UTC).hour
-            when (hour) {
-                in 4..7 -> distribution["Early Morning (4-7 AM)"] = distribution.getValue("Early Morning (4-7 AM)") + log.minutesSpent
-                in 8..11 -> distribution["Morning (8-11 AM)"] = distribution.getValue("Morning (8-11 AM)") + log.minutesSpent
-                in 12..16 -> distribution["Afternoon (12-4 PM)"] = distribution.getValue("Afternoon (12-4 PM)") + log.minutesSpent
-                in 17..21 -> distribution["Evening (5-9 PM)"] = distribution.getValue("Evening (5-9 PM)") + log.minutesSpent
-                else -> distribution["Night (10 PM-3 AM)"] = distribution.getValue("Night (10 PM-3 AM)") + log.minutesSpent
+            val key = when (hour) {
+                in 4..7 -> "early_morning"
+                in 8..11 -> "morning"
+                in 12..16 -> "afternoon"
+                in 17..21 -> "evening"
+                else -> "night"
             }
+            buckets[key] = buckets.getValue(key) + log.minutesSpent
         }
 
-        val total = distribution.values.sum().takeIf { it > 0 } ?: return emptyMap()
-        // Return actual minutes (as Float) instead of proportions, and filter out zero values
-        return distribution.mapValues { (_, value) -> value.toFloat() }
-            .filterValues { it > 0 }
+        val total = buckets.values.sum().takeIf { it > 0 } ?: return buckets
+        return buckets.mapValues { (_, minutes) -> (minutes / total).coerceIn(0f, 1f) }
     }
 
     private fun analyzeCategoryPerformance(logs: List<TaskLog>): Map<String, Float> {
@@ -124,7 +124,7 @@ class StudyPatternAnalyzer {
                     val weight = exp(-1.5f * (1 - recency))
                     if (log.correct) weight else 0f
                 }.sum()
-                (accuracy * 0.7f + (recencyWeight / categoryLogs.size) * 0.3f).coerceIn(0f, 1f)
+                (accuracy * 0.9f + (recencyWeight / categoryLogs.size) * 0.1f).coerceIn(0f, 1f)
             }
     }
 
@@ -208,4 +208,3 @@ class StudyPatternAnalyzer {
         )
     }
 }
-

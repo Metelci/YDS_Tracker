@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.Duration
 import java.time.Instant
 import java.util.Calendar
@@ -47,6 +48,11 @@ class NotificationManager @Inject constructor(
         const val REQUEST_CODE_DAILY_GOAL = 1003
         const val REQUEST_CODE_COMEBACK = 1004
         const val REQUEST_CODE_EXAM_MILESTONE = 1005
+
+        private const val PREFS_LIMITS = "notification_limit_prefs"
+        private const val KEY_LAST_DAY = "last_day"
+        private const val KEY_DAILY_COUNT = "daily_count"
+        private const val DAILY_LIMIT = 2
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -266,7 +272,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(achievement.hashCode(), notification)
+        sendIfAllowed(achievement.hashCode(), notification)
     }
 
     private suspend fun checkStreakWarning(currentStreak: Int) {
@@ -300,7 +306,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(REQUEST_CODE_STREAK_WARNING, notification)
+        sendIfAllowed(REQUEST_CODE_STREAK_WARNING, notification)
     }
 
     private suspend fun checkDailyGoalProgress(taskId: String) {
@@ -321,7 +327,7 @@ class NotificationManager @Inject constructor(
             .setContentIntent(createOpenAppPendingIntent())
             .build()
 
-        notificationManager.notify(REQUEST_CODE_DAILY_GOAL + 100, notification)
+        sendIfAllowed(REQUEST_CODE_DAILY_GOAL + 100, notification)
     }
 
     fun showQuickStudyReminder(
@@ -338,7 +344,7 @@ class NotificationManager @Inject constructor(
             .setContentIntent(createOpenTasksPendingIntent())
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
     }
 
     /**
@@ -364,7 +370,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
     }
 
     fun showExamApplicationReminder(
@@ -387,7 +393,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
     }
 
     /**
@@ -424,7 +430,7 @@ class NotificationManager @Inject constructor(
 
         val notification = builder.build()
 
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
 
         // Track delivery for analytics
         scope.launch {
@@ -460,7 +466,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
 
         // Track delivery for analytics
         scope.launch {
@@ -501,7 +507,7 @@ class NotificationManager @Inject constructor(
             )
             .build()
 
-        notificationManager.notify(milestone.daysUntil, notification)
+        sendIfAllowed(milestone.daysUntil, notification)
 
         // Track delivery for analytics
         scope.launch {
@@ -553,7 +559,7 @@ class NotificationManager @Inject constructor(
             .build()
 
         val notificationId = System.currentTimeMillis().toInt()
-        notificationManager.notify(notificationId, notification)
+        sendIfAllowed(notificationId, notification)
 
         // Track delivery for analytics
         scope.launch {
@@ -707,6 +713,29 @@ class NotificationManager @Inject constructor(
         )
     }
 
+    private fun sendIfAllowed(notificationId: Int, notification: android.app.Notification) {
+        if (incrementAndCheckDailyLimit()) {
+            notificationManager.notify(notificationId, notification)
+        }
+    }
+
+    private fun incrementAndCheckDailyLimit(): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_LIMITS, Context.MODE_PRIVATE)
+        val today = LocalDate.now().toString()
+        val lastDay = prefs.getString(KEY_LAST_DAY, null)
+        val currentCount = if (today == lastDay) prefs.getInt(KEY_DAILY_COUNT, 0) else 0
+
+        return if (currentCount < DAILY_LIMIT) {
+            prefs.edit()
+                .putString(KEY_LAST_DAY, today)
+                .putInt(KEY_DAILY_COUNT, currentCount + 1)
+                .apply()
+            true
+        } else {
+            false
+        }
+    }
+
 }
 
 class NotificationReceiver : BroadcastReceiver() {
@@ -727,7 +756,9 @@ class NotificationReceiver : BroadcastReceiver() {
             .setContentIntent(createOpenAppPendingIntent(context))
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        if (incrementAndCheckDailyLimit(context)) {
+            notificationManager.notify(notificationId, notification)
+        }
     }
 
     private fun createOpenAppPendingIntent(context: Context): PendingIntent {
@@ -741,5 +772,22 @@ class NotificationReceiver : BroadcastReceiver() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    private fun incrementAndCheckDailyLimit(context: Context): Boolean {
+        val prefs = context.getSharedPreferences("notification_limit_prefs", Context.MODE_PRIVATE)
+        val today = java.time.LocalDate.now().toString()
+        val lastDay = prefs.getString("last_day", null)
+        val currentCount = if (today == lastDay) prefs.getInt("daily_count", 0) else 0
+
+        return if (currentCount < 2) {
+            prefs.edit()
+                .putString("last_day", today)
+                .putInt("daily_count", currentCount + 1)
+                .apply()
+            true
+        } else {
+            false
+        }
     }
 }

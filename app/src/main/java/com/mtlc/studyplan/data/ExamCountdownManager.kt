@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * Manager for exam countdown updates and background refresh
@@ -110,16 +112,6 @@ class ExamCountdownManager(private val context: Context) {
         _examData.value = createCurrentExamData()
     }
 
-    companion object {
-        @Volatile
-        private var INSTANCE: ExamCountdownManager? = null
-
-        fun getInstance(context: Context): ExamCountdownManager {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: ExamCountdownManager(context.applicationContext).also { INSTANCE = it }
-            }
-        }
-    }
 }
 
 /**
@@ -128,12 +120,13 @@ class ExamCountdownManager(private val context: Context) {
 class ExamCountdownWorker(
     context: Context,
     params: WorkerParameters
-) : Worker(context, params) {
+) : Worker(context, params), KoinComponent {
+
+    private val manager: ExamCountdownManager by inject()
 
     override fun doWork(): Result {
         return try {
             // Update exam data in the background
-            val manager = ExamCountdownManager.getInstance(applicationContext)
             runBlocking {
                 manager.refreshNow()
             }

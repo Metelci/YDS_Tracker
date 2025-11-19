@@ -27,8 +27,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 96
-        versionName = "2.9.67"
+        versionCode = 97
+        versionName = "2.9.68"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -185,6 +185,8 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.biometric)
     implementation(libs.kotlinx.serialization)
+    // WebView hardening helpers
+    implementation("androidx.webkit:webkit:1.12.1")
 
     // JSON processing
     implementation(libs.gson)

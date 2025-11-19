@@ -43,7 +43,7 @@ class NetworkSecurityManager(private val context: Context) {
                 .addInterceptor(createSecurityHeadersInterceptor())
                 .certificatePinner(certificatePinner)
                 .sslSocketFactory(createSecureSSLSocketFactory(), getTrustManager())
-                .hostnameVerifier(createHostnameVerifier())
+                .hostnameVerifier(HttpsURLConnection.getDefaultHostnameVerifier())
 
             if (isDebugBuild) {
                 builder.addInterceptor(createLoggingInterceptor())
@@ -122,7 +122,7 @@ class NetworkSecurityManager(private val context: Context) {
 
             SecurityUtils.SecurityLogger.logSecurityEvent("HTTP: $sanitizedMessage")
         }.apply {
-            level = HttpLoggingInterceptor.Level.BODY // Always log in development
+            level = HttpLoggingInterceptor.Level.HEADERS // Limit log scope to headers in development
         }
     }
 
@@ -167,34 +167,8 @@ class NetworkSecurityManager(private val context: Context) {
     /**
      * Creates a hostname verifier
      */
-    private fun createHostnameVerifier(): HostnameVerifier {
-        return HostnameVerifier { hostname, session ->
-            try {
-                val cert = session.peerCertificates[0] as X509Certificate
-
-                // Özel hostname verification mantığı
-                when {
-                    hostname == "ais.osym.gov.tr" -> {
-                        // OSYM domain için özel kontroller
-                        cert.subjectDN.name.contains("osym.gov.tr") ||
-                        cert.subjectAlternativeNames?.any { altName ->
-                            altName.toString().contains("osym.gov.tr")
-                        } ?: false
-                    }
-                    else -> {
-                        // Diğer domainler için standart kontrol
-                        HttpsURLConnection.getDefaultHostnameVerifier().verify(hostname, session)
-                    }
-                }
-            } catch (e: Exception) {
-                SecurityUtils.SecurityLogger.logSecurityEvent(
-                    "Hostname verification failed for $hostname: ${e.message}",
-                    SecurityUtils.SecurityLogger.SecuritySeverity.WARNING
-                )
-                false
-            }
-        }
-    }
+    private fun createHostnameVerifier(): HostnameVerifier =
+        HttpsURLConnection.getDefaultHostnameVerifier()
 
     /**
      * Creates a secure request for API calls
@@ -402,3 +376,4 @@ class NetworkSecurityManager(private val context: Context) {
         val isHttpsWorking: Boolean
     )
 }
+

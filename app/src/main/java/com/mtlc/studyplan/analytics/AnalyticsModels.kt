@@ -7,13 +7,13 @@ data class StudyPatternsUI(
     val timeDistribution: Map<String, Float> = emptyMap(),
     val categoryPerformance: Map<String, Float> = emptyMap(),
     val weeklyProgress: List<Float> = emptyList(),
-    val mostProductiveHour: Int = 0,
-    val mostProductiveDay: String = "",
-    val focusScore: Float = 0f,
+    val mostProductiveHour: Int = 9,
+    val mostProductiveDay: String = "Monday",
+    val focusScore: Float = 0.7f,
     val hourlyProductivity: Map<Int, Float> = emptyMap(),
-    val morningProductivity: Float = 0f,
-    val afternoonProductivity: Float = 0f,
-    val eveningProductivity: Float = 0f
+    val morningProductivity: Float = 0.8f,
+    val afternoonProductivity: Float = 0.6f,
+    val eveningProductivity: Float = 0.4f
 )
 
 data class Recommendation(

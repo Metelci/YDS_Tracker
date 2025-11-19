@@ -3,6 +3,7 @@ package com.mtlc.studyplan.notifications
 import android.content.Context
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
+import com.mtlc.studyplan.utils.SecurityUtils
 import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -19,7 +20,6 @@ class FCMTokenManager @Inject constructor(
 
     companion object {
         private const val TAG = "FCMTokenManager"
-        private const val PREFS_FCM_TOKEN = "fcm_token_prefs"
         private const val KEY_FCM_TOKEN = "fcm_token"
         private const val KEY_TOKEN_TIMESTAMP = "token_timestamp"
     }
@@ -46,16 +46,28 @@ class FCMTokenManager @Inject constructor(
     }
 
     private fun storeFCMToken(token: String) {
-        val prefs = context.getSharedPreferences(PREFS_FCM_TOKEN, Context.MODE_PRIVATE)
+        val prefs = SecurityUtils.getEncryptedSharedPreferences(context)
+        val encrypted = try {
+            SecurityUtils.encryptString(token)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to encrypt FCM token", e)
+            return
+        }
         prefs.edit()
-            .putString(KEY_FCM_TOKEN, token)
+            .putString(KEY_FCM_TOKEN, encrypted)
             .putLong(KEY_TOKEN_TIMESTAMP, System.currentTimeMillis())
             .apply()
     }
 
     fun getStoredFCMToken(): String? {
-        val prefs = context.getSharedPreferences(PREFS_FCM_TOKEN, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_FCM_TOKEN, null)
+        val prefs = SecurityUtils.getEncryptedSharedPreferences(context)
+        val encrypted = prefs.getString(KEY_FCM_TOKEN, null) ?: return null
+        return try {
+            SecurityUtils.decryptString(encrypted)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to decrypt stored FCM token", e)
+            null
+        }
     }
 
     suspend fun deleteFCMToken() {
@@ -74,7 +86,7 @@ class FCMTokenManager @Inject constructor(
     }
 
     private fun clearStoredToken() {
-        val prefs = context.getSharedPreferences(PREFS_FCM_TOKEN, Context.MODE_PRIVATE)
+        val prefs = SecurityUtils.getEncryptedSharedPreferences(context)
         prefs.edit().clear().apply()
     }
 

@@ -82,6 +82,7 @@ class RecommendationGenerator(
 
     private fun weakAreaRecommendations(logs: List<TaskLog>): List<Recommendation> {
         val weakAreas = patternAnalyzer.identifyWeakAreas(logs)
+            .filter { it.errorRate > 0.2f }
         if (weakAreas.isEmpty()) return emptyList()
         return weakAreas.map { area ->
             Recommendation(
@@ -97,7 +98,16 @@ class RecommendationGenerator(
 
     private fun consistencyRecommendations(logs: List<TaskLog>): List<Recommendation> {
         val consistencyScore = patternAnalyzer.consistencyMetric(logs)
-        if (consistencyScore >= 0.6f) return emptyList()
+        val variance = runCatching {
+            val dates = logs.sortedBy { it.timestampMillis }
+                .map { java.time.Instant.ofEpochMilli(it.timestampMillis).atZone(java.time.ZoneId.systemDefault()).toLocalDate() }
+            val gaps = dates.zipWithNext().map { (prev, next) -> java.time.temporal.ChronoUnit.DAYS.between(prev, next).toFloat() }
+            val avg = gaps.takeIf { it.isNotEmpty() }?.average()?.toFloat() ?: 0f
+            gaps.map { (it - avg) * (it - avg) }.average().toFloat()
+        }.getOrDefault(0f)
+
+        val isInconsistent = consistencyScore < 0.75f || variance > 1f
+        if (!isInconsistent) return emptyList()
         return listOf(
             Recommendation(
                 id = "consistency_boost",

@@ -52,6 +52,16 @@
   <string name="exam_milestone_7_phase">Son Hafta - Sakin Kal</string>
   <string name="exam_milestone_7_action">Son Tekrar</string>
 
+  <string name="exam_milestone_1_title">Yarın %1$s!</string>
+  <string name="exam_milestone_1_message">İyi bir gece uykusu al, belgelerini hazırla ve hazırlığına güven. Bu an için çok çalıştın. İyi şanslar!</string>
+  <string name="exam_milestone_1_phase">Son Gün - İyi Dinlen</string>
+  <string name="exam_milestone_1_action">Son Kontrol Listesi</string>
+
+  <string name="exam_milestone_0_title">%1$s - Sınav Günü!</string>
+  <string name="exam_milestone_0_message">Bugün o gün! Sakin ol, soruları dikkatli oku ve zamanını iyi yönet. Başaracaksın! Bol şans!</string>
+  <string name="exam_milestone_0_phase">Sınav Günü - Bol Şans!</string>
+  <string name="exam_milestone_0_action">Sınav İpuçları</string>
+
   <string name="exam_milestone_progress_format">%1$d gün kaldı • %2$s</string>
   <string name="exam_milestone_notification_channel">Sınav Kilometre Taşları</string>
   <string name="exam_milestone_notification_channel_desc">Önemli hazırlık kilometre taşlarında geri sayım hatırlatıcıları</string>

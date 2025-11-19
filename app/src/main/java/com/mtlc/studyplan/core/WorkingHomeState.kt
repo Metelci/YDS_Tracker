@@ -7,13 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.ExamTracker
 import com.mtlc.studyplan.data.StreakInfo
 import com.mtlc.studyplan.data.TaskStats
 import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
+import org.koin.compose.koinInject
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -33,8 +33,6 @@ data class HomeState(
 fun rememberWorkingHomeState(
     appIntegrationManager: AppIntegrationManager
 ): HomeState {
-    val context = LocalContext.current
-
     val allTasks by appIntegrationManager.getAllTasks().collectAsState(initial = emptyList())
     val studyStreak by appIntegrationManager.studyStreak.collectAsState()
 
@@ -76,7 +74,7 @@ fun rememberWorkingHomeState(
         }
     }
 
-    val examCountdownManager = remember { ExamCountdownManager.getInstance(context) }
+    val examCountdownManager: ExamCountdownManager = koinInject()
     val examTracker by examCountdownManager.examData.collectAsState()
 
     LaunchedEffect(examCountdownManager) {

@@ -76,13 +76,13 @@ class AnalyticsViewModelTest {
         runBlocking {
             whenever(analyticsEngine.generateAnalytics(any(), any(), anyOrNull())).thenReturn(testAnalyticsData)
             whenever(analyticsEngine.getWeeklyData(any(), any())).thenReturn(testWeeklyData)
-            whenever(analyticsEngine.getPerformanceData(any())).thenReturn(testPerformanceData)
+            whenever(analyticsEngine.getPerformanceData(any(), any())).thenReturn(testPerformanceData)
         }
         // Setup repository mocks
         whenever(taskRepository.completedTasks).thenReturn(flowOf(emptyList()))
         whenever(studyProgressRepository.currentWeek).thenReturn(flowOf(1))
         doReturn(
-            flowOf(UserSettingsRepository.GoalSettings.default())
+            flowOf(UserSettingsRepository.GoalSettings.default().copy(weeklyStudyGoalMinutes = 0))
         ).whenever(userSettingsRepository).goalSettings
     }
 
@@ -97,9 +97,11 @@ class AnalyticsViewModelTest {
         )
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(30)
-        verify(analyticsEngine).getWeeklyData(30)
-        verify(analyticsEngine).getPerformanceData(30)
+        runBlocking {
+            verify(analyticsEngine).generateAnalytics(eq(30), any(), anyOrNull())
+            verify(analyticsEngine).getWeeklyData(eq(30), any())
+            verify(analyticsEngine).getPerformanceData(eq(30), any())
+        }
     }
 
     @Test
@@ -163,9 +165,11 @@ class AnalyticsViewModelTest {
         viewModel.loadAnalytics(AnalyticsTimeframe.LAST_7_DAYS)
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(7)
-        verify(analyticsEngine).getWeeklyData(7)
-        verify(analyticsEngine).getPerformanceData(7)
+        runBlocking {
+            verify(analyticsEngine).generateAnalytics(eq(7), any(), anyOrNull())
+            verify(analyticsEngine).getWeeklyData(eq(7), any())
+            verify(analyticsEngine).getPerformanceData(eq(7), any())
+        }
     }
 
     @Test
@@ -178,9 +182,11 @@ class AnalyticsViewModelTest {
         viewModel.loadAnalytics(AnalyticsTimeframe.LAST_90_DAYS)
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(90)
-        verify(analyticsEngine).getWeeklyData(90)
-        verify(analyticsEngine).getPerformanceData(90)
+        runBlocking {
+            verify(analyticsEngine).generateAnalytics(eq(90), any(), anyOrNull())
+            verify(analyticsEngine).getWeeklyData(eq(90), any())
+            verify(analyticsEngine).getPerformanceData(eq(90), any())
+        }
     }
 
     @Test
@@ -193,9 +199,11 @@ class AnalyticsViewModelTest {
         viewModel.loadAnalytics(AnalyticsTimeframe.ALL_TIME)
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(Int.MAX_VALUE)
-        verify(analyticsEngine).getWeeklyData(Int.MAX_VALUE)
-        verify(analyticsEngine).getPerformanceData(Int.MAX_VALUE)
+        runBlocking {
+            verify(analyticsEngine).generateAnalytics(eq(Int.MAX_VALUE), any(), anyOrNull())
+            verify(analyticsEngine).getWeeklyData(eq(Int.MAX_VALUE), any())
+            verify(analyticsEngine).getPerformanceData(eq(Int.MAX_VALUE), any())
+        }
     }
 
     @Test
@@ -314,7 +322,7 @@ class AnalyticsViewModelTest {
         viewModel.refreshAnalytics()
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(7)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(7), any(), anyOrNull()) }
     }
 
     @Test
@@ -338,7 +346,7 @@ class AnalyticsViewModelTest {
         viewModel.refreshAnalytics()
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(7)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(7), any(), anyOrNull()) }
     }
 
     @Test
@@ -362,7 +370,7 @@ class AnalyticsViewModelTest {
         viewModel.refreshAnalytics()
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(30)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(30), any(), anyOrNull()) }
     }
 
     @Test
@@ -386,7 +394,7 @@ class AnalyticsViewModelTest {
         viewModel.refreshAnalytics()
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(90)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(90), any(), anyOrNull()) }
     }
 
     @Test
@@ -410,7 +418,7 @@ class AnalyticsViewModelTest {
         viewModel.refreshAnalytics()
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(Int.MAX_VALUE)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(Int.MAX_VALUE), any(), anyOrNull()) }
     }
 
     // Integration Tests
@@ -432,7 +440,7 @@ class AnalyticsViewModelTest {
         viewModel.loadAnalytics(AnalyticsTimeframe.LAST_7_DAYS)
         advanceUntilIdle()
 
-        verify(analyticsEngine).generateAnalytics(7)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(7), any(), anyOrNull()) }
 
         // Refresh
         clearInvocations(analyticsEngine)
@@ -440,6 +448,6 @@ class AnalyticsViewModelTest {
         advanceUntilIdle()
 
         // Should use LAST_30_DAYS based on 2 weeks of data
-        verify(analyticsEngine).generateAnalytics(30)
+        runBlocking { verify(analyticsEngine).generateAnalytics(eq(30), any(), anyOrNull()) }
     }
 }

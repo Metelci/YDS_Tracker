@@ -1,6 +1,8 @@
 package com.mtlc.studyplan.feature.home
 
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -9,6 +11,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -47,20 +52,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.border
+import androidx.webkit.WebViewCompat
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.ResourceType
 import com.mtlc.studyplan.data.YdsResource
 import com.mtlc.studyplan.data.YdsResourceLibrary
-import com.mtlc.studyplan.ui.components.StudyPlanTopBar
-import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 
 @Composable
@@ -149,30 +157,79 @@ fun ResourceLibraryScreen(
 ) {
     var selectedResource by remember { mutableStateOf<YdsResource?>(null) }
     val backgroundBrush = appBackgroundBrush()
+    val layoutDirection = LocalLayoutDirection.current
 
     Scaffold(
         topBar = {
-            StudyPlanTopBar(
-                title = stringResource(R.string.resource_library_title),
-                subtitle = stringResource(R.string.resource_library_subtitle),
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = onBack,
-                style = StudyPlanTopBarStyle.Home
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFFC6E6FF), // Light pastel blue
+                                    Color(0xFFCFF5E9), // Light mint green
+                                    Color(0xFFFFE3F2)  // Light pastel pink
+                                ),
+                                start = Offset.Zero,
+                                end = Offset.Infinite
+                            ),
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                        .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.cd_back),
+                                tint = Color(0xFF424242)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.resource_library_title),
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF424242)
+                            )
+                            Text(
+                                text = stringResource(R.string.resource_library_subtitle),
+                                fontSize = 14.sp,
+                                color = Color(0xFF616161)
+                            )
+                        }
+                    }
+                }
+            }
         }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundBrush)
-                .padding(padding)
+                .padding(
+                    top = padding.calculateTopPadding(),
+                    start = padding.calculateStartPadding(layoutDirection),
+                    end = padding.calculateEndPadding(layoutDirection)
+                )
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(bottom = 24.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
             ) {
                 items(resources, key = { it.id }) { resource ->
                     ResourceListItem(
@@ -279,6 +336,7 @@ private fun ResourceWebViewDialog(
     resource: YdsResource,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -320,8 +378,21 @@ private fun ResourceWebViewDialog(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT
                             )
-                            settings.javaScriptEnabled = true
-                            webViewClient = WebViewClient()
+                            settings.javaScriptEnabled = false
+                            settings.domStorageEnabled = false
+                            settings.allowFileAccess = false
+                            settings.allowContentAccess = false
+                            settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                            runCatching { WebViewCompat.startSafeBrowsing(context) { /* no-op */ } }
+                            webViewClient = object : WebViewClient() {
+                                override fun shouldOverrideUrlLoading(
+                                    view: WebView?,
+                                    request: WebResourceRequest?
+                                ): Boolean {
+                                    val url = request?.url?.toString().orEmpty()
+                                    return !url.startsWith("https://")
+                                }
+                            }
                         }
                     },
                     update = { it.loadUrl(resource.url) },

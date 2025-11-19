@@ -327,15 +327,11 @@ class SmartScheduler {
 
     private fun getDefaultPattern(): StudyPattern {
         return StudyPattern(
-            preferredTimeSlots = listOf(
-                TimeSlot(LocalTime.of(9, 0), LocalTime.of(11, 0), 0.8f, 1),
-                TimeSlot(LocalTime.of(14, 0), LocalTime.of(16, 0), 0.7f, 1),
-                TimeSlot(LocalTime.of(19, 0), LocalTime.of(21, 0), 0.6f, 1)
-            ),
-            averageSessionDuration = 30,
-            strongDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+            preferredTimeSlots = emptyList(),
+            averageSessionDuration = 0,
+            strongDays = emptyList(),
             weakCategories = emptyList(),
-            consistencyScore = 0.5f,
+            consistencyScore = 0f,
             optimalBreakInterval = 45
         )
     }

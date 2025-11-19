@@ -6,7 +6,6 @@ import androidx.core.content.edit
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.error.ErrorHandler
 import com.mtlc.studyplan.core.error.ErrorLogger
-import com.mtlc.studyplan.utils.settingsDataStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
@@ -14,6 +13,7 @@ import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
 
 import com.mtlc.studyplan.core.error.ErrorType
+import kotlinx.coroutines.FlowPreview
 
 /**
  * Repository for managing application settings with reactive updates and comprehensive error handling
@@ -24,7 +24,7 @@ class SettingsRepository(
 ) {
 
     private val errorHandler = ErrorHandler(ErrorLogger(context))
-    private val preferences: SharedPreferences = DataStoreBackedPreferences(context.settingsDataStore)
+    private val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     // Internal state flows for reactive updates
     private val _settingsState = MutableStateFlow(SettingsState(emptyList(), emptyMap()))
@@ -207,7 +207,10 @@ class SettingsRepository(
     /**
      * Observe notification settings.
      */
-    fun getNotificationSettings(): Flow<NotificationData> = notificationState.asStateFlow()
+    @OptIn(FlowPreview::class)
+    fun getNotificationSettings(): Flow<NotificationData> =
+        notificationState.asStateFlow()
+            .debounce(5)
 
     /**
      * Observe gamification settings.

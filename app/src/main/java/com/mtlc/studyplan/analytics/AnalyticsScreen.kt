@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -86,8 +88,6 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.LoadingType
 import com.mtlc.studyplan.ui.components.ShimmerOverlay
 import com.mtlc.studyplan.ui.components.StudyPlanLoadingState
-import com.mtlc.studyplan.ui.components.StudyPlanTopBar
-import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle
 import kotlinx.coroutines.launch
 
 
@@ -150,13 +150,59 @@ private fun AnalyticsScreenContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        StudyPlanTopBar(
-            title = stringResource(R.string.study_analytics),
-            subtitle = stringResource(R.string.analytics),
-            navigationIcon = onBack?.let { Icons.AutoMirrored.Filled.ArrowBack },
-            onNavigationClick = onBack,
-            style = StudyPlanTopBarStyle.Progress
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFFFE3F2), // Light pastel pink
+                                Color(0xFFC6E6FF), // Light pastel blue
+                                Color(0xFFCFF5E9)  // Light mint green
+                            ),
+                            start = Offset.Zero,
+                            end = Offset.Infinite
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.cd_back),
+                                tint = Color(0xFF424242)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(R.string.study_analytics),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF424242)
+                        )
+                        Text(
+                            text = stringResource(R.string.analytics),
+                            fontSize = 14.sp,
+                            color = Color(0xFF616161)
+                        )
+                    }
+                }
+            }
+        }
         AnalyticsHeader(
             selectedTimeframe = state.selectedTimeframe,
             onTimeframeChanged = onTimeframeChanged,

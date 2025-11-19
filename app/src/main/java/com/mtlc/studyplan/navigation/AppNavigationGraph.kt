@@ -27,8 +27,6 @@ import com.mtlc.studyplan.feature.Routes.ONBOARDING_ROUTE
 import com.mtlc.studyplan.feature.Routes.PLAN_ROUTE
 import com.mtlc.studyplan.feature.Routes.WELCOME_ROUTE
 import com.mtlc.studyplan.feature.onboarding.OnboardingRoute
-import com.mtlc.studyplan.feature.reader.PassageUi
-import com.mtlc.studyplan.feature.reader.ReaderScreen
 import com.mtlc.studyplan.feature.home.ResourceLibraryScreen
 import com.mtlc.studyplan.feature.today.todayGraph
 import com.mtlc.studyplan.navigation.AppNavigationGraphParams.HapticCallback
@@ -193,19 +191,6 @@ fun NavGraphBuilder.appNavigationGraph(params: AppNavigationGraphParams) {
     composable(PLAN_ROUTE) {
         com.mtlc.studyplan.feature.today.TodayRoute(
             taskRepository = params.taskRepository
-        )
-    }
-
-    composable("readerDemo") {
-        ReaderScreen(
-            passage = PassageUi(
-                id = "demo",
-                title = "Reading Demo",
-                body = List(50) { idx ->
-                    "Paragraph $idx: Reading is core to YDS prep. Control comfort, track time, and learn words in context."
-                }.joinToString("\n\n")
-            ),
-            onBack = { navController.popBackStack() }
         )
     }
 

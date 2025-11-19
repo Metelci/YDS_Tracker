@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 /**
@@ -15,6 +16,7 @@ object ToastManager {
 
     private var applicationContext: Context? = null
     private var currentToast: Toast? = null
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun initialize(context: Context) {
         applicationContext = context.applicationContext
@@ -58,25 +60,25 @@ object ToastManager {
 
     // Thread-safe versions for use from background threads
     fun showSuccessAsync(message: String, duration: Int = Toast.LENGTH_SHORT) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             showSuccess(message, duration)
         }
     }
 
     fun showErrorAsync(message: String, duration: Int = Toast.LENGTH_LONG) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             showError(message, duration)
         }
     }
 
     fun showWarningAsync(message: String, duration: Int = Toast.LENGTH_LONG) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             showWarning(message, duration)
         }
     }
 
     fun showInfoAsync(message: String, duration: Int = Toast.LENGTH_SHORT) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             showInfo(message, duration)
         }
     }

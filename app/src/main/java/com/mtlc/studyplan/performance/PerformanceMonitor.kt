@@ -23,7 +23,7 @@ class PerformanceMonitor @Inject constructor() {
 
     private val frameMetrics = mutableListOf<Long>()
     private val memoryMetrics = mutableListOf<Long>()
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     init {
         startFrameTracking()
@@ -210,11 +210,19 @@ class PerformanceMonitor @Inject constructor() {
             memoryMetrics.clear()
         }
         _performanceMetrics.value = PerformanceMetrics()
+        restartTracking()
     }
 
     @VisibleForTesting
     internal fun stop() {
         scope.cancel()
+    }
+
+    private fun restartTracking() {
+        scope.cancel()
+        scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        startFrameTracking()
+        trackMemoryUsage()
     }
 }
 

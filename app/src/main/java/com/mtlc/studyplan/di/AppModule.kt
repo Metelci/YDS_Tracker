@@ -15,6 +15,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import javax.inject.Qualifier
+import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.feature.reader.GlossaryRepo
 import com.mtlc.studyplan.feature.reader.UserGlossaryRepo
 
@@ -39,6 +40,9 @@ val koinAppModule = module {
 
     // Reader glossary repository (no demo data)
     single<GlossaryRepo> { UserGlossaryRepo() }
+
+    // Exam countdown manager
+    single { ExamCountdownManager(androidContext()) }
 }
 
 // Qualifier annotations for different dispatchers

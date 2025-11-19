@@ -77,6 +77,16 @@
     <string name="exam_milestone_7_phase">Last Week - Stay Calm</string>
     <string name="exam_milestone_7_action">Final Review</string>
 
+    <string name="exam_milestone_1_title">Tomorrow is %1$s!</string>
+    <string name="exam_milestone_1_message">Get a good night\'s sleep, prepare your documents, and trust your preparation. You\'ve worked hard for this moment. Good luck!</string>
+    <string name="exam_milestone_1_phase">Final Day - Rest Well</string>
+    <string name="exam_milestone_1_action">Final Checklist</string>
+
+    <string name="exam_milestone_0_title">%1$s - Exam Day!</string>
+    <string name="exam_milestone_0_message">Today is the day! Stay calm, read questions carefully, and manage your time. You\'ve got this! Best of luck!</string>
+    <string name="exam_milestone_0_phase">Exam Day - Good Luck!</string>
+    <string name="exam_milestone_0_action">Exam Tips</string>
+
     <string name="exam_milestone_progress_format">%1$d days remaining • %2$s</string>
     <string name="exam_milestone_notification_channel">Exam Milestones</string>
     <string name="exam_milestone_notification_channel_desc">Important countdown reminders at key preparation milestones</string>

@@ -4,14 +4,15 @@
    for details.
 -->
 <data-extraction-rules>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
-    <!--
+    <cloud-backup>
+        <!-- Exclude sensitive client-side stores -->
+        <exclude domain="file" path="datastore/secure_datastore.preferences_pb"/>
+        <exclude domain="file" path="datastore/calendar_settings.preferences_pb"/>
+        <exclude domain="sharedpref" path="encrypted_prefs.xml"/>
+    </cloud-backup>
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="file" path="datastore/secure_datastore.preferences_pb"/>
+        <exclude domain="file" path="datastore/calendar_settings.preferences_pb"/>
+        <exclude domain="sharedpref" path="encrypted_prefs.xml"/>
     </device-transfer>
-    -->
 </data-extraction-rules>
