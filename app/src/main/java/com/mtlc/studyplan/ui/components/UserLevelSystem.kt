@@ -238,7 +238,7 @@ private fun NextLevelPreview(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_level),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
@@ -258,7 +258,7 @@ private fun NextLevelPreview(
                     ) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_completed),
                             tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(12.dp)
                         )

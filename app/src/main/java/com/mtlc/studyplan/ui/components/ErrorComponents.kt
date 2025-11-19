@@ -10,9 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.core.error.AppError
 import com.mtlc.studyplan.core.recovery.RecoveryOption
 
@@ -46,7 +48,7 @@ fun ErrorCard(
             ) {
                 Icon(
                     imageVector = getErrorIcon(error),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_error),
                     tint = MaterialTheme.colorScheme.onErrorContainer
                 )
 
@@ -66,7 +68,7 @@ fun ErrorCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Dismiss error",
+                            contentDescription = stringResource(R.string.cd_close),
                             tint = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
@@ -102,7 +104,7 @@ fun ErrorCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_refresh),
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -132,7 +134,7 @@ fun ErrorBanner(
         ) {
             Icon(
                 imageVector = getErrorIcon(error),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_error),
                 modifier = Modifier.size(20.dp)
             )
 
@@ -148,7 +150,7 @@ fun ErrorBanner(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss",
+                    contentDescription = stringResource(R.string.cd_close),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -169,7 +171,7 @@ fun ErrorDialog(
         icon = {
             Icon(
                 imageVector = getErrorIcon(error),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_error),
                 tint = MaterialTheme.colorScheme.error
             )
         },
@@ -235,7 +237,7 @@ fun LoadingErrorState(
     ) {
         Icon(
             imageVector = getErrorIcon(error),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_error),
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.error
         )
@@ -267,7 +269,7 @@ fun LoadingErrorState(
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_refresh),
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -295,7 +297,7 @@ fun EmptyStateWithError(
         if (error != null) {
             Icon(
                 imageVector = getErrorIcon(error),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_error),
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.error
             )
@@ -324,7 +326,7 @@ fun EmptyStateWithError(
                 Button(onClick = onRetry) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_refresh),
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -334,7 +336,7 @@ fun EmptyStateWithError(
         } else {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_search),
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -411,7 +413,7 @@ private fun RecoveryOptionsList(
                 ) {
                     Icon(
                         imageVector = getRecoveryOptionIcon(option.icon),
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_info),
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))

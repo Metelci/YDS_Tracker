@@ -66,6 +66,37 @@
   <string name="exam_milestone_notification_channel">Sınav Kilometre Taşları</string>
   <string name="exam_milestone_notification_channel_desc">Önemli hazırlık kilometre taşlarında geri sayım hatırlatıcıları</string>
 
+  <!-- Shared content descriptions -->
+  <string name="cd_back">Geri git</string>
+  <string name="cd_close">Kapat</string>
+  <string name="cd_error">Hata</string>
+  <string name="cd_warning">Uyarı</string>
+  <string name="cd_retry">Tekrar dene</string>
+  <string name="cd_refresh">Yenile</string>
+  <string name="cd_settings">Ayarlar</string>
+  <string name="cd_next">İleri</string>
+  <string name="cd_previous">Geri</string>
+  <string name="cd_search">Ara</string>
+  <string name="cd_calendar">Takvim</string>
+  <string name="cd_notification">Bildirim</string>
+  <string name="cd_completed">Tamamlandı</string>
+  <string name="cd_in_progress">Devam ediyor</string>
+  <string name="cd_locked">Kilitli</string>
+  <string name="cd_feature">Özellik</string>
+  <string name="cd_achievement">Başarım</string>
+  <string name="cd_streak">Çalışma serisi</string>
+  <string name="cd_level">Kullanıcı seviyesi</string>
+  <string name="cd_badge">Rozet</string>
+  <string name="cd_resource_link">Kaynağı aç</string>
+  <string name="cd_chart">Grafik</string>
+  <string name="cd_alert">Uyarı</string>
+  <string name="cd_info">Bilgi</string>
+  <string name="cd_play">Oynat</string>
+  <string name="cd_pause">Duraklat</string>
+  <string name="cd_time_focus">Zaman odak</string>
+  <string name="cd_goal">Hedef durumu</string>
+  <string name="cd_navigation_menu">Gezinme menüsü</string>
+
   <!-- New Exam Announcements -->
   <string name="new_exam_announcement_title">Yeni Sınav Duyurusu!</string>
   <string name="new_exam_announcement_basic">%1$s sınavı %2$s tarihine planlandı</string>

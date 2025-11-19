@@ -320,7 +320,7 @@ fun OriginalSettingsScreen(
                     ) {
                         Icon(
                             Icons.Outlined.Warning,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_warning),
                             modifier = Modifier.size(18.dp),
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -506,7 +506,7 @@ private fun TabButton(
         ) {
             Icon(
                 imageVector = tab.icon,
-                contentDescription = null, // Handled by parent semantics
+                contentDescription = tab.title,
                 tint = contentColor,
                 modifier = Modifier.size(22.dp)
             )
@@ -851,7 +851,7 @@ private fun WeeklyGoalCard(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.TrackChanges,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_goal),
                             tint = WEEKLY_GOAL_ICON_TINT,
                             modifier = Modifier.size(16.dp)
                         )
@@ -1061,7 +1061,7 @@ private fun SettingToggleItem(
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = title,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )

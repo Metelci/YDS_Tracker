@@ -234,7 +234,9 @@ private fun DailyTaskCard(
                 ) {
                     Icon(
                         imageVector = if (isCompleted) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
-                        contentDescription = null,
+                        contentDescription = stringResource(
+                            if (isCompleted) R.string.cd_completed else R.string.cd_in_progress
+                        ),
                         tint = if (isCompleted) MaterialTheme.colorScheme.onPrimary
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier

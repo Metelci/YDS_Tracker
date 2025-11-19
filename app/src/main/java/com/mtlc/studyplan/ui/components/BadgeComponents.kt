@@ -91,7 +91,7 @@ fun RowScope.BadgedNavigationItem(
             icon = {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null
+                    contentDescription = label
                 )
             },
             label = {

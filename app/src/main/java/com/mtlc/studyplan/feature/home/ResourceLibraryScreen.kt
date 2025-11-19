@@ -114,7 +114,7 @@ fun ResourceLibraryCard(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_next),
                             tint = Color.Black,
                             modifier = Modifier.size(20.dp)
                         )
@@ -280,6 +280,12 @@ private fun ResourceListItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    val cdLabel = when (resource.type) {
+                        ResourceType.VIDEO -> stringResource(R.string.cd_play)
+                        ResourceType.PODCAST -> stringResource(R.string.cd_feature)
+                        ResourceType.ARTICLE -> stringResource(R.string.cd_resource_link)
+                        ResourceType.OFFICIAL_GUIDE -> stringResource(R.string.cd_resource_link)
+                    }
                     Icon(
                         imageVector = when (resource.type) {
                             ResourceType.VIDEO -> Icons.Filled.PlayCircle
@@ -287,7 +293,7 @@ private fun ResourceListItem(
                     ResourceType.ARTICLE -> Icons.AutoMirrored.Filled.Article
                             ResourceType.OFFICIAL_GUIDE -> Icons.Filled.School
                         },
-                        contentDescription = null,
+                        contentDescription = cdLabel,
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -299,7 +305,7 @@ private fun ResourceListItem(
                 }
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_next),
                             tint = MaterialTheme.colorScheme.primary
                         )
             }

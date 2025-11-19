@@ -113,7 +113,7 @@ fun StreakCounterUI(
                 if (isFireStreak) {
                     Icon(
                         imageVector = Icons.Default.LocalFireDepartment,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_streak),
                         tint = Color(0xFFFF5722),
                         modifier = Modifier.size(16.dp)
                     )
@@ -404,7 +404,7 @@ fun CompactStreakCounter(
             if (streakState.isFireStreak) {
                 Icon(
                     imageVector = Icons.Default.LocalFireDepartment,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_streak),
                     tint = Color(0xFFFF5722),
                     modifier = Modifier.size(16.dp)
                 )

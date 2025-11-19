@@ -621,7 +621,7 @@ private fun OnboardingStepDate(vm: OnboardingViewModel) {
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Filled.Bolt,
-                                        contentDescription = null,
+                                        contentDescription = stringResource(R.string.cd_goal),
                                         modifier = Modifier.size(if (isVerySmall) 16.dp else 18.dp)
                                     )
                                 },
@@ -882,13 +882,13 @@ private fun PlannerDateField(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = MaterialTheme.colorScheme.primary
+        )
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = label,
@@ -1042,7 +1042,7 @@ private fun PlannerSuggestionCard(
             ) {
                 Icon(
                     imageVector = suggestion.icon,
-                    contentDescription = null,
+                    contentDescription = suggestion.headline,
                     tint = contentColor
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -195,7 +195,7 @@ private fun AchievementUnlockContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_achievement),
                         tint = Color.White,
                         modifier = Modifier.size(48.dp)
                     )
@@ -315,7 +315,7 @@ private fun AchievementUnlockContent(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_feature),
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -465,7 +465,7 @@ fun AchievementUnlockNotification(
                 ) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_achievement),
                         tint = Color(achievement.tier.color),
                         modifier = Modifier.padding(8.dp)
                     )

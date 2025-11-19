@@ -879,7 +879,7 @@ private fun RowScope.TasksTopBarHeader(isFirstTimeUser: Boolean) {
     ) {
         Icon(
             imageVector = Icons.Outlined.Task,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_feature),
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             modifier = Modifier.size(24.dp)
         )
@@ -924,7 +924,7 @@ private fun TasksTopBarXpBadge(taskStats: TaskStats) {
         ) {
             Icon(
                 Icons.Outlined.Bolt,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_achievement),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(16.dp)
             )
@@ -1271,7 +1271,7 @@ private fun WeeklyQuickActionsRow(
             ) {
                 Icon(
                     Icons.Filled.CalendarToday,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_calendar),
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -1308,7 +1308,7 @@ private fun WeeklyQuickActionsRow(
             ) {
                 Icon(
                     Icons.Filled.School,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_feature),
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onTertiaryContainer
                 )
@@ -1508,7 +1508,7 @@ private fun WeekStatItem(
     ) {
         Icon(
             icon,
-            contentDescription = null,
+            contentDescription = label,
             tint = color,
             modifier = Modifier.size(28.dp)
         )
@@ -1576,7 +1576,7 @@ private fun PlanTab(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.EditCalendar,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_calendar),
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -1694,7 +1694,7 @@ private fun AwardsTabContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Filled.EmojiEvents,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.cd_achievement),
                                     tint = Color.White,
                                     modifier = Modifier.size(28.dp)
                                 )
@@ -1842,7 +1842,9 @@ private fun AchievementIcon(achievement: AchievementBadge) {
     ) {
         Icon(
             imageVector = if (achievement.isUnlocked) Icons.Filled.EmojiEvents else Icons.Filled.Lock,
-            contentDescription = null,
+            contentDescription = stringResource(
+                if (achievement.isUnlocked) R.string.cd_achievement else R.string.cd_locked
+            ),
             tint = iconTint,
             modifier = Modifier.size(26.dp)
         )
@@ -2189,7 +2191,7 @@ private fun DailyTabPlaceholder(onBackToPlan: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Filled.CalendarToday,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_calendar),
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -2475,7 +2477,9 @@ private fun StudyUnitItem(unit: StudyUnit, onClick: () -> Unit = {}) {
         ) {
             Icon(
                 imageVector = if (unit.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
-                contentDescription = null,
+                contentDescription = stringResource(
+                    if (unit.isCompleted) R.string.cd_completed else R.string.cd_in_progress
+                ),
                 tint = if (unit.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
@@ -2552,7 +2556,9 @@ private fun DailyTaskItem(task: DailyTask) {
         ) {
             Icon(
                 imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
-                contentDescription = null,
+                contentDescription = stringResource(
+                    if (task.isCompleted) R.string.cd_completed else R.string.cd_in_progress
+                ),
                 tint = if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
@@ -2650,6 +2656,14 @@ private fun StudyMaterialItem(material: StudyMaterial) {
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val cdLabel = when (material.type) {
+                MaterialType.VIDEO -> stringResource(R.string.cd_play)
+                MaterialType.AUDIO -> stringResource(R.string.cd_feature)
+                MaterialType.PDF -> stringResource(R.string.cd_resource_link)
+                MaterialType.EXERCISE -> stringResource(R.string.cd_goal)
+                MaterialType.QUIZ -> stringResource(R.string.cd_goal)
+                MaterialType.READING -> stringResource(R.string.cd_resource_link)
+            }
             Icon(
                 imageVector = when (material.type) {
                     MaterialType.VIDEO -> Icons.Filled.PlayArrow
@@ -2659,7 +2673,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                     MaterialType.QUIZ -> Icons.Filled.Quiz
                     MaterialType.READING -> Icons.Filled.Star
                 },
-                contentDescription = null,
+                contentDescription = cdLabel,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
@@ -2703,7 +2717,7 @@ private fun NotesSection(notes: String) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.EditCalendar,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_calendar),
                     tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
@@ -3079,17 +3093,17 @@ private fun TaskListItem(task: Task) {
                     MaterialTheme.colorScheme.surfaceVariant
                 },
                 modifier = Modifier.size(24.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    if (task.isCompleted) {
-                        Icon(
-                            Icons.Filled.CheckCircle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(16.dp)
-                        )
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        if (task.isCompleted) {
+                            Icon(
+                                Icons.Filled.CheckCircle,
+                                contentDescription = stringResource(R.string.cd_completed),
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
-                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))

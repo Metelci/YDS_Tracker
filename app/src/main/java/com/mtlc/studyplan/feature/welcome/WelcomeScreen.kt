@@ -61,10 +61,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.ShapeTokens
 import kotlinx.coroutines.delay
@@ -151,7 +153,7 @@ private fun HeroSection(
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Filled.School,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_feature),
                             modifier = Modifier.size(48.dp),
                             tint = DesignTokens.PrimaryForeground
                         )
@@ -193,7 +195,7 @@ private fun HeroSection(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.AutoAwesome,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_feature),
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -267,7 +269,7 @@ private fun StatItem(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = label,
             modifier = Modifier.size(24.dp),
             tint = DesignTokens.Primary
         )
@@ -380,7 +382,7 @@ private fun FeatureCard(feature: FeatureData) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = feature.icon,
-                        contentDescription = null,
+                        contentDescription = feature.title,
                         modifier = Modifier.size(24.dp),
                         tint = DesignTokens.PrimaryContainerForeground
                     )
@@ -495,7 +497,7 @@ private fun TestimonialCard(testimonial: TestimonialData) {
                 repeat(testimonial.rating) {
                     Icon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_achievement),
                         modifier = Modifier.size(16.dp),
                         tint = Color(0xFFFFB300)
                     )

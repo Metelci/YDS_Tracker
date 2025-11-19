@@ -103,7 +103,7 @@ fun EnhancedSettingsCard(
                     if (icon != null) {
                         Icon(
                             imageVector = icon,
-                            contentDescription = null,
+                            contentDescription = title,
                             modifier = Modifier
                                 .size(24.dp)
                                 .padding(end = 12.dp),
@@ -490,13 +490,13 @@ fun FeedbackCard(
                         .fillMaxWidth()
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(20.dp)
-                )
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(R.string.cd_info),
+                tint = contentColor,
+                modifier = Modifier.size(20.dp)
+            )
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -507,14 +507,14 @@ fun FeedbackCard(
                     modifier = Modifier.weight(1f)
                 )
 
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = "Dismiss",
-                            tint = contentColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.cd_close),
+                        tint = contentColor,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
                 }
             }
         }

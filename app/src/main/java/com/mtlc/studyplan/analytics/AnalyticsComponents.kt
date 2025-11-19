@@ -116,12 +116,12 @@ fun TimeDistributionCard(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.weight(1f)
                             )
-                            Icon(
-                                imageVector = Icons.Filled.AccessTime,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
+                        Icon(
+                            imageVector = Icons.Filled.AccessTime,
+                            contentDescription = stringResource(R.string.cd_time_focus),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -302,7 +302,7 @@ fun ProductivityInsightsCard(
                             )
                             Icon(
                                 imageVector = Icons.Filled.CenterFocusWeak,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_time_focus),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -476,7 +476,7 @@ fun BestStudyTimesCard(
                             )
                             Icon(
                                 imageVector = Icons.Filled.Schedule,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_time_focus),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -579,7 +579,7 @@ fun RecommendationsCard(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Psychology,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_info),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -627,7 +627,7 @@ fun RecommendationsCard(
                             )
                             Icon(
                                 imageVector = Icons.Filled.EmojiObjects,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.cd_info),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -681,7 +681,7 @@ fun RecommendationItem(
                         "focus" -> Icons.Filled.CenterFocusWeak
                         else -> Icons.Filled.Lightbulb
                     },
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_info),
                     modifier = Modifier.size(16.dp),
                     tint = when (recommendation.priority) {
                         RecommendationPriority.HIGH -> MaterialTheme.colorScheme.error
@@ -1078,7 +1078,7 @@ fun RecentAchievementsCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.EmojiEvents,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_achievement),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -1101,7 +1101,7 @@ fun RecentAchievementsCard(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_achievement),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
@@ -1180,7 +1180,7 @@ fun QuickStatsCard(
                                 )
                                 Icon(
                                     imageVector = Icons.Filled.Dashboard,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.cd_chart),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp)
                                 )

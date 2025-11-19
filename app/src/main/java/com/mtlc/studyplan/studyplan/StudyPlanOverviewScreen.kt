@@ -489,7 +489,7 @@ private fun StatCard(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = label,
             tint = color,
             modifier = Modifier.size(20.dp)
         )
@@ -895,7 +895,9 @@ private fun GoalItem(goal: StudyGoal) {
     ) {
         Icon(
             imageVector = if (goal.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
-            contentDescription = null,
+            contentDescription = stringResource(
+                if (goal.isCompleted) R.string.cd_completed else R.string.cd_in_progress
+            ),
             tint = if (goal.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
@@ -1000,7 +1002,7 @@ private fun DailyScheduleView(
             ) {
                 Icon(
                     imageVector = Icons.Filled.CalendarToday,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_calendar),
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1175,7 +1177,9 @@ private fun StudyUnitItem(unit: StudyUnit) {
     ) {
         Icon(
             imageVector = if (unit.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
-            contentDescription = null,
+            contentDescription = stringResource(
+                if (unit.isCompleted) R.string.cd_completed else R.string.cd_in_progress
+            ),
             tint = if (unit.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
@@ -1256,7 +1260,9 @@ private fun DailyTaskItem(task: DailyTask) {
     ) {
         Icon(
             imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Filled.Circle,
-            contentDescription = null,
+            contentDescription = stringResource(
+                if (task.isCompleted) R.string.cd_completed else R.string.cd_in_progress
+            ),
             tint = if (task.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
@@ -1351,6 +1357,14 @@ private fun StudyMaterialItem(material: StudyMaterial) {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdLabel = when (material.type) {
+            MaterialType.VIDEO -> stringResource(R.string.cd_play)
+            MaterialType.AUDIO -> stringResource(R.string.cd_feature)
+            MaterialType.PDF -> stringResource(R.string.cd_resource_link)
+            MaterialType.EXERCISE -> stringResource(R.string.cd_goal)
+            MaterialType.QUIZ -> stringResource(R.string.cd_goal)
+            MaterialType.READING -> stringResource(R.string.cd_resource_link)
+        }
         Icon(
             imageVector = when (material.type) {
                 MaterialType.VIDEO -> Icons.Filled.PlayArrow
@@ -1360,7 +1374,7 @@ private fun StudyMaterialItem(material: StudyMaterial) {
                 MaterialType.QUIZ -> Icons.Filled.Quiz
                 MaterialType.READING -> Icons.AutoMirrored.Filled.MenuBook
             },
-            contentDescription = null,
+            contentDescription = cdLabel,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
@@ -1407,7 +1421,7 @@ private fun NotesSection(notes: String) {
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.StickyNote2,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_info),
                     tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(20.dp)
                 )

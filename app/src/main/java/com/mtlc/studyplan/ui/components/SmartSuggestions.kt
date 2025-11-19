@@ -177,7 +177,7 @@ private fun SuggestionCard(
                 // Icon
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_info),
                     tint = color,
                     modifier = Modifier.size(20.dp)
                 )
@@ -191,7 +191,7 @@ private fun SuggestionCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Dismiss suggestion",
+                        contentDescription = stringResource(R.string.cd_close),
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

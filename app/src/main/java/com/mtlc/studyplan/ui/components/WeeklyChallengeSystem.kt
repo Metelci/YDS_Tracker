@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.TaskCategory
 import com.mtlc.studyplan.data.UserProgress
 import com.mtlc.studyplan.gamification.*
+import com.mtlc.studyplan.R
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Contextual
 import java.time.DayOfWeek
@@ -172,7 +174,7 @@ fun WeeklyChallengeCard(
                     ) {
                         Icon(
                             imageVector = challenge.type.icon,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.cd_goal),
                             tint = Color.White,
                             modifier = Modifier.padding(8.dp)
                         )
@@ -197,7 +199,7 @@ fun WeeklyChallengeCard(
                 if (challenge.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Completed",
+                        contentDescription = stringResource(R.string.cd_completed),
                         tint = challenge.type.color,
                         modifier = Modifier.size(24.dp)
                     )
@@ -276,7 +278,7 @@ fun WeeklyChallengeCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_achievement),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
@@ -313,7 +315,7 @@ fun WeeklyChallengeCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.AccessTime,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.cd_time_focus),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp)
                     )
@@ -348,7 +350,7 @@ private fun ChallengeNearestMilestone(
             ) {
                 Icon(
                     imageVector = Icons.Default.Flag,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_goal),
                     tint = color,
                     modifier = Modifier.size(14.dp)
                 )
@@ -501,7 +503,7 @@ private fun SummaryStatItem(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = label,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
@@ -538,7 +540,7 @@ private fun CompletedChallengeCard(
         ) {
             Icon(
                 imageVector = challenge.type.icon,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_goal),
                 tint = challenge.type.color,
                 modifier = Modifier.size(24.dp)
             )

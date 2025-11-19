@@ -243,7 +243,7 @@ fun ErrorDialog(
                     ErrorType.VALIDATION -> Icons.Default.Warning
                     else -> Icons.Default.Error
                 },
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_error),
                 tint = MaterialTheme.colorScheme.error
             )
         },
