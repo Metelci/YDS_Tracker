@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.PlanOverridesStore
 import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
