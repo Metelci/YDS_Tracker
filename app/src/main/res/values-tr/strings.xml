@@ -66,36 +66,6 @@
   <string name="exam_milestone_notification_channel">Sınav Kilometre Taşları</string>
   <string name="exam_milestone_notification_channel_desc">Önemli hazırlık kilometre taşlarında geri sayım hatırlatıcıları</string>
 
-  <!-- Shared content descriptions -->
-  <string name="cd_back">Geri git</string>
-  <string name="cd_close">Kapat</string>
-  <string name="cd_error">Hata</string>
-  <string name="cd_warning">Uyarı</string>
-  <string name="cd_retry">Tekrar dene</string>
-  <string name="cd_refresh">Yenile</string>
-  <string name="cd_settings">Ayarlar</string>
-  <string name="cd_next">İleri</string>
-  <string name="cd_previous">Geri</string>
-  <string name="cd_search">Ara</string>
-  <string name="cd_calendar">Takvim</string>
-  <string name="cd_notification">Bildirim</string>
-  <string name="cd_completed">Tamamlandı</string>
-  <string name="cd_in_progress">Devam ediyor</string>
-  <string name="cd_locked">Kilitli</string>
-  <string name="cd_feature">Özellik</string>
-  <string name="cd_achievement">Başarım</string>
-  <string name="cd_streak">Çalışma serisi</string>
-  <string name="cd_level">Kullanıcı seviyesi</string>
-  <string name="cd_badge">Rozet</string>
-  <string name="cd_resource_link">Kaynağı aç</string>
-  <string name="cd_chart">Grafik</string>
-  <string name="cd_alert">Uyarı</string>
-  <string name="cd_info">Bilgi</string>
-  <string name="cd_play">Oynat</string>
-  <string name="cd_pause">Duraklat</string>
-  <string name="cd_time_focus">Zaman odak</string>
-  <string name="cd_goal">Hedef durumu</string>
-  <string name="cd_navigation_menu">Gezinme menüsü</string>
 
   <!-- New Exam Announcements -->
   <string name="new_exam_announcement_title">Yeni Sınav Duyurusu!</string>
@@ -695,7 +665,8 @@
   <string name="cd_filter">Filtrele</string>
   <string name="cd_close">Kapat</string>
   <string name="cd_menu">Menü</string>
-  <string name="cd_more_options">Diğer seçenekler</string>
+  <string name="cd_navigation_menu">Gezinme menüsü</string>
+  <string name="cd_more_options">Daha fazla seçenek</string>
   <string name="cd_edit">Düzenle</string>
   <string name="cd_delete">Sil</string>
   <string name="cd_share">Paylaş</string>
@@ -704,9 +675,13 @@
   <string name="cd_home">Ana sayfa</string>
   <string name="cd_tasks">Görevler</string>
   <string name="cd_progress">İlerleme</string>
-  <string name="cd_analytics">Analiz</string>
+  <string name="cd_analytics">Analizler</string>
   <string name="cd_calendar">Takvim</string>
-  <string name="cd_achievements">Başarılar</string>
+  <string name="cd_achievements">Başarımlar</string>
+  <string name="cd_achievement">Başarım</string>
+  <string name="cd_streak">Çalışma serisi</string>
+  <string name="cd_level">Kullanıcı seviyesi</string>
+  <string name="cd_badge">Rozet</string>
   <string name="cd_expand">Genişlet</string>
   <string name="cd_collapse">Daralt</string>
   <string name="cd_add">Ekle</string>
@@ -727,7 +702,21 @@
   <string name="cd_star">Yıldız</string>
   <string name="cd_award">Ödül</string>
   <string name="cd_trophy">Kupa</string>
+  <string name="cd_warning">Uyarı</string>
+  <string name="cd_alert">Uyarı</string>
+  <string name="cd_info">Bilgi</string>
   <string name="cd_error">Hata</string>
+  <string name="cd_retry">Tekrar dene</string>
+  <string name="cd_completed">Tamamlandı</string>
+  <string name="cd_in_progress">Devam ediyor</string>
+  <string name="cd_locked">Kilitli</string>
+  <string name="cd_feature">Özellik</string>
+  <string name="cd_resource_link">Kaynağı aç</string>
+  <string name="cd_chart">Grafik</string>
+  <string name="cd_play">Oynat</string>
+  <string name="cd_pause">Duraklat</string>
+  <string name="cd_time_focus">Zaman odak</string>
+  <string name="cd_goal">Hedef durumu</string>
   <string name="email">E-posta</string>
   <string name="email_required">E-posta gerekli</string>
   <string name="valid_email_required">L�tfen ge�erli bir e-posta adresi girin</string>
@@ -745,3 +734,4 @@
     <!-- Resource Library -->
     <string name="resource_library_title">YDS Kaynakları</string>
 </resources>
+
