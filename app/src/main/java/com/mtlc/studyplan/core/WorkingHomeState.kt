@@ -11,12 +11,15 @@ import com.mtlc.studyplan.data.ExamCountdownManager
 import com.mtlc.studyplan.data.ExamTracker
 import com.mtlc.studyplan.data.StreakInfo
 import com.mtlc.studyplan.data.TaskStats
+import com.mtlc.studyplan.data.WeekDay
 import com.mtlc.studyplan.data.WeeklyStudyPlan
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import org.koin.compose.koinInject
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 data class HomeState(
     val isFirstTimeUser: Boolean,
@@ -51,9 +54,11 @@ fun rememberWorkingHomeState(
                     .toLocalDate() == today
             } ?: false
         }
+        val completedTodayTasks = todayTasks.filter { it.isCompleted }
         TodayTaskSummary(
             total = todayTasks.size,
-            completed = todayTasks.count { it.isCompleted }
+            completed = completedTodayTasks.size,
+            pointsEarned = completedTodayTasks.sumOf { it.pointsValue }
         )
     }
 
@@ -81,10 +86,62 @@ fun rememberWorkingHomeState(
         examCountdownManager.forceRefresh()
     }
 
-    val weeklyPlan = remember { WeeklyStudyPlan() }
+    val weeklyPlan = remember(allTasks) {
+        val today = LocalDate.now()
+        val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+
+        // Get tasks for each day of the week
+        val weekDays = (0..6).map { dayOffset ->
+            val dayDate = startOfWeek.plusDays(dayOffset.toLong())
+            val dayName = when (dayOffset) {
+                0 -> "Mon"
+                1 -> "Tue"
+                2 -> "Wed"
+                3 -> "Thu"
+                4 -> "Fri"
+                5 -> "Sat"
+                else -> "Sun"
+            }
+
+            val dayTasks = allTasks.filter { task ->
+                task.dueDate?.let { dueDateTimestamp ->
+                    Instant.ofEpochMilli(dueDateTimestamp)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate() == dayDate
+                } ?: false
+            }
+
+            val completedCount = dayTasks.count { it.isCompleted }
+            val totalCount = dayTasks.size
+            val percentage = if (totalCount > 0) ((completedCount.toFloat() / totalCount) * 100).toInt() else 0
+            val isCompleted = totalCount > 0 && completedCount == totalCount
+
+            WeekDay(dayName, percentage, isCompleted)
+        }
+
+        // Calculate overall weekly progress
+        val weekTasks = allTasks.filter { task ->
+            task.dueDate?.let { dueDateTimestamp ->
+                val taskDate = Instant.ofEpochMilli(dueDateTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                !taskDate.isBefore(startOfWeek) && !taskDate.isAfter(startOfWeek.plusDays(6))
+            } ?: false
+        }
+        val weekCompleted = weekTasks.count { it.isCompleted }
+        val weekTotal = weekTasks.size
+        val weekProgress = if (weekTotal > 0) weekCompleted.toFloat() / weekTotal else 0f
+
+        WeeklyStudyPlan(
+            title = "Weekly Progress",
+            description = "Week Progress",
+            progressPercentage = weekProgress,
+            days = weekDays
+        )
+    }
 
     val pointsToday = remember(todaySummary, isFirstTimeUser) {
-        if (isFirstTimeUser) 0 else todaySummary.completed * 10
+        if (isFirstTimeUser) 0 else todaySummary.pointsEarned
     }
 
     return HomeState(
@@ -101,5 +158,6 @@ fun rememberWorkingHomeState(
 
 private data class TodayTaskSummary(
     val total: Int,
-    val completed: Int
+    val completed: Int,
+    val pointsEarned: Int = 0
 )

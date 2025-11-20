@@ -1,3 +1,23 @@
+## [2.9.70] - 2025-11-20 (hotfix)
+
+### Home Page
+- **Real Stats**: Completed tasks, earned points, and today's progress now display actual data from task database.
+- **Weekly Progress**: Progress bar and day circles show real completion percentages from current week's tasks.
+
+### Analytics
+- **AI Recommendations**: Fixed display to show title and description with real performance stats.
+- **Patterns Tab**: Made Study Time Distribution, Productivity Insights, and Best Study Times cards more compact with real data.
+- **Stats Tab**: Renamed from "Performance" to prevent text truncation; improved Performance Trends chart visibility (larger lines/points).
+- **Overview Tab**: Recent Achievements card now always visible with empty state message; shows real earned achievements.
+
+### Tasks Page - Awards
+- **Sorted Awards**: Unlocked achievements now appear at top of list, sorted by unlock date.
+- **Real Stats**: Gradient awards card displays actual total and unlocked achievement counts.
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- Bumped Android `versionCode` to 99 / `versionName` to 2.9.70.
+
 ## [2.9.69] - 2025-11-20 (hotfix)
 
 ### Resource Library

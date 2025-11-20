@@ -327,7 +327,7 @@ enum class AnalyticsTab(
     val icon: ImageVector
 ) {
     OVERVIEW("Overview", Icons.Filled.Dashboard),
-    PERFORMANCE("Performance", Icons.AutoMirrored.Filled.TrendingUp),
+    PERFORMANCE("Stats", Icons.AutoMirrored.Filled.TrendingUp),
     PATTERNS("Patterns", Icons.Filled.Schedule),
     INSIGHTS("Insights", Icons.AutoMirrored.Filled.ShowChart)
 }
@@ -433,9 +433,7 @@ fun OverviewSection(
         )
 
         // Recent Achievements
-        if (data.recentAchievements.isNotEmpty()) {
-            RecentAchievementsCard(achievements = data.recentAchievements)
-        }
+        RecentAchievementsCard(achievements = data.recentAchievements)
 
         // Quick Stats
         QuickStatsCard(data = data)

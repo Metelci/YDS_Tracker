@@ -76,13 +76,13 @@ fun TimeDistributionCard(
                 .fillMaxWidth()
                 .background(timeDistributionGradient)
         ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = "Study Time Distribution",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             if (patterns.timeDistribution.isEmpty()) {
                 // Show empty state message for first-time users
@@ -134,18 +134,23 @@ fun TimeDistributionCard(
                     }
                 }
             } else {
-                // Pie chart for time distribution
-                TimeDistributionChart(
-                    distribution = patterns.timeDistribution,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Compact pie chart
+                    TimeDistributionChart(
+                        distribution = patterns.timeDistribution,
+                        modifier = Modifier.size(100.dp)
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Legend
-                TimeDistributionLegend(distribution = patterns.timeDistribution)
+                    // Legend beside chart
+                    TimeDistributionLegend(
+                        distribution = patterns.timeDistribution,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
         }
@@ -214,27 +219,37 @@ fun TimeDistributionLegend(
 
     Column(modifier = modifier) {
         distribution.entries.forEachIndexed { index, (category, value) ->
+            val displayName = when (category) {
+                "early_morning" -> "Early Morning"
+                "morning" -> "Morning"
+                "afternoon" -> "Afternoon"
+                "evening" -> "Evening"
+                "night" -> "Night"
+                else -> category.replace("_", " ").split(" ").joinToString(" ") {
+                    it.replaceFirstChar { c -> c.uppercase() }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 2.dp),
+                    .padding(vertical = 1.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .size(12.dp)
+                        .size(10.dp)
                         .clip(RoundedCornerShape(2.dp))
                         .background(colors[index % colors.size])
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = category,
+                    text = displayName,
                     modifier = Modifier.weight(1f),
-                    fontSize = 14.sp
+                    fontSize = 12.sp
                 )
                 Text(
-                    text = "${value.toInt()}min",
-                    fontSize = 14.sp,
+                    text = "${(value * 100).toInt()}%",
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -260,13 +275,13 @@ fun ProductivityInsightsCard(
                 .fillMaxWidth()
                 .background(productivityGradient)
         ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = "Productivity Insights",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (insights.hourlyProductivity.isEmpty()) {
                 // Show empty state message for first-time users
@@ -339,14 +354,14 @@ fun ProductivityInsightsCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Productivity trend
                 ProductivityTrendChart(
                     hourlyData = insights.hourlyProductivity,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .height(60.dp)
                 )
             }
         }
@@ -434,13 +449,13 @@ fun BestStudyTimesCard(
                 .fillMaxWidth()
                 .background(bestTimesGradient)
         ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = "Best Study Times",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (patterns.hourlyProductivity.isEmpty()) {
                 // Show empty state message for first-time users
@@ -492,21 +507,18 @@ fun BestStudyTimesCard(
                     }
                 }
             } else {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     StudyTimeRecommendation(
-                        time = "Morning (8-10 AM)",
-                        score = patterns.morningProductivity,
-                        reason = "High focus and energy levels"
+                        time = "Morning",
+                        score = patterns.morningProductivity
                     )
                     StudyTimeRecommendation(
-                        time = "Afternoon (2-4 PM)",
-                        score = patterns.afternoonProductivity,
-                        reason = "Post-lunch concentration boost"
+                        time = "Afternoon",
+                        score = patterns.afternoonProductivity
                     )
                     StudyTimeRecommendation(
-                        time = "Evening (7-9 PM)",
-                        score = patterns.eveningProductivity,
-                        reason = "Quiet time for reflection"
+                        time = "Evening",
+                        score = patterns.eveningProductivity
                     )
                 }
             }
@@ -517,6 +529,49 @@ fun BestStudyTimesCard(
 
 @Composable
 fun StudyTimeRecommendation(
+    time: String,
+    score: Float,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = time,
+            fontWeight = FontWeight.Medium,
+            fontSize = 13.sp,
+            modifier = Modifier.weight(1f)
+        )
+
+        // Progress bar
+        LinearProgressIndicator(
+            progress = { score.coerceIn(0f, 1f) },
+            modifier = Modifier
+                .weight(2f)
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp)),
+            color = when {
+                score >= 0.7f -> MaterialTheme.colorScheme.primary
+                score >= 0.4f -> MaterialTheme.colorScheme.secondary
+                else -> MaterialTheme.colorScheme.outline
+            },
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+
+        // Score percentage
+        Text(
+            text = "${(score * 100).toInt()}%",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.width(40.dp),
+            textAlign = TextAlign.End
+        )
+    }
+}
+
+@Composable
+fun StudyTimeRecommendationLegacy(
     time: String,
     score: Float,
     reason: String,
@@ -697,12 +752,13 @@ fun RecommendationItem(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
                     )
-                    if (recommendation.reasoning.isNotEmpty()) {
+                    if (recommendation.description.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = recommendation.reasoning,
+                            text = recommendation.description,
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = 16.sp
                         )
                     }
                 }
@@ -949,7 +1005,7 @@ fun PerformanceTrendsChart(
                 labels = weeklyData.map { "W${it.weekNumber}" },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
+                    .height(180.dp)
             )
         }
     }
@@ -1009,7 +1065,7 @@ fun MultiLineChart(
                     color = primaryColor,
                     start = accuracyPoints[i],
                     end = accuracyPoints[i + 1],
-                    strokeWidth = 3.dp.toPx()
+                    strokeWidth = 4.dp.toPx()
                 )
             }
         }
@@ -1018,7 +1074,7 @@ fun MultiLineChart(
         accuracyPoints.forEach { point ->
             drawCircle(
                 color = primaryColor,
-                radius = 5.dp.toPx(),
+                radius = 6.dp.toPx(),
                 center = point
             )
         }
@@ -1039,7 +1095,7 @@ fun MultiLineChart(
                         color = secondaryColor,
                         start = speedPoints[i],
                         end = speedPoints[i + 1],
-                        strokeWidth = 3.dp.toPx()
+                        strokeWidth = 4.dp.toPx()
                     )
                 }
             }
@@ -1048,7 +1104,7 @@ fun MultiLineChart(
             speedPoints.forEach { point ->
                 drawCircle(
                     color = secondaryColor,
-                    radius = 5.dp.toPx(),
+                    radius = 6.dp.toPx(),
                     center = point
                 )
             }
@@ -1092,24 +1148,33 @@ fun RecentAchievementsCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            achievements.take(3).forEach { achievement ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = stringResource(R.string.cd_achievement),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = achievement,
-                        fontSize = 14.sp
-                    )
+            if (achievements.isEmpty()) {
+                Text(
+                    text = "Build a 7-day streak, reach 95% accuracy, or study 500+ minutes to earn achievements!",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 16.sp
+                )
+            } else {
+                achievements.take(3).forEach { achievement ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = stringResource(R.string.cd_achievement),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = achievement,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }

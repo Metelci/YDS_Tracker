@@ -1655,6 +1655,14 @@ private fun AwardsTabContent(
     val newAchievements by appIntegrationManager.getNewAchievementsCount().collectAsState(initial = 0)
     val cardShape = RoundedCornerShape(16.dp)
 
+    // Sort achievements: unlocked first, then by unlock date (newest first)
+    val sortedAchievements = remember(achievements) {
+        achievements.sortedWith(
+            compareByDescending<AchievementBadge> { it.isUnlocked }
+                .thenByDescending { it.unlockedAt ?: 0L }
+        )
+    }
+
     if (newAchievements > 0) {
         LaunchedEffect(newAchievements) {
             delay(3200)
@@ -1744,8 +1752,8 @@ private fun AwardsTabContent(
                 }
             }
 
-            items(achievements.size) { index ->
-                val achievement = achievements[index]
+            items(sortedAchievements.size) { index ->
+                val achievement = sortedAchievements[index]
                 AchievementCard(achievement, cardShape, index)
             }
         }

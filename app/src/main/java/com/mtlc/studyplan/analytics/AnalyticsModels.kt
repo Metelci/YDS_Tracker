@@ -23,9 +23,11 @@ data class Recommendation(
     val priority: RecommendationPriority,
     val actionText: String = "Apply",
     val category: String = "general",
-    val message: String = "",
     val reasoning: String = ""
-)
+) {
+    // Use title as main message for display
+    val message: String get() = title
+}
 
 enum class RecommendationPriority {
     HIGH, MEDIUM, LOW
