@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,6 +67,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -99,6 +103,7 @@ fun StudyPlanOverviewScreen(
     var selectedDay by remember { mutableStateOf<DailyStudyInfo?>(null) }
 
     val context = LocalContext.current
+    val layoutDirection = LocalLayoutDirection.current
     val appContext = context.applicationContext
     val settingsStore = remember { PlanSettingsStore(appContext.settingsDataStore) }
     remember { PlanOverridesStore(appContext.settingsDataStore) }
@@ -189,17 +194,14 @@ fun StudyPlanOverviewScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(appBackgroundBrush())
-    ) {
-        Scaffold(
-            topBar = {
-                // Settings-style topbar with pastel gradient
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
+    val backgroundBrush = appBackgroundBrush()
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0),
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(
@@ -208,84 +210,92 @@ fun StudyPlanOverviewScreen(
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    Color(0xFFFBE9E7), // Light pastel red/pink
-                                    Color(0xFFE3F2FD)  // Light pastel blue
+                                    Color(0xFFC6E6FF), // Light pastel blue
+                                    Color(0xFFCFF5E9), // Light mint green
+                                    Color(0xFFFFE3F2)  // Light pastel pink
                                 ),
                                 start = Offset.Zero,
                                 end = Offset.Infinite
                             ),
                             shape = RoundedCornerShape(24.dp)
                         )
-                        .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = onNavigateBack) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.navigate_up),
-                                    tint = Color(0xFF424242)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.study_overview_title),
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF424242)
-                                )
-                                Text(
-                                    text = stringResource(R.string.study_overview_subtitle),
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF616161)
-                                )
-                            }
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.navigate_up),
+                                tint = Color(0xFF424242)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.study_overview_title),
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF424242)
+                            )
+                            Text(
+                                text = stringResource(R.string.study_overview_subtitle),
+                                fontSize = 14.sp,
+                                color = Color(0xFF616161)
+                            )
                         }
                     }
                 }
             }
         }
-        ) { padding ->
-            Column(
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundBrush)
+        ) {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(
+                        top = padding.calculateTopPadding(),
+                        start = padding.calculateStartPadding(layoutDirection),
+                        end = padding.calculateEndPadding(layoutDirection)
+                    )
             ) {
-            // Tab Selector
-            StudyPlanTabRow(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Tab Selector
+                    StudyPlanTabRow(
+                        selectedTab = selectedTab,
+                        onTabSelected = { selectedTab = it },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-            // Content based on selected tab
-            when (selectedTab) {
-                StudyPlanTab.WEEKLY -> WeeklyScheduleView(
-                    studySchedule = studySchedule,
-                    taskStats = taskStats,
-                    completedTaskIds = completedTaskIds,
-                    onDayClick = { dayInfo ->
-                        selectedDay = dayInfo
-                        selectedTab = StudyPlanTab.DAILY
-                    },
-                    modifier = Modifier.weight(1f)
-                )
-                StudyPlanTab.DAILY -> DailyScheduleView(
-                    selectedDay = selectedDay,
-                    onBackToWeekly = { selectedTab = StudyPlanTab.WEEKLY },
-                    modifier = Modifier.weight(1f)
-                )
+                    // Content based on selected tab
+                    when (selectedTab) {
+                        StudyPlanTab.WEEKLY -> WeeklyScheduleView(
+                            studySchedule = studySchedule,
+                            taskStats = taskStats,
+                            completedTaskIds = completedTaskIds,
+                            onDayClick = { dayInfo ->
+                                selectedDay = dayInfo
+                                selectedTab = StudyPlanTab.DAILY
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                        StudyPlanTab.DAILY -> DailyScheduleView(
+                            selectedDay = selectedDay,
+                            onBackToWeekly = { selectedTab = StudyPlanTab.WEEKLY },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
         }
-    }
     }
 }
 
@@ -370,8 +380,8 @@ private fun WeeklyScheduleView(
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         // Current Week Overview
         item {
@@ -1096,8 +1106,8 @@ private fun DailyScheduleView(
     // Daily content
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         // Header with day info
         item {

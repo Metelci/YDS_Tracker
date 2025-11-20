@@ -16,16 +16,7 @@ object YdsResourceLibrary {
             id = "osym_official_website",
             title = "OSYM Official Website",
             description = "Official OSYM website for YDS exam registration, guides, and past exam questions with answer keys",
-            url = "https://www.osym.gov.tr",
-            type = ResourceType.OFFICIAL_GUIDE,
-            language = "tr",
-            source = "OSYM"
-        ),
-        YdsResource(
-            id = "osym_exam_schedule",
-            title = "2025 e-YDS Exam Schedule & Guidelines",
-            description = "Official e-YDS exam schedule, registration information, and test guidelines for 2025",
-            url = "https://www.osym.gov.tr/TR,32926/2025.html",
+            url = "https://www.osym.gov.tr/",
             type = ResourceType.OFFICIAL_GUIDE,
             language = "tr",
             source = "OSYM"
@@ -34,7 +25,7 @@ object YdsResourceLibrary {
             id = "osym_exam_portal",
             title = "OSYM Exam Information System (AIS)",
             description = "Official OSYM exam information system for registration and results",
-            url = "https://ais.osym.gov.tr",
+            url = "https://ais.osym.gov.tr/",
             type = ResourceType.OFFICIAL_GUIDE,
             language = "tr",
             source = "OSYM"
@@ -49,15 +40,6 @@ object YdsResourceLibrary {
             duration = "Self-paced",
             language = "en",
             source = "Academia.edu"
-        ),
-        YdsResource(
-            id = "quizlet_yds_vocabulary",
-            title = "YDS Vocabulary Flashcards - Quizlet",
-            description = "Popular YDS vocabulary flashcards and study sets for exam preparation",
-            url = "https://quizlet.com/subject/yds-vocabulary/",
-            type = ResourceType.ARTICLE,
-            language = "en",
-            source = "Quizlet"
         ),
         // Learning Platforms
         YdsResource(
@@ -74,7 +56,7 @@ object YdsResourceLibrary {
             id = "bbc_learning_english",
             title = "BBC Learning English",
             description = "BBC's trusted English learning resources with videos, lessons, and vocabulary practice",
-            url = "https://www.bbc.co.uk/learningenglish",
+            url = "https://www.bbc.com/learningenglish",
             type = ResourceType.VIDEO,
             duration = "5-15 min per video",
             language = "en",
@@ -88,16 +70,6 @@ object YdsResourceLibrary {
             type = ResourceType.ARTICLE,
             language = "en",
             source = "British Council"
-        ),
-        YdsResource(
-            id = "yds_sample_questions",
-            title = "YDS Ornek Sorular - Sample Questions",
-            description = "Sample YDS questions and detailed explanations from exam prep specialists",
-            url = "https://www.remzihoca.com/yds-ornek-sorular-sinav-basarinizi-katlayin",
-            type = ResourceType.VIDEO,
-            duration = "Variable",
-            language = "tr",
-            source = "Remzi Hoca"
         )
     )
 

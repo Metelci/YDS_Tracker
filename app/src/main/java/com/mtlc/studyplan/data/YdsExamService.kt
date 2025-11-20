@@ -81,6 +81,30 @@ class YdsExamService(
             registrationEnd = LocalDate.of(2025, 10, 8),
             lateRegistrationEnd = LocalDate.of(2025, 10, 15),
             resultDate = LocalDate.of(2025, 12, 5)
+        ),
+        YdsExamSession(
+            name = "YDS 2026/1",
+            examDate = LocalDate.of(2026, 3, 15),
+            registrationStart = LocalDate.of(2026, 1, 20),
+            registrationEnd = LocalDate.of(2026, 1, 28),
+            lateRegistrationEnd = LocalDate.of(2026, 2, 4),
+            resultDate = LocalDate.of(2026, 4, 3)
+        ),
+        YdsExamSession(
+            name = "YDS 2026/2",
+            examDate = LocalDate.of(2026, 7, 5),
+            registrationStart = LocalDate.of(2026, 5, 18),
+            registrationEnd = LocalDate.of(2026, 5, 26),
+            lateRegistrationEnd = LocalDate.of(2026, 6, 2),
+            resultDate = LocalDate.of(2026, 7, 28)
+        ),
+        YdsExamSession(
+            name = "YDS 2026/3",
+            examDate = LocalDate.of(2026, 11, 15),
+            registrationStart = LocalDate.of(2026, 9, 28),
+            registrationEnd = LocalDate.of(2026, 10, 6),
+            lateRegistrationEnd = LocalDate.of(2026, 10, 13),
+            resultDate = LocalDate.of(2026, 12, 4)
         )
     )
 
@@ -140,7 +164,7 @@ class YdsExamService(
     fun getApplicationUrlSync(): String = getNextExamSync()?.applicationUrl ?: Constants.OSYM_URL
 
     fun getDaysToNextExamSync(): Int {
-        val nextExam = getNextExamSync() ?: return 0
+        val nextExam = getNextExamSync() ?: return -1
         val today = LocalDate.now()
         return ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
     }
@@ -170,6 +194,11 @@ class YdsExamService(
     }
 
     fun getStatusMessageSync(): String {
+        val nextExam = getNextExamSync()
+        if (nextExam == null) {
+            return "No upcoming exam scheduled"
+        }
+
         val daysToExam = getDaysToNextExamSync()
         val registrationStatus = getRegistrationStatusSync()
 

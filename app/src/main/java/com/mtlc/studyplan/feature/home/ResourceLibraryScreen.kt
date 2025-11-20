@@ -1,21 +1,24 @@
 package com.mtlc.studyplan.feature.home
 
+import android.content.Intent
+import android.net.Uri
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,9 +30,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.PlayCircle
@@ -52,18 +55,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.foundation.border
 import androidx.webkit.WebViewCompat
 import com.mtlc.studyplan.R
 import com.mtlc.studyplan.data.ResourceType
@@ -158,6 +162,7 @@ fun ResourceLibraryScreen(
     var selectedResource by remember { mutableStateOf<YdsResource?>(null) }
     val backgroundBrush = appBackgroundBrush()
     val layoutDirection = LocalLayoutDirection.current
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -234,7 +239,9 @@ fun ResourceLibraryScreen(
                 items(resources, key = { it.id }) { resource ->
                     ResourceListItem(
                         resource = resource,
-                        onClick = { selectedResource = resource }
+                        onClick = {
+                            selectedResource = resource
+                        }
                     )
                 }
             }
@@ -290,7 +297,7 @@ private fun ResourceListItem(
                         imageVector = when (resource.type) {
                             ResourceType.VIDEO -> Icons.Filled.PlayCircle
                             ResourceType.PODCAST -> Icons.Filled.Headphones
-                    ResourceType.ARTICLE -> Icons.AutoMirrored.Filled.Article
+                            ResourceType.ARTICLE -> Icons.AutoMirrored.Filled.Article
                             ResourceType.OFFICIAL_GUIDE -> Icons.Filled.School
                         },
                         contentDescription = cdLabel,
@@ -300,14 +307,17 @@ private fun ResourceListItem(
                     Text(
                         text = resource.title,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = stringResource(R.string.cd_next),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = stringResource(R.string.cd_next),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
             }
 
             Text(
@@ -353,50 +363,82 @@ private fun ResourceWebViewDialog(
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = resource.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(onClick = onDismiss) {
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(32.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.close)
+                            contentDescription = stringResource(R.string.close),
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
                 HorizontalDivider()
                 AndroidView(
-                    factory = { context ->
-                        WebView(context).apply {
+                    factory = { ctx ->
+                        WebView(ctx).apply {
                             layoutParams = ViewGroup.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT
                             )
-                            settings.javaScriptEnabled = false
-                            settings.domStorageEnabled = false
+                            @Suppress("SetJavaScriptEnabled")
+                            settings.javaScriptEnabled = true
+                            settings.domStorageEnabled = true
                             settings.allowFileAccess = false
                             settings.allowContentAccess = false
                             settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-                            runCatching { WebViewCompat.startSafeBrowsing(context) { /* no-op */ } }
+                            settings.cacheMode = WebSettings.LOAD_DEFAULT
+                            settings.setSupportZoom(true)
+                            settings.builtInZoomControls = true
+                            settings.displayZoomControls = false
+                            settings.loadWithOverviewMode = true
+                            settings.useWideViewPort = true
+                            settings.javaScriptCanOpenWindowsAutomatically = false
+                            settings.setSupportMultipleWindows(true)
+                            // Set User-Agent to appear as mobile browser for government websites
+                            settings.userAgentString = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+                            runCatching { WebViewCompat.startSafeBrowsing(ctx) { /* no-op */ } }
                             webViewClient = object : WebViewClient() {
                                 override fun shouldOverrideUrlLoading(
                                     view: WebView?,
                                     request: WebResourceRequest?
                                 ): Boolean {
                                     val url = request?.url?.toString().orEmpty()
-                                    return !url.startsWith("https://")
+                                    // Allow all https URLs to load in WebView
+                                    if (url.startsWith("https://")) return false
+                                    // Block non-https URLs
+                                    return true
+                                }
+                            }
+                            // Handle window.open() calls - load in same WebView instead of external browser
+                            webChromeClient = object : WebChromeClient() {
+                                override fun onCreateWindow(
+                                    view: WebView?,
+                                    isDialog: Boolean,
+                                    isUserGesture: Boolean,
+                                    resultMsg: android.os.Message?
+                                ): Boolean {
+                                    val transport = resultMsg?.obj as? WebView.WebViewTransport ?: return false
+                                    // Reuse the current WebView for new window requests
+                                    transport.webView = view
+                                    resultMsg.sendToTarget()
+                                    return true
                                 }
                             }
                         }

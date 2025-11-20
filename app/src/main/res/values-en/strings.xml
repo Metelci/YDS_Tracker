@@ -142,7 +142,7 @@
     <string name="days_short_suffix">d</string>
 
     <!-- Study Overview -->
-    <string name="study_overview_title">Study Plan Overview</string>
+    <string name="study_overview_title">Weekly Study Plan</string>
     <string name="study_overview_subtitle">Track your YDS preparation progress</string>
     <string name="study_ready_to_plan">Ready to plan your study session</string>
     <string name="study_tasks_summary">%1$d tasks planned - Estimated time: %2$s</string>

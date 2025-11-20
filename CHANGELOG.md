@@ -1,3 +1,15 @@
+## [2.9.69] - 2025-11-20 (hotfix)
+
+### Resource Library
+- **WebView Improvements**: Enhanced WebView configuration with mobile User-Agent, zoom controls, and proper window handling for government websites.
+- **Reduced Header Height**: Minimized WebView dialog header padding and text size for better content visibility.
+- **Fixed Resource Links**: Updated BBC Learning English URL and allowed all HTTPS URLs to load in WebView.
+- **Cleaned Resource List**: Removed non-functional resources (Exam Calendar PDF, Magoosh, Remzi Hoca, Sample Questions, Memrise) - now features 6 verified working resources.
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- Bumped Android `versionCode` to 98 / `versionName` to 2.9.69.
+
 ## [2.9.67] - 2025-11-11 (hotfix)
 
 ### Navigation & UI

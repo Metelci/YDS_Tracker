@@ -9,6 +9,10 @@ import com.mtlc.studyplan.data.YdsExamService
 import com.mtlc.studyplan.repository.ExamRepository
 import com.mtlc.studyplan.services.NotificationSchedulerService
 import com.mtlc.studyplan.workers.ExamSyncWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import com.mtlc.studyplan.di.koinAppModule
 import com.mtlc.studyplan.di.koinDatabaseModule
@@ -28,6 +32,7 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
     private val architectureOptimizer by lazy { ArchitectureOptimizer(this) }
     private val examRepository: ExamRepository by inject()
     private val notificationSchedulerService: NotificationSchedulerService by inject()
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
@@ -73,6 +78,19 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
 
             // Schedule periodic exam sync worker (runs daily)
             ExamSyncWorker.schedule(this)
+
+            // Perform immediate sync if database is empty or stale
+            applicationScope.launch {
+                try {
+                    val examCount = examRepository.getExamCount()
+                    if (examCount == 0) {
+                        // No exams in database, sync immediately
+                        examRepository.syncExamsFromOsym()
+                    }
+                } catch (e: Exception) {
+                    // Ignore errors, static fallback will be used
+                }
+            }
         } catch (e: Exception) {
             // Log error but don't crash the app
             e.printStackTrace()

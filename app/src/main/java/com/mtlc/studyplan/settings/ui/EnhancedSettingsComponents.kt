@@ -195,30 +195,6 @@ fun EnhancedToggleSwitch(
 ) {
     val haptic = LocalHapticFeedback.current
 
-    val thumbPosition by animateFloatAsState(
-        targetValue = if (checked) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "thumbPosition"
-    )
-
-    val trackColor by animateColorAsState(
-        targetValue = if (checked)
-            MaterialTheme.colorScheme.primary
-        else
-            MaterialTheme.colorScheme.outline,
-        animationSpec = tween(300),
-        label = "trackColor"
-    )
-
-    val thumbColor by animateColorAsState(
-        targetValue = if (checked)
-            MaterialTheme.colorScheme.onPrimary
-        else
-            MaterialTheme.colorScheme.onSurface,
-        animationSpec = tween(300),
-        label = "thumbColor"
-    )
-
     Row(
         modifier = Modifier
             .fillMaxWidth(),

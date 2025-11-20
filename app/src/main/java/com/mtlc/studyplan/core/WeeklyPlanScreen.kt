@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -125,11 +124,8 @@ fun WeeklyPlanScreen(
                     totalWeeks = weeks.size.coerceAtLeast(1)
                 )
             },
-            contentWindowInsets = WindowInsets.navigationBars
+            contentWindowInsets = WindowInsets(0)
         ) { padding ->
-            val navigationBarPadding = with(density) {
-                WindowInsets.navigationBars.getBottom(this).toDp()
-            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -138,9 +134,9 @@ fun WeeklyPlanScreen(
                     start = 16.dp,
                     end = 16.dp,
                     top = 16.dp,
-                    bottom = navigationBarPadding + 32.dp
+                    bottom = 0.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 if (weekSummaries.isEmpty()) {
                     item { EmptyPlanCard() }
@@ -487,14 +483,13 @@ private fun WeeklyPlanGradientTopBar(
     currentWeek: Int,
     totalWeeks: Int
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
         Box(
             modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     brush = Brush.linearGradient(
@@ -508,7 +503,7 @@ private fun WeeklyPlanGradientTopBar(
                     shape = RoundedCornerShape(24.dp)
                 )
                 .border(2.dp, Color(0xFF0066FF), RoundedCornerShape(24.dp))
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
