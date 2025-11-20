@@ -40,7 +40,6 @@ class RecommendationGeneratorTest {
             priority = RecommendationPriority.HIGH,
             actionText = "Schedule",
             category = "timing",
-            message = "Peak productivity window detected",
             reasoning = "Based on historical data"
         )
 
@@ -52,7 +51,7 @@ class RecommendationGeneratorTest {
 
     @Test
     fun `RecommendationPriority enum should have required values`() {
-        val priorities = RecommendationPriority.values()
+        val priorities = RecommendationPriority.entries
 
         assertTrue(priorities.contains(RecommendationPriority.HIGH))
         assertTrue(priorities.contains(RecommendationPriority.MEDIUM))
@@ -127,7 +126,7 @@ class RecommendationGeneratorTest {
 
         // Count recommendations that look like they came from smart scheduler (based on type patterns)
         val fromScheduler = recommendations.count { it.category == "timing" || it.category == "breaks" }
-        assertTrue(fromScheduler <= 5 || fromScheduler == 0, "Smart scheduler should contribute at most 5 recommendations")
+        assertTrue(fromScheduler <= 5, "Smart scheduler should contribute at most 5 recommendations")
     }
 
     // ============ Performance Recommendations Tests ============
