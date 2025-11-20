@@ -21,12 +21,14 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mtlc.studyplan.data.StreakMultiplier
 import com.mtlc.studyplan.data.StreakState
+import com.mtlc.studyplan.R
 import kotlinx.coroutines.delay
 import kotlin.math.*
 import kotlin.random.Random

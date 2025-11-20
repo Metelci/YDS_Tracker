@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +34,7 @@ import com.mtlc.studyplan.data.AchievementCategory
 import com.mtlc.studyplan.data.AchievementTier
 import com.mtlc.studyplan.data.AchievementUnlock
 import com.mtlc.studyplan.data.CategorizedAchievement
+import com.mtlc.studyplan.R
 import kotlinx.coroutines.delay
 
 /**
