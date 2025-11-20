@@ -719,19 +719,63 @@
   <string name="cd_goal">Hedef durumu</string>
   <string name="email">E-posta</string>
   <string name="email_required">E-posta gerekli</string>
-  <string name="valid_email_required">L�tfen ge�erli bir e-posta adresi girin</string>
-  <string name="username">Kullan�c� ad�</string>
-  <string name="username_hint">En az 3 karakter, harf, rakam ve alt �izgi</string>
-  <string name="username_validation_error">Kullan�c� ad� en az 3 karakter olmal� (harf, rakam, alt �izgi)</string>
-  <string name="login">Giri� yap</string>
-  <string name="logout">��k�� yap</string>
-  <string name="not_logged_in">Giri� yap�lmad�</string>
-  <string name="login_failed">Giri� ba�ar�s�z: %s</string>
-  <string name="logged_in_successfully">Ba�ar�yla giri� yap�ld�!</string>
-  <string name="logged_out_successfully">Ba�ar�yla ��k�� yap�ld�</string>
-  <string name="study_tasks_summary">%1$d g�rev planland� - Tahmini s�re: %2$s</string>
-  <string name="today_label">Bug�n</string>
+  <string name="valid_email_required">Lütfen geçerli bir e-posta adresi girin</string>
+  <string name="username">Kullanıcı adı</string>
+  <string name="username_hint">En az 3 karakter, harf, rakam ve alt çizgi</string>
+  <string name="username_validation_error">Kullanıcı adı en az 3 karakter olmalı (harf, rakam, alt çizgi)</string>
+  <string name="login">Giriş yap</string>
+  <string name="logout">Çıkış yap</string>
+  <string name="not_logged_in">Giriş yapılmadı</string>
+  <string name="login_failed">Giriş başarısız: %s</string>
+  <string name="logged_in_successfully">Başarıyla giriş yapıldı!</string>
+  <string name="logged_out_successfully">Başarıyla çıkış yapıldı</string>
+  <string name="study_tasks_summary">%1$d görev planlandı - Tahmini süre: %2$s</string>
+  <string name="today_label">Bugün</string>
     <!-- Resource Library -->
     <string name="resource_library_title">YDS Kaynakları</string>
+
+    <!-- Analytics - Metrics -->
+    <string name="analytics_metric_streak">Seri</string>
+    <string name="analytics_metric_days">gün</string>
+    <string name="analytics_metric_time">Süre</string>
+    <string name="analytics_metric_studied">çalışıldı</string>
+    <string name="analytics_metric_tasks">Görev</string>
+    <string name="analytics_metric_done">tamamlandı</string>
+    <string name="analytics_metric_score">Skor</string>
+    <string name="analytics_metric_avg">ort.</string>
+    <string name="analytics_accuracy">Doğruluk</string>
+    <string name="analytics_speed">Hız</string>
+    <string name="analytics_consistency">Tutarlılık</string>
+    <string name="analytics_error_rate">%% hata oranı</string>
+
+    <!-- Analytics - Cards -->
+    <string name="analytics_study_time_distribution">Çalışma Süresi Dağılımı</string>
+    <string name="analytics_track_study_times">Çalışma Saatlerini Takip Et</string>
+    <string name="analytics_track_study_times_desc">Gün boyunca en verimli olduğunuz saatleri görmek için çalışma oturumları tamamlayın. Bu grafik sabah, öğleden sonra ve akşam dönemlerinde çalışma süresi dağılımınızı gösterecek.</string>
+    <string name="analytics_productivity_insights">Verimlilik Öngörüleri</string>
+    <string name="analytics_discover_peak_hours">En Verimli Saatlerinizi Keşfedin</string>
+    <string name="analytics_discover_peak_hours_desc">En verimli saatlerinizi, en yüksek performans günlerinizi ve odaklanma kalıplarınızı belirlemek için çalışma geçmişinizi oluşturun. Bu öngörü, önemli görevleri en iyi olduğunuz zamana planlamanıza yardımcı olur.</string>
+    <string name="analytics_best_study_times">En İyi Çalışma Saatleri</string>
+    <string name="analytics_find_optimal_windows">Optimal Çalışma Pencerelerinizi Bulun</string>
+    <string name="analytics_find_optimal_windows_desc">En iyi performans gösterdiğiniz zamanları keşfetmek için günün farklı saatlerinde çalışma oturumları tamamlayın. Sabah, öğleden sonra ve akşam verimliliğinizi analiz ederek ideal çalışma saatlerini önereceğiz.</string>
+    <string name="analytics_performance_trends">Performans Trendleri</string>
+    <string name="analytics_quick_stats">Hızlı İstatistikler</string>
+    <string name="analytics_welcome">StudyPlan\'a Hoş Geldiniz!</string>
+    <string name="analytics_start_journey">Yolculuğunuza Başlayın</string>
+    <string name="analytics_start_journey_desc">Günlük istatistikleriniz, haftalık ilerlemeniz ve çalışma kalıplarınız burada görünecek. İlk görevinizi tamamlayarak başlayın!</string>
+    <string name="analytics_track_learning">Öğrenme Yolculuğunuzu Takip Edin</string>
+    <string name="analytics_track_learning_desc">Haftalık ilerlemenizi görselleştirmek için görevler ve çalışma oturumları tamamlayın. Bu grafik çalışma süresi trendlerinizi göstererek tutarlılığı korumanıza ve en verimli dönemlerinizi belirlemenize yardımcı olacak.</string>
+    <string name="analytics_complete_first_task">İlerleme geçmişinizi oluşturmak için ilk görevinizi tamamlayın</string>
+    <string name="analytics_earn_achievements">Başarı kazanmak için 7 günlük seri oluşturun, %%95 doğruluk oranına ulaşın veya 500+ dakika çalışın!</string>
+    <string name="analytics_best_hour">En İyi Saat</string>
+    <string name="analytics_peak_day">En İyi Gün</string>
+    <string name="analytics_focus_score">Odak Skoru</string>
+    <string name="analytics_morning">Sabah</string>
+    <string name="analytics_afternoon">Öğleden Sonra</string>
+    <string name="analytics_evening">Akşam</string>
+    <string name="analytics_early_morning">Sabah Erken</string>
+    <string name="analytics_night">Gece</string>
+    <string name="analytics_no_performance_data">Performans Verisi Yok</string>
+    <string name="analytics_complete_tasks_trends">Performans trendlerinizi görmek için görevleri tamamlayın</string>
 </resources>
 

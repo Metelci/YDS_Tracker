@@ -49,6 +49,7 @@ object PlanTaskLocalizer {
     )
 
     private val descriptionResMap = mapOf(
+        // Lesson 1 titles
         "1. ders: gelecek haftaya hazirlik" to R.string.next_week_preparation_lesson,
         "1. ders: gramer alistirmalari" to R.string.grammar_exercises_lesson,
         "1. ders: gramer konulari" to R.string.grammar_topics_lesson,
@@ -62,6 +63,7 @@ object PlanTaskLocalizer {
         "1. ders: mini deneme sinavi" to R.string.mini_exam_lesson,
         "1. ders: okuma ve kelime" to R.string.reading_vocabulary_lesson,
         "1. ders: soru tipi pratigi" to R.string.question_type_practice_lesson,
+        // Lesson 2 titles
         "2. ders: deneme analizi ve kelime calismasi" to R.string.mini_analysis_lesson,
         "2. ders: dinleme pratigi ve tekrar" to R.string.listening_practice_review_lesson,
         "2. ders: dinleme ve tekrar" to R.string.listening_repeat_lesson,
@@ -75,6 +77,7 @@ object PlanTaskLocalizer {
         "2. ders: serbest okuma/dinleme" to R.string.free_reading_listening,
         "2. ders: soru analizi ve tekrar" to R.string.question_analysis_review_lesson,
         "2. ders: zorlu okuma ve kelime" to R.string.challenging_reading_vocabulary_lesson,
+        // Standalone titles
         "deneme analizi" to R.string.exam_analysis,
         "genel tekrar ve dinlenme" to R.string.general_repeat,
         "haftalik kelime tekrari" to R.string.weekly_vocabulary_review_title,
@@ -85,7 +88,24 @@ object PlanTaskLocalizer {
     fun localize(task: PlanTask, context: Context): PlanTask {
         if (!isEnglish(context)) return task
         val localizedDesc = descriptionResMap[normalizedKey(task.desc)]?.let(context::getString) ?: task.desc
-        return if (localizedDesc == task.desc) task else task.copy(desc = localizedDesc)
+        // Clear Turkish details when in English - details contain dynamic Turkish content
+        val localizedDetails = if (task.details != null && containsTurkishText(task.details)) {
+            null
+        } else {
+            task.details
+        }
+        return task.copy(desc = localizedDesc, details = localizedDetails)
+    }
+
+    private fun containsTurkishText(text: String): Boolean {
+        // Check for common Turkish words or patterns in the details
+        val turkishPatterns = listOf(
+            "kaynak:", "kitab", "ünite", "çalış", "çöz", "tekrar", "analiz",
+            "öğren", "oku", "dinle", "izle", "tamamla", "pekiştir", "not al",
+            "kelime", "gramer", "soru", "deneme", "hafta", "gün", "saat"
+        )
+        val lower = text.lowercase()
+        return turkishPatterns.any { lower.contains(it) }
     }
 
     fun dayIndex(raw: String): Int = dayIndexMap[normalizedKey(raw)] ?: 0

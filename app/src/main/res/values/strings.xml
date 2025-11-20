@@ -826,6 +826,50 @@
     <string name="exam_info_result_date">Announcement: %s</string>
     <string name="exam_info_apply_button">Apply on ÖSYM</string>
 
+    <!-- Analytics - Metrics -->
+    <string name="analytics_metric_streak">Streak</string>
+    <string name="analytics_metric_days">days</string>
+    <string name="analytics_metric_time">Time</string>
+    <string name="analytics_metric_studied">studied</string>
+    <string name="analytics_metric_tasks">Tasks</string>
+    <string name="analytics_metric_done">done</string>
+    <string name="analytics_metric_score">Score</string>
+    <string name="analytics_metric_avg">avg</string>
+    <string name="analytics_accuracy">Accuracy</string>
+    <string name="analytics_speed">Speed</string>
+    <string name="analytics_consistency">Consistency</string>
+    <string name="analytics_error_rate">%% error rate</string>
+
+    <!-- Analytics - Cards -->
+    <string name="analytics_study_time_distribution">Study Time Distribution</string>
+    <string name="analytics_track_study_times">Track Your Study Times</string>
+    <string name="analytics_track_study_times_desc">Complete study sessions throughout the day to see when you\'re most productive. This chart will show your study time distribution across morning, afternoon, and evening periods.</string>
+    <string name="analytics_productivity_insights">Productivity Insights</string>
+    <string name="analytics_discover_peak_hours">Discover Your Peak Hours</string>
+    <string name="analytics_discover_peak_hours_desc">Build your study history to identify your most productive hours, peak performance days, and focus patterns. This insight helps you schedule important tasks when you\'re at your best.</string>
+    <string name="analytics_best_study_times">Best Study Times</string>
+    <string name="analytics_find_optimal_windows">Find Your Optimal Study Windows</string>
+    <string name="analytics_find_optimal_windows_desc">Complete study sessions during different times of day to discover when you perform best. We\'ll analyze your morning, afternoon, and evening productivity to recommend ideal study times.</string>
+    <string name="analytics_performance_trends">Performance Trends</string>
+    <string name="analytics_quick_stats">Quick Stats</string>
+    <string name="analytics_welcome">Welcome to StudyPlan!</string>
+    <string name="analytics_start_journey">Start Your Journey</string>
+    <string name="analytics_start_journey_desc">Your daily stats, weekly progress, and study patterns will appear here. Begin by completing your first task!</string>
+    <string name="analytics_track_learning">Track Your Learning Journey</string>
+    <string name="analytics_track_learning_desc">Complete tasks and study sessions to visualize your weekly progress. This chart will show your study time trends, helping you maintain consistency and identify your most productive periods.</string>
+    <string name="analytics_complete_first_task">Complete your first task to start building your progress history</string>
+    <string name="analytics_earn_achievements">Build a 7-day streak, reach 95%% accuracy, or study 500+ minutes to earn achievements!</string>
+    <string name="analytics_best_hour">Best Hour</string>
+    <string name="analytics_peak_day">Peak Day</string>
+    <string name="analytics_focus_score">Focus Score</string>
+    <string name="analytics_morning">Morning</string>
+    <string name="analytics_afternoon">Afternoon</string>
+    <string name="analytics_evening">Evening</string>
+    <string name="analytics_early_morning">Early Morning</string>
+    <string name="analytics_night">Night</string>
+    <string name="analytics_no_performance_data">No Performance Data</string>
+    <string name="analytics_complete_tasks_trends">Complete some tasks to see your performance trends</string>
+
     <!-- Resource Library -->
     <string name="resource_library_title">Resource Library</string>
     <string name="resource_library_subtitle">Videos, Podcasts &amp; Study Materials</string>

@@ -80,6 +80,7 @@ import com.mtlc.studyplan.data.PlanOverridesStore
 import com.mtlc.studyplan.data.PlanRepository
 import com.mtlc.studyplan.data.PlanSettingsStore
 import com.mtlc.studyplan.data.PlanTask
+import com.mtlc.studyplan.data.PlanTaskLocalizer
 import com.mtlc.studyplan.data.StudyProgressRepository
 import com.mtlc.studyplan.data.TaskStats
 import com.mtlc.studyplan.data.UserProgress
@@ -189,7 +190,7 @@ fun StudyPlanOverviewScreen(
                     schedule.date == currentSelected.date
             }
             if (match != null) {
-                selectedDay = createDailyStudyInfo(match, completedTaskIds)
+                selectedDay = createDailyStudyInfo(match, completedTaskIds, context)
             }
         }
     }
@@ -378,6 +379,7 @@ private fun WeeklyScheduleView(
     onDayClick: (DailyStudyInfo) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -405,7 +407,7 @@ private fun WeeklyScheduleView(
             DailyScheduleCard(
                 dailySchedule = dailySchedule,
                 onClick = {
-                    onDayClick(createDailyStudyInfo(dailySchedule, completedTaskIds))
+                    onDayClick(createDailyStudyInfo(dailySchedule, completedTaskIds, context))
                 }
             )
         }
@@ -716,15 +718,17 @@ enum class Priority { HIGH, MEDIUM, LOW }
 // Helper function to create DailyStudyInfo from DailySchedule
 private fun createDailyStudyInfo(
     dailySchedule: DailySchedule,
-    completedTaskIds: Set<String>
+    completedTaskIds: Set<String>,
+    context: android.content.Context
 ): DailyStudyInfo {
     val planTasks = dailySchedule.planTasks
     val totalMinutes = planTasks.sumOf { estimateTaskDurationMinutes(it) }
 
     val tasks = planTasks.map { task ->
+        val localizedTask = PlanTaskLocalizer.localize(task, context)
         DailyTask(
-            title = task.desc,
-            description = task.details.orEmpty(),
+            title = localizedTask.desc,
+            description = localizedTask.details.orEmpty(),
             estimatedDuration = formatEstimatedTime(estimateTaskDurationMinutes(task)),
             priority = determineTaskPriority(task),
             isCompleted = completedTaskIds.contains(task.id)
