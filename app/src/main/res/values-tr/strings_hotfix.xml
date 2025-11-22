@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hotfix overrides for recent localization additions -->
+    <string name="exam_status_stale">Sınav takvimi güncel değil. En son tarihleri yüklemek için yenileyin.</string>
+    <string name="exam_status_none">Yaklaşan sınav bulunmuyor</string>
+
+    <!-- Task List Screen -->
+    <string name="tasks_list_completed">Tamamlananlar</string>
+    <string name="tasks_list_pending">Bekleyenler</string>
+    <string name="tasks_list_title">%1$s Görevler (%2$d)</string>
+    <string name="tasks_list_page">Sayfa %1$d</string>
+    <string name="tasks_list_page_info">%1$d / %2$d</string>
+    <string name="tasks_list_no_completed">Tamamlanan görev bulunamadı</string>
+    <string name="tasks_list_no_pending">Bekleyen görev bulunamadı</string>
+    <string name="tasks_list_minutes_format">%1$ddk</string>
+    <string name="tasks_list_points_format">%1$dp</string>
+
+    <!-- Resource Library -->
+    <string name="resource_library_subtitle">Videolar, Podcastler ve Çalışma Materyalleri</string>
+    <string name="resource_library_view_all">Kaynakları Görüntüle</string>
+    <string name="resource_type_video">Video</string>
+    <string name="resource_type_podcast">Podcast</string>
+    <string name="resource_type_article">Makale</string>
+    <string name="resource_type_official_guide">Resmi Kılavuz</string>
+</resources>
