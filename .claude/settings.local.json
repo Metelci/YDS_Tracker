@@ -5,7 +5,10 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(./gradlew :app:compileDebugKotlin:*)",
-      "Bash(./gradlew :app:compileDebugUnitTestKotlin:*)"
+      "Bash(./gradlew :app:compileDebugUnitTestKotlin:*)",
+      "Bash(./gradlew detekt:*)",
+      "Bash(LC_ALL=C grep:*)",
+      "Bash(./gradlew clean:*)"
     ],
     "deny": [],
     "ask": []

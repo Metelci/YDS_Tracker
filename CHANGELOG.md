@@ -6,6 +6,7 @@
 
 ### Exams & Resilience
 - Extended YDS static fallback sessions through 2028 and added stale-data detection to prompt refresh when OSYM scraping fails.
+- Home exam card now shows source/last-updated telemetry with a stale badge plus a manual refresh action (localized strings added in EN/TR).
 
 ### Security & Build
 - FCM analytics prefs now use encrypted storage; Koin logging is silenced in release.

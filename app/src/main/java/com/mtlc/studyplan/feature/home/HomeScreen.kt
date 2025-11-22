@@ -38,6 +38,7 @@ import androidx.core.os.ConfigurationCompat
 import com.mtlc.studyplan.data.ExamCountdownManager
 import java.util.Locale
 import org.koin.compose.koinInject
+import android.widget.Toast
 
 
 @Composable
@@ -51,6 +52,7 @@ fun HomeScreen() {
     val examCountdownManager: ExamCountdownManager = koinInject()
     val examData by examCountdownManager.examData.collectAsState()
     val telemetry by YdsExamService.getTelemetry().collectAsState()
+    var refreshInFlight by remember { mutableStateOf(false) }
 
     LaunchedEffect(examCountdownManager) {
         examCountdownManager.refreshNow()
@@ -233,6 +235,16 @@ fun HomeScreen() {
                                 stringResource(R.string.home_exam_card_title, nextExam.name),
                                 style = MaterialTheme.typography.titleSmall
                             )
+                            Text(
+                                stringResource(
+                                    R.string.home_exam_card_last_updated,
+                                    telemetry.lastSource.name.lowercase(Locale.getDefault()),
+                                    java.text.DateFormat.getDateTimeInstance().format(java.util.Date(telemetry.lastUpdatedAt))
+                                ),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
                             if (dataStale || telemetry.fallbackUsed) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -246,14 +258,24 @@ fun HomeScreen() {
                                     )
                                     TextButton(
                                         onClick = {
-                                            coroutineScope.launch {
-                                                val refreshed = YdsExamService.refreshExams()
-                                                examCountdownManager.forceRefresh()
-                                                if (!refreshed) {
-                                                    // soft failure: keep UI alive
+                                            if (!refreshInFlight) {
+                                                coroutineScope.launch {
+                                                    refreshInFlight = true
+                                                    val refreshed = YdsExamService.refreshExams()
+                                                    examCountdownManager.forceRefresh()
+                                                    refreshInFlight = false
+                                                    val msg = if (refreshed) {
+                                                        R.string.home_exam_card_refresh_success
+                                                    } else {
+                                                        R.string.home_exam_card_refresh_failure
+                                                    }
+                                                    Toast
+                                                        .makeText(context, msg, Toast.LENGTH_SHORT)
+                                                        .show()
                                                 }
                                             }
-                                        }
+                                        },
+                                        enabled = !refreshInFlight
                                     ) {
                                         Text(stringResource(R.string.home_exam_card_refresh))
                                     }

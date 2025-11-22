@@ -790,11 +790,16 @@
     <string name="tasks_list_minutes_format">%1$ddk</string>
     <string name="tasks_list_points_format">%1$dp</string>
     <!-- Resource Library -->
-    <string name="resource_library_subtitle">Videolar, Podcastler ve Calisma Materyalleri</string>
-    <string name="resource_library_view_all">Kaynaklari Goruntule</string>
+    <string name="resource_library_subtitle">Videolar, Podcastler ve Çalışma Materyalleri</string>
+    <string name="resource_library_view_all">Kaynakları Görüntüle</string>
     <string name="resource_type_video">Video</string>
     <string name="resource_type_podcast">Podcast</string>
     <string name="resource_type_article">Makale</string>
-    <string name="resource_type_official_guide">Resmi Kilavuz</string>
+    <string name="resource_type_official_guide">Resmi Kılavuz</string>
+    <string name="home_exam_card_stale">Veriler güncel olmayabilir</string>
+    <string name="home_exam_card_refresh">Sınav tarihlerini yenile</string>
+    <string name="home_exam_card_refresh_success">Sınav tarihleri yenilendi</string>
+    <string name="home_exam_card_refresh_failure">Sınav tarihleri yenilenemedi</string>
+    <string name="home_exam_card_last_updated">Kaynak: %1$s · Güncellendi: %2$s</string>
 </resources>
 
