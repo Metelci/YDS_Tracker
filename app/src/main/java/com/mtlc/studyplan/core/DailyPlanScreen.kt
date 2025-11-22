@@ -89,7 +89,7 @@ fun DailyPlanScreen(
     val startDate = remember(settings.startEpochDay) { LocalDate.ofEpochDay(settings.startEpochDay) }
     val scheduledDate = startDate.plusDays((weekIndex * 7L) + dayIndex)
     val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM d, yyyy") }
-    val localizedDayName = dayPlan?.day?.let { PlanTaskLocalizer.localizeDayName(it, context) }
+    val localizedDayName = dayPlan?.let { PlanTaskLocalizer.localizeDayName(it, context, dayIndex + 1) }
         ?: "Study Plan"
 
     val gradientBrush = remember {

@@ -4,7 +4,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.66 (November 10, 2025)
+- **Latest release:** v2.9.70 (November 21, 2025)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30
@@ -40,11 +40,12 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Biometric authentication (fingerprint/face) and PIN fallback.
 - Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-## Recent Highlights (v2.9.52 – v2.9.66)
+## Recent Highlights (v2.9.52 - v2.9.70)
 
+- **v2.9.70:** Weekly schedule day names now respect your device language (no more hardcoded Turkish labels), and the exam countdown shows a stale-data warning if OSYM dates can't be refreshed.
+- **v2.9.70:** Added 2027-2028 YDS fallback sessions, enabled OWASP Dependency-Check by default, encrypted FCM analytics prefs, and muted Koin logs for release builds.
 - **v2.9.66:** Resource Library screen now uses the shared StudyPlan top bar with matching gradient capsule, so it feels identical to the Home, Tasks, and Overview headers.
-- **v2.9.66:** Updated Resource Library WebView dialog to use auto-mirrored icons and Material 3’s `HorizontalDivider`, removing remaining warnings and improving RTL readability.
-
+- **v2.9.66:** Updated Resource Library WebView dialog to use auto-mirrored icons and Material 3's `HorizontalDivider`, removing remaining warnings and improving RTL readability.
 - **v2.9.65:** Analytics Performance tab UI polish - fixed tab title truncation, scaled text to fit in one line, enhanced chart with legend and grid lines.
 - **v2.9.65:** Performance Trends chart now properly displays single data points for new users - no more empty space.
 - **v2.9.65:** Verified all analytics display real user data - production-ready with proper empty states for first-time users.
@@ -151,11 +152,11 @@ Key features:
 
 Download Road to YDS and keep your preparation on track all the way to exam day.
 
-### Play Store What's New (v2.9.66)
+### Play Store What's New (v2.9.70)
 
-- Resource Library now shares the same gradient top bar as Home, keeping navigation consistent across the app.
-- Cleaned up the in-app WebView dialog with auto-mirrored icons plus Material 3 dividers to remove warnings and support RTL users.
-- General polish sweep on the Resource Library card and dialog to make resources easier to scan.
+- Weekly schedule day names are now fully localized using string resources.
+- YDS fallback schedule now covers 2027-2028 with a stale-data warning if refresh fails.
+- Dependency vulnerability scanning runs by default; FCM analytics prefs are stored encrypted and Koin logs stay quiet in release.
 
 ## License
 

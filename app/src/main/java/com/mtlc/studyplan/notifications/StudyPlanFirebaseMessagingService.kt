@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import androidx.annotation.VisibleForTesting
 import com.google.firebase.messaging.RemoteMessage
+import com.mtlc.studyplan.utils.SecurityUtils
 import org.koin.core.context.GlobalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,11 +98,11 @@ class StudyPlanFirebaseMessagingService : FirebaseMessagingService() {
             )
 
             // Store analytics data
-            val prefs = getSharedPreferences("fcm_analytics", MODE_PRIVATE)
-            prefs.edit()
-                .putLong("last_message_received", System.currentTimeMillis())
-                .putString("last_message_type", message.type.name)
-                .apply()
+            val prefs = SecurityUtils.getEncryptedSharedPreferences(this@StudyPlanFirebaseMessagingService)
+            prefs.edit().apply {
+                putLong("last_message_received", System.currentTimeMillis())
+                putString("last_message_type", message.type.name)
+            }.apply()
 
         } catch (e: SecurityException) {
             Log.e(TAG, "Security violation when tracking message reception", e)
@@ -122,11 +123,11 @@ class StudyPlanFirebaseMessagingService : FirebaseMessagingService() {
                 "timestamp" to System.currentTimeMillis()
             )
 
-            val prefs = getSharedPreferences("fcm_analytics", MODE_PRIVATE)
-            prefs.edit()
-                .putLong("last_message_failure", System.currentTimeMillis())
-                .putString("last_failure_reason", error.message)
-                .apply()
+            val prefs = SecurityUtils.getEncryptedSharedPreferences(this@StudyPlanFirebaseMessagingService)
+            prefs.edit().apply {
+                putLong("last_message_failure", System.currentTimeMillis())
+                putString("last_failure_reason", error.message)
+            }.apply()
 
         } catch (e: SecurityException) {
             Log.e(TAG, "Security violation when tracking message failure", e)

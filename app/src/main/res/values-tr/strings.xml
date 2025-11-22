@@ -777,5 +777,24 @@
     <string name="analytics_night">Gece</string>
     <string name="analytics_no_performance_data">Performans Verisi Yok</string>
     <string name="analytics_complete_tasks_trends">Performans trendlerinizi görmek için görevleri tamamlayın</string>
+    <string name="exam_status_stale">Sınav takvimi güncel değil. En son tarihleri yüklemek için yenileyin.</string>
+    <string name="exam_status_none">Yaklaşan sınav bulunmuyor</string>
+    <!-- Task List Screen -->
+    <string name="tasks_list_completed">Tamamlananlar</string>
+    <string name="tasks_list_pending">Bekleyenler</string>
+    <string name="tasks_list_title">%1$s Gorevler (%2$d)</string>
+    <string name="tasks_list_page">Sayfa %1$d</string>
+    <string name="tasks_list_page_info">%1$d / %2$d</string>
+    <string name="tasks_list_no_completed">Tamamlanan gorev bulunamadi</string>
+    <string name="tasks_list_no_pending">Bekleyen gorev bulunamadi</string>
+    <string name="tasks_list_minutes_format">%1$ddk</string>
+    <string name="tasks_list_points_format">%1$dp</string>
+    <!-- Resource Library -->
+    <string name="resource_library_subtitle">Videolar, Podcastler ve Calisma Materyalleri</string>
+    <string name="resource_library_view_all">Kaynaklari Goruntule</string>
+    <string name="resource_type_video">Video</string>
+    <string name="resource_type_podcast">Podcast</string>
+    <string name="resource_type_article">Makale</string>
+    <string name="resource_type_official_guide">Resmi Kilavuz</string>
 </resources>
 

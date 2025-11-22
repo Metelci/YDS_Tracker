@@ -1,3 +1,17 @@
+## [2.9.71] - 2025-11-21 (hotfix)
+
+### Localization & UX
+- Weekly schedules now localize day names via string resources; stale exam data surfaces a localized warning instead of hardcoded English.
+- Added Turkish coverage for task list and resource library strings; English resources mirror the base set to avoid missing translations.
+
+### Exams & Resilience
+- Extended YDS static fallback sessions through 2028 and added stale-data detection to prompt refresh when OSYM scraping fails.
+
+### Security & Build
+- FCM analytics prefs now use encrypted storage; Koin logging is silenced in release.
+- Dependency-Check runs by default; lint passes cleanly with updated locale coverage.
+- Bumped Android `versionCode` to 100 / `versionName` to 2.9.71.
+
 ## [2.9.70] - 2025-11-20 (hotfix)
 
 ### Home Page

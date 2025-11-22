@@ -186,7 +186,7 @@ private fun buildWeekSummary(
     context: Context
 ): WeekSummary {
     val daySummaries = week.days.mapIndexed { dayIndex, day ->
-        val localizedName = PlanTaskLocalizer.localizeDayName(day.day, context)
+        val localizedName = PlanTaskLocalizer.localizeDayName(day, context, dayIndex + 1)
         val total = day.tasks.size
         val completed = day.tasks.count { completedTaskIds.contains(it.id) }
         val primaryTask = day.tasks.firstOrNull()

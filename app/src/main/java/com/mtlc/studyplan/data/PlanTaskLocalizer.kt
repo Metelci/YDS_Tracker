@@ -3,6 +3,7 @@ package com.mtlc.studyplan.data
 import android.content.Context
 import com.mtlc.studyplan.R
 import java.text.Normalizer
+import java.time.DayOfWeek
 import java.util.Locale
 
 /**
@@ -35,10 +36,13 @@ object PlanTaskLocalizer {
         "pazartesi" to R.string.monday,
         "monday" to R.string.monday,
         "sali" to R.string.tuesday,
+        "salı" to R.string.tuesday,
         "tuesday" to R.string.tuesday,
         "carsamba" to R.string.wednesday,
+        "çarşamba" to R.string.wednesday,
         "wednesday" to R.string.wednesday,
         "persembe" to R.string.thursday,
+        "perşembe" to R.string.thursday,
         "thursday" to R.string.thursday,
         "cuma" to R.string.friday,
         "friday" to R.string.friday,
@@ -109,6 +113,26 @@ object PlanTaskLocalizer {
     }
 
     fun dayIndex(raw: String): Int = dayIndexMap[normalizedKey(raw)] ?: 0
+
+    fun localizeDayName(dayPlan: DayPlan, context: Context, dayNumber: Int? = null): String {
+        // Prefer structured day-of-week when available
+        val dayOfWeek = dayPlan.dayOfWeek ?: dayNumber?.takeIf { it in 1..7 }?.let { DayOfWeek.of(it) }
+        if (dayOfWeek != null) {
+            val resId = when (dayOfWeek) {
+                DayOfWeek.MONDAY -> R.string.monday
+                DayOfWeek.TUESDAY -> R.string.tuesday
+                DayOfWeek.WEDNESDAY -> R.string.wednesday
+                DayOfWeek.THURSDAY -> R.string.thursday
+                DayOfWeek.FRIDAY -> R.string.friday
+                DayOfWeek.SATURDAY -> R.string.saturday
+                DayOfWeek.SUNDAY -> R.string.sunday
+            }
+            return context.getString(resId)
+        }
+
+        // Fallback to legacy string matching
+        return localizeDayName(dayPlan.day, context)
+    }
 
     fun localizeDayName(raw: String, context: Context): String {
         val resId = dayNameResMap[normalizedKey(raw)] ?: return raw

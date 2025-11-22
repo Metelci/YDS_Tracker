@@ -9,6 +9,8 @@ import com.mtlc.studyplan.data.YdsExamService
 import com.mtlc.studyplan.repository.ExamRepository
 import com.mtlc.studyplan.services.NotificationSchedulerService
 import com.mtlc.studyplan.workers.ExamSyncWorker
+import com.mtlc.studyplan.BuildConfig
+import com.mtlc.studyplan.utils.ApplicationContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,11 +39,13 @@ class StudyPlanApplication : Application(), Configuration.Provider, ComponentCal
     override fun onCreate() {
         super.onCreate()
 
+        ApplicationContextProvider.init(this)
+
         // Initialize Koin with all modules to maintain compatibility
         // Check if Koin is already started (for tests)
         if (GlobalContext.getOrNull() == null) {
         startKoin {
-            androidLogger(Level.INFO)
+            androidLogger(if (BuildConfig.DEBUG) Level.INFO else Level.NONE)
             androidContext(this@StudyPlanApplication)
             modules(
                 koinAppModule,

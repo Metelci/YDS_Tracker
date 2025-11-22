@@ -139,3 +139,10 @@ Unlike generic study apps, StudyPlan is specifically designed for Turkish studen
 - **Promo Text**: 124 characters (optimal: 170 max)
 - **Keywords**: 10 primary keywords strategically placed
 - **Conversion Focus**: Benefit-driven language emphasizing results
+
+## What's New (v2.9.70)
+- Weekly schedule day names now use localized string resources (no more hardcoded Turkish labels).
+- YDS fallback sessions extended through 2028 with a stale-data warning if OSYM refresh fails.
+- Dependency-Check runs by default; FCM analytics prefs are encrypted and Koin logs stay quiet in release builds.
+
+

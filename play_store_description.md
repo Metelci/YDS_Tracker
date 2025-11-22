@@ -39,13 +39,17 @@ Unlike generic study apps, StudyPlan is specifically designed for Turkish studen
 • **Review Screen**: Detailed performance analysis with wrong answer reviews and retry options
 • **Analytics Screen**: Comprehensive progress tracking with AI insights and personalized recommendations
 • **Settings Hub**: Unified controls for notifications, gamification, privacy, and accessibility
-
 **Perfect for:**
-• University students preparing for YDS/YÖKDİL certification
-• Graduate school applicants needing English proficiency scores
-• Self-learners pursuing advanced English proficiency
-• Students requiring structured, long-term language preparation
+ University students preparing for YDS/Y�KDIL certification
+ Graduate school applicants needing English proficiency scores
+ Self-learners pursuing advanced English proficiency
+ Students requiring structured, long-term language preparation
 
-**Transform your exam preparation with StudyPlan - where proven methodology meets modern technology. Download now and start your journey to YDS/YÖKDİL success!**
+**Transform your exam preparation with StudyPlan - where proven methodology meets modern technology. Download now and start your journey to YDS/Y�KDIL success!**
 
-*Keywords: YDS preparation, YÖKDİL study, English exam prep, Turkish exam study, language proficiency, study planner, exam countdown, offline study, secure learning, analytics dashboard*
+*Keywords: YDS preparation, Y�KDIL study, English exam prep, Turkish exam study, language proficiency, study planner, exam countdown, offline study, secure learning, analytics dashboard*
+
+**What's New (v2.9.70)**
+ Weekly schedule day names now use localized string resources (no more hardcoded Turkish labels).
+ YDS fallback sessions extended through 2028 with a stale-data warning if OSYM refresh fails.
+ Dependency-Check runs by default; FCM analytics prefs are encrypted and Koin logs stay quiet in release builds.

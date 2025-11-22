@@ -1395,7 +1395,7 @@ private fun WeeklyDayCard(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val localizedDayName = PlanTaskLocalizer.localizeDayName(day.day, context)
+    val localizedDayName = PlanTaskLocalizer.localizeDayName(day, context, dayNumber)
 
     val todayGradient = Brush.linearGradient(
         colors = listOf(
@@ -2044,7 +2044,7 @@ private fun DayScheduleList(
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     val dateLabel = dayDate.format(fmt)
-                    val localizedDayName = PlanTaskLocalizer.localizeDayName(day.day, context)
+                    val localizedDayName = PlanTaskLocalizer.localizeDayName(day, context, idx + 1)
                     val dayLabel = if (isToday) {
                         stringResource(R.string.tasks_plan_day_label_today, localizedDayName, dateLabel)
                     } else {
@@ -2757,8 +2757,9 @@ private fun createDailyStudyInfo(
     context: Context,
     completedTaskIds: Set<String>
 ): DailyStudyInfo {
-    val dayIndex = PlanTaskLocalizer.dayIndex(dayPlan.day)
-    val localizedDayName = PlanTaskLocalizer.localizeDayName(dayPlan.day, context)
+    val dayNumber = dayPlan.dayOfWeek?.value
+        ?: PlanTaskLocalizer.dayIndex(dayPlan.day).let { index -> if (index in 0..6) index + 1 else null }
+    val localizedDayName = PlanTaskLocalizer.localizeDayName(dayPlan, context, dayNumber)
 
     val book = when (currentWeek) {
         in 1..8 -> StudyBook.RED_BOOK      // Weeks 1-8: Red Book Foundation
@@ -2827,7 +2828,9 @@ private fun createDailyStudyInfo(
 
     val weekTitle = context.getString(R.string.tasks_week_nav_label, currentWeek)
     val weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY)
-    val dateLabel = weekStart.plusDays(dayIndex.toLong()).format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault()))
+    val dateLabel = weekStart
+        .plusDays(((dayNumber ?: 1) - 1).toLong())
+        .format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault()))
 
     return DailyStudyInfo(
         weekTitle = weekTitle,

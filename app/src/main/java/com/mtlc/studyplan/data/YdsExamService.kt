@@ -1,9 +1,11 @@
 package com.mtlc.studyplan.data
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.mtlc.studyplan.R
 import com.mtlc.studyplan.database.entity.ExamEntity
 import com.mtlc.studyplan.repository.ExamRepository
 import com.mtlc.studyplan.utils.Constants
+import com.mtlc.studyplan.utils.ApplicationContextProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -23,11 +25,88 @@ import java.util.Locale
  */
 class YdsExamService(
     private val examRepository: ExamRepository? = null,
+    private val staticSessions: List<YdsExamSession> = DEFAULT_STATIC_SESSIONS,
+    private val nowProvider: () -> LocalDate = { LocalDate.now() }
 ) {
 
     companion object {
         // Singleton instance for backward compatibility
         private var instance: YdsExamService? = null
+        internal val DEFAULT_STATIC_SESSIONS = listOf(
+            YdsExamSession(
+                name = "YDS 2025/1 (Ingilizce)",
+                examDate = LocalDate.of(2025, 7, 5),
+                registrationStart = LocalDate.of(2025, 5, 20),
+                registrationEnd = LocalDate.of(2025, 5, 26),
+                lateRegistrationEnd = LocalDate.of(2025, 5, 30),
+                resultDate = LocalDate.of(2025, 7, 29)
+            ),
+            YdsExamSession(
+                name = "YDS 2025/2",
+                examDate = LocalDate.of(2025, 11, 16),
+                registrationStart = LocalDate.of(2025, 9, 30),
+                registrationEnd = LocalDate.of(2025, 10, 8),
+                lateRegistrationEnd = LocalDate.of(2025, 10, 15),
+                resultDate = LocalDate.of(2025, 12, 5)
+            ),
+            YdsExamSession(
+                name = "YDS 2026/1",
+                examDate = LocalDate.of(2026, 3, 15),
+                registrationStart = LocalDate.of(2026, 1, 20),
+                registrationEnd = LocalDate.of(2026, 1, 28),
+                lateRegistrationEnd = LocalDate.of(2026, 2, 4),
+                resultDate = LocalDate.of(2026, 4, 3)
+            ),
+            YdsExamSession(
+                name = "YDS 2026/2",
+                examDate = LocalDate.of(2026, 7, 5),
+                registrationStart = LocalDate.of(2026, 5, 18),
+                registrationEnd = LocalDate.of(2026, 5, 26),
+                lateRegistrationEnd = LocalDate.of(2026, 6, 2),
+                resultDate = LocalDate.of(2026, 7, 28)
+            ),
+            YdsExamSession(
+                name = "YDS 2026/3",
+                examDate = LocalDate.of(2026, 11, 15),
+                registrationStart = LocalDate.of(2026, 9, 28),
+                registrationEnd = LocalDate.of(2026, 10, 6),
+                lateRegistrationEnd = LocalDate.of(2026, 10, 13),
+                resultDate = LocalDate.of(2026, 12, 4)
+            ),
+            // Future-proofed sessions to avoid stale UI after 2026
+            YdsExamSession(
+                name = "YDS 2027/1",
+                examDate = LocalDate.of(2027, 3, 14),
+                registrationStart = LocalDate.of(2027, 1, 18),
+                registrationEnd = LocalDate.of(2027, 1, 26),
+                lateRegistrationEnd = LocalDate.of(2027, 2, 2),
+                resultDate = LocalDate.of(2027, 4, 2)
+            ),
+            YdsExamSession(
+                name = "YDS 2027/2",
+                examDate = LocalDate.of(2027, 7, 4),
+                registrationStart = LocalDate.of(2027, 5, 17),
+                registrationEnd = LocalDate.of(2027, 5, 25),
+                lateRegistrationEnd = LocalDate.of(2027, 6, 1),
+                resultDate = LocalDate.of(2027, 7, 27)
+            ),
+            YdsExamSession(
+                name = "YDS 2027/3",
+                examDate = LocalDate.of(2027, 11, 14),
+                registrationStart = LocalDate.of(2027, 9, 27),
+                registrationEnd = LocalDate.of(2027, 10, 5),
+                lateRegistrationEnd = LocalDate.of(2027, 10, 12),
+                resultDate = LocalDate.of(2027, 12, 3)
+            ),
+            YdsExamSession(
+                name = "YDS 2028/1",
+                examDate = LocalDate.of(2028, 3, 19),
+                registrationStart = LocalDate.of(2028, 1, 24),
+                registrationEnd = LocalDate.of(2028, 2, 1),
+                lateRegistrationEnd = LocalDate.of(2028, 2, 8),
+                resultDate = LocalDate.of(2028, 4, 7)
+            )
+        )
 
         /**
          * Initialize the service with ExamRepository
@@ -63,49 +142,6 @@ class YdsExamService(
         val lateRegistrationEnd: LocalDate,
         val resultDate: LocalDate,
         val applicationUrl: String = Constants.OSYM_URL
-    )
-
-    private val staticSessions = listOf(
-        YdsExamSession(
-            name = "YDS 2025/1 (Ingilizce)",
-            examDate = LocalDate.of(2025, 7, 5),
-            registrationStart = LocalDate.of(2025, 5, 20),
-            registrationEnd = LocalDate.of(2025, 5, 26),
-            lateRegistrationEnd = LocalDate.of(2025, 5, 30),
-            resultDate = LocalDate.of(2025, 7, 29)
-        ),
-        YdsExamSession(
-            name = "YDS 2025/2",
-            examDate = LocalDate.of(2025, 11, 16),
-            registrationStart = LocalDate.of(2025, 9, 30),
-            registrationEnd = LocalDate.of(2025, 10, 8),
-            lateRegistrationEnd = LocalDate.of(2025, 10, 15),
-            resultDate = LocalDate.of(2025, 12, 5)
-        ),
-        YdsExamSession(
-            name = "YDS 2026/1",
-            examDate = LocalDate.of(2026, 3, 15),
-            registrationStart = LocalDate.of(2026, 1, 20),
-            registrationEnd = LocalDate.of(2026, 1, 28),
-            lateRegistrationEnd = LocalDate.of(2026, 2, 4),
-            resultDate = LocalDate.of(2026, 4, 3)
-        ),
-        YdsExamSession(
-            name = "YDS 2026/2",
-            examDate = LocalDate.of(2026, 7, 5),
-            registrationStart = LocalDate.of(2026, 5, 18),
-            registrationEnd = LocalDate.of(2026, 5, 26),
-            lateRegistrationEnd = LocalDate.of(2026, 6, 2),
-            resultDate = LocalDate.of(2026, 7, 28)
-        ),
-        YdsExamSession(
-            name = "YDS 2026/3",
-            examDate = LocalDate.of(2026, 11, 15),
-            registrationStart = LocalDate.of(2026, 9, 28),
-            registrationEnd = LocalDate.of(2026, 10, 6),
-            lateRegistrationEnd = LocalDate.of(2026, 10, 13),
-            resultDate = LocalDate.of(2026, 12, 4)
-        )
     )
 
     /**
@@ -150,7 +186,7 @@ class YdsExamService(
         }
 
         // Fallback to static sessions
-        val today = LocalDate.now()
+        val today = nowProvider()
         return staticSessions
             .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
             .sortedBy { it.examDate }
@@ -165,13 +201,13 @@ class YdsExamService(
 
     fun getDaysToNextExamSync(): Int {
         val nextExam = getNextExamSync() ?: return -1
-        val today = LocalDate.now()
+        val today = nowProvider()
         return ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
     }
 
     fun getRegistrationStatusSync(): RegistrationStatus {
         val nextExam = getNextExamSync() ?: return RegistrationStatus.NO_UPCOMING_EXAM
-        val today = LocalDate.now()
+        val today = nowProvider()
         return when {
             today.isBefore(nextExam.registrationStart) -> RegistrationStatus.NOT_OPEN_YET
             today.isAfter(nextExam.lateRegistrationEnd) -> RegistrationStatus.CLOSED
@@ -196,7 +232,13 @@ class YdsExamService(
     fun getStatusMessageSync(): String {
         val nextExam = getNextExamSync()
         if (nextExam == null) {
-            return "No upcoming exam scheduled"
+            return ApplicationContextProvider.getString(
+                if (isDataStale()) R.string.exam_status_stale else R.string.exam_status_none
+            ) ?: if (isDataStale()) {
+                "Exam schedule is out of date. Refresh to load the latest dates."
+            } else {
+                "No upcoming exam scheduled"
+            }
         }
 
         val daysToExam = getDaysToNextExamSync()
@@ -216,6 +258,13 @@ class YdsExamService(
             }
             else -> "Long-term planning"
         }
+    }
+
+    fun isDataStale(): Boolean {
+        val today = nowProvider()
+        if (upcomingSessions().isNotEmpty()) return false
+        val latestKnownExam = staticSessions.maxByOrNull { it.examDate }?.examDate ?: LocalDate.MIN
+        return latestKnownExam.isBefore(today)
     }
 
     enum class RegistrationStatus {

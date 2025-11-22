@@ -27,8 +27,8 @@ android {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
         targetSdk = 35
-        versionCode = 99
-        versionName = "2.9.70"
+        versionCode = 100
+        versionName = "2.9.71"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -360,6 +360,8 @@ dependencyCheck {
     format = "HTML"
 }
 
+val dependencyCheckEnabled = (project.findProperty("dependencyCheckEnabled") as? String)?.toBoolean() ?: true
+
 tasks.matching { it.name.startsWith("dependencyCheck") }.configureEach {
-    onlyIf { project.hasProperty("dependencyCheckEnabled") }
+    onlyIf { dependencyCheckEnabled }
 }

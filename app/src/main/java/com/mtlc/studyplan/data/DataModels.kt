@@ -2,9 +2,14 @@
 package com.mtlc.studyplan.data
 
 import kotlinx.serialization.Serializable
+import java.time.DayOfWeek
 
 data class PlanTask(val id: String, val desc: String, val details: String? = null)
-data class DayPlan(val day: String, val tasks: List<PlanTask>)
+data class DayPlan(
+    val day: String,
+    val tasks: List<PlanTask>,
+    val dayOfWeek: DayOfWeek? = null // Optional to avoid breaking existing serialized data
+)
 data class WeekPlan(val week: Int, val month: Int, val title: String, val days: List<DayPlan>)
 data class DayProgress(
     val weekIndex: Int,
