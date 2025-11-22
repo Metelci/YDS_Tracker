@@ -7,6 +7,8 @@ import com.mtlc.studyplan.repository.ExamRepository
 import com.mtlc.studyplan.utils.Constants
 import com.mtlc.studyplan.utils.ApplicationContextProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -15,6 +17,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import android.util.Log
 
 /**
  * YDS Exam Service - Now powered by ÖSYM web scraping with fallback to static data
@@ -28,6 +31,18 @@ class YdsExamService(
     private val staticSessions: List<YdsExamSession> = DEFAULT_STATIC_SESSIONS,
     private val nowProvider: () -> LocalDate = { LocalDate.now() }
 ) {
+
+    data class ExamTelemetry(
+        val lastSource: ExamDataSource = ExamDataSource.STATIC_FALLBACK,
+        val lastUpdatedAt: Long = System.currentTimeMillis(),
+        val fallbackUsed: Boolean = true,
+        val lastError: String? = null
+    )
+
+    enum class ExamDataSource { STATIC_FALLBACK, REPOSITORY }
+
+    private val _telemetry = MutableStateFlow(ExamTelemetry())
+    val telemetry: StateFlow<ExamTelemetry> = _telemetry
 
     companion object {
         // Singleton instance for backward compatibility
@@ -132,6 +147,9 @@ class YdsExamService(
         fun getRegistrationStatus(): RegistrationStatus = getInstance().getRegistrationStatusSync()
         fun getFormattedExamDate(): String = getInstance().getFormattedExamDateSync()
         fun getStatusMessage(): String = getInstance().getStatusMessageSync()
+        fun getTelemetry(): StateFlow<ExamTelemetry> = getInstance().telemetry
+        fun refreshExams(): Boolean = getInstance().refreshFromRepository()
+        fun isDataStale(): Boolean = getInstance().isDataStale()
     }
 
     data class YdsExamSession(
@@ -178,15 +196,32 @@ class YdsExamService(
                         ?.mapNotNull { it.toYdsExamSession() }
                 }
                 if (!repoExams.isNullOrEmpty()) {
+                    _telemetry.value = ExamTelemetry(
+                        lastSource = ExamDataSource.REPOSITORY,
+                        lastUpdatedAt = System.currentTimeMillis(),
+                        fallbackUsed = false,
+                        lastError = null
+                    )
                     return repoExams
                 }
             } catch (e: Exception) {
-                // Fall through to static data
+                Log.w("YdsExamService", "OSYM scrape failed, using static fallback: ${e.message}")
+                _telemetry.value = ExamTelemetry(
+                    lastSource = ExamDataSource.STATIC_FALLBACK,
+                    lastUpdatedAt = System.currentTimeMillis(),
+                    fallbackUsed = true,
+                    lastError = e.message
+                )
             }
         }
 
         // Fallback to static sessions
         val today = nowProvider()
+        _telemetry.value = _telemetry.value.copy(
+            lastSource = ExamDataSource.STATIC_FALLBACK,
+            lastUpdatedAt = System.currentTimeMillis(),
+            fallbackUsed = true
+        )
         return staticSessions
             .filter { it.examDate.isAfter(today) || it.examDate.isEqual(today) }
             .sortedBy { it.examDate }
@@ -265,6 +300,30 @@ class YdsExamService(
         if (upcomingSessions().isNotEmpty()) return false
         val latestKnownExam = staticSessions.maxByOrNull { it.examDate }?.examDate ?: LocalDate.MIN
         return latestKnownExam.isBefore(today)
+    }
+
+    fun refreshFromRepository(): Boolean {
+        if (examRepository == null) return false
+        return try {
+            val result = runBlocking { examRepository.syncExamsFromOsym() }
+            val success = result.isSuccess
+            _telemetry.value = ExamTelemetry(
+                lastSource = if (success) ExamDataSource.REPOSITORY else ExamDataSource.STATIC_FALLBACK,
+                lastUpdatedAt = System.currentTimeMillis(),
+                fallbackUsed = !success,
+                lastError = result.exceptionOrNull()?.message
+            )
+            success
+        } catch (e: Exception) {
+            Log.e("YdsExamService", "Manual exam refresh failed", e)
+            _telemetry.value = ExamTelemetry(
+                lastSource = ExamDataSource.STATIC_FALLBACK,
+                lastUpdatedAt = System.currentTimeMillis(),
+                fallbackUsed = true,
+                lastError = e.message
+            )
+            false
+        }
     }
 
     enum class RegistrationStatus {

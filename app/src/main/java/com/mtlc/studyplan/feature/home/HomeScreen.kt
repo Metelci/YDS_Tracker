@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ fun HomeScreen() {
     val progressRepo = remember { com.mtlc.studyplan.repository.progressRepository }
     val examCountdownManager: ExamCountdownManager = koinInject()
     val examData by examCountdownManager.examData.collectAsState()
+    val telemetry by YdsExamService.getTelemetry().collectAsState()
 
     LaunchedEffect(examCountdownManager) {
         examCountdownManager.refreshNow()
@@ -144,7 +146,7 @@ fun HomeScreen() {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = stringResource(R.string.tasks_completed, completedTasks, plannedTasks),
+                            text = pluralStringResource(R.plurals.tasks_completed, completedTasks, completedTasks, plannedTasks),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         if (studyMinutes > 0) {
@@ -189,8 +191,8 @@ fun HomeScreen() {
                 }
             }
             item {
-                // Real exam countdown using YdsExamService
                 val nextExam = YdsExamService.getNextExam()
+                val dataStale = YdsExamService.isDataStale()
                 if (nextExam != null) {
                     val rawDaysToExam = ChronoUnit.DAYS.between(today, nextExam.examDate).toInt()
                     val registrationStatus = YdsExamService.getRegistrationStatus()
@@ -231,6 +233,32 @@ fun HomeScreen() {
                                 stringResource(R.string.home_exam_card_title, nextExam.name),
                                 style = MaterialTheme.typography.titleSmall
                             )
+                            if (dataStale || telemetry.fallbackUsed) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
+                                ) {
+                                    Text(
+                                        stringResource(R.string.home_exam_card_stale),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                    TextButton(
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                val refreshed = YdsExamService.refreshExams()
+                                                examCountdownManager.forceRefresh()
+                                                if (!refreshed) {
+                                                    // soft failure: keep UI alive
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Text(stringResource(R.string.home_exam_card_refresh))
+                                    }
+                                }
+                            }
                             Text(
                                 stringResource(R.string.home_exam_card_date, formattedExamDate),
                                 style = MaterialTheme.typography.bodySmall

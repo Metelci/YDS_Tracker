@@ -32,7 +32,7 @@
         <item quantity="other">%1$d / %2$d tasks completed</item>
     </plurals>
     <!-- Back-compat: code may still reference string versions -->
-    <string name="tasks_completed">%1$d / %2$d tasks completed</string>
+    <string name="tasks_completed_format">%1$d / %2$d tasks completed</string>
     <string name="new_achievement">New Achievement: %s</string>
 
     <string name="application_reminder_title">Exam Application Reminder</string>
@@ -266,7 +266,7 @@
         <item quantity="other">%d days</item>
     </plurals>
     <!-- Back-compat: code may still reference string versions -->
-    <string name="days_unit">%d days</string>
+    <string name="days_format">%d days</string>
     <string name="percent_format">%d%%</string>
 
   <string name="units">Units</string>
@@ -880,6 +880,8 @@
     <string name="resource_type_official_guide">Official Guide</string>
     <string name="exam_status_stale">Exam schedule is out of date. Refresh to load the latest dates.</string>
     <string name="exam_status_none">No upcoming exam scheduled</string>
+    <string name="home_exam_card_stale">Data may be outdated</string>
+    <string name="home_exam_card_refresh">Refresh exam dates</string>
 </resources>
 
 

@@ -878,6 +878,8 @@
     <string name="resource_type_podcast">Podcast</string>
     <string name="resource_type_article">Article</string>
     <string name="resource_type_official_guide">Official Guide</string>
+    <string name="home_exam_card_stale">Data may be outdated</string>
+    <string name="home_exam_card_refresh">Refresh exam dates</string>
     <string name="exam_status_stale">Exam schedule is out of date. Refresh to load the latest dates.</string>
     <string name="exam_status_none">No upcoming exam scheduled</string>
 </resources>
