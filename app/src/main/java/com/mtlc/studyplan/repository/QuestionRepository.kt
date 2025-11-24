@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.repository
 
 import com.mtlc.studyplan.database.StudyPlanDatabase

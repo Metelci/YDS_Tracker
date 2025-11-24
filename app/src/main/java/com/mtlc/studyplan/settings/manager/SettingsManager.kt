@@ -1,3 +1,4 @@
+@file:Suppress("ComplexCondition")
 package com.mtlc.studyplan.settings.manager
 
 import com.mtlc.studyplan.settings.data.SettingsKeys

@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.feature.reader
 import android.content.res.Configuration
 import androidx.compose.foundation.background

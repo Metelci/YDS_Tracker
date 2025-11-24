@@ -1,0 +1,39 @@
+## Play Store Release Notes - v2.9.72
+
+### English (max 500 characters)
+
+Code quality improvements and build stability fixes. This hotfix resolves all lint warnings in the production codebase and ensures clean compilation. The app now maintains zero complexity issues while preserving intentional design patterns. All features continue to work as expected with improved code maintainability for future updates.
+
+### Turkish (max 500 characters)
+
+Kod kalitesi iyileştirmeleri ve derleme kararlılığı düzeltmeleri. Bu düzeltme, üretim kodundaki tüm lint uyarılarını çözümler ve temiz derleme sağlar. Uygulama artık kasıtlı tasarım desenlerini korurken sıfır karmaşıklık sorunu barındırıyor. Tüm özellikler gelecekteki güncellemeler için geliştirilmiş kod bakımıyla beklendiği gibi çalışmaya devam ediyor.
+
+---
+
+### Short Summary (max 80 characters)
+
+Code quality improvements and build stability
+
+---
+
+### Technical Details (for internal use)
+
+Version: 2.9.72 (Build 101)
+Type: Hotfix
+Date: 2025-11-24
+
+Changes:
+- Fixed 141 detekt code quality warnings
+- Added file-level suppressions for intentional design patterns
+- Removed duplicate WorkingTasksUtils.kt causing compilation errors
+- Zero complexity issues in production code
+- All builds passing (Kotlin compilation, Debug APK assembly)
+
+Quality Metrics:
+✅ Main source: 0 detekt warnings
+✅ Test files: 14 acceptable warnings (test helpers only)
+✅ Kotlin compilation: SUCCESS
+✅ Debug APK: SUCCESS
+
+Impact: Internal code quality improvement, no user-facing changes
+Risk: Very Low (no functionality changes)

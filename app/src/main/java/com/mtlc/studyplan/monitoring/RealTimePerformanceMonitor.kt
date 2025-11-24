@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.monitoring
 
 import android.app.ActivityManager

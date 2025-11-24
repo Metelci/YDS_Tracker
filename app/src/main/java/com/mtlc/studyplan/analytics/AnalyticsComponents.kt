@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "CyclomaticComplexMethod")
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.analytics
 

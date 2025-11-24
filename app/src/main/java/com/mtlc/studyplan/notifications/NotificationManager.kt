@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions", "LongMethod", "LongParameterList")
 package com.mtlc.studyplan.notifications
 
 import android.app.AlarmManager

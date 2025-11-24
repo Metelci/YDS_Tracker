@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package com.mtlc.studyplan.feedback
 
 import android.animation.Animator

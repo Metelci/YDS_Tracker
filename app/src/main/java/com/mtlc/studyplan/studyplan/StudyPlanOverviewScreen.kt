@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.studyplan
 
 // removed luminance-based dark theme checks

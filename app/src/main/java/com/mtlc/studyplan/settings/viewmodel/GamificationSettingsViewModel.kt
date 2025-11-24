@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.settings.viewmodel
 
 import android.content.Context

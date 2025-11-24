@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.ui.animations
 
 import androidx.compose.animation.AnimatedContentTransitionScope

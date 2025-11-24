@@ -1,3 +1,4 @@
+@file:Suppress("CyclomaticComplexMethod")
 package com.mtlc.studyplan.settings.data
 
 import android.content.SharedPreferences

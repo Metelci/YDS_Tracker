@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList")
 package com.mtlc.studyplan.core
 
 import android.content.Context

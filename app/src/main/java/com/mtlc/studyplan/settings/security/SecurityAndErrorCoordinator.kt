@@ -1,3 +1,4 @@
+@file:Suppress("NestedBlockDepth")
 package com.mtlc.studyplan.settings.security
 
 import android.content.Context

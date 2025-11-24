@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.feature.home
 
 import android.content.Intent

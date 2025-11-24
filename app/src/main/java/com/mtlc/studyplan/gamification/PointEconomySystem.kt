@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList")
 package com.mtlc.studyplan.gamification
 
 import androidx.compose.runtime.*

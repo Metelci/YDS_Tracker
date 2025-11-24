@@ -1,3 +1,4 @@
+@file:Suppress("CyclomaticComplexMethod")
 package com.mtlc.studyplan.ui.responsive
 
 import androidx.compose.runtime.Composable

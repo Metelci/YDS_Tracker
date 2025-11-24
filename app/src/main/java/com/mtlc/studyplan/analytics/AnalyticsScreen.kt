@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions", "LongMethod", "LongParameterList")
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.analytics
 

@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList")
 package com.mtlc.studyplan.gamification
 import com.mtlc.studyplan.ui.components.StudyPlanTopBar
 import com.mtlc.studyplan.ui.components.StudyPlanTopBarStyle

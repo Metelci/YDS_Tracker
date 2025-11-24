@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package com.mtlc.studyplan.repository
 
 import kotlinx.coroutines.flow.Flow

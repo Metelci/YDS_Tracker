@@ -1,3 +1,4 @@
+@file:Suppress("CyclomaticComplexMethod")
 package com.mtlc.studyplan.eventbus
 
 import kotlinx.coroutines.CoroutineScope

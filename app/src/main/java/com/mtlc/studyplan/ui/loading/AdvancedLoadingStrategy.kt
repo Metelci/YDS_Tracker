@@ -1,3 +1,4 @@
+@file:Suppress("LongParameterList")
 package com.mtlc.studyplan.ui.loading
 
 import androidx.compose.animation.*

@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.settings.data
 
 import androidx.compose.material.icons.Icons

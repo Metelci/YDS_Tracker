@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "NestedBlockDepth")
 package com.mtlc.studyplan.data
 
 import com.mtlc.studyplan.shared.SharedAppViewModel

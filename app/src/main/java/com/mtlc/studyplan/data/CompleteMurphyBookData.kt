@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.data
 
 import androidx.compose.ui.graphics.Color

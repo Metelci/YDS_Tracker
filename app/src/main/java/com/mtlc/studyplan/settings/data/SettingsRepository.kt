@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions", "LargeClass", "LongMethod", "CyclomaticComplexMethod", "NestedBlockDepth")
 package com.mtlc.studyplan.settings.data
 
 import android.content.Context

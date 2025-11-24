@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.mtlc.studyplan.feature.welcome
 

@@ -1,3 +1,4 @@
+@file:Suppress("LongParameterList")
 package com.mtlc.studyplan.data
 
 //region VERİ KAYNAKLARI

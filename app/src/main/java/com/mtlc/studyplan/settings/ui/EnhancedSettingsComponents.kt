@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.settings.ui
 
 import androidx.compose.animation.AnimatedContent

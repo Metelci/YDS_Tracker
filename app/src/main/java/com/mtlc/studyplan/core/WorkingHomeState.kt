@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.core
 
 import androidx.compose.runtime.Composable

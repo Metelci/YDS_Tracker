@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.settings.ui
 import androidx.compose.ui.graphics.Brush
 import android.annotation.SuppressLint

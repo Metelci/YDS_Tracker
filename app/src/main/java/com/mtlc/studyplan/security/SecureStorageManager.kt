@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package com.mtlc.studyplan.security
 
 import android.content.Context

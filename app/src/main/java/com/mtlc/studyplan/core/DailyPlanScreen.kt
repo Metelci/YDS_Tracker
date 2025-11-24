@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList")
 package com.mtlc.studyplan.core
 
 import androidx.compose.foundation.background

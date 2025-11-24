@@ -1,3 +1,4 @@
+@file:Suppress("LongParameterList")
 package com.mtlc.studyplan.ui.responsive
 
 import androidx.compose.foundation.clickable

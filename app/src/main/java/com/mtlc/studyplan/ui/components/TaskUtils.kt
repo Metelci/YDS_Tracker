@@ -1,3 +1,4 @@
+@file:Suppress("CyclomaticComplexMethod")
 package com.mtlc.studyplan.ui.components
 
 internal fun estimateTaskMinutes(desc: String, details: String?): Int {

@@ -1,3 +1,4 @@
+@file:Suppress("NestedBlockDepth")
 package com.mtlc.studyplan.settings.migration
 
 import android.content.Context

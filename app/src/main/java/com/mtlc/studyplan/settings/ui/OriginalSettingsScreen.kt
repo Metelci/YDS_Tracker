@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod", "LongParameterList", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.settings.ui
 import android.app.Activity
 import android.util.Log
@@ -98,6 +99,7 @@ import kotlin.math.roundToInt
 // Avoid name clash with Composable named GamificationSettings in other modules
 import com.mtlc.studyplan.settings.data.PrivacySettings
 import com.mtlc.studyplan.ui.theme.appBackgroundBrush
+import org.koin.compose.koinInject
 
 
 data class SettingsTab(
@@ -119,11 +121,8 @@ fun OriginalSettingsScreen(
     val languageManager = rememberLanguageManager(context)
     var selectedTab by remember { mutableStateOf("tasks") }
 
-    val appContext = remember(context) { context.applicationContext }
-    val userSettingsRepository = remember(appContext) {
-        val database = StudyPlanDatabase.getDatabase(appContext)
-        UserSettingsRepository(database.settingsDao())
-    }
+    val userSettingsRepository: UserSettingsRepository = koinInject()
+    val studyPlanDatabase: StudyPlanDatabase = koinInject()
     val goalSettings by userSettingsRepository.goalSettings.collectAsState(initial = UserSettingsRepository.GoalSettings.default())
     val savedWeeklyGoalHours = (goalSettings.weeklyStudyGoalMinutes / 60).coerceIn(WEEKLY_GOAL_MIN, WEEKLY_GOAL_MAX)
     var weeklyGoalSelection by rememberSaveable { mutableStateOf(savedWeeklyGoalHours) }
@@ -384,8 +383,7 @@ fun OriginalSettingsScreen(
 
                                     // Clear database if exists
                                     try {
-                                        val database = StudyPlanDatabase.getDatabase(context)
-                                        database.clearAllTables()
+                                        studyPlanDatabase.clearAllTables()
                                     } catch (e: Exception) {
                                         Log.e("SettingsReset", "Failed to clear database", e)
                                     }

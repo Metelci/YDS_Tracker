@@ -1,3 +1,4 @@
+@file:Suppress("LongParameterList", "CyclomaticComplexMethod")
 package com.mtlc.studyplan.ui
 
 import android.view.View

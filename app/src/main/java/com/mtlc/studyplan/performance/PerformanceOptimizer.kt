@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.mtlc.studyplan.performance

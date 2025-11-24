@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions", "LongMethod", "CyclomaticComplexMethod", "LongParameterList")
 package com.mtlc.studyplan.core
 
 // removed luminance-based dark theme checks

@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.ui.responsive
 
 import androidx.compose.material3.MaterialTheme

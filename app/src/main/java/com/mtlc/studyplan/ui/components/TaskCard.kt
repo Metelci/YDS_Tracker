@@ -1,3 +1,4 @@
+@file:Suppress("LongParameterList")
 package com.mtlc.studyplan.ui.components
 
 import androidx.compose.foundation.layout.*

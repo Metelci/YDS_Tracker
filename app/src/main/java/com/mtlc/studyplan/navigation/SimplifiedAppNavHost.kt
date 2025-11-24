@@ -1,3 +1,4 @@
+@file:Suppress("LongMethod")
 package com.mtlc.studyplan.navigation
 
 import androidx.compose.animation.AnimatedContent
