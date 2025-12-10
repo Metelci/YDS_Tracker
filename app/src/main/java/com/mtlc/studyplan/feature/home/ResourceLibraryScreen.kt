@@ -411,7 +411,7 @@ private fun ResourceWebViewDialog(
                             settings.loadWithOverviewMode = true
                             settings.useWideViewPort = true
                             settings.javaScriptCanOpenWindowsAutomatically = false
-                            settings.setSupportMultipleWindows(true)
+                            settings.setSupportMultipleWindows(false)
                             // Set User-Agent to appear as mobile browser for government websites
                             settings.userAgentString = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
                             runCatching { WebViewCompat.startSafeBrowsing(ctx) { /* no-op */ } }
@@ -424,21 +424,6 @@ private fun ResourceWebViewDialog(
                                     // Allow all https URLs to load in WebView
                                     if (url.startsWith("https://")) return false
                                     // Block non-https URLs
-                                    return true
-                                }
-                            }
-                            // Handle window.open() calls - load in same WebView instead of external browser
-                            webChromeClient = object : WebChromeClient() {
-                                override fun onCreateWindow(
-                                    view: WebView?,
-                                    isDialog: Boolean,
-                                    isUserGesture: Boolean,
-                                    resultMsg: android.os.Message?
-                                ): Boolean {
-                                    val transport = resultMsg?.obj as? WebView.WebViewTransport ?: return false
-                                    // Reuse the current WebView for new window requests
-                                    transport.webView = view
-                                    resultMsg.sendToTarget()
                                     return true
                                 }
                             }
