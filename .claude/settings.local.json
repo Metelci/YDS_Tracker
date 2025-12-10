@@ -10,7 +10,8 @@
       "Bash(LC_ALL=C grep:*)",
       "Bash(./gradlew clean:*)",
       "Bash(git tag:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(./gradlew assembleDebug:*)"
     ],
     "deny": [],
     "ask": []
