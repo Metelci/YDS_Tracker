@@ -21,14 +21,14 @@ plugins {
 
 android {
     namespace = "com.mtlc.studyplan"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mtlc.studyplan"
         minSdk = 30
-        targetSdk = 35
-        versionCode = 101
-        versionName = "2.9.72"
+        targetSdk = 36
+        versionCode = 102
+        versionName = "2.9.73"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
