@@ -239,6 +239,7 @@ object AccessibilityUtils {
     /**
      * Announce important changes to screen readers
      */
+    @Suppress("DEPRECATION")
     fun announceForAccessibility(view: View, message: String) {
         view.announceForAccessibility(message)
     }

@@ -238,6 +238,7 @@ class FocusIndicatorManager(private val context: Context) {
             }
         }
 
+        @Suppress("DEPRECATION")
         view.announceForAccessibility(announcement)
     }
 

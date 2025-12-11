@@ -1,3 +1,7 @@
+import com.google.devtools.ksp.gradle.KspTask
+import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
+import org.gradle.testing.jacoco.tasks.JacocoReport
+
 plugins {
     // Android application plugins
     alias(libs.plugins.android.application)
@@ -107,6 +111,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        // Keep debug symbols for JNI libs that fail to strip to avoid warnings
+        jniLibs {
+            keepDebugSymbols += listOf(
+                "**/libandroidx.graphics.path.so",
+                "**/libdatastore_shared_counter.so"
+            )
         }
     }
 
@@ -259,6 +270,15 @@ dependencies {
 ksp {
     arg("room.incremental", "true")
     arg("room.expandProjection", "true")
+}
+
+// Work around Windows file locking issues where KSP copies generated sources
+// into an existing output directory (e.g., AchievementDao_Impl.java) during
+// incremental builds by wiping the generated folder before each KSP task.
+tasks.withType<KspTask>().configureEach {
+    doFirst {
+        delete(layout.buildDirectory.dir("generated/ksp"))
+    }
 }
 
 detekt {

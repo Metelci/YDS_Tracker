@@ -75,7 +75,7 @@ class CrashReporter @Inject constructor(
                     id = UUID.randomUUID().toString(),
                     timestamp = System.currentTimeMillis(),
                     threadName = thread.name,
-                    threadId = thread.id,
+                    threadId = getThreadId(thread),
                     exceptionClass = throwable::class.java.name,
                     message = throwable.message ?: "No message",
                     stackTrace = getStackTraceString(throwable),
@@ -367,6 +367,9 @@ class CrashReporter @Inject constructor(
         )
     }
 
+    @Suppress("DEPRECATION")
+    private fun getThreadId(thread: Thread): Long = thread.id
+
     private fun getAppVersion(): String {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -384,7 +387,7 @@ class CrashReporter @Inject constructor(
         printWriter.println("=====================================")
 
         Thread.getAllStackTraces().forEach { (thread, stackTrace) ->
-            printWriter.println("Thread: ${thread.name} (id: ${thread.id}, state: ${thread.state})")
+            printWriter.println("Thread: ${thread.name} (id: ${getThreadId(thread)}, state: ${thread.state})")
             printWriter.println("Stack Trace:")
             stackTrace.forEach { element ->
                 printWriter.println("  $element")

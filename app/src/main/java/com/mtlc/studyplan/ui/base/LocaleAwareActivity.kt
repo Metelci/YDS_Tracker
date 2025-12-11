@@ -20,7 +20,7 @@ abstract class LocaleAwareActivity : ComponentActivity() {
 
             val locale = when (savedLanguage) {
                 Language.ENGLISH -> Locale.ENGLISH
-                Language.TURKISH -> Locale("tr", "TR")
+                Language.TURKISH -> Locale.Builder().setLanguage("tr").setRegion("TR").build()
             }
 
             Locale.setDefault(locale)
