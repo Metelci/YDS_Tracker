@@ -1,5 +1,12 @@
 # Road to YDS – StudyPlan
 
+[![Version](https://img.shields.io/badge/version-2.9.74-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
+[![API](https://img.shields.io/badge/API-30%2B-brightgreen.svg)](https://android-arsenal.com/api?level=30)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org)
+[![Compose](https://img.shields.io/badge/Jetpack%20Compose-2024.09.02-blue.svg)](https://developer.android.com/jetpack/compose)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](LICENSE)
+
 Road to YDS is a modern Android app that guides learners through a 30-week preparation journey for the YDS and YÖKDİL English exams. It combines a curated curriculum, live exam tracking, and progress analytics to keep students on schedule from day one until exam day.
 
 ## Overview
@@ -40,8 +47,10 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Biometric authentication (fingerprint/face) and PIN fallback.
 - Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-## Recent Highlights (v2.9.52 - v2.9.70)
+## Recent Highlights (v2.9.52 - v2.9.74)
 
+- **v2.9.74:** Major architecture refactoring - extracted scheduling logic into pure Kotlin `StudyPlanScheduler` with 30+ unit tests, removed Android Context dependencies, added `MonitoringViewModel` for cleaner state management.
+- **v2.9.74:** Code cleanup - removed 306 lines of custom `RenderOptimizer` code, now relies on standard Compose best practices for better maintainability.
 - **v2.9.70:** Weekly schedule day names now respect your device language (no more hardcoded Turkish labels), and the exam countdown shows a stale-data warning if OSYM dates can't be refreshed.
 - **v2.9.70:** Added 2027-2028 YDS fallback sessions, enabled OWASP Dependency-Check by default, encrypted FCM analytics prefs, and muted Koin logs for release builds.
 - **v2.9.66:** Resource Library screen now uses the shared StudyPlan top bar with matching gradient capsule, so it feels identical to the Home, Tasks, and Overview headers.
