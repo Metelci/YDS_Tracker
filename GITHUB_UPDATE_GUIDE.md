@@ -50,33 +50,12 @@ Public count
 
 ## How to Update on GitHub
 
-### Method 1: Via GitHub Web Interface
+### Via GitHub Web Interface
 1. Go to https://github.com/Metelci/YDS_Tracker
 2. Click the ⚙️ gear icon next to "About" (top right of page)
 3. Update the description field with the new text
 4. Add topics by typing them in the "Topics" field
 5. Click "Save changes"
-
-### Method 2: Via GitHub CLI (if installed)
-```bash
-# Update description
-gh repo edit Metelci/YDS_Tracker --description "Modern Android app for YDS & YÖKDİL exam preparation with 30-week structured curriculum, AI-powered analytics, live exam tracking, and gamified progress system. Built with Jetpack Compose & Material 3."
-
-# Add topics
-gh repo edit Metelci/YDS_Tracker --add-topic android,kotlin,jetpack-compose,material-design,yds,yokdil,exam-preparation,study-planner,education,mvvm,room-database,koin,material3,android-app,study-tracker
-```
-
-### Method 3: Via GitHub API (requires personal access token)
-```bash
-curl -X PATCH \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  https://api.github.com/repos/Metelci/YDS_Tracker \
-  -d '{
-    "description": "Modern Android app for YDS & YÖKDİL exam preparation with 30-week structured curriculum, AI-powered analytics, live exam tracking, and gamified progress system. Built with Jetpack Compose & Material 3.",
-    "topics": ["android", "kotlin", "jetpack-compose", "material-design", "yds", "yokdil", "exam-preparation", "study-planner", "education", "mvvm", "room-database", "koin", "material3", "android-app", "study-tracker"]
-  }'
-```
 
 ---
 
