@@ -28,7 +28,7 @@ val koinRepositoryModule = module {
     single { OnboardingRepository(get()) }
     single { PlanSettingsStore(get()) }
     single { PlanOverridesStore(get()) }
-    single { PlanRepository(androidContext(), get<PlanOverridesStore>(), get()) }
+    single { PlanRepository(get<PlanOverridesStore>(), get()) }
     single { OsymExamScraper() }
     single { ExamRepository(get<ExamDao>(), get<OsymExamScraper>()) }
 }

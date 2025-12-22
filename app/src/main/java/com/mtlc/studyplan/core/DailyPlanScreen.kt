@@ -70,9 +70,8 @@ fun DailyPlanScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val settingsStore = remember { PlanSettingsStore(context.settingsDataStore) }
-    val overridesStore = remember { PlanOverridesStore(context.settingsDataStore) }
-    val planRepository = remember(context) { PlanRepository(context, overridesStore, settingsStore) }
+    val planRepository: PlanRepository = koinInject()
+    val settingsStore: PlanSettingsStore = koinInject()
     val resolvedTaskRepository = taskRepository ?: koinInject()
 
     val planFlow: Flow<List<com.mtlc.studyplan.data.WeekPlan>> =

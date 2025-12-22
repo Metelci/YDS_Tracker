@@ -98,7 +98,7 @@ class PlanRepositoryTest {
         whenever(planOverridesStore.overridesFlow).thenReturn(flowOf(testOverrides))
         whenever(planSettingsStore.settingsFlow).thenReturn(flowOf(testSettings))
 
-        repository = PlanRepository(context, planOverridesStore, planSettingsStore)
+        repository = PlanRepository(planOverridesStore, planSettingsStore)
     }
 
     // Task Visibility Tests
@@ -455,7 +455,7 @@ class PlanRepositoryTest {
         whenever(planOverridesStore.overridesFlow).thenReturn(overridesFlow)
         whenever(planSettingsStore.settingsFlow).thenReturn(flowOf(testSettings))
 
-        val repository = PlanRepository(context, planOverridesStore, planSettingsStore)
+        val repository = PlanRepository(planOverridesStore, planSettingsStore)
 
         // Note: Full reactive testing would require PlanDataSource initialization
         // This test verifies the flow structure is properly combined

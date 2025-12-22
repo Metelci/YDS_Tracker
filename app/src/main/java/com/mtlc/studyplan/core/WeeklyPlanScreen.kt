@@ -90,9 +90,7 @@ fun WeeklyPlanScreen(
 
     val resolvedTaskRepository = taskRepository ?: koinInject()
 
-    val settingsStore = remember { PlanSettingsStore(context.settingsDataStore) }
-    val overridesStore = remember { PlanOverridesStore(context.settingsDataStore) }
-    val planRepository = remember(context) { PlanRepository(context, overridesStore, settingsStore) }
+    val planRepository: PlanRepository = koinInject()
     val planFlow: Flow<List<WeekPlan>> = sharedViewModel?.planFlow ?: planRepository.planFlow
 
     val weeks by planFlow.collectAsState(initial = emptyList())

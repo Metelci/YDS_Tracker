@@ -4,7 +4,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.70 (November 21, 2025)
+- **Latest release:** v2.9.74 (December 23, 2025)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30

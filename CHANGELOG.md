@@ -1,3 +1,26 @@
+## [2.9.74] - 2025-12-23
+
+### Architecture & Code Quality
+- **Scheduler Refactoring**: Extracted complex scheduling logic from `PlanRepository` into pure Kotlin `StudyPlanScheduler` class
+  - Removed Android `Context` dependency from scheduling algorithms
+  - Created comprehensive unit tests (30+ test cases) for `StudyPlanScheduler`
+  - Improved testability and maintainability of core business logic
+  - Uses `java.time.DayOfWeek` instead of hardcoded day name strings
+  
+- **Monitoring System Enhancement**: Added ViewModel layer to `MonitoringDashboard`
+  - Created `MonitoringViewModel` to aggregate monitoring service flows
+  - Introduced `MonitoringUiState` for cleaner state management
+  - Backward-compatible implementation preserving existing API
+  
+- **Code Cleanup**: Removed `RenderOptimizer.kt` (306 lines)
+  - Eliminated custom performance optimization code
+  - Relies on standard Compose best practices instead
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- ✅ `:app:testDebugUnitTest` - All tests passing
+- Bumped Android `versionCode` to 103 / `versionName` to 2.9.74
+
 ## [2.9.72] - 2025-11-24 (hotfix)
 
 ### Code Quality

@@ -27,7 +27,13 @@ import java.util.*
 /**
  * Basic Monitoring Dashboard
  * Displays real-time performance metrics and crash reports
+ *
+ * This overload creates a ViewModel internally for backward compatibility.
+ * Prefer using the overload that accepts MonitoringViewModel for better testability.
+ *
+ * @param performanceMonitor Kept for API compatibility but no longer used by ViewModel
  */
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun MonitoringDashboard(
     crashReporter: CrashReporter,
@@ -35,41 +41,26 @@ fun MonitoringDashboard(
     realTimeMonitor: RealTimePerformanceMonitor,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val dateFormat = remember { SimpleDateFormat("HH:mm:ss", Locale.getDefault()) }
-
-    // State collections
-    var crashReports by remember { mutableStateOf<List<CrashReport>>(emptyList()) }
-    var errorStats by remember { mutableStateOf(com.mtlc.studyplan.monitoring.ErrorStatistics()) }
-    var performanceMetrics by remember { mutableStateOf(com.mtlc.studyplan.monitoring.RealTimeMetrics()) }
-    var performanceAlerts by remember { mutableStateOf<List<PerformanceAlert>>(emptyList()) }
-
-    // Collect data flows
-    LaunchedEffect(Unit) {
-        launch {
-            crashReporter.crashReports.collectLatest { reports ->
-                crashReports = reports.take(10) // Show last 10 crashes
-            }
-        }
-
-        launch {
-            crashReporter.errorStats.collectLatest { stats ->
-                errorStats = stats
-            }
-        }
-
-        launch {
-            realTimeMonitor.performanceMetrics.collectLatest { metrics ->
-                performanceMetrics = metrics
-            }
-        }
-
-        launch {
-            realTimeMonitor.performanceAlerts.collectLatest { alerts ->
-                performanceAlerts = alerts.take(5) // Show last 5 alerts
-            }
-        }
+    // Create ViewModel with the required dependencies
+    val viewModel = remember(crashReporter, realTimeMonitor) {
+        MonitoringViewModel(crashReporter, realTimeMonitor)
     }
+    MonitoringDashboard(viewModel = viewModel, modifier = modifier)
+}
+
+/**
+ * MonitoringDashboard with ViewModel injection.
+ *
+ * This is the preferred overload for new code and testing.
+ * The ViewModel aggregates all monitoring flows into a single UI state.
+ */
+@Composable
+fun MonitoringDashboard(
+    viewModel: MonitoringViewModel,
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val dateFormat = remember { SimpleDateFormat("HH:mm:ss", Locale.getDefault()) }
 
     LazyColumn(
         modifier = modifier
@@ -90,25 +81,25 @@ fun MonitoringDashboard(
 
         // Real-time Performance Metrics
         item {
-            PerformanceMetricsCard(performanceMetrics, dateFormat)
+            PerformanceMetricsCard(uiState.performanceMetrics, dateFormat)
         }
 
         // Error Statistics
         item {
-            ErrorStatisticsCard(errorStats)
+            ErrorStatisticsCard(uiState.errorStats)
         }
 
         // Active Performance Alerts
-        if (performanceAlerts.isNotEmpty()) {
+        if (uiState.performanceAlerts.isNotEmpty()) {
             item {
-                PerformanceAlertsCard(performanceAlerts, onClearAlerts = {
-                    realTimeMonitor.clearAlerts()
+                PerformanceAlertsCard(uiState.performanceAlerts, onClearAlerts = {
+                    viewModel.clearAlerts()
                 })
             }
         }
 
         // Recent Crash Reports
-        if (crashReports.isNotEmpty()) {
+        if (uiState.crashReports.isNotEmpty()) {
             item {
                 Text(
                     text = "Recent Crash Reports",
@@ -117,35 +108,51 @@ fun MonitoringDashboard(
                 )
             }
 
-            items(crashReports) { crash ->
+            items(uiState.crashReports) { crash ->
                 CrashReportCard(crash, dateFormat)
             }
         }
 
         // Performance Report
         item {
-            PerformanceReportCard(realTimeMonitor)
+            PerformanceReportCardFromViewModel(viewModel)
         }
 
         // Action Buttons
         item {
             MonitoringActionsCard(
                 onGenerateReport = {
-                    scope.launch {
-                        val report = realTimeMonitor.generatePerformanceReport()
-                        // In a real app, this would show the report or save it
-                        println("Performance Report Generated: $report")
-                    }
+                    val report = viewModel.generatePerformanceReport()
+                    println("Performance Report Generated: $report")
                 },
                 onClearCrashes = {
-                    crashReporter.clearCrashReports()
+                    viewModel.clearCrashReports()
                 },
                 onRefresh = {
-                    // Force refresh of metrics
-                    scope.launch {
-                        delay(100) // Small delay to show refresh
-                    }
+                    viewModel.refresh()
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PerformanceReportCardFromViewModel(viewModel: MonitoringViewModel) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Performance Report",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = viewModel.generatePerformanceReport().take(500),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
