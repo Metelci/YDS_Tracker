@@ -9,7 +9,7 @@ import java.util.Locale
 val argMap = parseArgs(args)
 val repoRoot = Paths.get("").toAbsolutePath()
 val inputPath = argMap["--input"]?.let { repoRoot.resolve(it).normalize() }
-    ?: repoRoot.resolve(".claude/CODE_SPECIFICATIONS.MD")
+    ?: repoRoot.resolve("docs/CODE_SPECIFICATIONS.MD")
 val outputDir = argMap["--output"]?.let { repoRoot.resolve(it).normalize() }
     ?: repoRoot.resolve("app/src/main/java/com/mtlc/studyplan/ui/theme")
 
