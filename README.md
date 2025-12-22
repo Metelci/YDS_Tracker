@@ -57,7 +57,6 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Settings cards rebuilt with gradient backgrounds and solid toggle containers for clarity.
 - Achievement roster expanded with hidden milestones; awards tab styling refreshed.
 - Exam countdown stabilised with guarded ÖSYM refresh logic and locale-aware date output.
-- CI/CD hardening: Detekt clean, GitHub Actions artifact uploads fixed, Kotlin 2.0.21 support.
 
 ## Screens at a Glance
 
