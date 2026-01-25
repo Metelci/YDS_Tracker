@@ -71,11 +71,16 @@ import com.mtlc.studyplan.R
 import com.mtlc.studyplan.ui.theme.DesignTokens
 import com.mtlc.studyplan.ui.theme.ShapeTokens
 import kotlinx.coroutines.delay
+import com.mtlc.studyplan.shared.SharedAppViewModel
+import com.mtlc.studyplan.ui.components.ExamNotificationBanner
+import androidx.compose.runtime.collectAsState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun YdsWelcomeScreen(
     onStartStudyPlan: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sharedViewModel: SharedAppViewModel = koinViewModel()
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
@@ -84,11 +89,30 @@ fun YdsWelcomeScreen(
         isVisible = true
     }
 
+    val activeNotification by sharedViewModel.activeExamNotification.collectAsState(initial = null)
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
+        // Notification Banner Item
+        item {
+            AnimatedVisibility(
+                visible = activeNotification != null && isVisible,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { -it })
+            ) {
+                activeNotification?.let { notification ->
+                    Box(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
+                         ExamNotificationBanner(
+                            notification = notification,
+                            onDismiss = { sharedViewModel.dismissExamNotification(notification.key) }
+                        )
+                    }
+                }
+            }
+        }
+
         item {
             HeroSection(
                 onStartStudyPlan = onStartStudyPlan,

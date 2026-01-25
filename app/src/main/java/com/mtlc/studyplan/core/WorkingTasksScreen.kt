@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,6 +55,7 @@ import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -62,6 +64,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -110,6 +113,9 @@ import com.mtlc.studyplan.ui.responsive.touchTargetSize
 import com.mtlc.studyplan.ui.theme.FeatureKey
 import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 import com.mtlc.studyplan.ui.theme.featurePastelContainer
+import com.mtlc.studyplan.shared.ExamNotification
+import com.mtlc.studyplan.shared.NotificationType
+import com.mtlc.studyplan.ui.components.ExamNotificationBanner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -676,11 +682,24 @@ private fun WorkingTasksScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
             TasksGradientTopBar(appIntegrationManager)
             Spacer(Modifier.height(8.dp))
+
+            val activeNotification by sharedViewModel.activeExamNotification.collectAsState(initial = null)
+            AnimatedVisibility(visible = activeNotification != null) {
+                activeNotification?.let { notification ->
+                    ExamNotificationBanner(
+                        notification = notification,
+                        onDismiss = { sharedViewModel.dismissExamNotification(notification.key) },
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
+
             SegmentedControl(
                 segments = listOf(
                     stringResource(R.string.tasks_tab_daily),
@@ -3272,3 +3291,6 @@ private fun parseEstimatedMinutes(estimatedTime: String): Int {
         else -> 30 // Default 30 minutes
     }
 }
+
+
+

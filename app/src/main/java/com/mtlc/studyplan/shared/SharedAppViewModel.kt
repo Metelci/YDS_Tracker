@@ -114,6 +114,44 @@ class SharedAppViewModel(
         }
     }
 
+    // ============ NOTIFICATIONS ============
+
+    private val _dismissedNotificationsTrigger = MutableStateFlow(0)
+
+    val activeExamNotification: Flow<ExamNotification?> = _dismissedNotificationsTrigger
+        .flatMapLatest {
+            flow {
+                emit(calculateActiveExamNotification())
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun dismissExamNotification(key: String) {
+        viewModelScope.launch {
+            try {
+                settingsRepository.updateSetting(
+                    SettingsUpdateRequest.UpdateBoolean("dismissed_exam_$key", true)
+                )
+                // Trigger re-evaluation
+                 _dismissedNotificationsTrigger.value += 1
+            } catch (e: Exception) {
+               // Log error
+            }
+        }
+    }
+
+    private fun calculateActiveExamNotification(): ExamNotification? {
+        val today = LocalDate.now()
+        val exams = ExamCalendarDataSource.upcomingExams
+        
+        return ExamNotificationLogic.calculateActiveExamNotification(
+            today = today,
+            exams = exams,
+            isDismissed = { key -> settingsRepository.getBoolean("dismissed_exam_$key", false) }
+        )
+    }
+
+
     // ============ INITIALIZATION ============
 
     // ============ TASK OPERATIONS ============
@@ -474,6 +512,7 @@ sealed class NavigationEvent {
     object GoToSettings : NavigationEvent()
 }
 
+
 sealed class TaskFilter {
     object CreateNew : TaskFilter()
     data class ById(val taskId: String) : TaskFilter()
@@ -482,4 +521,15 @@ sealed class TaskFilter {
     object CompletedOnly : TaskFilter()
     object IncompleteOnly : TaskFilter()
 }
+
+data class ExamNotification(
+    val key: String,
+    val title: String,
+    val message: String,
+    val type: NotificationType,
+    val priority: Int // Higher means more important
+)
+
+enum class NotificationType { INFO, WARNING }
+
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,11 +35,19 @@ import com.mtlc.studyplan.feature.home.ResourceLibraryCard
 import com.mtlc.studyplan.integration.AppIntegrationManager
 import com.mtlc.studyplan.ui.theme.appBackgroundBrush
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.mtlc.studyplan.shared.SharedAppViewModel
+import com.mtlc.studyplan.ui.components.ExamNotificationBanner
+import org.koin.androidx.compose.koinViewModel
+
 @Suppress("LongMethod", "LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkingHomeScreen(
     appIntegrationManager: AppIntegrationManager,
+    sharedViewModel: SharedAppViewModel = koinViewModel(),
     onNavigateToTasks: () -> Unit = {},
     onNavigateToWeeklyPlan: () -> Unit = {},
     onNavigateToStudyPlan: () -> Unit = {},
@@ -75,7 +84,21 @@ fun WorkingHomeScreen(
             .fillMaxSize()
             .testTag("home_screen")
             .background(appBackgroundBrush())
+            .statusBarsPadding()
     ) {
+        val activeNotification by sharedViewModel.activeExamNotification.collectAsState(initial = null)
+        
+        AnimatedVisibility(visible = activeNotification != null) {
+            activeNotification?.let { notification ->
+                 Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    ExamNotificationBanner(
+                        notification = notification,
+                        onDismiss = { sharedViewModel.dismissExamNotification(notification.key) }
+                    )
+                 }
+            }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()

@@ -120,6 +120,7 @@ fun NavGraphBuilder.appNavigationGraph(params: AppNavigationGraphParams) {
     ) {
         com.mtlc.studyplan.core.WorkingHomeScreen(
             appIntegrationManager = params.mainAppIntegrationManager,
+            sharedViewModel = params.sharedViewModel,
             onNavigateToTasks = {
                 haptic.trigger()
                 navController.navigate("tasks")
