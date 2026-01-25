@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Celebration
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Lock
@@ -68,7 +69,25 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import android.content.Intent
 
+
 private val PrussianBlue = Color(0xFF003153)
+
+/**
+ * Sanitizes crash log content by removing sensitive information
+ */
+private fun sanitizeCrashLog(content: String): String {
+    return content
+        // Remove internal file paths
+        .replace(Regex("/data/user/\\d+/[^/\\s]+"), "/app")
+        .replace(Regex("/data/data/[^/\\s]+"), "/app")
+        // Redact IP addresses
+        .replace(Regex("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b"), "[IP_REDACTED]")
+        // Remove package-specific paths but keep structure for debugging
+        .replace(Regex("com\\.mtlc\\.studyplan"), "com.app.package")
+        // Redact user IDs
+        .replace(Regex("user_id=[^\\s&]+"), "user_id=[REDACTED]")
+        .replace(Regex("userId=[^\\s&]+"), "userId=[REDACTED]")
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -103,6 +122,7 @@ fun SettingsScreen(
             // Category grid (2 rows x 3)
             var selected by remember { mutableStateOf("Navigation") }
             var showResetDialog by remember { mutableStateOf(false) }
+            var showShareCrashLogsDialog by remember { mutableStateOf(false) }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -157,6 +177,80 @@ fun SettingsScreen(
             }
 
             // Removed neutral action: Reset All Notifications per requirement
+
+            // Share Crash Logs action
+            OutlinedButton(
+                onClick = { showShareCrashLogsDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = DesignTokens.Error),
+                border = BorderStroke(1.dp, DesignTokens.Error)
+            ) {
+                Icon(Icons.Outlined.BugReport, contentDescription = "Share crash logs", tint = DesignTokens.Error)
+                Spacer(Modifier.width(8.dp))
+                Text("Share Crash Logs")
+            }
+
+            // Share Crash Logs Consent Dialog
+            if (showShareCrashLogsDialog) {
+                AlertDialog(
+                    onDismissRequest = { showShareCrashLogsDialog = false },
+                    title = { Text("Share Crash Logs?") },
+                    text = {
+                        Text(
+                            "This will share diagnostic information including:\n\n" +
+                            "• App version and build number\n" +
+                            "• Device model and Android version\n" +
+                            "• Error stack traces and messages\n" +
+                            "• Crash timestamps\n" +
+                            "• Thread information\n\n" +
+                            "This data helps developers identify and fix issues. No personal information is included.\n\n" +
+                            "Do you want to continue?"
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showShareCrashLogsDialog = false
+                                scope.launch {
+                                    val crashDir = java.io.File(context.filesDir, "crash_logs")
+                                    val crashLogs = if (crashDir.exists()) {
+                                        crashDir.listFiles()
+                                            ?.sortedByDescending { it.lastModified() }
+                                            ?.take(10)
+                                            ?.joinToString("\n\n${"=".repeat(50)}\n\n") { file ->
+                                                "File: ${file.name}\n${sanitizeCrashLog(file.readText())}"
+                                            } ?: "No crash logs found."
+                                    } else {
+                                        "No crash logs found."
+                                    }
+
+                                    val shareText = buildString {
+                                        append("StudyPlan YDS Tracker - Crash Logs\n")
+                                        append("Generated: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())}\n")
+                                        append("${"=".repeat(50)}\n\n")
+                                        append(crashLogs)
+                                    }
+
+                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "text/plain"
+                                        putExtra(Intent.EXTRA_SUBJECT, "StudyPlan Crash Logs")
+                                        putExtra(Intent.EXTRA_TEXT, shareText)
+                                    }
+                                    context.startActivity(Intent.createChooser(shareIntent, "Share Crash Logs"))
+                                }
+                            }
+                        ) {
+                            Text("Share", color = MaterialTheme.colorScheme.primary)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showShareCrashLogsDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
 
             // Danger action
             OutlinedButton(
