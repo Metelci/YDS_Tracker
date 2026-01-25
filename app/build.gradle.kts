@@ -14,7 +14,7 @@ plugins {
     // Static analysis and code quality
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
-    jacoco // Test coverage reporting
+    id("jacoco") // Test coverage reporting
 
     // Kotlin Symbol Processing (KSP) for code generation
     id("com.google.devtools.ksp") version libs.versions.ksp.get()

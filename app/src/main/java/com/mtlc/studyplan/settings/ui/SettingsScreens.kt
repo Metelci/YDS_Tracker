@@ -68,6 +68,8 @@ import com.mtlc.studyplan.data.OnboardingRepository
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import android.content.Intent
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 
 private val PrussianBlue = Color(0xFF003153)
@@ -100,6 +102,7 @@ fun SettingsScreen(
     val s = LocalSpacing.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     Scaffold(
         containerColor = Color(0xFFE9F5E9)
@@ -108,6 +111,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -123,6 +127,7 @@ fun SettingsScreen(
             var selected by remember { mutableStateOf("Navigation") }
             var showResetDialog by remember { mutableStateOf(false) }
             var showShareCrashLogsDialog by remember { mutableStateOf(false) }
+            var showAboutDialog by remember { mutableStateOf(false) }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -281,6 +286,7 @@ fun SettingsScreen(
             val versionName = packageInfo?.versionName?.takeIf { it.isNotBlank() } ?: "Unknown"
             val versionCode = packageInfo?.let { PackageInfoCompat.getLongVersionCode(it) } ?: -1L
 
+
             Text(
                 text = buildString {
                     append("StudyPlan YDS Tracker\nVersion $versionName")
@@ -293,6 +299,67 @@ fun SettingsScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // About button
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(
+                onClick = { showAboutDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFF9500)),
+                border = BorderStroke(1.dp, Color(0xFFFF9500))
+            ) {
+                Icon(Icons.Outlined.Settings, contentDescription = "About", tint = Color(0xFFFF9500))
+                Spacer(Modifier.width(8.dp))
+                Text("About")
+            }
+
+            // What's New Dialog
+            if (showAboutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showAboutDialog = false },
+                    title = { Text("What's New") },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Version $versionName (Build $versionCode)",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = DesignTokens.Primary
+                            )
+                            
+                            Text(
+                                text = "Privacy & Security Enhancements",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            
+                            Text(
+                                text = "• Crash Log Consent Dialog\n" +
+                                      "  Users must explicitly confirm before sharing crash logs\n\n" +
+                                      "• Automatic Data Sanitization\n" +
+                                      "  - Internal paths anonymized\n" +
+                                      "  - IP addresses redacted\n" +
+                                      "  - Package names genericized\n" +
+                                      "  - User IDs removed\n\n" +
+                                      "• Security Audit Resolved\n" +
+                                      "  Enhanced data protection and privacy controls\n" +
+                                      "  Security score improved: 92 → 95",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAboutDialog = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
+            }
 
             // Reset Progress Confirmation Dialog
             if (showResetDialog) {
