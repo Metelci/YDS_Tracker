@@ -1,6 +1,6 @@
 # Road to YDS – StudyPlan
 
-[![Version](https://img.shields.io/badge/version-2.9.74-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+[![Version](https://img.shields.io/badge/version-2.9.75-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 [![API](https://img.shields.io/badge/API-30%2B-brightgreen.svg)](https://android-arsenal.com/api?level=30)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org)
@@ -11,7 +11,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.74 (December 23, 2025)
+- **Latest release:** v2.9.75 (January 25, 2026)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30
