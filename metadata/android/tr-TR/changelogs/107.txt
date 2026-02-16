@@ -1,0 +1,30 @@
+🎯 Ayarlar Otomasyonu (v2.9.78)
+
+✨ Dinamik Hakkında Dialog - Sıfır bakım
+• CHANGELOG.md'den otomatik okur
+• Manuel güncellemeye gerek yok
+• Her zaman güncel versiyon bilgisi
+
+📝 Markdown Desteği - Güzel formatlama
+• Özellik adları kalın yazıyla
+• Kod parçacıkları monospace yazıyla
+• Girintili madde işaretli listeler
+• Bölüm başlıkları net görünüm
+
+🛡️ Akıllı Hata Yönetimi - Güvenilir deneyim
+• Üç seviyeli yedekleme sistemi
+• Versiyon uyumsuzluğu algılama
+• Hatalarda zarif düşüş
+• Hata ayıklama için günlük kaydı
+
+🔄 Bakım İş Akışı - Geliştirici dostu
+• Yeni versiyon için CHANGELOG.md güncelle
+• Uygulamayı derle (changelog otomatik)
+• Hakkında dialog otomatik güncellenir
+• Tek doğruluk kaynağı
+
+Teknik Uygulama:
+• Özel hafif parser (~150 satır)
+• Context.assets entegrasyonu
+• Compose AnnotatedString render
+• Harici bağımlılık yok

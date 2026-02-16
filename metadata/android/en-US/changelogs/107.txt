@@ -1,0 +1,30 @@
+🎯 Settings Automation (v2.9.78)
+
+✨ Dynamic About Dialog - Zero-maintenance release notes
+• Automatically reads from CHANGELOG.md
+• No more hardcoded updates needed
+• Always shows current version info
+
+📝 Markdown Support - Beautiful formatting
+• Bold text for feature names
+• Code snippets in monospace
+• Bullet lists with proper indentation
+• Section headers clearly displayed
+
+🛡️ Smart Error Handling - Reliable experience
+• Three-level fallback system
+• Version mismatch detection
+• Graceful degradation on errors
+• Debug logging for troubleshooting
+
+🔄 Maintenance Workflow - Developer friendly
+• Update CHANGELOG.md for new version
+• Build app (changelog auto-bundled)
+• About dialog updates automatically
+• Single source of truth
+
+Technical Implementation:
+• Custom lightweight parser (~150 lines)
+• Context.assets integration
+• Compose AnnotatedString rendering
+• Zero external dependencies

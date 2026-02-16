@@ -14,7 +14,9 @@
       "Bash(git push:*)",
       "Bash(/c/Users/metel/AppData/Local/Android/Sdk/platform-tools/adb.exe shell:*)",
       "Bash(/c/Users/metel/AppData/Local/Android/Sdk/platform-tools/adb.exe pull:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(./gradlew clean assembleDebug:*)"
     ]
   }
 }

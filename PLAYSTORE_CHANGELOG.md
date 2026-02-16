@@ -18,8 +18,79 @@
 
 | Version Code | Version Name | Release Date |
 |:---:|:---:|:---:|
+| 107 | 2.9.78 | 2026-02-16 |
 | 106 | 2.9.77 | 2026-02-16 |
 | 105 | 2.9.76 | 2026-02-15 |
+
+---
+
+## Version 2.9.78 (Version Code 107) — 2026-02-16
+
+### English
+
+🎯 Settings Automation (v2.9.78)
+
+✨ Dynamic About Dialog - Zero-maintenance release notes
+• Automatically reads from CHANGELOG.md
+• No more hardcoded updates needed
+• Always shows current version info
+
+📝 Markdown Support - Beautiful formatting
+• Bold text for feature names
+• Code snippets in monospace
+• Bullet lists with proper indentation
+• Section headers clearly displayed
+
+🛡️ Smart Error Handling - Reliable experience
+• Three-level fallback system
+• Version mismatch detection
+• Graceful degradation on errors
+• Debug logging for troubleshooting
+
+🔄 Maintenance Workflow - Developer friendly
+• Update CHANGELOG.md for new version
+• Build app (changelog auto-bundled)
+• About dialog updates automatically
+• Single source of truth
+
+Technical Implementation:
+• Custom lightweight parser (~150 lines)
+• Context.assets integration
+• Compose AnnotatedString rendering
+• Zero external dependencies
+
+### Turkish / Türkçe
+
+🎯 Ayarlar Otomasyonu (v2.9.78)
+
+✨ Dinamik Hakkında Dialog - Sıfır bakım
+• CHANGELOG.md'den otomatik okur
+• Manuel güncellemeye gerek yok
+• Her zaman güncel versiyon bilgisi
+
+📝 Markdown Desteği - Güzel formatlama
+• Özellik adları kalın yazıyla
+• Kod parçacıkları monospace yazıyla
+• Girintili madde işaretli listeler
+• Bölüm başlıkları net görünüm
+
+🛡️ Akıllı Hata Yönetimi - Güvenilir deneyim
+• Üç seviyeli yedekleme sistemi
+• Versiyon uyumsuzluğu algılama
+• Hatalarda zarif düşüş
+• Hata ayıklama için günlük kaydı
+
+🔄 Bakım İş Akışı - Geliştirici dostu
+• Yeni versiyon için CHANGELOG.md güncelle
+• Uygulamayı derle (changelog otomatik)
+• Hakkında dialog otomatik güncellenir
+• Tek doğruluk kaynağı
+
+Teknik Uygulama:
+• Özel hafif parser (~150 satır)
+• Context.assets entegrasyonu
+• Compose AnnotatedString render
+• Harici bağımlılık yok
 
 ---
 
