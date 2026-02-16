@@ -99,30 +99,27 @@ fun WorkingHomeScreen(
             }
         }
 
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = Color(0xFFE3F2FD)
         ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFFE3F2FD)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFFE3F2FD),
+                                Color(0xFFFCE4EC)
+                            )
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFFE3F2FD),
-                                    Color(0xFFFCE4EC)
-                                )
-                            ),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -152,7 +149,8 @@ fun WorkingHomeScreen(
                     }
                 }
             }
-        }
+
+        Spacer(Modifier.height(12.dp))
 
         LazyColumn(
             modifier = Modifier

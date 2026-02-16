@@ -678,16 +678,22 @@ private fun WorkingTasksScreenContent(
         modifier = modifier
             .fillMaxSize()
             .background(appBackgroundBrush())
+            .statusBarsPadding()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp)
         ) {
-            Spacer(Modifier.height(4.dp))
-            TasksGradientTopBar(appIntegrationManager)
-            Spacer(Modifier.height(8.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                TasksGradientTopBar(appIntegrationManager)
+            }
+            Spacer(Modifier.height(12.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
 
             val activeNotification by sharedViewModel.activeExamNotification.collectAsState(initial = null)
             AnimatedVisibility(visible = activeNotification != null) {
@@ -736,6 +742,7 @@ private fun WorkingTasksScreenContent(
                 3 -> AwardsTabContent(
                     appIntegrationManager = appIntegrationManager
                 )
+            }
             }
         }
     }
@@ -868,7 +875,7 @@ private fun TasksTopBarSurface(content: @Composable () -> Unit) {
                     ),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             content()
         }
