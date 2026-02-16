@@ -64,7 +64,7 @@ class NotificationSchedulerService @Inject constructor(
 
             notificationManager.showDailyStudyReminder(
                 context = context,
-                title = "?? Test Notification",
+                title = "\uD83D\uDD14 Test Notification",
                 message = motivationalMessage,
                 notificationId = System.currentTimeMillis().toInt(),
                 calendarIntent = null
@@ -73,7 +73,7 @@ class NotificationSchedulerService @Inject constructor(
     }
 
     private fun generateTestMessage(studyStats: StudyStats): String {
-        return "Test notification! Your current streak: ${studyStats.currentStreak} days. Keep up the great work! ??"
+        return "Test notification! Your current streak: ${studyStats.currentStreak} days. Keep up the great work! \uD83D\uDCAA"
     }
 
     /**

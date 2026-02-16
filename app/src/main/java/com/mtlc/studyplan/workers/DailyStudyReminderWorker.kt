@@ -120,7 +120,7 @@ class DailyStudyReminderWorker(
 
             notificationManager.showDailyStudyReminder(
                 context = applicationContext,
-                title = "?? Study Time Reminder",
+                title = "\uD83D\uDD14 Study Time Reminder",
                 message = motivationalMessage,
                 notificationId = notificationId,
                 calendarIntent = calendarIntent,
@@ -144,11 +144,11 @@ class DailyStudyReminderWorker(
         val weeklyGoal = studyStats.weeklyGoalHours
 
         return when {
-            currentStreak >= 7 -> "?? Amazing! You're on a $currentStreak-day streak! Keep the momentum going!"
-            currentStreak >= 3 -> "? Great job! $currentStreak days strong. Your dedication is paying off!"
-            completedTasks > 10 -> "?? Impressive! You've completed $completedTasks tasks. You're unstoppable!"
-            weeklyGoal > 0 -> "?? Time to crush your $weeklyGoal-hour weekly goal. You've got this!"
-            else -> "?? Every great journey begins with a single step. Let's make today count!"
+            currentStreak >= 7 -> "\uD83D\uDD25 Amazing! You're on a $currentStreak-day streak! Keep the momentum going!"
+            currentStreak >= 3 -> "\uD83C\uDF1F Great job! $currentStreak days strong. Your dedication is paying off!"
+            completedTasks > 10 -> "\uD83D\uDCAA Impressive! You've completed $completedTasks tasks. You're unstoppable!"
+            weeklyGoal > 0 -> "\uD83D\uDCDA Time to crush your $weeklyGoal-hour weekly goal. You've got this!"
+            else -> "\uD83D\uDE80 Every great journey begins with a single step. Let's make today count!"
         }
     }
 

@@ -1,7 +1,12 @@
 package com.mtlc.studyplan
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import com.mtlc.studyplan.navigation.AppNavHost
+import com.mtlc.studyplan.permissions.NotificationPermissionHelper
 import com.mtlc.studyplan.shared.SharedAppViewModel
 import com.mtlc.studyplan.ui.theme.StudyPlanTheme
 import com.mtlc.studyplan.ui.base.LocaleAwareActivity
@@ -25,8 +31,23 @@ import org.koin.compose.koinInject
  */
 
 class MinimalMainActivity : LocaleAwareActivity() {
+
+    private lateinit var notificationPermissionLauncher: ActivityResultLauncher<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Register permission launcher before setContent
+        // Required for Android 13+ (API 33+) to show local notifications
+        notificationPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                Log.d(TAG, "Notification permission granted")
+            } else {
+                Log.w(TAG, "Notification permission denied by user")
+            }
+        }
 
         setContent {
             val sharedViewModel: SharedAppViewModel = koinViewModel()
@@ -62,5 +83,17 @@ class MinimalMainActivity : LocaleAwareActivity() {
                 }
             }
         }
+
+        // Request notification permission for Android 13+ (API 33+)
+        // Must be called after setContent completes
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationPermissionHelper.isNotificationPermissionGranted(this)) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "MinimalMainActivity"
     }
 }
