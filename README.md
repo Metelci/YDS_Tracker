@@ -1,6 +1,6 @@
 # Road to YDS – StudyPlan
 
-[![Version](https://img.shields.io/badge/version-2.9.75-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
+[![Version](https://img.shields.io/badge/version-2.9.77-blue.svg)](https://github.com/Metelci/YDS_Tracker/releases)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 [![API](https://img.shields.io/badge/API-30%2B-brightgreen.svg)](https://android-arsenal.com/api?level=30)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org)
@@ -11,7 +11,7 @@ Road to YDS is a modern Android app that guides learners through a 30-week prepa
 
 ## Overview
 
-- **Latest release:** v2.9.75 (January 25, 2026)
+- **Latest release:** v2.9.77 (February 16, 2026)
 - **Target exams:** YDS, YÖKDİL (English)
 - **Supported locales:** English, Turkish
 - **Minimum Android version:** API 30
@@ -47,8 +47,11 @@ The app ships with an offline-first plan repository, localized UI, and a unified
 - Biometric authentication (fingerprint/face) and PIN fallback.
 - Certificate pinning and strict network policies; app runs fully offline after initial setup.
 
-## Recent Highlights (v2.9.52 - v2.9.74)
+## Recent Highlights (v2.9.52 - v2.9.77)
 
+- **v2.9.77:** Comprehensive notification system fixes - added Android 13+ POST_NOTIFICATIONS runtime permission, increased daily notification limit (2→10), implemented proper daily goal and streak logic with timestamp filtering, fixed emoji encoding, added SecurityException fallback.
+- **v2.9.76:** UI refinements - minimized header spacing in Home and Tasks screens to match Settings reference design for consistent visual hierarchy.
+- **v2.9.75:** Privacy enhancements - crash log consent dialog, automatic sensitive data sanitization, improved security score (92/100 → 95/100).
 - **v2.9.74:** Major architecture refactoring - extracted scheduling logic into pure Kotlin `StudyPlanScheduler` with 30+ unit tests, removed Android Context dependencies, added `MonitoringViewModel` for cleaner state management.
 - **v2.9.74:** Code cleanup - removed 306 lines of custom `RenderOptimizer` code, now relies on standard Compose best practices for better maintainability.
 - **v2.9.70:** Weekly schedule day names now respect your device language (no more hardcoded Turkish labels), and the exam countdown shows a stale-data warning if OSYM dates can't be refreshed.
@@ -160,11 +163,14 @@ Key features:
 
 Download Road to YDS and keep your preparation on track all the way to exam day.
 
-### Play Store What's New (v2.9.70)
+### Play Store What's New (v2.9.77)
 
-- Weekly schedule day names are now fully localized using string resources.
-- YDS fallback schedule now covers 2027-2028 with a stale-data warning if refresh fails.
-- Dependency vulnerability scanning runs by default; FCM analytics prefs are stored encrypted and Koin logs stay quiet in release.
+- Fully functional notification system with Android 13+ support - never miss study reminders or achievements.
+- Smart daily goal tracking - only notifies when you actually reach your target (filters by today's completed tasks).
+- Intelligent streak warnings - alerts only when your streak is genuinely at risk (3+ days, no activity today).
+- Enhanced notification reliability - increased daily limit to 10 notifications for important exam milestones.
+- Perfect emoji display - study reminders now show beautiful 🔔🔥🌟💪📚 emoji instead of placeholder characters.
+- Cleaner UI - minimized header spacing in Home and Tasks screens for more content visibility.
 
 ## License
 

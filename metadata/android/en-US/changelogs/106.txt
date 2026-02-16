@@ -1,0 +1,38 @@
+🔔 Notification System Overhaul (v2.9.77)
+
+✅ Android 13+ Support - Never miss notifications again
+• Permission request added for modern Android devices
+• Full compatibility with latest Android versions
+
+📊 Smarter Daily Goals - Only real achievements count
+• Tracks today's completed tasks accurately
+• No more false "goal achieved" notifications
+• Timestamp-based progress tracking
+
+🔥 Intelligent Streak Warnings - Alerts when you need them
+• Only warns if streak is actually at risk
+• Checks if you studied today before alerting
+• No unnecessary interruptions
+
+📢 Enhanced Reliability - Room for what matters
+• Daily notification limit increased (2→10)
+• Exam deadline reminders won't be missed
+• Better mix of achievements and reminders
+
+🎨 Perfect Emoji Display - Beautiful notifications
+• 🔔 Study reminders with proper emoji
+• 🔥 Streak notifications look great
+• 🌟 Achievement alerts sparkle
+• No more ?? placeholder characters
+
+🎯 UI Refinements - More content, less clutter
+• Minimized header spacing in Home & Tasks
+• Consistent design across all screens
+• Professional visual hierarchy
+
+Bug Fixes:
+• Fixed notification permission on Android 13+
+• Fixed daily goal false positives
+• Fixed streak warning spam
+• Fixed emoji encoding issues
+• Removed legacy notification code

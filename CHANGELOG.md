@@ -1,3 +1,87 @@
+## [2.9.77] - 2026-02-16
+
+### Notifications - Comprehensive System Fixes
+- **Android 13+ Support**: Added POST_NOTIFICATIONS runtime permission request
+  - Permission dialog appears on first launch for Android 13+ (API 33+) devices
+  - Created `NotificationPermissionHelper.kt` for permission management
+  - Integrated in `MinimalMainActivity` with proper ActivityResultLauncher
+  - Users can now receive notifications on modern Android versions
+
+- **Enhanced Daily Goal Tracking**: Fixed logic to count only TODAY's completed tasks
+  - Uses `completedAt` timestamp filtering with Calendar API (00:00-23:59 range)
+  - Only shows "goal achieved" notification when daily target actually reached
+  - No more false positives from total task count
+
+- **Intelligent Streak Warnings**: Fixed risk detection to check TODAY's activity
+  - Only warns if: streak >= 3 days AND no tasks completed today
+  - Eliminates unnecessary warnings when user is actively studying
+  - Uses same timestamp-based filtering as daily goal tracking
+
+- **Increased Notification Capacity**: Daily limit raised from 2 to 10
+  - Important exam deadline notifications won't be dropped
+  - Allows proper mix of reminders, achievements, and streak warnings
+  - More reliable notification delivery throughout the day
+
+- **Fixed Emoji Display**: Proper Unicode encoding for all notification emojis
+  - 🔔 Study Time Reminder displays correctly (was showing ??)
+  - 🔥 Streak notifications show fire emoji
+  - 🌟 Achievement alerts display star emoji
+  - 💪 Motivation messages show muscle emoji
+  - 📚 Study reminders show books emoji
+  - Updated in `DailyStudyReminderWorker.kt` and `NotificationSchedulerService.kt`
+
+- **Enhanced Error Handling**: Added SecurityException fallback for AlarmManager
+  - Falls back to WorkManager if exact alarm permission denied
+  - Ensures study reminders work even without exact alarm permission
+  - Graceful degradation for notification scheduling
+
+- **Code Quality**: Removed empty stub file `NotificationScheduler.kt`
+  - Cleaned up legacy code that was doing nothing
+  - All notification logic now in proper `NotificationManager.kt`
+
+### Technical Implementation
+- Added `Task` import to `NotificationManager.kt` for proper type checking
+- Implemented Calendar-based date range filtering for timestamp comparisons
+- Used explicit `Task` type annotations in lambda parameters for type safety
+- All notification channels verified active and properly configured
+- Notification system fully tested on Android 13+ emulator (API 36.1)
+
+### Testing & Verification
+- ✅ POST_NOTIFICATIONS permission dialog tested on API 36.1 emulator
+- ✅ All 7 notification channels active (exam_applications, achievements, streak_warnings, etc.)
+- ✅ Emoji encoding verified with test notifications
+- ✅ Code compiles and runs without errors
+- ✅ Logic implementations reviewed for correctness
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- ✅ `:app:assembleDebug`
+- Bumped Android `versionCode` to 106 / `versionName` to 2.9.77
+
+## [2.9.76] - 2026-02-15
+
+### UI - Header Spacing Refinements
+- **Home Screen**: Minimized header spacing to match Settings reference
+  - Removed outer Box wrapper causing excessive padding
+  - Reduced header top padding from 26dp to 12dp
+  - Consistent spacing across all screens now
+
+- **Tasks Screen**: Optimized header layout structure
+  - Restructured Box and Column hierarchy to eliminate extra spacing
+  - Removed top Spacer before header
+  - Moved statusBarsPadding to parent Box for proper inset handling
+  - Header now sits flush with content like Settings screen
+
+### Visual Consistency
+- All three main screens (Home, Tasks, Settings) now have matching header spacing
+- Improved content visibility with reduced whitespace
+- Professional, consistent visual hierarchy throughout the app
+
+### Build
+- ✅ `:app:compileDebugKotlin`
+- ✅ `:app:assembleDebug`
+- Bumped Android `versionCode` to 105 / `versionName` to 2.9.76
+
 ## [2.9.75] - 2026-01-25
 
 ### Privacy & Security

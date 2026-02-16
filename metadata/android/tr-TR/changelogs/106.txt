@@ -1,0 +1,38 @@
+🔔 Bildirim Sistemi Yenilendi (v2.9.77)
+
+✅ Android 13+ Desteği - Bildirimleri kaçırmayın
+• Modern Android cihazlar için izin sistemi eklendi
+• En son Android sürümleriyle tam uyumluluk
+
+📊 Akıllı Günlük Hedefler - Sadece gerçek başarılar
+• Bugün tamamlanan görevleri doğru takip eder
+• Artık yanlış "hedef ulaşıldı" bildirimleri yok
+• Zaman damgası tabanlı ilerleme takibi
+
+🔥 Akıllı Seri Uyarıları - İhtiyacınız olduğunda uyarır
+• Sadece seriniz gerçekten risk altındaysa uyarır
+• Uyarmadan önce bugün çalışıp çalışmadığınızı kontrol eder
+• Gereksiz kesintiler yok
+
+📢 Gelişmiş Güvenilirlik - Önemli şeyler için alan
+• Günlük bildirim limiti artırıldı (2→10)
+• Sınav tarih hatırlatıcıları kaçırılmaz
+• Başarılar ve hatırlatıcılar daha iyi karışım
+
+🎨 Mükemmel Emoji Gösterimi - Güzel bildirimler
+• 🔔 Düzgün emoji ile çalışma hatırlatıcıları
+• 🔥 Seri bildirimleri harika görünüyor
+• 🌟 Başarı uyarıları parlıyor
+• Artık ?? yer tutucu karakterler yok
+
+🎯 Arayüz İyileştirmeleri - Daha fazla içerik
+• Ana Sayfa ve Görevler'de başlık boşluğu azaltıldı
+• Tüm ekranlarda tutarlı tasarım
+• Profesyonel görsel hiyerarşi
+
+Hata Düzeltmeleri:
+• Android 13+ bildirim izni düzeltildi
+• Günlük hedef yanlış pozitifleri düzeltildi
+• Seri uyarısı spam'i düzeltildi
+• Emoji kodlama sorunları düzeltildi
+• Eski bildirim kodu temizlendi
