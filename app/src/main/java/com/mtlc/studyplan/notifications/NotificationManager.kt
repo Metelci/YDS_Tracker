@@ -11,6 +11,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.mtlc.studyplan.MinimalMainActivity
 import com.mtlc.studyplan.R
+import com.mtlc.studyplan.data.Task
 import com.mtlc.studyplan.eventbus.AppEvent
 import com.mtlc.studyplan.eventbus.AppEventBus
 import com.mtlc.studyplan.integration.AppIntegrationManager
@@ -264,10 +265,37 @@ class NotificationManager @Inject constructor(
 
         // Only warn if streak exists and is at risk (3+ days)
         if (streakInfo >= 3) {
-            // For now, always check streak warning when called
-            // In production, this should verify if user actually studied today
-            // by checking task completion timestamps
-            checkStreakWarning(streakInfo)
+            // Check if user has completed any tasks today
+            val hasStudiedToday = try {
+                val allTasks = appIntegrationManager.getAllTasks().first()
+
+                // Calculate today's date range
+                val calendar = java.util.Calendar.getInstance()
+                calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+                calendar.set(java.util.Calendar.MINUTE, 0)
+                calendar.set(java.util.Calendar.SECOND, 0)
+                calendar.set(java.util.Calendar.MILLISECOND, 0)
+                val todayStart = calendar.timeInMillis
+
+                calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
+                val todayEnd = calendar.timeInMillis
+
+                // Check if any task completed today
+                allTasks.any { task: Task ->
+                    task.isCompleted &&
+                    task.completedAt != null &&
+                    task.completedAt >= todayStart &&
+                    task.completedAt < todayEnd
+                }
+            } catch (e: Exception) {
+                android.util.Log.w("NotificationManager", "Unable to check today's tasks", e)
+                false // Assume not studied if error
+            }
+
+            // Only warn if haven't studied today - streak is at risk
+            if (!hasStudiedToday) {
+                checkStreakWarning(streakInfo)
+            }
         }
     }
 
@@ -335,17 +363,34 @@ class NotificationManager @Inject constructor(
         // Check if daily goal reminders are enabled
         if (!settings.dailyGoalRemindersEnabled) return
 
-        // Get today's completed tasks count from study stats
+        // Get today's completed tasks by filtering completedAt timestamp
         val completedToday = try {
-            val stats = appIntegrationManager.getStudyStats()
-            stats.totalTasksCompleted // This might be total, not daily
+            val allTasks = appIntegrationManager.getAllTasks().first()
+
+            // Calculate today's date range in milliseconds
+            val calendar = java.util.Calendar.getInstance()
+            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+            calendar.set(java.util.Calendar.MINUTE, 0)
+            calendar.set(java.util.Calendar.SECOND, 0)
+            calendar.set(java.util.Calendar.MILLISECOND, 0)
+            val todayStart = calendar.timeInMillis
+
+            calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
+            val todayEnd = calendar.timeInMillis
+
+            // Count tasks completed today
+            allTasks.count { task: Task ->
+                task.isCompleted &&
+                task.completedAt != null &&
+                task.completedAt >= todayStart &&
+                task.completedAt < todayEnd
+            }
         } catch (e: Exception) {
-            android.util.Log.w("NotificationManager", "Unable to get task count", e)
+            android.util.Log.w("NotificationManager", "Unable to get today's task count", e)
             return
         }
 
-        // Only show notification if goal threshold is reached
-        // Note: This is a simplified check - in production, filter by today's date
+        // Only show notification if daily goal is actually reached
         if (completedToday >= dailyGoal) {
             showDailyGoalAchievedNotification(completedToday, dailyGoal)
         }
