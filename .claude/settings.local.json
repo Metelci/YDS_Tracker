@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(./gradlew compileDebugKotlin:*)",
+      "Bash(adb devices:*)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe\" devices)",
+      "Bash(./gradlew installDebug)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe\" shell am start -n com.mtlc.studyplan/.MinimalMainActivity)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe\" logcat -d)",
+      "Bash(/c/Users/metel/AppData/Local/Android/Sdk/platform-tools/adb.exe logcat:*)",
+      "Bash(git push:*)",
+      "Bash(/c/Users/metel/AppData/Local/Android/Sdk/platform-tools/adb.exe shell:*)",
+      "Bash(/c/Users/metel/AppData/Local/Android/Sdk/platform-tools/adb.exe pull:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
