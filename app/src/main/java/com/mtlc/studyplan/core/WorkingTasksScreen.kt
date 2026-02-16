@@ -685,7 +685,7 @@ private fun WorkingTasksScreenContent(
                 .statusBarsPadding()
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
             TasksGradientTopBar(appIntegrationManager)
             Spacer(Modifier.height(8.dp))
 
@@ -868,7 +868,7 @@ private fun TasksTopBarSurface(content: @Composable () -> Unit) {
                     ),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
             content()
         }

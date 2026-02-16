@@ -102,7 +102,7 @@ fun WorkingHomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 4.dp)
         ) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -121,7 +121,7 @@ fun WorkingHomeScreen(
                             ),
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .padding(horizontal = 20.dp, vertical = 18.dp)
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
