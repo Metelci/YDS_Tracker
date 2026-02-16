@@ -75,6 +75,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.mtlc.studyplan.ui.components.AboutDialog
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -543,48 +544,10 @@ fun OriginalSettingsScreen(
 
         // What's New Dialog
         if (showAboutDialog) {
-            AlertDialog(
-                onDismissRequest = { showAboutDialog = false },
-                title = { Text("What's New") },
-                text = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "Version $versionName (Build $versionCode)",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        
-                        Text(
-                            text = "Privacy & Security Enhancements",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        
-                        Text(
-                            text = "• Crash Log Consent Dialog\n" +
-                                  "  Users must explicitly confirm before sharing crash logs\n\n" +
-                                  "• Automatic Data Sanitization\n" +
-                                  "  - Internal paths anonymized\n" +
-                                  "  - IP addresses redacted\n" +
-                                  "  - Package names genericized\n" +
-                                  "  - User IDs removed\n\n" +
-                                  "• Security Audit Resolved\n" +
-                                  "  Enhanced data protection and privacy controls\n" +
-                                  "  Security score improved: 92 → 95",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showAboutDialog = false }) {
-                        Text("Close")
-                    }
-                }
+            AboutDialog(
+                versionName = versionName,
+                versionCode = versionCode,
+                onDismiss = { showAboutDialog = false }
             )
         }
         }
